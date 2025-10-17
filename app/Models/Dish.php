@@ -2,17 +2,25 @@
 
 namespace App\Models;
 
+use App\Enums\DishCategoryEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Dish extends Model
 {
     protected $guarded = ['id'];
 
-    public function images(): MorphToMany
+    protected function casts(): array
     {
-        return $this->morphToMany(Image::class, 'imageable');
+        return [
+            'category' => DishCategoryEnum::class,
+        ];
+    }
+
+    public function images(): MorphMany
+    {
+        return $this->morphMany(Image::class, 'imageable');
     }
 
     public function ingredients(): BelongsToMany
