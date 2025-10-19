@@ -4,51 +4,60 @@ import { ImagePlus } from 'lucide-vue-next';
 
 const props = defineProps<{
     modelValue: File[];
+    existingImages?: {id: number; path: string}[];
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', files: File[]): void;
+    (e: 'update:modelValue', images: File[]): void;
 }>();
 
-const files = ref<File[]>(props.modelValue || []);
+const images = ref<File[]>(props.modelValue || []);
+const existingImagesPreviewUrls = ref<string[]>(props.existingImages?.map(img => img.path) || [])
 const previewUrls = ref<string[]>([]);
 const isDragging = ref<boolean>(false);
 
 watch(
     () => props.modelValue,
     (newValue) => {
-        if (newValue) files.value = newValue;
+        if (newValue) images.value = newValue;
     },
 );
 
 const handleDrop = (event: DragEvent) => {
     event.preventDefault();
     isDragging.value = false;
-    const droppedFiles = Array.from(event.dataTransfer?.files || []);
-    addFiles(droppedFiles);
+    const droppedImages = Array.from(event.dataTransfer?.files || []);
+    addImages(droppedImages);
 };
 
-const handleFileChange = (event: Event) => {
+const handleImageChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    const selectedFiles = Array.from(target.files || []);
-    addFiles(selectedFiles);
+    const selectedImages = Array.from(target.files || []);
+    addImages(selectedImages);
 };
 
-const addFiles = (newFiles: File[]) => {
-    const updatedFiles = [...files.value, ...newFiles];
-    files.value = updatedFiles;
-    emit('update:modelValue', updatedFiles);
+const addImages = (newFiles: File[]) => {
+    const updatedImages = [...images.value, ...newFiles];
+    images.value = updatedImages;
+    emit('update:modelValue', updatedImages);
     updatePreviewImages();
 };
 
-const removeFile = (index: number) => {
-    files.value.splice(index, 1);
-    emit('update:modelValue', files.value);
+const removeImage = (index: number) => {
+    images.value.splice(index, 1);
+    emit('update:modelValue', images.value);
     updatePreviewImages();
 };
+
+const removeExistingImage = (index: number) => {
+    const image = props.existingImages?.[index];
+    if (image) {
+        existingImagesPreviewUrls.value.splice(index, 1);
+    }
+}
 
 const updatePreviewImages = () => {
-    previewUrls.value = files.value.map((file) => URL.createObjectURL(file));
+    previewUrls.value = images.value.map((image) => URL.createObjectURL(image));
 };
 </script>
 
@@ -69,7 +78,7 @@ const updatePreviewImages = () => {
             multiple
             accept="image/*"
             class="absolute inset-0 cursor-pointer opacity-0 z-999"
-            @change="handleFileChange"
+            @change="handleImageChange"
         />
 
         <div
@@ -82,6 +91,26 @@ const updatePreviewImages = () => {
         </div>
 
         <div v-else class="grid w-full grid-cols-2 gap-3 md:grid-cols-3">
+            <!--existing images-->
+            <div
+                v-for="(url, index) in existingImagesPreviewUrls"
+                :key="index"
+                class="group relative z-999"
+            >
+                <img
+                    :src="url"
+                    class="h-32 w-full rounded-xl object-cover shadow-md"
+                    alt=""
+                />
+                <button
+                    type="button"
+                    @click.stop="removeExistingImage(index)"
+                    class="absolute top-2 right-2 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 z-999"
+                >
+                    ✕
+                </button>
+            </div>
+            <!--new uploaded images-->
             <div
                 v-for="(url, index) in previewUrls"
                 :key="index"
@@ -94,7 +123,7 @@ const updatePreviewImages = () => {
                 />
                 <button
                     type="button"
-                    @click.stop="removeFile(index)"
+                    @click.stop="removeImage(index)"
                     class="absolute top-2 right-2 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 z-999"
                 >
                     ✕

@@ -17,16 +17,16 @@ class DishController extends Controller
      */
     public function index()
     {
-        //$dishes = Dish::with(['ingredients', 'images'])->paginate(10);
-        $dishes = Dish::query()->orderBy('created_at', 'desc')->paginate(10);
+        $dishes = Dish::query()->with(['images'])->orderBy('created_at', 'desc')->paginate(10);
 
         $dishes->through(fn ($dish) => [
             'id' => $dish->id,
             'name' => $dish->name,
+            'image' => $dish->images->first() ? Storage::url($dish->images->first()->path) : Storage::url('images/picture.png'),
             'description' => $dish->description,
-            'category' => $dish->category->label(),
+            'category' => DishCategoryEnum::getCategory($dish->category),
             'price' => $dish->price,
-            'is_available' => $dish->is_available,
+            'is_available' => $dish->is_available === 1 ? 'Available' : 'Unavailable',
             'created_at' => $dish->created_at->toDateTimeString(),
             'updated_at' => $dish->updated_at->toDateTimeString(),
         ]);
@@ -93,12 +93,31 @@ class DishController extends Controller
      */
     public function edit(Dish $dish)
     {
-        $dish->load(['ingredients', 'images']);
-        $ingredients = Ingredient::all();
+        $dish->load(['ingredients','images']);
+        $formattedDish = [
+            'id' => $dish->id,
+            'name' => $dish->name,
+            'category' => $dish->category,
+            'description' => $dish->description,
+            'price' => $dish->price,
+            'ingredients' => $dish->ingredients->map(fn ($ingredient) => [
+                'id' => $ingredient->id,
+            ]),
+            'images' => $dish->images->map(fn ($image) => [
+                'id' => $image->id,
+                'path' => $image->path,
+            ]),
+        ];
+
+        $ingredients = Ingredient::all()->map(fn ($ingredient) => [
+            'value' => $ingredient->id,
+            'label' => $ingredient->name,
+        ]);
 
         return Inertia::render('dish/Edit', [
-            'dish' => $dish,
+            'dishToEdit' => $formattedDish,
             'ingredients' => $ingredients,
+            'categories' => DishCategoryEnum::getCategories(),
         ]);
     }
 

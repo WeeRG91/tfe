@@ -19,7 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', 'store')->name('store');
         Route::get('/{dish}', 'show')->name('show');
         Route::get('/{dish}/edit', 'edit')->name('edit');
-        Route::patch('/{dish}', 'update')->name('update');
+        Route::post('/{dish}', 'update')->name('update');
         Route::delete('/{dish}', 'destroy')->name('destroy');
     });
 });

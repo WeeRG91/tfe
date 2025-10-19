@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { Badge } from '@/components/ui/badge';
 
 interface Option {
     value: number;
     label: string;
+    color: string;
 }
 
 const props = defineProps<{
@@ -12,11 +14,14 @@ const props = defineProps<{
     label?: string;
 }>();
 
+console.log(props.options)
+
 const emit = defineEmits<{
     (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const selectedValue = ref<number | null>(props.modelValue ?? null);
+const selectedColor = ref<string | null>(props.options.find((option) => option.value === selectedValue.value)?.color || '');
 const isDropdownOpen = ref(false);
 const dropdownRef = ref<HTMLDivElement | null>(null);
 
@@ -33,6 +38,7 @@ const toggleDropdown = () => {
 
 const selectOption = (value: number | null) => {
     selectedValue.value = value;
+    selectedColor.value = props.options.find((option) => option.value === selectedValue.value)?.color || '';
     emit('update:modelValue', value);
     isDropdownOpen.value = false;
 };
@@ -71,7 +77,7 @@ onBeforeUnmount(() => {
                 @click="toggleDropdown"
                 class="peer block min-h-[42px] w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-2.5 pt-4 pb-2.5 text-left text-sm text-gray-900 focus:border-blue-600 focus:ring-0 focus:outline-none dark:border-gray-600 dark:text-white dark:focus:border-blue-500"
             >
-                <span v-if="selectedLabel()">{{ selectedLabel() }}</span>
+                <Badge v-if="selectedLabel()" :class="selectedColor">{{ selectedLabel() }}</Badge>
                 <span v-else class="text-gray-400">Select {{ label }}...</span>
             </button>
             <label
