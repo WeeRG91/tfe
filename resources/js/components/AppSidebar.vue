@@ -14,9 +14,10 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Salad } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Salad, Trash } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import dish from '@/routes/dish';
+import trashed from '@/routes/trashed';
 
 const mainNavItems: NavItem[] = [
     {
@@ -28,6 +29,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dishes',
         href: dish.index(),
         icon: Salad,
+    },
+    {
+        title: 'Trashed',
+        href: trashed.index(),
+        icon: Trash,
     },
 ];
 

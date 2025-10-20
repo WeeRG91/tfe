@@ -38,7 +38,6 @@ export type DishType = {
 export type Ingredients = {
     id: number;
     name: string;
-    image: string;
 }
 
 export type CategoryEnum = {

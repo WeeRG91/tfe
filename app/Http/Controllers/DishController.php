@@ -19,6 +19,7 @@ class DishController extends Controller
     {
         $dishes = Dish::query()
             ->with(['ingredients', 'images'])
+            ->where('deleted_at', null)
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->through(fn($dish) => [
@@ -33,7 +34,6 @@ class DishController extends Controller
                 'ingredients' => $dish->ingredients->map(fn($ingredient) => [
                     'id' => $ingredient->id,
                     'name' => $ingredient->name,
-                    'image' => $ingredient->images->first() ? Storage::url($ingredient->images->first()->path) : Storage::url('images/picture.png'),
                 ]),
                 'category' => DishCategoryEnum::getCategory($dish->category),
                 'price' => $dish->price,
@@ -87,16 +87,6 @@ class DishController extends Controller
         }
 
         return redirect()->route('dish.index')->with('success', 'Dish created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Dish $dish)
-    {
-        return Inertia::render('dish/Show', [
-            'dish' => $dish->load(['ingredients', 'images']),
-        ]);
     }
 
     /**
@@ -165,13 +155,16 @@ class DishController extends Controller
      */
     public function destroy(Dish $dish)
     {
-        foreach ($dish->images as $image) {
-            Storage::disk('public')->delete($image->path);
-            $image->delete();
-        }
-
         $dish->delete();
 
         return redirect()->route('dish.index')->with('success', 'Dish deleted successfully.');
+    }
+
+    public function available(Dish $dish)
+    {
+        $dish->is_available = ! $dish->is_available;
+        $dish->save();
+
+        return redirect()->route('dish.index')->with('success', 'Dish available successfully.');
     }
 }

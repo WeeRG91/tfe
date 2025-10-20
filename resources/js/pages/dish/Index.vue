@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DishDetailModal from '@/components/dish/DishDetailModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,18 +20,18 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
 import type { BreadcrumbItem } from '@/types';
 import { DishType, Paginated } from '@/types/dish';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import {
     CircleCheckBigIcon,
     CircleXIcon,
     EllipsisVerticalIcon,
+    EyeIcon,
     SquarePenIcon,
     SquarePlusIcon,
     TrashIcon,
-    EyeIcon,
 } from 'lucide-vue-next';
 import { ref } from 'vue';
-import DishDetailModal from '@/components/dish/DishDetailModal.vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     dishes: Paginated<DishType>;
@@ -45,6 +46,28 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const selectedDish = ref<DishType | null>(null);
 const modalOpen = ref<boolean>(false);
+
+const dishForm = useForm({});
+
+const deleteDish = (id: number) => {
+    if (confirm('Are you sure you want to delete dish?')) {
+        dishForm.delete(dish.destroy(id).url, {
+            onSuccess: () => {
+                toast.success('Dish successfully deleted.');
+            },
+        });
+    }
+};
+
+const toggleAvailability = (id: number) => {
+    if (confirm('Change availability of this dish?')) {
+        dishForm.patch(dish.available(id).url, {
+            onSuccess: () => {
+                toast.success('Dish availability updated successfully.');
+            }
+        })
+    }
+}
 
 const openDishDetail = (dish: DishType) => {
     selectedDish.value = dish;
@@ -82,9 +105,13 @@ const closeDishDetail = () => {
                         <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead>Category</TableHead>
-                            <TableHead class="hidden md:table-cell">price</TableHead>
+                            <TableHead class="hidden md:table-cell"
+                                >price</TableHead
+                            >
                             <TableHead>Availability</TableHead>
-                            <TableHead class="hidden md:table-cell">Created at</TableHead>
+                            <TableHead class="hidden md:table-cell"
+                                >Created at</TableHead
+                            >
                             <TableHead>Updated at</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
@@ -100,18 +127,20 @@ const closeDishDetail = () => {
                                     :alt="dishData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />
-                                <span class="whitespace-nowrap">{{ dishData.name }}</span></TableCell
+                                <span class="whitespace-nowrap">{{
+                                    dishData.name
+                                }}</span></TableCell
                             >
                             <TableCell>
                                 <Badge
                                     class="text-white/80"
-                                    :class="
-                                        dishData.category.color
-                                    "
+                                    :class="dishData.category.color"
                                     >{{ dishData.category.label }}</Badge
                                 >
                             </TableCell>
-                            <TableCell class="hidden md:table-cell">{{ dishData.price }} €</TableCell>
+                            <TableCell class="hidden md:table-cell"
+                                >{{ dishData.price }} €</TableCell
+                            >
                             <TableCell>
                                 <Badge
                                     v-if="dishData.is_available === 'Available'"
@@ -122,8 +151,16 @@ const closeDishDetail = () => {
                                     dishData.is_available
                                 }}</Badge>
                             </TableCell>
-                            <TableCell class="hidden md:table-cell"><span class="whitespace-nowrap">{{ dishData.created_at }}</span></TableCell>
-                            <TableCell><span class="whitespace-nowrap">{{ dishData.updated_at }}</span></TableCell>
+                            <TableCell class="hidden md:table-cell"
+                                ><span class="whitespace-nowrap">{{
+                                    dishData.created_at
+                                }}</span></TableCell
+                            >
+                            <TableCell
+                                ><span class="whitespace-nowrap">{{
+                                    dishData.updated_at
+                                }}</span></TableCell
+                            >
                             <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger>
@@ -140,10 +177,12 @@ const closeDishDetail = () => {
                                                 <SquarePenIcon /> Edit
                                             </a>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem @click="openDishDetail(dishData)">
+                                        <DropdownMenuItem
+                                            @click="openDishDetail(dishData)"
+                                        >
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem @click="deleteDish(dishData.id)">
                                             <TrashIcon /> Delete
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
@@ -151,10 +190,11 @@ const closeDishDetail = () => {
                                                 dishData.is_available ===
                                                 'Available'
                                             "
+                                            @click="toggleAvailability(dishData.id)"
                                         >
                                             <CircleXIcon /> Unavailable
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem v-else>
+                                        <DropdownMenuItem v-else @click="toggleAvailability(dishData.id)">
                                             <CircleCheckBigIcon /> Available
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
@@ -164,7 +204,11 @@ const closeDishDetail = () => {
                     </TableBody>
                 </Table>
 
-                <DishDetailModal :open="modalOpen" :selectedDish="selectedDish" :onClose="closeDishDetail" />
+                <DishDetailModal
+                    :open="modalOpen"
+                    :selectedDish="selectedDish"
+                    :onClose="closeDishDetail"
+                />
             </div>
         </div>
     </AdminLayout>

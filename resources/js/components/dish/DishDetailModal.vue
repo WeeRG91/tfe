@@ -90,15 +90,15 @@ watch(
                 <!-- Dish Details -->
                 <div class="flex w-full flex-col gap-2 md:w-1/2">
                     <DialogHeader>
-                        <DialogTitle class="flex flex-col gap-3"
-                        ><span>{{ props.selectedDish?.name }}</span>
-                            <Badge :class="props.selectedDish?.category.color">{{
-                                    props.selectedDish?.category.label
-                                }}</Badge></DialogTitle
-                        >
-                        <DialogDescription>{{
-                                props.selectedDish?.description
-                            }}</DialogDescription>
+                        <DialogTitle class="flex flex-col gap-3">
+                            <span>{{ props.selectedDish?.name }}</span>
+                            <Badge :class="props.selectedDish?.category.color">
+                                {{ props.selectedDish?.category.label }}
+                            </Badge>
+                        </DialogTitle>
+                        <DialogDescription>
+                            {{ props.selectedDish?.description }}
+                        </DialogDescription>
                     </DialogHeader>
                     <div>
                         <span class="font-semibold">Ingredients:</span>
