@@ -25,13 +25,22 @@ export type DishType = {
     id: number;
     name: string;
     image: string;
+    images: {id: number, path: string}[];
     description: string;
     price: number;
+    ingredients: Ingredients[];
     category: CategoryEnum;
     is_available: string;
     created_at: number;
     updated_at: number;
 }
+
+export type Ingredients = {
+    id: number;
+    name: string;
+    image: string;
+}
+
 export type CategoryEnum = {
     value: number;
     label: string;

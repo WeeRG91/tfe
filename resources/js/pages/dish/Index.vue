@@ -27,7 +27,10 @@ import {
     SquarePenIcon,
     SquarePlusIcon,
     TrashIcon,
+    EyeIcon,
 } from 'lucide-vue-next';
+import { ref } from 'vue';
+import DishDetailModal from '@/components/dish/DishDetailModal.vue';
 
 const props = defineProps<{
     dishes: Paginated<DishType>;
@@ -39,6 +42,18 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dish.index().url,
     },
 ];
+
+const selectedDish = ref<DishType | null>(null);
+const modalOpen = ref<boolean>(false);
+
+const openDishDetail = (dish: DishType) => {
+    selectedDish.value = dish;
+    modalOpen.value = true;
+};
+
+const closeDishDetail = () => {
+    modalOpen.value = false;
+};
 </script>
 
 <template>
@@ -83,7 +98,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                                 ><img
                                     :src="dishData.image"
                                     :alt="dishData.name"
-                                    class="hidden h-8 w-8 rounded-full md:block"
+                                    class="hidden h-8 w-8 rounded-lg md:block"
                                 />
                                 <span class="whitespace-nowrap">{{ dishData.name }}</span></TableCell
                             >
@@ -125,6 +140,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                                                 <SquarePenIcon /> Edit
                                             </a>
                                         </DropdownMenuItem>
+                                        <DropdownMenuItem @click="openDishDetail(dishData)">
+                                            <EyeIcon /> View
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem>
                                             <TrashIcon /> Delete
                                         </DropdownMenuItem>
@@ -145,6 +163,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                <DishDetailModal :open="modalOpen" :selectedDish="selectedDish" :onClose="closeDishDetail" />
             </div>
         </div>
     </AdminLayout>

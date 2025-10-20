@@ -17,19 +17,30 @@ class DishController extends Controller
      */
     public function index()
     {
-        $dishes = Dish::query()->with(['images'])->orderBy('created_at', 'desc')->paginate(10);
-
-        $dishes->through(fn ($dish) => [
-            'id' => $dish->id,
-            'name' => $dish->name,
-            'image' => $dish->images->first() ? Storage::url($dish->images->first()->path) : Storage::url('images/picture.png'),
-            'description' => $dish->description,
-            'category' => DishCategoryEnum::getCategory($dish->category),
-            'price' => $dish->price,
-            'is_available' => $dish->is_available === 1 ? 'Available' : 'Unavailable',
-            'created_at' => $dish->created_at->toDateTimeString(),
-            'updated_at' => $dish->updated_at->toDateTimeString(),
-        ]);
+        $dishes = Dish::query()
+            ->with(['ingredients', 'images'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->through(fn($dish) => [
+                'id' => $dish->id,
+                'name' => $dish->name,
+                'image' => $dish->images->first() ? Storage::url($dish->images->first()->path) : Storage::url('images/picture.png'),
+                'images' => $dish->images->map(fn($image) => [
+                    'id' => $image->id,
+                    'path' => $image->path,
+                ]),
+                'description' => $dish->description,
+                'ingredients' => $dish->ingredients->map(fn($ingredient) => [
+                    'id' => $ingredient->id,
+                    'name' => $ingredient->name,
+                    'image' => $ingredient->images->first() ? Storage::url($ingredient->images->first()->path) : Storage::url('images/picture.png'),
+                ]),
+                'category' => DishCategoryEnum::getCategory($dish->category),
+                'price' => $dish->price,
+                'is_available' => $dish->is_available === 1 ? 'Available' : 'Unavailable',
+                'created_at' => $dish->created_at->toDateTimeString(),
+                'updated_at' => $dish->updated_at->toDateTimeString(),
+            ]);
 
         return Inertia::render('dish/Index', [
             'dishes' => $dishes,
@@ -41,7 +52,7 @@ class DishController extends Controller
      */
     public function create()
     {
-        $ingredients = Ingredient::all()->map(fn ($ingredient) => [
+        $ingredients = Ingredient::all()->map(fn($ingredient) => [
             'value' => $ingredient->id,
             'label' => $ingredient->name,
         ]);
@@ -93,23 +104,23 @@ class DishController extends Controller
      */
     public function edit(Dish $dish)
     {
-        $dish->load(['ingredients','images']);
+        $dish->load(['ingredients', 'images']);
         $formattedDish = [
             'id' => $dish->id,
             'name' => $dish->name,
             'category' => $dish->category,
             'description' => $dish->description,
             'price' => $dish->price,
-            'ingredients' => $dish->ingredients->map(fn ($ingredient) => [
+            'ingredients' => $dish->ingredients->map(fn($ingredient) => [
                 'id' => $ingredient->id,
             ]),
-            'images' => $dish->images->map(fn ($image) => [
+            'images' => $dish->images->map(fn($image) => [
                 'id' => $image->id,
                 'path' => $image->path,
             ]),
         ];
 
-        $ingredients = Ingredient::all()->map(fn ($ingredient) => [
+        $ingredients = Ingredient::all()->map(fn($ingredient) => [
             'value' => $ingredient->id,
             'label' => $ingredient->name,
         ]);
