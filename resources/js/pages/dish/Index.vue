@@ -64,10 +64,10 @@ const toggleAvailability = (id: number) => {
         dishForm.patch(dish.available(id).url, {
             onSuccess: () => {
                 toast.success('Dish availability updated successfully.');
-            }
-        })
+            },
+        });
     }
-}
+};
 
 const openDishDetail = (dish: DishType) => {
     selectedDish.value = dish;
@@ -120,17 +120,18 @@ const closeDishDetail = () => {
                         <TableRow
                             v-for="dishData in props.dishes.data"
                             :key="dishData.id"
+                            @dblclick="openDishDetail(dishData)"
                         >
-                            <TableCell class="flex items-center gap-4"
-                                ><img
+                            <TableCell class="flex items-center gap-4">
+                                <img
                                     :src="dishData.image"
                                     :alt="dishData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />
-                                <span class="whitespace-nowrap">{{
-                                    dishData.name
-                                }}</span></TableCell
-                            >
+                                <span class="whitespace-nowrap">
+                                    {{ dishData.name }}
+                                </span>
+                            </TableCell>
                             <TableCell>
                                 <Badge
                                     class="text-white/80"
@@ -147,20 +148,20 @@ const closeDishDetail = () => {
                                     class="bg-green-500 text-white"
                                     >{{ dishData.is_available }}</Badge
                                 >
-                                <Badge v-else class="bg-red-500 text-white">{{
-                                    dishData.is_available
-                                }}</Badge>
+                                <Badge v-else class="bg-red-500 text-white">
+                                    {{ dishData.is_available }}
+                                </Badge>
                             </TableCell>
                             <TableCell class="hidden md:table-cell"
-                                ><span class="whitespace-nowrap">{{
-                                    dishData.created_at
-                                }}</span></TableCell
-                            >
+                                ><span class="whitespace-nowrap">
+                                    {{ dishData.created_at }}
+                                </span>
+                            </TableCell>
                             <TableCell
-                                ><span class="whitespace-nowrap">{{
-                                    dishData.updated_at
-                                }}</span></TableCell
-                            >
+                                ><span class="whitespace-nowrap">
+                                    {{ dishData.updated_at }}
+                                </span>
+                            </TableCell>
                             <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger>
@@ -182,7 +183,9 @@ const closeDishDetail = () => {
                                         >
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem @click="deleteDish(dishData.id)">
+                                        <DropdownMenuItem
+                                            @click="deleteDish(dishData.id)"
+                                        >
                                             <TrashIcon /> Delete
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
@@ -190,11 +193,18 @@ const closeDishDetail = () => {
                                                 dishData.is_available ===
                                                 'Available'
                                             "
-                                            @click="toggleAvailability(dishData.id)"
+                                            @click="
+                                                toggleAvailability(dishData.id)
+                                            "
                                         >
                                             <CircleXIcon /> Unavailable
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem v-else @click="toggleAvailability(dishData.id)">
+                                        <DropdownMenuItem
+                                            v-else
+                                            @click="
+                                                toggleAvailability(dishData.id)
+                                            "
+                                        >
                                             <CircleCheckBigIcon /> Available
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>

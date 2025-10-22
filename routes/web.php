@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DishController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\TrashedController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,6 +30,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/restore', 'restore')->name('restore');
         Route::post('/forceDelete', 'forceDelete')->name('forceDelete');
+    });
+
+    Route::controller(ImageController::class)->prefix('image')->name('image.')->group(function () {
+        Route::delete('/{image}', 'destroy')->name('destroy');
     });
 });
 

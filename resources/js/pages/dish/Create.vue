@@ -63,16 +63,6 @@ const submit = () => {
         },
     });
 };
-
-const reset = () => {
-    selectedIngredients.value = [];
-    selectedCategory.value = null;
-    name.value = '';
-    description.value = '';
-    price.value = null;
-    imageFile.value = [];
-    dishForm.reset();
-}
 </script>
 
 <template>
@@ -129,7 +119,11 @@ const reset = () => {
                     </div>
                 </div>
                 <div class="flex items-center justify-end gap-4 mt-4">
-                    <Button type="button" variant="secondary" @click="reset"><X /> Cancel</Button>
+                    <Button type="button" variant="secondary">
+                        <a :href="dish.index().url" class="flex items-center">
+                            <X /> Cancel
+                        </a>
+                    </Button>
                     <Button type="submit" :disabled="dishForm.processing"
                         ><CirclePlus /> Create</Button
                     >

@@ -11,7 +11,7 @@ import {
 import dish from '@/routes/dish';
 import { DishType } from '@/types/dish';
 import { SquarePenIcon, X } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     open: boolean;
@@ -36,8 +36,38 @@ const prevImage = () => {
 
 watch(
     () => props.selectedDish,
-    () => (currentIndex.value = 0),
+    () => {
+        currentIndex.value = 0;
+        startAutoSlide();
+    },
 );
+
+let intervalId: number | null = null;
+
+const startAutoSlide = () => {
+    stopAutoSlide();
+    if (
+        props.selectedDish?.images?.length &&
+        props.selectedDish.images.length > 1
+    ) {
+        intervalId = window.setInterval(nextImage, 3000);
+    }
+};
+
+const stopAutoSlide = () => {
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+};
+
+onMounted(() => {
+    if (props.open) startAutoSlide();
+});
+
+onBeforeUnmount(() => {
+    stopAutoSlide();
+})
 </script>
 
 <template>
@@ -65,12 +95,14 @@ watch(
                             }"
                         />
                         <button
+                            v-if="props.selectedDish?.images?.length > 1"
                             class="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-white/70 p-1"
                             @click="prevImage"
                         >
                             ‹
                         </button>
                         <button
+                            v-if="props.selectedDish?.images?.length > 1"
                             class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-white/70 p-1"
                             @click="nextImage"
                         >

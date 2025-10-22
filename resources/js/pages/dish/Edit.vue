@@ -6,6 +6,7 @@ import ImageUploader from '@/components/ImageUploader.vue';
 import MultipleSelect from '@/components/MultipleSelect.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
 import type { BreadcrumbItem } from '@/types';
@@ -14,7 +15,6 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { Spinner } from '@/components/ui/spinner';
 
 const props = defineProps<{
     dishToEdit: EditDishType;
@@ -60,6 +60,8 @@ const submit = () => {
     dishForm.category = selectedCategory.value;
     dishForm.ingredients = selectedIngredients.value;
     dishForm.images = imageFile.value;
+
+    console.log('submit');
 
     dishForm.post(dish.update(props.dishToEdit.id).url, {
         forceFormData: true,
@@ -138,11 +140,16 @@ const reset = () => {
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
-                    <Button type="button" variant="secondary" @click="reset"
-                        ><X /> Cancel</Button
-                    >
+                    <Button type="button" variant="secondary">
+                        <a :href="dish.index().url" class="flex items-center">
+                            <X /> Cancel
+                        </a>
+                    </Button>
                     <Button type="submit" :disabled="dishForm.processing"
-                        ><SquarePenIcon v-if="!dishForm.processing" /><Spinner v-else /> Edit</Button
+                        ><SquarePenIcon v-if="!dishForm.processing" /><Spinner
+                            v-else
+                        />
+                        Edit</Button
                     >
                 </div>
             </form>

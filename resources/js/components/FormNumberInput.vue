@@ -34,7 +34,7 @@ watch(value, (val) => emit('update:modelValue', val));
             :placeholder="placeholder || ''"
             :min="min || 0"
             :max="max || 1000000"
-            :step="step || 1"
+            :step="step || 0.1"
             class="peer block w-full appearance-none rounded-lg border-1 border-gray-300 bg-transparent px-2.5 pt-4 pb-2.5 text-sm text-gray-900 focus:border-blue-600 focus:ring-0 focus:outline-none dark:border-gray-600 dark:text-white dark:focus:border-blue-500"
         />
         <label

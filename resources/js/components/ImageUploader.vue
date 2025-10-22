@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { ImagePlus } from 'lucide-vue-next';
+import { useForm } from '@inertiajs/vue3';
+import image from '@/routes/image';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     modelValue: File[];
     existingImages?: {id: number; path: string}[];
 }>();
+
+console.log(props.existingImages)
 
 const emit = defineEmits<{
     (e: 'update:modelValue', images: File[]): void;
@@ -15,13 +20,7 @@ const images = ref<File[]>(props.modelValue || []);
 const existingImagesPreviewUrls = ref<string[]>(props.existingImages?.map(img => img.path) || [])
 const previewUrls = ref<string[]>([]);
 const isDragging = ref<boolean>(false);
-
-watch(
-    () => props.modelValue,
-    (newValue) => {
-        if (newValue) images.value = newValue;
-    },
-);
+const imageForm = useForm({});
 
 const handleDrop = (event: DragEvent) => {
     event.preventDefault();
@@ -50,15 +49,27 @@ const removeImage = (index: number) => {
 };
 
 const removeExistingImage = (index: number) => {
-    const image = props.existingImages?.[index];
-    if (image) {
+    const imageToRemove = props.existingImages?.[index];
+    if (imageToRemove) {
         existingImagesPreviewUrls.value.splice(index, 1);
+        imageForm.delete(image.destroy(imageToRemove.id).url, {
+            onSuccess: () => {
+                toast.success('Image removed successfully.');
+            }
+        })
     }
 }
 
 const updatePreviewImages = () => {
     previewUrls.value = images.value.map((image) => URL.createObjectURL(image));
 };
+
+watch(
+    () => props.modelValue,
+    (newValue) => {
+        if (newValue) images.value = newValue;
+    },
+);
 </script>
 
 <template>
@@ -82,7 +93,7 @@ const updatePreviewImages = () => {
         />
 
         <div
-            v-if="!isDragging && !previewUrls.length"
+            v-if="!isDragging && !previewUrls.length && !existingImagesPreviewUrls.length"
             class="absolute inset-0 flex flex-col items-center justify-center space-y-2 text-center"
         >
             <ImagePlus />

@@ -25,10 +25,10 @@ class DishController extends Controller
             ->through(fn($dish) => [
                 'id' => $dish->id,
                 'name' => $dish->name,
-                'image' => $dish->images->first() ? Storage::url($dish->images->first()->path) : Storage::url('images/picture.png'),
+                'image' => $dish->images->first() ? Storage::disk('public')->url($dish->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
                 'images' => $dish->images->map(fn($image) => [
                     'id' => $image->id,
-                    'path' => $image->path,
+                    'path' => Storage::disk('public')->url($image->path),
                 ]),
                 'description' => $dish->description,
                 'ingredients' => $dish->ingredients->map(fn($ingredient) => [
@@ -71,20 +71,7 @@ class DishController extends Controller
 
         $dish = Dish::query()->create($validated);
         $dish->ingredients()->sync($request->ingredients);
-
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('images', 'public');
-                $dish->images()->create([
-                    'name' => $image->getClientOriginalName(),
-                    'path' => $path,
-                    'mime_type' => $image->getClientMimeType(),
-                    'size' => $image->getSize(),
-                    'imageable_id' => $dish->id,
-                    'imageable_type' => Dish::class,
-                ]);
-            }
-        }
+        $dish->uploadImage();
 
         return redirect()->route('dish.index')->with('success', 'Dish created successfully.');
     }
@@ -106,7 +93,7 @@ class DishController extends Controller
             ]),
             'images' => $dish->images->map(fn($image) => [
                 'id' => $image->id,
-                'path' => $image->path,
+                'path' => Storage::disk('public')->url($image->path),
             ]),
         ];
 
@@ -131,21 +118,7 @@ class DishController extends Controller
 
         $dish->update($validated);
         $dish->ingredients()->sync($request->ingredients);
-
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('images', 'public');
-
-                $dish->images()->create([
-                    'name' => $image->getClientOriginalName(),
-                    'path' => $path,
-                    'mime_type' => $image->getClientMimeType(),
-                    'size' => $image->getSize(),
-                    'imageable_id' => $dish->id,
-                    'imageable_type' => Dish::class,
-                ]);
-            }
-        }
+        $dish->uploadImage();
 
         return redirect()->route('dish.index')->with('success', 'Dish updated successfully.');
     }

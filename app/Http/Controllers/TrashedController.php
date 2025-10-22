@@ -18,7 +18,7 @@ class TrashedController extends Controller
             ->map(fn($dish) => [
                 'id' => $dish->id,
                 'name' => $dish->name,
-                'image' => $dish->images->first() ? Storage::url($dish->images->first()->path) : Storage::url('images/picture.png'),
+                'image' => $dish->images->first() ? Storage::disk('public')->url($dish->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
                 'type' => 'Dish',
                 'deleted_at' => $dish->deleted_at->toDateTimeString(),
             ]);
@@ -29,7 +29,7 @@ class TrashedController extends Controller
             ->map(fn($ingredient) => [
                 'id' => $ingredient->id,
                 'name' => $ingredient->name,
-                'image' => $ingredient->images->first() ? Storage::url($ingredient->images->first()->path) : Storage::url('images/picture.png'),
+                'image' => $ingredient->images->first() ? Storage::disk('public')->url($ingredient->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
                 'type' => 'Ingredient',
                 'deleted_at' => $ingredient->deleted_at->toDateTimeString(),
             ]);
@@ -93,7 +93,9 @@ class TrashedController extends Controller
 
         if (method_exists($item, 'images')) {
             foreach ($item->images as $image) {
-                Storage::delete($image->path);
+                if (Storage::disk('public')->exists($image->path)) {
+                    Storage::disk('public')->delete($image->path);
+                }
                 $image->delete();
             }
         }

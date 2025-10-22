@@ -31,7 +31,6 @@ class DishUpdateRequest extends FormRequest
             'price' => ['nullable', 'numeric'],
             'ingredients' => ['required', 'array', 'exists:ingredients,id'],
             'images' => ['nullable', 'array'],
-            'images.*' => ['image', 'mimes:jpg,png,jpeg', 'max:1024'],
         ];
     }
 }
