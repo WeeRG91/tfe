@@ -71,16 +71,6 @@ const submit = () => {
         },
     });
 };
-
-const reset = () => {
-    selectedIngredients.value = [];
-    selectedCategory.value = null;
-    name.value = '';
-    description.value = '';
-    price.value = 0;
-    imageFile.value = [];
-    dishForm.reset();
-};
 </script>
 
 <template>

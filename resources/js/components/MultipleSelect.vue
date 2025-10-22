@@ -10,6 +10,7 @@ const props = defineProps<{
     modelValue: number[];
     options: Option[];
     label?: string;
+    error?: string;
 }>();
 
 const emit = defineEmits<{
@@ -72,7 +73,12 @@ onBeforeUnmount(() => {
             <button
                 type="button"
                 @click="toggleDropdown"
-                class="peer block min-h-[42px] w-full appearance-none rounded-lg border-1 border-gray-300 bg-transparent px-2.5 pt-4 pb-2.5 text-left text-sm text-gray-900 focus:border-blue-600 focus:ring-0 focus:outline-none dark:border-gray-600 dark:text-white dark:focus:border-blue-500"
+                class="peer block min-h-[42px] w-full appearance-none rounded-lg border-1 bg-transparent px-2.5 pt-4 pb-2.5 text-left text-sm text-gray-900 focus:ring-0 focus:outline-none dark:text-white"
+                :class="
+                    props.error
+                        ? 'border-red-500'
+                        : 'border-gray-300 focus:border-blue-600 dark:border-gray-600 dark:focus:border-blue-500'
+                "
             >
                 <div class="flex flex-wrap gap-1">
                     <span
@@ -97,14 +103,19 @@ onBeforeUnmount(() => {
                     </span>
                     <span
                         v-if="selectedValues.length === 0"
-                        class="text-gray-400"
+                        :class="props.error ? 'text-red-500' : 'text-gray-400'"
                     >
                         Select {{ label }}...
                     </span>
                 </div>
             </button>
             <label
-                class="pointer-events-none absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-2 text-sm text-gray-500 duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 peer-focus:text-blue-600 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:bg-[#0a0a0a] dark:text-gray-400 peer-focus:dark:text-blue-500"
+                class="pointer-events-none absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:bg-[#0a0a0a]"
+                :class="
+                    props.error
+                        ? 'text-red-500'
+                        : 'text-gray-500 peer-focus:text-blue-600 dark:text-gray-400 peer-focus:dark:text-blue-500'
+                "
                 >{{ label }}</label
             >
             <div
@@ -156,6 +167,7 @@ onBeforeUnmount(() => {
                 </label>
             </div>
         </div>
+        <span v-if="props.error" class="text-sm text-red-500">{{props.error}}</span>
     </div>
 </template>
 

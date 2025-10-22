@@ -1,26 +1,46 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { ImagePlus } from 'lucide-vue-next';
-import { useForm } from '@inertiajs/vue3';
 import image from '@/routes/image';
+import { useForm } from '@inertiajs/vue3';
+import { ImagePlus } from 'lucide-vue-next';
+import { ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     modelValue: File[];
-    existingImages?: {id: number; path: string}[];
+    existingImages?: { id: number; path: string }[];
 }>();
-
-console.log(props.existingImages)
 
 const emit = defineEmits<{
     (e: 'update:modelValue', images: File[]): void;
 }>();
 
 const images = ref<File[]>(props.modelValue || []);
-const existingImagesPreviewUrls = ref<string[]>(props.existingImages?.map(img => img.path) || [])
+const existingImagesPreviewUrls = ref<string[]>(
+    props.existingImages?.map((img) => img.path) || [],
+);
 const previewUrls = ref<string[]>([]);
 const isDragging = ref<boolean>(false);
 const imageForm = useForm({});
+const error = ref<string>();
+
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+const ALLOWED_TYPES = ['image/jpg', 'image/jpeg', 'image/png'];
+const MAX_IMAGES = 5;
+
+const validateImages = (images: File[]) => {
+    if (images.length + images.values.length > MAX_IMAGES) {
+        error.value = `You can only upload up to ${MAX_IMAGES} images.`;
+    }
+
+    images.forEach((image: File) => {
+        if (!ALLOWED_TYPES.includes(image.type)) {
+            error.value = `${image.name} has an invalid file type.`;
+        }
+        if (image.size > MAX_IMAGE_SIZE) {
+            error.value = `${image.size} exceeds the maximum size of 2MB.`;
+        }
+    });
+};
 
 const handleDrop = (event: DragEvent) => {
     event.preventDefault();
@@ -36,6 +56,13 @@ const handleImageChange = (event: Event) => {
 };
 
 const addImages = (newFiles: File[]) => {
+    error.value = '';
+    validateImages(newFiles);
+
+    if (error.value) {
+        return;
+    }
+
     const updatedImages = [...images.value, ...newFiles];
     images.value = updatedImages;
     emit('update:modelValue', updatedImages);
@@ -55,10 +82,10 @@ const removeExistingImage = (index: number) => {
         imageForm.delete(image.destroy(imageToRemove.id).url, {
             onSuccess: () => {
                 toast.success('Image removed successfully.');
-            }
-        })
+            },
+        });
     }
-}
+};
 
 const updatePreviewImages = () => {
     previewUrls.value = images.value.map((image) => URL.createObjectURL(image));
@@ -77,28 +104,31 @@ watch(
         @dragover.prevent="isDragging = true"
         @dragleave="isDragging = false"
         @drop="handleDrop"
-        class="relative flex flex-1 flex-col items-center bg-transparent justify-start rounded-2xl border-2 border-dashed p-6 text-gray-600 transition-all duration-200"
-        :class="
-            isDragging
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 bg-gray-50'
-        "
+        class="relative flex flex-1 flex-col items-center justify-start rounded-2xl border-2 border-dashed bg-transparent p-6 text-gray-600 transition-all duration-200"
+        :class="{
+            'border-blue-500 bg-blue-50': isDragging,
+            'border-red-500 bg-red-50': error && !isDragging,
+            'border-gray-300 bg-gray-50': !isDragging && !error,
+        }"
     >
         <input
             type="file"
             multiple
             accept="image/*"
-            class="absolute inset-0 cursor-pointer opacity-0 z-999"
+            class="absolute inset-0 z-999 cursor-pointer opacity-0"
             @change="handleImageChange"
         />
 
         <div
-            v-if="!isDragging && !previewUrls.length && !existingImagesPreviewUrls.length"
+            v-if="
+                !isDragging &&
+                !previewUrls.length &&
+                !existingImagesPreviewUrls.length
+            "
             class="absolute inset-0 flex flex-col items-center justify-center space-y-2 text-center"
         >
-            <ImagePlus />
-
-            <p class="text-sm">Drag and drop images here, or click to browse</p>
+            <ImagePlus :class="error ? 'text-red-500' : ''" />
+            <p class="text-sm" :class="error ? 'text-red-500' : ''">Drag and drop images here, or click to browse</p>
         </div>
 
         <div v-else class="grid w-full grid-cols-2 gap-3 md:grid-cols-3">
@@ -116,7 +146,7 @@ watch(
                 <button
                     type="button"
                     @click.stop="removeExistingImage(index)"
-                    class="absolute top-2 right-2 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 z-999"
+                    class="absolute top-2 right-2 z-999 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
                 >
                     ✕
                 </button>
@@ -135,7 +165,7 @@ watch(
                 <button
                     type="button"
                     @click.stop="removeImage(index)"
-                    class="absolute top-2 right-2 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100 z-999"
+                    class="absolute top-2 right-2 z-999 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
                 >
                     ✕
                 </button>
@@ -151,6 +181,7 @@ watch(
             </div>
         </transition>
     </div>
+    <span v-if="error" class="text-sm text-red-500">{{error}}</span>
 </template>
 
 <style scoped>

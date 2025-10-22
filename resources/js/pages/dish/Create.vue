@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
 import type { BreadcrumbItem } from '@/types';
-import { CategoryType, IngredientType } from '@/types/dish';
+import { CategoryType, ErrorType, IngredientType } from '@/types/dish';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -18,6 +18,7 @@ import { toast } from 'vue-sonner';
 const props = defineProps<{
     ingredients: IngredientType[];
     categories: CategoryType[];
+    errors: ErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -81,31 +82,40 @@ const submit = () => {
                             Dish Information
                         </h2>
 
-                        <FormTextInput id="name" label="Name" v-model="name" />
+                        <FormTextInput
+                            id="name"
+                            label="Name"
+                            v-model="name"
+                            :error="props.errors.name"
+                        />
 
                         <FormTextarea
                             id="description"
                             label="Description"
                             v-model="description"
                             :rows="5"
+                            :error="props.errors.description"
                         />
 
                         <FormNumberInput
                             id="price"
                             label="Price (€)"
                             v-model="price"
+                            :error="props.errors.price"
                         />
 
                         <MultipleSelect
                             v-model="selectedIngredients"
                             :options="props.ingredients"
                             label="Ingredients"
+                            :error="props.errors.ingredients"
                         />
 
                         <Select
                             v-model="selectedCategory"
                             :options="props.categories"
                             label="Category"
+                            :error="props.errors.category"
                         />
                     </div>
                     <div
@@ -118,7 +128,7 @@ const submit = () => {
                         <ImageUploader v-model="imageFile" />
                     </div>
                 </div>
-                <div class="flex items-center justify-end gap-4 mt-4">
+                <div class="mt-4 flex items-center justify-end gap-4">
                     <Button type="button" variant="secondary">
                         <a :href="dish.index().url" class="flex items-center">
                             <X /> Cancel

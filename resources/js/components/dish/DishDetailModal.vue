@@ -67,7 +67,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     stopAutoSlide();
-})
+});
 </script>
 
 <template>

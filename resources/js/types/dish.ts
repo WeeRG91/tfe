@@ -66,3 +66,11 @@ export type IngredientType = {
     value: number;
     label: string;
 };
+
+export type ErrorType = {
+    name?: string;
+    description?: string;
+    price?: string;
+    ingredients?: string;
+    category?: string;
+}

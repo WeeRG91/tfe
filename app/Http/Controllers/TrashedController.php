@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Dish;
 use App\Models\Ingredient;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class TrashedController extends Controller
 {
+    /**
+     * @return Response
+     */
     public function index()
     {
         $trashedDishes = Dish::onlyTrashed()
@@ -43,6 +48,10 @@ class TrashedController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function restore(Request $request)
     {
         $request->validate([
@@ -66,6 +75,10 @@ class TrashedController extends Controller
         return redirect()->back()->with('success', "{$item->name} restored successfully.");
     }
 
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function forceDelete(Request $request)
     {
         $request->validate([

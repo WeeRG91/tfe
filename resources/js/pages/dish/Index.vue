@@ -93,7 +93,7 @@ const closeDishDetail = () => {
                     <a :href="dish.create().url">
                         <Button
                             variant="outline"
-                            class="cursor-pointer text-gray-500 hover:text-gray-800"
+                            class="cursor-pointer text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
                         >
                             <SquarePlusIcon class="h-6 w-6" />
                             Add

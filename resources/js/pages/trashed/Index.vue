@@ -71,13 +71,13 @@ const forceDelete = (id: number, type: string, name: string) => {
 const getColorType = (type: string) => {
     switch (type) {
         case 'Dish':
-            return 'danger';
+            return 'bg-[#7F7EFF]';
         case 'Ingredient':
-            return 'success';
+            return 'bg-[#A390E4]';
         case 'Allergen':
-            return 'warning';
+            return 'bg-[#C69DD2]';
         default:
-            return 'info';
+            return 'bg-black';
     }
 };
 </script>

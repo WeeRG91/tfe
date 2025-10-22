@@ -7,6 +7,7 @@ use App\Http\Requests\DishCreateRequest;
 use App\Http\Requests\DishUpdateRequest;
 use App\Models\Dish;
 use App\Models\Ingredient;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -133,6 +134,10 @@ class DishController extends Controller
         return redirect()->route('dish.index')->with('success', 'Dish deleted successfully.');
     }
 
+    /**
+     * @param Dish $dish
+     * @return RedirectResponse
+     */
     public function available(Dish $dish)
     {
         $dish->is_available = ! $dish->is_available;
