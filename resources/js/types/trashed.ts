@@ -3,5 +3,5 @@ export type TrashedType = {
     name: string;
     type: string;
     image: string;
-    deleted_at: number;
+    deleted_at: string;
 }

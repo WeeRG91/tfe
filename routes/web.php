@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\TrashedController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,11 +20,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
-        Route::get('/{dish}', 'show')->name('show');
         Route::get('/{dish}/edit', 'edit')->name('edit');
         Route::post('/{dish}', 'update')->name('update');
-        Route::patch('/{dish}/available', 'available')->name('available');
         Route::delete('/{dish}', 'destroy')->name('destroy');
+        Route::patch('/{dish}/available', 'available')->name('available');
+    });
+
+    Route::controller(IngredientController::class)->prefix('ingredients')->name('ingredient.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{ingredient}/edit', 'edit')->name('edit');
+        Route::post('/{ingredient}', 'update')->name('update');
+        Route::delete('/{ingredient}', 'destroy')->name('destroy');
     });
 
     Route::controller(TrashedController::class)->prefix('trashed')->name('trashed.')->group(function () {
@@ -32,7 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/forceDelete', 'forceDelete')->name('forceDelete');
     });
 
-    Route::controller(ImageController::class)->prefix('image')->name('image.')->group(function () {
+    Route::controller(ImageController::class)->prefix('images')->name('image.')->group(function () {
         Route::delete('/{image}', 'destroy')->name('destroy');
     });
 });

@@ -10,7 +10,7 @@ import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
 import type { BreadcrumbItem } from '@/types';
-import { CategoryType, EditDishType, IngredientType } from '@/types/dish';
+import { CategoryOptionType, EditDishType, IngredientOptionType } from '@/types/dish';
 import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -18,8 +18,8 @@ import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     dishToEdit: EditDishType;
-    ingredients: IngredientType[];
-    categories: CategoryType[];
+    ingredients: IngredientOptionType[];
+    categories: CategoryOptionType[];
 }>();
 
 console.log(props.dishToEdit);
@@ -60,8 +60,6 @@ const submit = () => {
     dishForm.category = selectedCategory.value;
     dishForm.ingredients = selectedIngredients.value;
     dishForm.images = imageFile.value;
-
-    console.log('submit');
 
     dishForm.post(dish.update(props.dishToEdit.id).url, {
         forceFormData: true,

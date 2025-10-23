@@ -5,7 +5,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 interface Option {
     value: number;
     label: string;
-    color: string;
+    color?: string;
 }
 
 const props = defineProps<{

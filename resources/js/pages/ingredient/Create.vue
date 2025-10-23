@@ -1,70 +1,57 @@
 <script setup lang="ts">
-import FormNumberInput from '@/components/FormNumberInput.vue';
 import FormTextInput from '@/components/FormTextInput.vue';
 import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
-import MultipleSelect from '@/components/MultipleSelect.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import dish from '@/routes/dish';
 import type { BreadcrumbItem } from '@/types';
-import {
-    CategoryOptionType,
-    ErrorType,
-    IngredientOptionType,
-} from '@/types/dish';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import ingredient from '@/routes/ingredient';
+import { AllergenOptionType, ErrorType } from '@/types/ingredient';
 
 const props = defineProps<{
-    ingredients: IngredientOptionType[];
-    categories: CategoryOptionType[];
+    allergens: AllergenOptionType[];
     errors: ErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dishes',
-        href: dish.index().url,
+        title: 'Ingredients',
+        href: ingredient.index().url,
     },
     {
         title: 'Create',
-        href: dish.create().url,
+        href: ingredient.create().url,
     },
 ];
 
-const selectedIngredients = ref<number[]>([]);
-const selectedCategory = ref<number | null>(null);
-const name = ref('');
-const description = ref('');
-const price = ref(null);
+const selectedAllergen = ref<number | null>(null);
+const name = ref<string>('');
+const description = ref<string>('');
 const imageFile = ref<File[]>([]);
 
-const dishForm = useForm({
+const ingredientForm = useForm({
     name: '',
     description: '',
-    price: null as number | null,
-    category: null as number | null,
-    ingredients: [] as number[],
+    allergen: null as number | null,
     images: [] as File[],
 });
 
 const submit = () => {
-    dishForm.name = name.value;
-    dishForm.description = description.value;
-    dishForm.price = price.value;
-    dishForm.category = selectedCategory.value;
-    dishForm.ingredients = selectedIngredients.value;
-    dishForm.images = imageFile.value;
+    ingredientForm.name = name.value;
+    ingredientForm.description = description.value;
+    ingredientForm.allergen = selectedAllergen.value;
+    ingredientForm.images = imageFile.value;
 
-    dishForm.post(dish.store().url, {
+    ingredientForm.post(ingredient.store().url, {
         forceFormData: true,
         onSuccess: () => {
-            dishForm.reset();
-            toast.success('Dish successfully created.');
+            ingredientForm.reset();
+            toast.success('Ingredient successfully created.');
         },
     });
 };
@@ -83,7 +70,7 @@ const submit = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Dish Information
+                            Ingredient Information
                         </h2>
 
                         <FormTextInput
@@ -101,25 +88,11 @@ const submit = () => {
                             :error="props.errors.description"
                         />
 
-                        <FormNumberInput
-                            id="price"
-                            label="Price (€)"
-                            v-model="price"
-                            :error="props.errors.price"
-                        />
-
-                        <MultipleSelect
-                            v-model="selectedIngredients"
-                            :options="props.ingredients"
-                            label="Ingredients"
-                            :error="props.errors.ingredients"
-                        />
-
                         <Select
-                            v-model="selectedCategory"
-                            :options="props.categories"
+                            v-model="selectedAllergen"
+                            :options="props.allergens"
                             label="Category"
-                            :error="props.errors.category"
+                            :error="props.errors.allergen"
                         />
                     </div>
                     <div
@@ -134,11 +107,11 @@ const submit = () => {
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
                     <Button type="button" variant="secondary">
-                        <a :href="dish.index().url" class="flex items-center">
+                        <a :href="ingredient.index().url" class="flex items-center">
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="dishForm.processing"
+                    <Button type="submit" :disabled="ingredientForm.processing"
                         ><CirclePlus /> Create</Button
                     >
                 </div>

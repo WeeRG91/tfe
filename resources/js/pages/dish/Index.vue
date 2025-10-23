@@ -18,8 +18,8 @@ import {
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
-import type { BreadcrumbItem } from '@/types';
-import { DishType, Paginated } from '@/types/dish';
+import type { BreadcrumbItem, Paginated } from '@/types';
+import { DishType } from '@/types/dish';
 import { Head, useForm } from '@inertiajs/vue3';
 import {
     CircleCheckBigIcon,

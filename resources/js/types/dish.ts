@@ -1,26 +1,3 @@
-export type Paginated<T> = {
-    current_page: number;
-    data: T[];
-    first_page_url: string;
-    from: number;
-    last_page: number;
-    last_page_url: string;
-    links: Link[];
-    next_page_url: string;
-    path: string;
-    per_page: number;
-    prev_page_url: string;
-    to: number;
-    total: number;
-}
-
-export type Link = {
-    active: boolean;
-    label: string;
-    page: number;
-    url: string;
-}
-
 export type DishType = {
     id: number;
     name: string;
@@ -28,19 +5,19 @@ export type DishType = {
     images: {id: number, path: string}[];
     description: string;
     price: number;
-    ingredients: Ingredients[];
-    category: CategoryEnum;
+    ingredients: IngredientType[];
+    category: CategoryEnumType;
     is_available: string;
-    created_at: number;
-    updated_at: number;
+    created_at: string;
+    updated_at: string;
 }
 
-export type Ingredients = {
+export type IngredientType = {
     id: number;
     name: string;
 }
 
-export type CategoryEnum = {
+export type CategoryEnumType = {
     value: number;
     label: string;
     color: string;
@@ -56,13 +33,13 @@ export type EditDishType = {
     images: {id: number, path: string}[];
 }
 
-export type CategoryType = {
+export type CategoryOptionType = {
     value: number;
     label: string;
     color: string;
 };
 
-export type IngredientType = {
+export type IngredientOptionType = {
     value: number;
     label: string;
 };

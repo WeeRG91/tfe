@@ -13,7 +13,7 @@ class Dish extends Model
 {
     use SoftDeletes, HasImages;
 
-    protected string $folder = 'images/dish/';
+    protected string $folder = 'images/dish';
     protected string $imageInput = 'images';
     protected $guarded = ['id'];
 

@@ -15,7 +15,7 @@ trait HasImages
     {
         $request = app('request');
 
-        $folder = property_exists($this, 'folder') && $this->folder ? $this->folder : 'images/' . Str::snake(class_basename($this)) . '/';
+        $folder = property_exists($this, 'folder') && $this->folder ? $this->folder : 'images/' . Str::snake(class_basename($this));
 
         $inputName = property_exists($this, 'imageInput') && $this->imageInput ? $this->imageInput : 'images';
 
