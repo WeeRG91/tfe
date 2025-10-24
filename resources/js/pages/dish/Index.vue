@@ -37,6 +37,8 @@ const props = defineProps<{
     dishes: Paginated<DishType>;
 }>();
 
+console.log(props.dishes.links);
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dishes',

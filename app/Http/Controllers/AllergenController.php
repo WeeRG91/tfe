@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AllergenCreateRequest;
 use App\Http\Requests\AllergenUpdateRequest;
+use App\Http\Resources\AllergenResource;
 use App\Models\Allergen;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
@@ -22,26 +23,10 @@ class AllergenController extends Controller
             ->with(['ingredients', 'images'])
             ->where('deleted_at', null)
             ->orderBy('name')
-            ->paginate(10)
-            ->through(fn($allergen) => [
-                'id' => $allergen->id,
-                'name' => $allergen->name,
-                'description' => $allergen->description,
-                'ingredients' => $allergen->ingredients->map(fn($ingredient) => [
-                    'id' => $ingredient->id,
-                    'name' => $ingredient->name,
-                ]),
-                'image' => $allergen->images->first() ? Storage::disk('public')->url($allergen->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
-                'images' => $allergen->images->map(fn($image) => [
-                    'id' => $image->id,
-                    'path' => Storage::disk('public')->url($image->path),
-                ]),
-                'created_at' => $allergen->created_at->toDateTimeString(),
-                'updated_at' => $allergen->updated_at->toDateTimeString(),
-            ]);
+            ->paginate(10);
 
         return Inertia::render('allergen/Index', [
-            'allergens' => $allergens,
+            'allergens' => AllergenResource::collection($allergens),
         ]);
     }
 

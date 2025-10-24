@@ -45,14 +45,14 @@ const imageFile = ref<File[]>([]);
 const ingredientForm = useForm({
     name: '',
     description: '',
-    allergen: null as number | null,
+    allergen_id: null as number | null,
     images: [] as File[],
 });
 
 const submit = () => {
     ingredientForm.name = name.value;
     ingredientForm.description = description.value;
-    ingredientForm.allergen = selectedAllergen.value;
+    ingredientForm.allergen_id = selectedAllergen.value;
     ingredientForm.images = imageFile.value;
 
     ingredientForm.post(ingredient.update(props.ingredientToEdit.id).url, {

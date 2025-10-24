@@ -1,8 +1,7 @@
 export type IngredientType = {
     id: number;
     name: string;
-    allergen: string;
-    allergenImage: string;
+    allergen: {id: number, name: string, image: string};
     description: string;
     image: string;
     images: {id: number, path: string}[];

@@ -15,7 +15,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem, Paginated } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import {
@@ -32,6 +31,8 @@ import { AllergenType } from '@/types/allergen';
 const props = defineProps<{
     allergens: Paginated<AllergenType>;
 }>();
+
+console.log(props.allergens);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

@@ -100,16 +100,16 @@ const deleteIngredient = (id: number) => {
                             </TableCell>
                             <TableCell class="relative group">
                                 <img
-                                    v-if="ingredientData.allergenImage"
-                                    :src="ingredientData.allergenImage"
-                                    :alt="ingredientData.allergen"
+                                    v-if="ingredientData.allergen?.image"
+                                    :src="ingredientData.allergen?.image"
+                                    :alt="ingredientData.allergen?.name"
                                     class="h-8 w-8 rounded-full"
                                 />
                                 <div
-                                    v-if="ingredientData.allergen"
+                                    v-if="ingredientData.allergen?.name"
                                     class="absolute top-5 left-13 mb-1 w-max rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition"
                                 >
-                                    {{ ingredientData.allergen }}
+                                    {{ ingredientData.allergen.name }}
                                 </div>
                             </TableCell>
                             <TableCell

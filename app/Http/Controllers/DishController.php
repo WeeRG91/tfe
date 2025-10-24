@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\DishCategoryEnum;
 use App\Http\Requests\DishCreateRequest;
 use App\Http\Requests\DishUpdateRequest;
+use App\Http\Resources\DishResource;
 use App\Models\Dish;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
@@ -19,32 +20,13 @@ class DishController extends Controller
     public function index()
     {
         $dishes = Dish::query()
-            ->with(['ingredients', 'images'])
+            ->with(['ingredients.allergen.images', 'images'])
             ->where('deleted_at', null)
             ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->through(fn($dish) => [
-                'id' => $dish->id,
-                'name' => $dish->name,
-                'image' => $dish->images->first() ? Storage::disk('public')->url($dish->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
-                'images' => $dish->images->map(fn($image) => [
-                    'id' => $image->id,
-                    'path' => Storage::disk('public')->url($image->path),
-                ]),
-                'description' => $dish->description,
-                'ingredients' => $dish->ingredients->map(fn($ingredient) => [
-                    'id' => $ingredient->id,
-                    'name' => $ingredient->name,
-                ]),
-                'category' => DishCategoryEnum::getCategory($dish->category),
-                'price' => $dish->price,
-                'is_available' => $dish->is_available === 1 ? 'Available' : 'Unavailable',
-                'created_at' => $dish->created_at->toDateTimeString(),
-                'updated_at' => $dish->updated_at->toDateTimeString(),
-            ]);
+            ->paginate(10);
 
         return Inertia::render('dish/Index', [
-            'dishes' => $dishes,
+            'dishes' => DishResource::collection($dishes),
         ]);
     }
 
@@ -140,7 +122,7 @@ class DishController extends Controller
      */
     public function available(Dish $dish)
     {
-        $dish->is_available = ! $dish->is_available;
+        $dish->is_available = !$dish->is_available;
         $dish->save();
 
         return redirect()->route('dish.index')->with('success', 'Dish available successfully.');

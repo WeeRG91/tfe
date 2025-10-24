@@ -14,47 +14,36 @@ use Inertia\Response;
 class TrashedController extends Controller
 {
     /**
+     * @param string $model
+     * @param string $type
+     * @return array
+     */
+    private function getTrashedItems(string $model, string $type)
+    {
+        return $model::onlyTrashed()
+            ->with('images')
+            ->get()
+            ->map(fn($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'image' => $item->images->first()
+                    ? Storage::disk('public')->url($item->images->first()->path)
+                    : Storage::disk('public')->url('images/picture.png'),
+                'type' => $type,
+                'deleted_at' => $item->deleted_at->toDateTimeString(),
+            ])
+            ->toArray();
+    }
+
+    /**
      * @return Response
      */
     public function index()
     {
-        $trashedDishes = Dish::onlyTrashed()
-            ->with('images')
-            ->get()
-            ->map(fn($dish) => [
-                'id' => $dish->id,
-                'name' => $dish->name,
-                'image' => $dish->images->first() ? Storage::disk('public')->url($dish->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
-                'type' => 'Dish',
-                'deleted_at' => $dish->deleted_at->toDateTimeString(),
-            ]);
-
-        $trashedIngredients = Ingredient::onlyTrashed()
-            ->with('images')
-            ->get()
-            ->map(fn($ingredient) => [
-                'id' => $ingredient->id,
-                'name' => $ingredient->name,
-                'image' => $ingredient->images->first() ? Storage::disk('public')->url($ingredient->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
-                'type' => 'Ingredient',
-                'deleted_at' => $ingredient->deleted_at->toDateTimeString(),
-            ]);
-
-        $trashedAllergens = Allergen::onlyTrashed()
-            ->with('images')
-            ->get()
-            ->map(fn($allergen) => [
-                'id' => $allergen->id,
-                'name' => $allergen->name,
-                'image' => $allergen->images->first() ? Storage::disk('public')->url($allergen->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
-                'type' => 'Allergen',
-                'deleted_at' => $allergen->deleted_at->toDateTimeString(),
-            ]);
-
         $trashedItems = collect([
-            ...$trashedDishes,
-            ...$trashedIngredients,
-            ...$trashedAllergens,
+            ...$this->getTrashedItems(Dish::class, 'Dish'),
+            ...$this->getTrashedItems(Ingredient::class, 'Ingredient'),
+            ...$this->getTrashedItems(Allergen::class, 'Allergen'),
         ])->sortByDesc('deleted_at')->values();
 
         return Inertia::render('trashed/Index', [

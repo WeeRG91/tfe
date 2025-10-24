@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\IngredientCreateRequest;
 use App\Http\Requests\IngredientUpdateRequest;
+use App\Http\Resources\IngredientResource;
 use App\Models\Allergen;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
@@ -20,31 +21,13 @@ class IngredientController extends Controller
     public function index()
     {
         $ingredients = Ingredient::query()
-            ->with(['allergen', 'allergen.images', 'images'])
+            ->with(['allergen', 'images'])
             ->where('deleted_at', null)
             ->orderBy('created_at', 'desc')
-            ->paginate(10)
-            ->through(fn($ingredient) => [
-                'id' => $ingredient->id,
-                'name' => $ingredient->name,
-                'allergen' => $ingredient->allergen->name ?? null,
-                'allergenImage' => $ingredient->allergen?->images->first()
-                    ? Storage::disk('public')->url($ingredient->allergen->images->first()->path)
-                    : null,
-                'description' => $ingredient->description,
-                'image' => $ingredient->images->first()
-                    ? Storage::disk('public')->url($ingredient->images->first()->path)
-                    : Storage::disk('public')->url('images/picture.png'),
-                'images' => $ingredient->images->map(fn($image) => [
-                    'id' => $image->id,
-                    'path' => Storage::disk('public')->url($image->path),
-                ]),
-                'created_at' => $ingredient->created_at->toDateTimeString(),
-                'updated_at' => $ingredient->updated_at->toDateTimeString(),
-            ]);
+            ->paginate(10);
 
         return Inertia::render('ingredient/Index', [
-            'ingredients' => $ingredients,
+            'ingredients' => IngredientResource::collection($ingredients),
         ]);
     }
 
