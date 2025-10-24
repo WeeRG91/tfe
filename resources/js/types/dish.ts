@@ -5,16 +5,11 @@ export type DishType = {
     images: {id: number, path: string}[];
     description: string;
     price: number;
-    ingredients: IngredientType[];
+    ingredients: {id: number, name: string}[];
     category: CategoryEnumType;
     is_available: string;
     created_at: string;
     updated_at: string;
-}
-
-export type IngredientType = {
-    id: number;
-    name: string;
 }
 
 export type CategoryEnumType = {

@@ -15,6 +15,7 @@ class Dish extends Model
 
     protected string $folder = 'images/dish';
     protected string $imageInput = 'images';
+
     protected $guarded = ['id'];
 
     protected function casts(): array

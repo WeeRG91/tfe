@@ -58,7 +58,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create a dish" />
+    <Head title="Create an ingredient" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div

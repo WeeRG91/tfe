@@ -1,24 +1,23 @@
-export type IngredientType = {
+export type AllergenType = {
     id: number;
     name: string;
-    allergen: string;
-    allergenImage: string;
     description: string;
+    ingredients: {id: number, name: string}[];
     image: string;
     images: {id: number, path: string}[];
     created_at: string;
     updated_at: string;
 }
 
-export type EditIngredientType = {
+export type EditAllergenType = {
     id: number;
     name: string;
     description: string;
-    allergen: number;
+    ingredients: {id: number}[];
     images: {id: number, path: string}[];
 }
 
-export type AllergenOptionType = {
+export type IngredientOptionType = {
     value: number;
     label: string;
 }
@@ -26,5 +25,5 @@ export type AllergenOptionType = {
 export type ErrorType = {
     name: string;
     description: string;
-    allergen: string;
+    ingredients: string;
 }

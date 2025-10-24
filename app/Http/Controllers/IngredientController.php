@@ -20,17 +20,22 @@ class IngredientController extends Controller
     public function index()
     {
         $ingredients = Ingredient::query()
-            ->with(['allergen', 'images'])
+            ->with(['allergen', 'allergen.images', 'images'])
             ->where('deleted_at', null)
             ->orderBy('created_at', 'desc')
             ->paginate(10)
-            ->through(fn ($ingredient) => [
+            ->through(fn($ingredient) => [
                 'id' => $ingredient->id,
                 'name' => $ingredient->name,
                 'allergen' => $ingredient->allergen->name ?? null,
+                'allergenImage' => $ingredient->allergen?->images->first()
+                    ? Storage::disk('public')->url($ingredient->allergen->images->first()->path)
+                    : null,
                 'description' => $ingredient->description,
-                'image' => $ingredient->images->first() ? Storage::disk('public')->url($ingredient->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
-                'images' => $ingredient->images->map(fn ($image) => [
+                'image' => $ingredient->images->first()
+                    ? Storage::disk('public')->url($ingredient->images->first()->path)
+                    : Storage::disk('public')->url('images/picture.png'),
+                'images' => $ingredient->images->map(fn($image) => [
                     'id' => $image->id,
                     'path' => Storage::disk('public')->url($image->path),
                 ]),
@@ -48,7 +53,7 @@ class IngredientController extends Controller
      */
     public function create()
     {
-        $allergens = Allergen::all()->map(fn ($allergen) => [
+        $allergens = Allergen::all()->map(fn($allergen) => [
             'value' => $allergen->id,
             'label' => $allergen->name,
         ]);
@@ -84,13 +89,13 @@ class IngredientController extends Controller
             'name' => $ingredient->name,
             'description' => $ingredient->description,
             'allergen' => $ingredient->allergen->id ?? null,
-            'images' => $ingredient->images->map(fn ($image) => [
+            'images' => $ingredient->images->map(fn($image) => [
                 'id' => $image->id,
                 'path' => Storage::disk('public')->url($image->path),
             ]),
         ];
 
-        $allergens = Allergen::all()->map(fn ($allergen) => [
+        $allergens = Allergen::all()->map(fn($allergen) => [
             'value' => $allergen->id,
             'label' => $allergen->name,
         ]);

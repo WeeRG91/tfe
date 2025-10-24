@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AllergenController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\IngredientController;
@@ -33,6 +34,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{ingredient}/edit', 'edit')->name('edit');
         Route::post('/{ingredient}', 'update')->name('update');
         Route::delete('/{ingredient}', 'destroy')->name('destroy');
+    });
+
+    Route::controller(AllergenController::class)->prefix('allergens')->name('allergen.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{allergen}/edit', 'edit')->name('edit');
+        Route::post('/{allergen}', 'update')->name('update');
+        Route::delete('/{allergen}', 'destroy')->name('destroy');
     });
 
     Route::controller(TrashedController::class)->prefix('trashed')->name('trashed.')->group(function () {

@@ -17,7 +17,6 @@ import {
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem, Paginated } from '@/types';
-import { IngredientType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
 import {
     EllipsisVerticalIcon,
@@ -27,25 +26,27 @@ import {
     TrashIcon,
 } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
+import allergen from '@/routes/allergen';
+import { AllergenType } from '@/types/allergen';
 
 const props = defineProps<{
-    ingredients: Paginated<IngredientType>;
+    allergens: Paginated<AllergenType>;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Ingredients',
-        href: ingredient.index().url,
+        title: 'Allergens',
+        href: allergen.index().url,
     },
 ];
 
-const ingredientForm = useForm({});
+const allergenForm = useForm({});
 
-const deleteIngredient = (id: number) => {
-    if (confirm('Are you sure you want to delete ingredient?')) {
-        ingredientForm.delete(ingredient.destroy(id).url, {
+const deleteAllergen = (id: number) => {
+    if (confirm('Are you sure you want to delete allergen?')) {
+        allergenForm.delete(allergen.destroy(id).url, {
             onSuccess: () => {
-                toast.success('Ingredient successfully deleted.');
+                toast.success('Allergen successfully deleted.');
             },
         });
     }
@@ -53,7 +54,7 @@ const deleteIngredient = (id: number) => {
 </script>
 
 <template>
-    <Head title="Ingredients" />
+    <Head title="Allergens" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -63,7 +64,7 @@ const deleteIngredient = (id: number) => {
                 class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
             >
                 <div class="m-2 flex cursor-pointer justify-end">
-                    <a :href="ingredient.create().url">
+                    <a :href="allergen.create().url">
                         <Button
                             variant="outline"
                             class="cursor-pointer text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
@@ -77,7 +78,6 @@ const deleteIngredient = (id: number) => {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead>Allergen</TableHead>
                             <TableHead>Created at</TableHead>
                             <TableHead>Updated at</TableHead>
                             <TableHead></TableHead>
@@ -85,41 +85,27 @@ const deleteIngredient = (id: number) => {
                     </TableHeader>
                     <TableBody>
                         <TableRow
-                            v-for="ingredientData in props.ingredients.data"
-                            :key="ingredientData.id"
+                            v-for="allergenData in props.allergens.data"
+                            :key="allergenData.id"
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
-                                    :src="ingredientData.image"
-                                    :alt="ingredientData.name"
+                                    :src="allergenData.image"
+                                    :alt="allergenData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />
                                 <span class="whitespace-nowrap">
-                                    {{ ingredientData.name }}
+                                    {{ allergenData.name }}
                                 </span>
                             </TableCell>
-                            <TableCell class="relative group">
-                                <img
-                                    v-if="ingredientData.allergenImage"
-                                    :src="ingredientData.allergenImage"
-                                    :alt="ingredientData.allergen"
-                                    class="h-8 w-8 rounded-full"
-                                />
-                                <div
-                                    v-if="ingredientData.allergen"
-                                    class="absolute top-5 left-13 mb-1 w-max rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition"
-                                >
-                                    {{ ingredientData.allergen }}
-                                </div>
-                            </TableCell>
                             <TableCell
-                                ><span class="whitespace-nowrap">{{
-                                    ingredientData.created_at
+                            ><span class="whitespace-nowrap">{{
+                                    allergenData.created_at
                                 }}</span></TableCell
                             >
                             <TableCell
-                                ><span class="whitespace-nowrap">{{
-                                    ingredientData.updated_at
+                            ><span class="whitespace-nowrap">{{
+                                    allergenData.updated_at
                                 }}</span>
                             </TableCell>
                             <TableCell>
@@ -129,27 +115,14 @@ const deleteIngredient = (id: number) => {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
                                         <DropdownMenuItem>
-                                            <a
-                                                :href="
-                                                    ingredient.edit(
-                                                        ingredientData.id,
-                                                    ).url
-                                                "
-                                                class="flex gap-2"
-                                            >
+                                            <a :href="allergen.edit(allergenData.id).url" class="flex gap-2">
                                                 <SquarePenIcon /> Edit
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            @click="
-                                                deleteIngredient(
-                                                    ingredientData.id,
-                                                )
-                                            "
-                                        >
+                                        <DropdownMenuItem @click="deleteAllergen(allergenData.id)">
                                             <TrashIcon /> Delete
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Allergen;
 use App\Models\Dish;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
@@ -39,9 +40,22 @@ class TrashedController extends Controller
                 'deleted_at' => $ingredient->deleted_at->toDateTimeString(),
             ]);
 
-        $trashedItems = $trashedDishes->concat($trashedIngredients)
-            ->sortByDesc('deleted_at')
-            ->values();
+        $trashedAllergens = Allergen::onlyTrashed()
+            ->with('images')
+            ->get()
+            ->map(fn($allergen) => [
+                'id' => $allergen->id,
+                'name' => $allergen->name,
+                'image' => $allergen->images->first() ? Storage::disk('public')->url($allergen->images->first()->path) : Storage::disk('public')->url('images/picture.png'),
+                'type' => 'Allergen',
+                'deleted_at' => $allergen->deleted_at->toDateTimeString(),
+            ]);
+
+        $trashedItems = collect([
+            ...$trashedDishes,
+            ...$trashedIngredients,
+            ...$trashedAllergens,
+        ])->sortByDesc('deleted_at')->values();
 
         return Inertia::render('trashed/Index', [
             'trashedItems' => $trashedItems,
@@ -56,12 +70,13 @@ class TrashedController extends Controller
     {
         $request->validate([
             'id' => 'required|integer',
-            'type' => 'required|string|in:Dish,Ingredient',
+            'type' => 'required|string|in:Dish,Ingredient,Allergen',
         ]);
 
         $modelClass = match ($request->type) {
             'Dish' => Dish::class,
             'Ingredient' => Ingredient::class,
+            'Allergen' => Allergen::class,
         };
 
         $item = $modelClass::onlyTrashed()->find($request->id);
@@ -83,12 +98,13 @@ class TrashedController extends Controller
     {
         $request->validate([
             'id' => 'required|integer',
-            'type' => 'required|string|in:Dish,Ingredient',
+            'type' => 'required|string|in:Dish,Ingredient,Allergen',
         ]);
 
         $modelClass = match ($request->type) {
             'Dish' => Dish::class,
             'Ingredient' => Ingredient::class,
+            'Allergen' => Allergen::class,
         };
 
         $item = $modelClass::onlyTrashed()->find($request->id);
@@ -101,7 +117,6 @@ class TrashedController extends Controller
             $item->ingredients()->detach();
         } elseif ($request->type == 'Ingredient') {
             $item->dish()->detach();
-            $item->allergen()->detach();
         }
 
         if (method_exists($item, 'images')) {

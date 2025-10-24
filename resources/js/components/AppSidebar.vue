@@ -14,11 +14,12 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Salad, Trash, Carrot } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Salad, Trash, Carrot, BeanOff } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import dish from '@/routes/dish';
 import trashed from '@/routes/trashed';
 import ingredient from '@/routes/ingredient';
+import allergen from '@/routes/allergen';
 
 const mainNavItems: NavItem[] = [
     {
@@ -35,6 +36,11 @@ const mainNavItems: NavItem[] = [
         title: 'Ingredients',
         href: ingredient.index(),
         icon: Carrot,
+    },
+    {
+        title: 'Allergens',
+        href: allergen.index(),
+        icon: BeanOff,
     },
     {
         title: 'Trashed',

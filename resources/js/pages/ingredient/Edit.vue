@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { CirclePlus, X } from 'lucide-vue-next';
+import { CirclePlus, SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 import ingredient from '@/routes/ingredient';
@@ -16,6 +16,7 @@ import {
     EditIngredientType,
     ErrorType,
 } from '@/types/ingredient';
+import { Spinner } from '@/components/ui/spinner';
 
 const props = defineProps<{
     ingredientToEdit: EditIngredientType;
@@ -29,12 +30,14 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: ingredient.index().url,
     },
     {
-        title: 'Create',
-        href: ingredient.create().url,
+        title: 'Edit',
+        href: ingredient.edit(props.ingredientToEdit.id).url,
     },
 ];
 
-const selectedAllergen = ref<number | null>(props.ingredientToEdit.allergen ?? null);
+const selectedAllergen = ref<number | null>(
+    props.ingredientToEdit.allergen ?? null,
+);
 const name = ref<string>(props.ingredientToEdit.name ?? '');
 const description = ref<string>(props.ingredientToEdit.description ?? '');
 const imageFile = ref<File[]>([]);
@@ -63,7 +66,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create a dish" />
+    <Head :title="`Edit the ingredient '${props.ingredientToEdit.name}'`" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -107,7 +110,10 @@ const submit = () => {
                             Photos
                         </h2>
 
-                        <ImageUploader v-model="imageFile" :existingImages="props.ingredientToEdit.images" />
+                        <ImageUploader
+                            v-model="imageFile"
+                            :existingImages="props.ingredientToEdit.images"
+                        />
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
@@ -120,7 +126,10 @@ const submit = () => {
                         </a>
                     </Button>
                     <Button type="submit" :disabled="ingredientForm.processing"
-                        ><CirclePlus /> Create</Button
+                        ><SquarePenIcon v-if="!ingredientForm.processing" /><Spinner
+                            v-else
+                        />
+                        Edit</Button
                     >
                 </div>
             </form>

@@ -15,6 +15,7 @@ class Ingredient extends Model
 
     protected string $folder = 'images/ingredient';
     protected string $imageInput = 'images';
+
     protected $guarded = ['id'];
 
     public function images(): MorphMany

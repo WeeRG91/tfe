@@ -83,7 +83,7 @@ const getColorType = (type: string) => {
 </script>
 
 <template>
-    <Head title="Dishes" />
+    <Head title="Trashed items" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
