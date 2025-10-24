@@ -71,7 +71,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Dialog :open="open" @update:open="props.onClose">
+    <Dialog :open="props.open" @update:open="props.onClose">
         <DialogContent class="max-w-2xl">
             <div class="flex flex-col gap-4 md:flex-row">
                 <!-- Image Slider -->

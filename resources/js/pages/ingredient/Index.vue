@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -26,6 +27,7 @@ import {
     SquarePlusIcon,
     TrashIcon,
 } from 'lucide-vue-next';
+import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
@@ -39,16 +41,35 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
+
 const ingredientForm = useForm({});
 
 const deleteIngredient = (id: number) => {
-    if (confirm('Are you sure you want to delete ingredient?')) {
-        ingredientForm.delete(ingredient.destroy(id).url, {
-            onSuccess: () => {
-                toast.success('Ingredient successfully deleted.');
-            },
-        });
-    }
+    ingredientForm.delete(ingredient.destroy(id).url, {
+        onSuccess: () => {
+            closeConfirmModal();
+            toast.success('Ingredient successfully deleted.');
+        },
+    });
+};
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
 };
 </script>
 
@@ -98,7 +119,7 @@ const deleteIngredient = (id: number) => {
                                     {{ ingredientData.name }}
                                 </span>
                             </TableCell>
-                            <TableCell class="relative group">
+                            <TableCell class="group relative">
                                 <img
                                     v-if="ingredientData.allergen?.image"
                                     :src="ingredientData.allergen?.image"
@@ -107,7 +128,7 @@ const deleteIngredient = (id: number) => {
                                 />
                                 <div
                                     v-if="ingredientData.allergen?.name"
-                                    class="absolute top-5 left-13 mb-1 w-max rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition"
+                                    class="absolute top-5 left-13 mb-1 w-max rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition group-hover:opacity-100"
                                 >
                                     {{ ingredientData.allergen.name }}
                                 </div>
@@ -145,8 +166,10 @@ const deleteIngredient = (id: number) => {
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="
-                                                deleteIngredient(
-                                                    ingredientData.id,
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this ingredient?',
+                                                    'destructive',
+                                                    () => deleteIngredient(ingredientData.id),
                                                 )
                                             "
                                         >
@@ -158,6 +181,14 @@ const deleteIngredient = (id: number) => {
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                <ConfirmModal
+                    :open="confirmModalOpen"
+                    :onClose="closeConfirmModal"
+                    :message="confirmModalMessage"
+                    :type="confirmModalType"
+                    @confirm="confirmModalAction"
+                />
             </div>
         </div>
     </AdminLayout>

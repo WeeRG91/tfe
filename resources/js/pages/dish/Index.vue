@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import DishDetailModal from '@/components/dish/DishDetailModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,37 +48,54 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const selectedDish = ref<DishType | null>(null);
-const modalOpen = ref<boolean>(false);
+const detailModalOpen = ref<boolean>(false);
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
 
 const dishForm = useForm({});
 
 const deleteDish = (id: number) => {
-    if (confirm('Are you sure you want to delete dish?')) {
-        dishForm.delete(dish.destroy(id).url, {
-            onSuccess: () => {
-                toast.success('Dish successfully deleted.');
-            },
-        });
-    }
+    dishForm.delete(dish.destroy(id).url, {
+        onSuccess: () => {
+            closeConfirmModal();
+            toast.success('Dish successfully deleted.');
+        },
+    });
 };
 
 const toggleAvailability = (id: number) => {
-    if (confirm('Change availability of this dish?')) {
-        dishForm.patch(dish.available(id).url, {
-            onSuccess: () => {
-                toast.success('Dish availability updated successfully.');
-            },
-        });
-    }
+    dishForm.patch(dish.available(id).url, {
+        onSuccess: () => {
+            closeConfirmModal();
+            toast.success('Dish availability updated successfully.');
+        },
+    });
 };
 
 const openDishDetail = (dish: DishType) => {
     selectedDish.value = dish;
-    modalOpen.value = true;
+    detailModalOpen.value = true;
 };
 
 const closeDishDetail = () => {
-    modalOpen.value = false;
+    detailModalOpen.value = false;
+};
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
 };
 </script>
 
@@ -186,7 +204,13 @@ const closeDishDetail = () => {
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            @click="deleteDish(dishData.id)"
+                                            @click="
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this dish?',
+                                                    'destructive',
+                                                    () => deleteDish(dishData.id),
+                                                )
+                                            "
                                         >
                                             <TrashIcon /> Delete
                                         </DropdownMenuItem>
@@ -196,7 +220,11 @@ const closeDishDetail = () => {
                                                 'Available'
                                             "
                                             @click="
-                                                toggleAvailability(dishData.id)
+                                                openConfirmModal(
+                                                    'Are you sure you want to mark this dish as unavailable?',
+                                                    'info',
+                                                    () => toggleAvailability(dishData.id),
+                                                )
                                             "
                                         >
                                             <CircleXIcon /> Unavailable
@@ -204,7 +232,11 @@ const closeDishDetail = () => {
                                         <DropdownMenuItem
                                             v-else
                                             @click="
-                                                toggleAvailability(dishData.id)
+                                                openConfirmModal(
+                                                    'Are you sure you want to mark this dish as available?',
+                                                    'info',
+                                                    () => toggleAvailability(dishData.id),
+                                                )
                                             "
                                         >
                                             <CircleCheckBigIcon /> Available
@@ -217,9 +249,17 @@ const closeDishDetail = () => {
                 </Table>
 
                 <DishDetailModal
-                    :open="modalOpen"
+                    :open="detailModalOpen"
                     :selectedDish="selectedDish"
                     :onClose="closeDishDetail"
+                />
+
+                <ConfirmModal
+                    :open="confirmModalOpen"
+                    :onClose="closeConfirmModal"
+                    :message="confirmModalMessage"
+                    :type="confirmModalType"
+                    @confirm="confirmModalAction"
                 />
             </div>
         </div>

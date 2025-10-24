@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -15,7 +16,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import allergen from '@/routes/allergen';
 import type { BreadcrumbItem, Paginated } from '@/types';
+import { AllergenType } from '@/types/allergen';
 import { Head, useForm } from '@inertiajs/vue3';
 import {
     EllipsisVerticalIcon,
@@ -24,15 +27,12 @@ import {
     SquarePlusIcon,
     TrashIcon,
 } from 'lucide-vue-next';
+import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import allergen from '@/routes/allergen';
-import { AllergenType } from '@/types/allergen';
 
 const props = defineProps<{
     allergens: Paginated<AllergenType>;
 }>();
-
-console.log(props.allergens);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -41,16 +41,35 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
+
 const allergenForm = useForm({});
 
 const deleteAllergen = (id: number) => {
-    if (confirm('Are you sure you want to delete allergen?')) {
-        allergenForm.delete(allergen.destroy(id).url, {
-            onSuccess: () => {
-                toast.success('Allergen successfully deleted.');
-            },
-        });
-    }
+    allergenForm.delete(allergen.destroy(id).url, {
+        onSuccess: () => {
+            closeConfirmModal();
+            toast.success('Allergen successfully deleted.');
+        },
+    });
+};
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
 };
 </script>
 
@@ -100,12 +119,12 @@ const deleteAllergen = (id: number) => {
                                 </span>
                             </TableCell>
                             <TableCell
-                            ><span class="whitespace-nowrap">{{
+                                ><span class="whitespace-nowrap">{{
                                     allergenData.created_at
                                 }}</span></TableCell
                             >
                             <TableCell
-                            ><span class="whitespace-nowrap">{{
+                                ><span class="whitespace-nowrap">{{
                                     allergenData.updated_at
                                 }}</span>
                             </TableCell>
@@ -116,14 +135,32 @@ const deleteAllergen = (id: number) => {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
                                         <DropdownMenuItem>
-                                            <a :href="allergen.edit(allergenData.id).url" class="flex gap-2">
+                                            <a
+                                                :href="
+                                                    allergen.edit(
+                                                        allergenData.id,
+                                                    ).url
+                                                "
+                                                class="flex gap-2"
+                                            >
                                                 <SquarePenIcon /> Edit
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem>
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem @click="deleteAllergen(allergenData.id)">
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this allergen?',
+                                                    'destructive',
+                                                    () =>
+                                                        deleteAllergen(
+                                                            allergenData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
                                             <TrashIcon /> Delete
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
@@ -132,6 +169,14 @@ const deleteAllergen = (id: number) => {
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                <ConfirmModal
+                    :open="confirmModalOpen"
+                    :onClose="closeConfirmModal"
+                    :message="confirmModalMessage"
+                    :type="confirmModalType"
+                    @confirm="confirmModalAction"
+                />
             </div>
         </div>
     </AdminLayout>

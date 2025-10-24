@@ -1,4 +1,12 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
+import { Badge } from '@/components/ui/badge';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
     Table,
     TableBody,
@@ -7,23 +15,17 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    TrashIcon,
-    RotateCcwIcon,
-    EllipsisVerticalIcon,
-} from 'lucide-vue-next';
+import AdminLayout from '@/layouts/AdminLayout.vue';
+import trashed from '@/routes/trashed';
+import type { BreadcrumbItem } from '@/types';
+import { TrashedType } from '@/types/trashed';
 import { Head, useForm } from '@inertiajs/vue3';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import AdminLayout from '@/layouts/AdminLayout.vue';
-import { TrashedType } from '@/types/trashed';
-import type { BreadcrumbItem } from '@/types';
-import trashed from '@/routes/trashed';
+    EllipsisVerticalIcon,
+    RotateCcwIcon,
+    TrashIcon,
+} from 'lucide-vue-next';
+import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
@@ -37,6 +39,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
+
 const trashedForm = useForm({
     id: null as number | null | undefined,
     type: '',
@@ -46,26 +53,24 @@ const restoreTrashed = (id: number, type: string, name: string) => {
     trashedForm.id = id;
     trashedForm.type = type;
 
-    if (confirm('Are you sure you want to restore dish?')) {
-        trashedForm.post(trashed.restore().url, {
-            onSuccess: () => {
-                toast.success(`${name} has been restored.`);
-            },
-        });
-    }
+    trashedForm.post(trashed.restore().url, {
+        onSuccess: () => {
+            closeConfirmModal();
+            toast.success(`${name} has been restored.`);
+        },
+    });
 };
 
 const forceDelete = (id: number, type: string, name: string) => {
     trashedForm.id = id;
     trashedForm.type = type;
 
-    if (confirm('Are you sure you want to permanently delete dish?')) {
-        trashedForm.post(trashed.forceDelete().url, {
-            onSuccess: () => {
-                toast.success(`${name} has been permanently deleted.`);
-            },
-        });
-    }
+    trashedForm.post(trashed.forceDelete().url, {
+        onSuccess: () => {
+            closeConfirmModal();
+            toast.success(`${name} has been permanently deleted.`);
+        },
+    });
 };
 
 const getColorType = (type: string) => {
@@ -79,6 +84,21 @@ const getColorType = (type: string) => {
         default:
             return 'bg-black';
     }
+};
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
 };
 </script>
 
@@ -103,29 +123,29 @@ const getColorType = (type: string) => {
                     </TableHeader>
                     <TableBody>
                         <TableRow
-                            v-for="dishData in props.trashedItems"
-                            :key="dishData.id"
+                            v-for="trashedData in props.trashedItems"
+                            :key="trashedData.id"
                         >
                             <TableCell class="flex items-center gap-4"
                                 ><img
-                                    :src="dishData.image"
-                                    :alt="dishData.name"
+                                    :src="trashedData.image"
+                                    :alt="trashedData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />
                                 <span class="whitespace-nowrap">{{
-                                    dishData.name
+                                    trashedData.name
                                 }}</span></TableCell
                             >
                             <TableCell>
                                 <Badge
                                     class="text-white/80"
-                                    :class="getColorType(dishData.type)"
-                                    >{{ dishData.type }}</Badge
+                                    :class="getColorType(trashedData.type)"
+                                    >{{ trashedData.type }}</Badge
                                 >
                             </TableCell>
                             <TableCell
                                 ><span class="whitespace-nowrap">{{
-                                    dishData.deleted_at
+                                    trashedData.deleted_at
                                 }}</span></TableCell
                             >
                             <TableCell>
@@ -136,10 +156,15 @@ const getColorType = (type: string) => {
                                     <DropdownMenuContent>
                                         <DropdownMenuItem
                                             @click="
-                                                restoreTrashed(
-                                                    dishData.id,
-                                                    dishData.type,
-                                                    dishData.name,
+                                                openConfirmModal(
+                                                    `Are you sure you want to restore this ${trashedData.type.toLowerCase()}?`,
+                                                    'info',
+                                                    () =>
+                                                        restoreTrashed(
+                                                            trashedData.id,
+                                                            trashedData.type,
+                                                            trashedData.name,
+                                                        ),
                                                 )
                                             "
                                         >
@@ -147,10 +172,15 @@ const getColorType = (type: string) => {
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="
-                                                forceDelete(
-                                                    dishData.id,
-                                                    dishData.type,
-                                                    dishData.name,
+                                                openConfirmModal(
+                                                    `Are you sure you want to permanently delete this ${trashedData.type.toLowerCase()}?`,
+                                                    'destructive',
+                                                    () =>
+                                                        forceDelete(
+                                                            trashedData.id,
+                                                            trashedData.type,
+                                                            trashedData.name,
+                                                        ),
                                                 )
                                             "
                                         >
@@ -162,6 +192,14 @@ const getColorType = (type: string) => {
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                <ConfirmModal
+                    :open="confirmModalOpen"
+                    :onClose="closeConfirmModal"
+                    :message="confirmModalMessage"
+                    :type="confirmModalType"
+                    @confirm="confirmModalAction"
+                />
             </div>
         </div>
     </AdminLayout>
