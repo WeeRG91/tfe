@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class AllergenResource extends JsonResource
+class IngredientResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,7 +19,6 @@ class AllergenResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'ingredients' => IngredientWithAllergenResource::collection($this->whenLoaded('ingredients')),
             'image' => $this->images->first()
                 ? Storage::disk('public')->url($this->images->first()->path)
                 : Storage::disk('public')->url('images/picture.png'),
@@ -27,8 +26,9 @@ class AllergenResource extends JsonResource
                 'id' => $image->id,
                 'path' => Storage::disk('public')->url($image->path),
             ]),
-            'created_at' => $this->created_at->toFormattedDateString(),
-            'updated_at' => $this->updated_at->toFormattedDateString(),
+            'allergen' => new AllergenWithImagesResource($this->whenLoaded('allergen')),
+            'created_at' => $this->created_at->toDateTimeString(),
+            'updated_at' => $this->updated_at->toDateTimeString(),
         ];
     }
 }

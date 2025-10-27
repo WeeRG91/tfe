@@ -2,6 +2,7 @@
 import FormTextInput from '@/components/FormTextInput.vue';
 import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
+import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { BreadcrumbItem } from '@/types';
@@ -9,56 +10,55 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { ErrorType, IngredientOptionType } from '@/types/allergen';
-import allergen from '@/routes/allergen';
-import MultipleSelect from '@/components/MultipleSelect.vue';
+import ingredient from '@/routes/ingredient';
+import { AllergenOptionType, ErrorType } from '@/types/ingredient';
 
 const props = defineProps<{
-    ingredients: IngredientOptionType[];
+    allergens: AllergenOptionType[];
     errors: ErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Allergens',
-        href: allergen.index().url,
+        title: 'Ingredients',
+        href: ingredient.index().url,
     },
     {
         title: 'Create',
-        href: allergen.create().url,
+        href: ingredient.create().url,
     },
 ];
 
-const selectedIngredients = ref<number[]>([]);
+const selectedAllergen = ref<number | null>(null);
 const name = ref<string>('');
 const description = ref<string>('');
 const imageFile = ref<File[]>([]);
 
-const allergenForm = useForm({
+const ingredientForm = useForm({
     name: '',
     description: '',
-    ingredients: [] as number[],
+    allergen_id: null as number | null,
     images: [] as File[],
 });
 
 const submit = () => {
-    allergenForm.name = name.value;
-    allergenForm.description = description.value;
-    allergenForm.ingredients = selectedIngredients.value;
-    allergenForm.images = imageFile.value;
+    ingredientForm.name = name.value;
+    ingredientForm.description = description.value;
+    ingredientForm.allergen_id = selectedAllergen.value;
+    ingredientForm.images = imageFile.value;
 
-    allergenForm.post(allergen.store().url, {
+    ingredientForm.post(ingredient.store().url, {
         forceFormData: true,
         onSuccess: () => {
-            allergenForm.reset();
-            toast.success('Allergen successfully created.');
+            ingredientForm.reset();
+            toast.success('Ingredient successfully created.');
         },
     });
 };
 </script>
 
 <template>
-    <Head title="Create an allergen" />
+    <Head title="Create an ingredient" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -70,7 +70,7 @@ const submit = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Allergen Information
+                            Ingredient Information
                         </h2>
 
                         <FormTextInput
@@ -88,11 +88,11 @@ const submit = () => {
                             :error="props.errors.description"
                         />
 
-                        <MultipleSelect
-                            v-model="selectedIngredients"
-                            :options="props.ingredients"
-                            label="Ingredients"
-                            :error="props.errors.ingredients"
+                        <Select
+                            v-model="selectedAllergen"
+                            :options="props.allergens"
+                            label="Allergen"
+                            :error="props.errors.allergen"
                         />
                     </div>
                     <div
@@ -107,14 +107,11 @@ const submit = () => {
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
                     <Button type="button" variant="secondary">
-                        <a
-                            :href="allergen.index().url"
-                            class="flex items-center"
-                        >
+                        <a :href="ingredient.index().url" class="flex items-center">
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="allergenForm.processing"
+                    <Button type="submit" :disabled="ingredientForm.processing"
                         ><CirclePlus /> Create</Button
                     >
                 </div>

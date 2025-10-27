@@ -134,7 +134,7 @@ onBeforeUnmount(() => {
                     </DialogHeader>
                     <div>
                         <span class="font-semibold">Ingredients:</span>
-                        <ul class="list-inside list-disc">
+                        <ul class="list-inside list-disc text-sm">
                             <li
                                 v-for="(ingredient, index) in props.selectedDish
                                     ?.ingredients"
@@ -143,6 +143,30 @@ onBeforeUnmount(() => {
                                 {{ ingredient.name }}
                             </li>
                         </ul>
+                    </div>
+
+                    <div class="mt-2 flex items-center gap-1">
+                        <div
+                            v-for="(ingredient, index) in props.selectedDish?.ingredients"
+                            :key="index"
+                            class="relative flex items-center"
+                        >
+                            <div class="group relative">
+                                <img
+                                    v-if="ingredient.allergen?.image"
+                                    :src="ingredient.allergen.image"
+                                    :alt="ingredient.allergen.name"
+                                    class="h-6 w-6 object-cover cursor-pointer"
+                                />
+
+                                <div
+                                    v-if="ingredient.allergen?.name"
+                                    class="pointer-events-none absolute left-1/2 bottom-full -translate-x-1/2 mb-1 rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 whitespace-nowrap shadow-lg"
+                                >
+                                    {{ ingredient.allergen.name }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mt-2 flex items-center justify-between">
@@ -159,21 +183,21 @@ onBeforeUnmount(() => {
                             {{ props.selectedDish?.is_available }}
                         </Badge>
                     </div>
-
-                    <div class="mt-4 flex justify-end gap-2">
-                        <Button variant="outline" @click="props.onClose"
-                            ><X /> Close</Button
-                        >
-                        <Button
-                            ><a
-                                :href="dish.edit(props.selectedDish?.id!).url"
-                                class="flex gap-2"
-                            >
-                                <SquarePenIcon /> Edit
-                            </a></Button
-                        >
-                    </div>
                 </div>
+            </div>
+
+            <div class="mt-4 flex justify-end gap-2">
+                <Button variant="outline" @click="props.onClose"
+                ><X /> Close</Button
+                >
+                <Button
+                ><a
+                    :href="dish.edit(props.selectedDish?.id!).url"
+                    class="flex gap-2"
+                >
+                    <SquarePenIcon /> Edit
+                </a></Button
+                >
             </div>
         </DialogContent>
     </Dialog>

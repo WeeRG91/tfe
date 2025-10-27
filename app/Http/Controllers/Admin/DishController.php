@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\DishCategoryEnum;
-use App\Http\Requests\DishCreateRequest;
-use App\Http\Requests\DishUpdateRequest;
-use App\Http\Resources\DishResource;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\DishCreateRequest;
+use App\Http\Requests\Admin\DishUpdateRequest;
+use App\Http\Resources\Admin\DishResource;
 use App\Models\Dish;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
@@ -25,7 +26,7 @@ class DishController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return Inertia::render('dish/Index', [
+        return Inertia::render('admin/dish/Index', [
             'dishes' => DishResource::collection($dishes),
         ]);
     }
@@ -39,7 +40,7 @@ class DishController extends Controller
             'value' => $ingredient->id,
             'label' => $ingredient->name,
         ]);
-        return Inertia::render('dish/Create', [
+        return Inertia::render('admin/dish/Create', [
             'ingredients' => $ingredients,
             'categories' => DishCategoryEnum::getCategories(),
         ]);
@@ -85,7 +86,7 @@ class DishController extends Controller
             'label' => $ingredient->name,
         ]);
 
-        return Inertia::render('dish/Edit', [
+        return Inertia::render('admin/dish/Edit', [
             'dishToEdit' => $formattedDish,
             'ingredients' => $ingredients,
             'categories' => DishCategoryEnum::getCategories(),

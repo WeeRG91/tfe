@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
-class IngredientWithAllergenResource extends JsonResource
+class AllergenWithImagesResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,7 +18,9 @@ class IngredientWithAllergenResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'allergen' => new AllergenWithImagesResource($this->whenLoaded('allergen')),
+            'image' => $this->images->first()
+                ? Storage::disk('public')->url($this->images->first()->path)
+                : Storage::disk('public')->url('/images/picture.png'),
         ];
     }
 }

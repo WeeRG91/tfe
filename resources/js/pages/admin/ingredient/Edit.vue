@@ -7,13 +7,19 @@ import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { CirclePlus, X } from 'lucide-vue-next';
+import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 import ingredient from '@/routes/ingredient';
-import { AllergenOptionType, ErrorType } from '@/types/ingredient';
+import {
+    AllergenOptionType,
+    EditIngredientType,
+    ErrorType,
+} from '@/types/ingredient';
+import { Spinner } from '@/components/ui/spinner';
 
 const props = defineProps<{
+    ingredientToEdit: EditIngredientType;
     allergens: AllergenOptionType[];
     errors: ErrorType;
 }>();
@@ -24,14 +30,16 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: ingredient.index().url,
     },
     {
-        title: 'Create',
-        href: ingredient.create().url,
+        title: 'Edit',
+        href: ingredient.edit(props.ingredientToEdit.id).url,
     },
 ];
 
-const selectedAllergen = ref<number | null>(null);
-const name = ref<string>('');
-const description = ref<string>('');
+const selectedAllergen = ref<number | null>(
+    props.ingredientToEdit.allergen ?? null,
+);
+const name = ref<string>(props.ingredientToEdit.name ?? '');
+const description = ref<string>(props.ingredientToEdit.description ?? '');
 const imageFile = ref<File[]>([]);
 
 const ingredientForm = useForm({
@@ -47,18 +55,18 @@ const submit = () => {
     ingredientForm.allergen_id = selectedAllergen.value;
     ingredientForm.images = imageFile.value;
 
-    ingredientForm.post(ingredient.store().url, {
+    ingredientForm.post(ingredient.update(props.ingredientToEdit.id).url, {
         forceFormData: true,
         onSuccess: () => {
             ingredientForm.reset();
-            toast.success('Ingredient successfully created.');
+            toast.success('Ingredient successfully updated.');
         },
     });
 };
 </script>
 
 <template>
-    <Head title="Create an ingredient" />
+    <Head :title="`Edit the ingredient '${props.ingredientToEdit.name}'`" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -102,17 +110,26 @@ const submit = () => {
                             Photos
                         </h2>
 
-                        <ImageUploader v-model="imageFile" />
+                        <ImageUploader
+                            v-model="imageFile"
+                            :existingImages="props.ingredientToEdit.images"
+                        />
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
                     <Button type="button" variant="secondary">
-                        <a :href="ingredient.index().url" class="flex items-center">
+                        <a
+                            :href="ingredient.index().url"
+                            class="flex items-center"
+                        >
                             <X /> Cancel
                         </a>
                     </Button>
                     <Button type="submit" :disabled="ingredientForm.processing"
-                        ><CirclePlus /> Create</Button
+                        ><SquarePenIcon v-if="!ingredientForm.processing" /><Spinner
+                            v-else
+                        />
+                        Edit</Button
                     >
                 </div>
             </form>

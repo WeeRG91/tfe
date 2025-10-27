@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Allergen;
 use App\Models\Dish;
 use App\Models\Ingredient;
@@ -46,7 +47,7 @@ class TrashedController extends Controller
             ...$this->getTrashedItems(Allergen::class, 'Allergen'),
         ])->sortByDesc('deleted_at')->values();
 
-        return Inertia::render('trashed/Index', [
+        return Inertia::render('admin/trashed/Index', [
             'trashedItems' => $trashedItems,
         ]);
     }

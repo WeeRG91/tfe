@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AllergenDetailModal from '@/components/admin/allergen/AllergenDetailModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,6 +42,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const selectedAllergen = ref<AllergenType | null>(null);
+const detailModalOpen = ref<boolean>(false);
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
@@ -55,6 +58,15 @@ const deleteAllergen = (id: number) => {
             toast.success('Allergen successfully deleted.');
         },
     });
+};
+
+const openAllergenDetailModal = (allergen: AllergenType) => {
+    selectedAllergen.value = allergen;
+    detailModalOpen.value = true;
+};
+
+const closeAllergenDetailModal = () => {
+    detailModalOpen.value = false;
 };
 
 const openConfirmModal = (
@@ -107,6 +119,7 @@ const closeConfirmModal = () => {
                         <TableRow
                             v-for="allergenData in props.allergens.data"
                             :key="allergenData.id"
+                            @dblclick="openAllergenDetailModal(allergenData)"
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
@@ -146,7 +159,13 @@ const closeConfirmModal = () => {
                                                 <SquarePenIcon /> Edit
                                             </a>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                openAllergenDetailModal(
+                                                    allergenData,
+                                                )
+                                            "
+                                        >
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
@@ -169,6 +188,12 @@ const closeConfirmModal = () => {
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                <AllergenDetailModal
+                    :open="detailModalOpen"
+                    :onClose="closeAllergenDetailModal"
+                    :selectedAllergen="selectedAllergen"
+                />
 
                 <ConfirmModal
                     :open="confirmModalOpen"

@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\AllergenController;
-use App\Http\Controllers\DishController;
-use App\Http\Controllers\ImageController;
-use App\Http\Controllers\IngredientController;
-use App\Http\Controllers\TrashedController;
+use App\Http\Controllers\Admin\AllergenController;
+use App\Http\Controllers\Admin\DishController;
+use App\Http\Controllers\Admin\ImageController;
+use App\Http\Controllers\Admin\IngredientController;
+use App\Http\Controllers\Admin\TrashedController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Admin;
 
+use App\Enums\DishCategoryEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class IngredientResource extends JsonResource
+class DishResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,15 +19,18 @@ class IngredientResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'description' => $this->description,
             'image' => $this->images->first()
                 ? Storage::disk('public')->url($this->images->first()->path)
-                : Storage::disk('public')->url('images/picture.png'),
-            'images' => $this->images->map(fn($image) => [
+                : Storage::disk('public')->url('/images/picture.png'),
+            'images' => $this->images->map(fn ($image) => [
                 'id' => $image->id,
                 'path' => Storage::disk('public')->url($image->path),
             ]),
-            'allergen' => new AllergenWithImagesResource($this->whenLoaded('allergen')),
+            'description' => $this->description,
+            'price' => $this->price,
+            'is_available' => $this->is_available ? 'Available' : 'Unavailable',
+            'ingredients' => IngredientWithAllergenResource::collection($this->whenLoaded('ingredients')),
+            'category' => DishCategoryEnum::getCategory($this->category),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
         ];

@@ -1,7 +1,6 @@
 <script setup lang="ts">
+import IngredientDetailModal from '@/components/admin/ingredient/IngredientDetailModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import DishDetailModal from '@/components/dish/DishDetailModal.vue';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -18,13 +17,11 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import dish from '@/routes/dish';
+import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem, Paginated } from '@/types';
-import { DishType } from '@/types/dish';
+import { IngredientType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
 import {
-    CircleCheckBigIcon,
-    CircleXIcon,
     EllipsisVerticalIcon,
     EyeIcon,
     SquarePenIcon,
@@ -35,51 +32,40 @@ import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
-    dishes: Paginated<DishType>;
+    ingredients: Paginated<IngredientType>;
 }>();
-
-console.log(props.dishes.links);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dishes',
-        href: dish.index().url,
+        title: 'Ingredients',
+        href: ingredient.index().url,
     },
 ];
 
-const selectedDish = ref<DishType | null>(null);
+const selectedIngredient = ref<IngredientType | null>(null);
 const detailModalOpen = ref<boolean>(false);
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
 
-const dishForm = useForm({});
+const ingredientForm = useForm({});
 
-const deleteDish = (id: number) => {
-    dishForm.delete(dish.destroy(id).url, {
+const deleteIngredient = (id: number) => {
+    ingredientForm.delete(ingredient.destroy(id).url, {
         onSuccess: () => {
             closeConfirmModal();
-            toast.success('Dish successfully deleted.');
+            toast.success('Ingredient successfully deleted.');
         },
     });
 };
 
-const toggleAvailability = (id: number) => {
-    dishForm.patch(dish.available(id).url, {
-        onSuccess: () => {
-            closeConfirmModal();
-            toast.success('Dish availability updated successfully.');
-        },
-    });
-};
-
-const openDishDetail = (dish: DishType) => {
-    selectedDish.value = dish;
+const openIngredientDetailModal = (ingredient: IngredientType) => {
+    selectedIngredient.value = ingredient;
     detailModalOpen.value = true;
 };
 
-const closeDishDetail = () => {
+const closeIngredientDetailModal = () => {
     detailModalOpen.value = false;
 };
 
@@ -100,7 +86,7 @@ const closeConfirmModal = () => {
 </script>
 
 <template>
-    <Head title="Dishes" />
+    <Head title="Ingredients" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -110,7 +96,7 @@ const closeConfirmModal = () => {
                 class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
             >
                 <div class="m-2 flex cursor-pointer justify-end">
-                    <a :href="dish.create().url">
+                    <a :href="ingredient.create().url">
                         <Button
                             variant="outline"
                             class="cursor-pointer text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
@@ -124,63 +110,53 @@ const closeConfirmModal = () => {
                     <TableHeader>
                         <TableRow>
                             <TableHead>Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead class="hidden md:table-cell"
-                                >price</TableHead
-                            >
-                            <TableHead>Availability</TableHead>
-                            <TableHead class="hidden md:table-cell"
-                                >Created at</TableHead
-                            >
+                            <TableHead>Allergen</TableHead>
+                            <TableHead>Created at</TableHead>
                             <TableHead>Updated at</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         <TableRow
-                            v-for="dishData in props.dishes.data"
-                            :key="dishData.id"
-                            @dblclick="openDishDetail(dishData)"
+                            v-for="ingredientData in props.ingredients.data"
+                            :key="ingredientData.id"
+                            @dblclick="
+                                openIngredientDetailModal(ingredientData)
+                            "
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
-                                    :src="dishData.image"
-                                    :alt="dishData.name"
+                                    :src="ingredientData.image"
+                                    :alt="ingredientData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />
                                 <span class="whitespace-nowrap">
-                                    {{ dishData.name }}
+                                    {{ ingredientData.name }}
                                 </span>
                             </TableCell>
-                            <TableCell>
-                                <Badge
-                                    class="text-white/80"
-                                    :class="dishData.category.color"
-                                    >{{ dishData.category.label }}</Badge
+                            <TableCell class="group relative">
+                                <img
+                                    v-if="ingredientData.allergen?.image"
+                                    :src="ingredientData.allergen?.image"
+                                    :alt="ingredientData.allergen?.name"
+                                    class="h-8 w-8 rounded-full"
+                                />
+                                <div
+                                    v-if="ingredientData.allergen?.name"
+                                    class="absolute top-5 left-13 mb-1 w-max rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition group-hover:opacity-100"
                                 >
-                            </TableCell>
-                            <TableCell class="hidden md:table-cell"
-                                >{{ dishData.price }} €</TableCell
-                            >
-                            <TableCell>
-                                <Badge
-                                    v-if="dishData.is_available === 'Available'"
-                                    class="bg-green-500 text-white"
-                                    >{{ dishData.is_available }}</Badge
-                                >
-                                <Badge v-else class="bg-red-500 text-white">
-                                    {{ dishData.is_available }}
-                                </Badge>
-                            </TableCell>
-                            <TableCell class="hidden md:table-cell"
-                                ><span class="whitespace-nowrap">
-                                    {{ dishData.created_at }}
-                                </span>
+                                    {{ ingredientData.allergen.name }}
+                                </div>
                             </TableCell>
                             <TableCell
-                                ><span class="whitespace-nowrap">
-                                    {{ dishData.updated_at }}
-                                </span>
+                                ><span class="whitespace-nowrap">{{
+                                    ingredientData.created_at
+                                }}</span></TableCell
+                            >
+                            <TableCell
+                                ><span class="whitespace-nowrap">{{
+                                    ingredientData.updated_at
+                                }}</span>
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
@@ -191,7 +167,9 @@ const closeConfirmModal = () => {
                                         <DropdownMenuItem>
                                             <a
                                                 :href="
-                                                    dish.edit(dishData.id).url
+                                                    ingredient.edit(
+                                                        ingredientData.id,
+                                                    ).url
                                                 "
                                                 class="flex gap-2"
                                             >
@@ -199,47 +177,27 @@ const closeConfirmModal = () => {
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            @click="openDishDetail(dishData)"
+                                            @click="
+                                                openIngredientDetailModal(
+                                                    ingredientData,
+                                                )
+                                            "
                                         >
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this dish?',
+                                                    'Are you sure you want to delete this ingredient?',
                                                     'destructive',
-                                                    () => deleteDish(dishData.id),
+                                                    () =>
+                                                        deleteIngredient(
+                                                            ingredientData.id,
+                                                        ),
                                                 )
                                             "
                                         >
                                             <TrashIcon /> Delete
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            v-if="
-                                                dishData.is_available ===
-                                                'Available'
-                                            "
-                                            @click="
-                                                openConfirmModal(
-                                                    'Are you sure you want to mark this dish as unavailable?',
-                                                    'info',
-                                                    () => toggleAvailability(dishData.id),
-                                                )
-                                            "
-                                        >
-                                            <CircleXIcon /> Unavailable
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            v-else
-                                            @click="
-                                                openConfirmModal(
-                                                    'Are you sure you want to mark this dish as available?',
-                                                    'info',
-                                                    () => toggleAvailability(dishData.id),
-                                                )
-                                            "
-                                        >
-                                            <CircleCheckBigIcon /> Available
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -248,10 +206,10 @@ const closeConfirmModal = () => {
                     </TableBody>
                 </Table>
 
-                <DishDetailModal
+                <IngredientDetailModal
                     :open="detailModalOpen"
-                    :selectedDish="selectedDish"
-                    :onClose="closeDishDetail"
+                    :selectedIngredient="selectedIngredient"
+                    :onClose="closeIngredientDetailModal"
                 />
 
                 <ConfirmModal

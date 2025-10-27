@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\AllergenCreateRequest;
-use App\Http\Requests\AllergenUpdateRequest;
-use App\Http\Resources\AllergenResource;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AllergenCreateRequest;
+use App\Http\Requests\Admin\AllergenUpdateRequest;
+use App\Http\Resources\Admin\AllergenResource;
 use App\Models\Allergen;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
@@ -25,7 +26,7 @@ class AllergenController extends Controller
             ->orderBy('name')
             ->paginate(10);
 
-        return Inertia::render('allergen/Index', [
+        return Inertia::render('admin/allergen/Index', [
             'allergens' => AllergenResource::collection($allergens),
         ]);
     }
@@ -40,7 +41,7 @@ class AllergenController extends Controller
             'label' => $ingredient->name,
         ]);
 
-        return Inertia::render('allergen/Create', [
+        return Inertia::render('admin/allergen/Create', [
             'ingredients' => $ingredients,
         ]);
     }
@@ -93,7 +94,7 @@ class AllergenController extends Controller
             'label' => $ingredient->name,
         ]);
 
-        return Inertia::render('allergen/Edit', [
+        return Inertia::render('admin/allergen/Edit', [
             'allergenToEdit' => $formattedAllergen,
             'ingredients' => $ingredients,
         ]);

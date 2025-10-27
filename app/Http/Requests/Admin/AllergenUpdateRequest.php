@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
-use App\Enums\DishCategoryEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
 
-class DishCreateRequest extends FormRequest
+class AllergenUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,9 +25,8 @@ class DishCreateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'category' => ['required', new Enum(DishCategoryEnum::class)],
-            'price' => ['required', 'numeric'],
-            'ingredients' => ['required', 'array', 'exists:ingredients,id'],
+            'ingredients' => ['nullable', 'array'],
+            'ingredients.*' => ['exists:ingredients,id'],
             'images' => ['nullable', 'array'],
         ];
     }
