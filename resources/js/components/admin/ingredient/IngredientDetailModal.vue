@@ -47,7 +47,7 @@ const startAutoSlide = () => {
     stopAutoSlide();
     if (
         props.selectedIngredient?.images?.length &&
-        props.selectedIngredient.images.length > 1
+        props.selectedIngredient?.images.length > 1
     ) {
         intervalId = window.setInterval(nextImage, 3000);
     }

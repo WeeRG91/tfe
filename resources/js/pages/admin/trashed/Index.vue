@@ -73,10 +73,14 @@ const forceDelete = (id: number, type: string, name: string) => {
     });
 };
 
-const getColorType = (type: string) => {
+type TrashedModelType = 'Allergen' | 'Dish' | 'Drink' | 'Ingredient';
+
+const getColorType = (type: TrashedModelType) => {
     switch (type) {
         case 'Dish':
             return 'bg-[#7F7EFF]';
+        case 'Drink':
+            return 'bg-[#256EFF]';
         case 'Ingredient':
             return 'bg-[#A390E4]';
         case 'Allergen':
@@ -189,6 +193,9 @@ const closeConfirmModal = () => {
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>
+                        </TableRow>
+                        <TableRow v-if="props.trashedItems.length === 0">
+                            <TableCell class="text-center text-gray-300" :colspan="4">No trashed item yet</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>

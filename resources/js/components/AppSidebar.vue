@@ -12,14 +12,24 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import allergen from '@/routes/allergen';
+import dish from '@/routes/dish';
+import ingredient from '@/routes/ingredient';
+import trashed from '@/routes/trashed';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Salad, Trash, Carrot, BeanOff } from 'lucide-vue-next';
+import {
+    BeanOff,
+    BookOpen,
+    Wine,
+    Carrot,
+    Folder,
+    LayoutGrid,
+    Salad,
+    Trash,
+} from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-import dish from '@/routes/dish';
-import trashed from '@/routes/trashed';
-import ingredient from '@/routes/ingredient';
-import allergen from '@/routes/allergen';
+import drink from '@/routes/drink';
 
 const mainNavItems: NavItem[] = [
     {
@@ -31,6 +41,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dishes',
         href: dish.index(),
         icon: Salad,
+    },
+    {
+        title: 'Drinks',
+        href: drink.index(),
+        icon: Wine,
     },
     {
         title: 'Ingredients',

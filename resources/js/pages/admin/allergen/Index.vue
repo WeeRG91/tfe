@@ -186,6 +186,9 @@ const closeConfirmModal = () => {
                                 </DropdownMenu>
                             </TableCell>
                         </TableRow>
+                        <TableRow v-if="props.allergens.data.length === 0">
+                            <TableCell class="text-center text-gray-300" :colspan="4">No allergen yet</TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
 

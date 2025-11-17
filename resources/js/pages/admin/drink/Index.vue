@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import DrinkDetailModal from '@/components/admin/drink/DrinkDetailModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import DishDetailModal from '@/components/admin/dish/DishDetailModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,9 +18,9 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import dish from '@/routes/dish';
+import drink from '@/routes/drink';
 import type { BreadcrumbItem, Paginated } from '@/types';
-import { DishType } from '@/types/dish';
+import { DrinkType } from '@/types/drink';
 import { Head, useForm } from '@inertiajs/vue3';
 import {
     CircleCheckBigIcon,
@@ -35,49 +35,51 @@ import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
-    dishes: Paginated<DishType>;
+    drinks: Paginated<DrinkType>;
 }>();
+
+console.log(props.drinks);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dishes',
-        href: dish.index().url,
+        title: 'Drinks',
+        href: drink.index().url,
     },
 ];
 
-const selectedDish = ref<DishType | null>(null);
+const selectedDrink = ref<DrinkType | null>(null);
 const detailModalOpen = ref<boolean>(false);
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
 
-const dishForm = useForm({});
+const drinkForm = useForm({});
 
-const deleteDish = (id: number) => {
-    dishForm.delete(dish.destroy(id).url, {
+const deleteDrink = (id: number) => {
+    drinkForm.delete(drink.destroy(id).url, {
         onSuccess: () => {
             closeConfirmModal();
-            toast.success('Dish successfully deleted.');
+            toast.success('Drink successfully deleted.');
         },
     });
 };
 
 const toggleAvailability = (id: number) => {
-    dishForm.patch(dish.available(id).url, {
+    drinkForm.patch(drink.available(id).url, {
         onSuccess: () => {
             closeConfirmModal();
-            toast.success('Dish availability updated successfully.');
+            toast.success('Drink availability updated successfully.');
         },
     });
 };
 
-const openDishDetailModal = (dish: DishType) => {
-    selectedDish.value = dish;
+const openDrinkDetailModal = (drink: DrinkType) => {
+    selectedDrink.value = drink;
     detailModalOpen.value = true;
 };
 
-const closeDishDetailModal = () => {
+const closeDrinkDetailModal = () => {
     detailModalOpen.value = false;
 };
 
@@ -98,7 +100,7 @@ const closeConfirmModal = () => {
 </script>
 
 <template>
-    <Head title="Dishes" />
+    <Head title="Drinks" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -108,7 +110,7 @@ const closeConfirmModal = () => {
                 class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
             >
                 <div class="m-2 flex cursor-pointer justify-end">
-                    <a :href="dish.create().url">
+                    <a :href="drink.create().url">
                         <Button
                             variant="outline"
                             class="cursor-pointer text-gray-500 hover:text-gray-700 dark:hover:text-gray-400"
@@ -136,48 +138,50 @@ const closeConfirmModal = () => {
                     </TableHeader>
                     <TableBody>
                         <TableRow
-                            v-for="dishData in props.dishes.data"
-                            :key="dishData.id"
-                            @dblclick="openDishDetailModal(dishData)"
+                            v-for="drinkData in props.drinks.data"
+                            :key="drinkData.id"
+                            @dblclick="openDrinkDetailModal(drinkData)"
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
-                                    :src="dishData.image"
-                                    :alt="dishData.name"
+                                    :src="drinkData.image"
+                                    :alt="drinkData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />
                                 <span class="whitespace-nowrap">
-                                    {{ dishData.name }}
+                                    {{ drinkData.name }}
                                 </span>
                             </TableCell>
                             <TableCell>
                                 <Badge
                                     class="text-white/80"
-                                    :class="dishData.category.color"
-                                    >{{ dishData.category.label }}</Badge
+                                    :class="drinkData.category.color"
+                                    >{{ drinkData.category.label }}</Badge
                                 >
                             </TableCell>
                             <TableCell class="hidden md:table-cell"
-                                >{{ dishData.price }} €</TableCell
+                                >{{ drinkData.price }} €</TableCell
                             >
                             <TableCell>
                                 <Badge
-                                    v-if="dishData.is_available === 'Available'"
+                                    v-if="
+                                        drinkData.is_available === 'Available'
+                                    "
                                     class="bg-green-500 text-white"
-                                    >{{ dishData.is_available }}</Badge
+                                    >{{ drinkData.is_available }}</Badge
                                 >
                                 <Badge v-else class="bg-red-500 text-white">
-                                    {{ dishData.is_available }}
+                                    {{ drinkData.is_available }}
                                 </Badge>
                             </TableCell>
                             <TableCell class="hidden md:table-cell"
                                 ><span class="whitespace-nowrap">
-                                    {{ dishData.created_at }}
+                                    {{ drinkData.created_at }}
                                 </span>
                             </TableCell>
                             <TableCell
                                 ><span class="whitespace-nowrap">
-                                    {{ dishData.updated_at }}
+                                    {{ drinkData.updated_at }}
                                 </span>
                             </TableCell>
                             <TableCell>
@@ -189,16 +193,14 @@ const closeConfirmModal = () => {
                                         <DropdownMenuItem>
                                             <a
                                                 :href="
-                                                    dish.edit(dishData.id).url
+                                                    drink.edit(drinkData.id).url
                                                 "
                                                 class="flex gap-2"
                                             >
                                                 <SquarePenIcon /> Edit
                                             </a>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            @click="openDishDetailModal(dishData)"
-                                        >
+                                        <DropdownMenuItem @click="openDrinkDetailModal(drinkData)">
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
@@ -206,7 +208,10 @@ const closeConfirmModal = () => {
                                                 openConfirmModal(
                                                     'Are you sure you want to delete this dish?',
                                                     'destructive',
-                                                    () => deleteDish(dishData.id),
+                                                    () =>
+                                                        deleteDrink(
+                                                            drinkData.id,
+                                                        ),
                                                 )
                                             "
                                         >
@@ -214,14 +219,17 @@ const closeConfirmModal = () => {
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
-                                                dishData.is_available ===
+                                                drinkData.is_available ===
                                                 'Available'
                                             "
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to mark this dish as unavailable?',
                                                     'info',
-                                                    () => toggleAvailability(dishData.id),
+                                                    () =>
+                                                        toggleAvailability(
+                                                            drinkData.id,
+                                                        ),
                                                 )
                                             "
                                         >
@@ -233,7 +241,10 @@ const closeConfirmModal = () => {
                                                 openConfirmModal(
                                                     'Are you sure you want to mark this dish as available?',
                                                     'info',
-                                                    () => toggleAvailability(dishData.id),
+                                                    () =>
+                                                        toggleAvailability(
+                                                            drinkData.id,
+                                                        ),
                                                 )
                                             "
                                         >
@@ -243,16 +254,20 @@ const closeConfirmModal = () => {
                                 </DropdownMenu>
                             </TableCell>
                         </TableRow>
-                        <TableRow v-if="props.dishes.data.length === 0">
-                            <TableCell class="text-center text-gray-300" :colspan="7">No dish yet</TableCell>
+                        <TableRow v-if="props.drinks.data.length === 0">
+                            <TableCell
+                                class="text-center text-gray-300"
+                                :colspan="7"
+                                >No drink yet</TableCell
+                            >
                         </TableRow>
                     </TableBody>
                 </Table>
 
-                <DishDetailModal
+                <DrinkDetailModal
                     :open="detailModalOpen"
-                    :selectedDish="selectedDish"
-                    :onClose="closeDishDetailModal"
+                    :selectedDrink="selectedDrink"
+                    :onClose="closeDrinkDetailModal"
                 />
 
                 <ConfirmModal

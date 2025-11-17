@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Allergen;
 use App\Models\Dish;
+use App\Models\Drink;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -45,6 +46,7 @@ class TrashedController extends Controller
             ...$this->getTrashedItems(Dish::class, 'Dish'),
             ...$this->getTrashedItems(Ingredient::class, 'Ingredient'),
             ...$this->getTrashedItems(Allergen::class, 'Allergen'),
+            ...$this->getTrashedItems(Drink::class, 'Drink'),
         ])->sortByDesc('deleted_at')->values();
 
         return Inertia::render('admin/trashed/Index', [
@@ -60,13 +62,14 @@ class TrashedController extends Controller
     {
         $request->validate([
             'id' => 'required|integer',
-            'type' => 'required|string|in:Dish,Ingredient,Allergen',
+            'type' => 'required|string|in:Dish,Ingredient,Allergen,Drink',
         ]);
 
         $modelClass = match ($request->type) {
             'Dish' => Dish::class,
             'Ingredient' => Ingredient::class,
             'Allergen' => Allergen::class,
+            'Drink' => Drink::class,
         };
 
         $item = $modelClass::onlyTrashed()->find($request->id);
@@ -88,13 +91,14 @@ class TrashedController extends Controller
     {
         $request->validate([
             'id' => 'required|integer',
-            'type' => 'required|string|in:Dish,Ingredient,Allergen',
+            'type' => 'required|string|in:Dish,Ingredient,Allergen,Drink',
         ]);
 
         $modelClass = match ($request->type) {
             'Dish' => Dish::class,
             'Ingredient' => Ingredient::class,
             'Allergen' => Allergen::class,
+            'Drink' => Drink::class,
         };
 
         $item = $modelClass::onlyTrashed()->find($request->id);

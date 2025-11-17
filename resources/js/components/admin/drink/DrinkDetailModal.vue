@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { DrinkType } from '@/types/drink';
 import {
     Dialog,
     DialogContent,
@@ -8,34 +7,35 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import dish from '@/routes/dish';
-import { DishType } from '@/types/dish';
-import { SquarePenIcon, X } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { Badge } from '@/components/ui/badge';
+import { SquarePenIcon, X } from 'lucide-vue-next';
+import { Button } from '@/components/ui/button';
+import drink from '@/routes/drink';
 
 const props = defineProps<{
     open: boolean;
     onClose?: () => void;
-    selectedDish: DishType | null;
+    selectedDrink: DrinkType | null;
 }>();
 
 const currentIndex = ref(0);
 
 const nextImage = () => {
-    if (!props.selectedDish?.images?.length) return;
+    if (!props.selectedDrink?.images?.length) return;
     currentIndex.value =
-        (currentIndex.value + 1) % props.selectedDish.images.length;
+        (currentIndex.value + 1) % props.selectedDrink.images.length;
 };
 
 const prevImage = () => {
-    if (!props.selectedDish?.images?.length) return;
+    if (!props.selectedDrink?.images?.length) return;
     currentIndex.value =
-        (currentIndex.value - 1 + props.selectedDish.images.length) %
-        props.selectedDish.images.length;
+        (currentIndex.value - 1 + props.selectedDrink.images.length) %
+        props.selectedDrink.images.length;
 };
 
 watch(
-    () => props.selectedDish,
+    () => props.selectedDrink,
     () => {
         currentIndex.value = 0;
         startAutoSlide();
@@ -47,8 +47,8 @@ let intervalId: number | null = null;
 const startAutoSlide = () => {
     stopAutoSlide();
     if (
-        props.selectedDish?.images?.length &&
-        props.selectedDish?.images.length > 1
+        props.selectedDrink?.images?.length &&
+        props.selectedDrink?.images.length > 1
     ) {
         intervalId = window.setInterval(nextImage, 3000);
     }
@@ -79,11 +79,11 @@ onBeforeUnmount(() => {
                     class="relative w-full overflow-hidden rounded-lg md:w-1/2"
                 >
                     <div
-                        v-if="props.selectedDish?.images?.length"
+                        v-if="props.selectedDrink?.images?.length"
                         class="relative"
                     >
                         <img
-                            v-for="(img, index) in props.selectedDish.images"
+                            v-for="(img, index) in props.selectedDrink.images"
                             :key="index"
                             :src="img.path"
                             alt=""
@@ -95,14 +95,14 @@ onBeforeUnmount(() => {
                             }"
                         />
                         <button
-                            v-if="props.selectedDish?.images?.length > 1"
+                            v-if="props.selectedDrink?.images?.length > 1"
                             class="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-white/70 p-1"
                             @click="prevImage"
                         >
                             ‹
                         </button>
                         <button
-                            v-if="props.selectedDish?.images?.length > 1"
+                            v-if="props.selectedDrink?.images?.length > 1"
                             class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-white/70 p-1"
                             @click="nextImage"
                         >
@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
 
                     <div v-else>
                         <img
-                            :src="props.selectedDish?.image"
+                            :src="props.selectedDrink?.image"
                             alt=""
                             class="h-full w-full rounded-lg object-cover"
                         />
@@ -123,64 +123,28 @@ onBeforeUnmount(() => {
                 <div class="flex w-full flex-col gap-2 md:w-1/2">
                     <DialogHeader>
                         <DialogTitle class="flex flex-col gap-3">
-                            <span>{{ props.selectedDish?.name }}</span>
-                            <Badge :class="props.selectedDish?.category.color">
-                                {{ props.selectedDish?.category.label }}
+                            <span>{{ props.selectedDrink?.name }}</span>
+                            <Badge :class="props.selectedDrink?.category.color">
+                                {{ props.selectedDrink?.category.label }}
                             </Badge>
                         </DialogTitle>
                         <DialogDescription>
-                            {{ props.selectedDish?.description }}
+                            {{ props.selectedDrink?.description }}
                         </DialogDescription>
                     </DialogHeader>
-                    <div>
-                        <span class="font-semibold">Ingredients:</span>
-                        <ul class="list-inside list-disc text-sm">
-                            <li
-                                v-for="(ingredient, index) in props.selectedDish
-                                    ?.ingredients"
-                                :key="index"
-                            >
-                                {{ ingredient.name }}
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="mt-2 flex items-center gap-1">
-                        <div
-                            v-for="(ingredient, index) in props.selectedDish?.ingredients"
-                            :key="index"
-                            class="relative flex items-center"
-                        >
-                            <div class="group relative">
-                                <img
-                                    v-if="ingredient.allergen?.image"
-                                    :src="ingredient.allergen.image"
-                                    :alt="ingredient.allergen.name"
-                                    class="h-6 w-6 object-cover cursor-pointer"
-                                />
-
-                                <div
-                                    v-if="ingredient.allergen?.name"
-                                    class="pointer-events-none absolute left-1/2 bottom-full -translate-x-1/2 mb-1 rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50 whitespace-nowrap shadow-lg"
-                                >
-                                    {{ ingredient.allergen.name }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="mt-2 flex items-center justify-between">
                         <span class="text-lg font-semibold"
-                            >{{ props.selectedDish?.price }} €</span
+                            >{{ props.selectedDrink?.price }} €</span
                         >
                         <Badge
                             :class="
-                                props.selectedDish?.is_available === 'Available'
+                                props.selectedDrink?.is_available === 'Available'
                                     ? 'bg-green-500 text-white'
                                     : 'bg-red-500 text-white'
                             "
                         >
-                            {{ props.selectedDish?.is_available }}
+                            {{ props.selectedDrink?.is_available }}
                         </Badge>
                     </div>
                 </div>
@@ -188,19 +152,17 @@ onBeforeUnmount(() => {
 
             <div class="mt-4 flex justify-end gap-2">
                 <Button variant="outline" @click="props.onClose"
-                ><X /> Close</Button
+                    ><X /> Close</Button
                 >
                 <Button
-                ><a
-                    :href="dish.edit(props.selectedDish?.id!).url"
-                    class="flex gap-2"
-                >
-                    <SquarePenIcon /> Edit
-                </a></Button
+                    ><a
+                        :href="drink.edit(props.selectedDrink?.id!).url"
+                        class="flex gap-2"
+                    >
+                        <SquarePenIcon /> Edit
+                    </a></Button
                 >
             </div>
         </DialogContent>
     </Dialog>
 </template>
-
-<style scoped></style>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AllergenController;
 use App\Http\Controllers\Admin\DishController;
+use App\Http\Controllers\Admin\DrinkController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\TrashedController;
@@ -25,6 +26,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{dish}', 'update')->name('update');
         Route::delete('/{dish}', 'destroy')->name('destroy');
         Route::patch('/{dish}/available', 'available')->name('available');
+    });
+
+    Route::controller(DrinkController::class)->prefix('drinks')->name('drink.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{drink}/edit', 'edit')->name('edit');
+        Route::post('/{drink}', 'update')->name('update');
+        Route::delete('/{drink}', 'destroy')->name('destroy');
+        Route::patch('/{drink}/available', 'available')->name('available');
     });
 
     Route::controller(IngredientController::class)->prefix('ingredients')->name('ingredient.')->group(function () {

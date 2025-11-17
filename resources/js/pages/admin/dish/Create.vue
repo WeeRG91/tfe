@@ -38,9 +38,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const selectedIngredients = ref<number[]>([]);
 const selectedCategory = ref<number | null>(null);
-const name = ref('');
-const description = ref('');
-const price = ref(null);
+const name = ref<string>('');
+const description = ref<string>('');
+const price = ref<number | null>(null);
 const imageFile = ref<File[]>([]);
 
 const dishForm = useForm({

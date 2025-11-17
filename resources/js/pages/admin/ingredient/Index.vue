@@ -203,6 +203,9 @@ const closeConfirmModal = () => {
                                 </DropdownMenu>
                             </TableCell>
                         </TableRow>
+                        <TableRow v-if="props.ingredients.data.length === 0">
+                            <TableCell class="text-center text-gray-300" :colspan="5">No ingredient yet</TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
 
