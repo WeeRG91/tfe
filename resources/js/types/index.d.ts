@@ -42,7 +42,7 @@ export type Paginated<T> = {
     data: T[];
     links: Links;
     meta: Meta;
-}
+};
 
 export type Meta = {
     current_page: number;
@@ -53,18 +53,18 @@ export type Meta = {
     per_page: number;
     to: number;
     total: number;
-}
+};
 
 export type Links = {
     first: string;
     last: string;
     next: string;
     prev: string;
-}
+};
 
 export type Link = {
     active: boolean;
     label: string;
     page: number;
     url: string;
-}
+};

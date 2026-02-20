@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\DishCategoryEnum;
+use App\Actions\Admin\Dish\Commands\CreateDish;
+use App\Actions\Admin\Dish\Commands\DeleteDish;
+use App\Actions\Admin\Dish\Commands\ToggleDishAvailability;
+use App\Actions\Admin\Dish\Commands\updateDish;
+use App\Actions\Admin\Dish\Queries\GetDishForEdit;
+use App\Actions\Admin\Dish\Queries\GetDishFormData;
+use App\Actions\Admin\Dish\Queries\GetPaginatedDishes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DishCreateRequest;
 use App\Http\Requests\Admin\DishUpdateRequest;
 use App\Http\Resources\Admin\DishResource;
 use App\Models\Dish;
-use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
+use Throwable;
 
 class DishController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(GetPaginatedDishes $query): InertiaResponse
     {
-        $dishes = Dish::query()
-            ->with(['ingredients.allergen.images', 'images'])
-            ->where('deleted_at', null)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $dishes = $query->execute();
 
         return Inertia::render('admin/dish/Index', [
             'dishes' => DishResource::collection($dishes),
@@ -34,98 +36,90 @@ class DishController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(GetDishFormData $query): InertiaResponse
     {
-        $ingredients = Ingredient::all()->map(fn($ingredient) => [
-            'value' => $ingredient->id,
-            'label' => $ingredient->name,
-        ]);
-        return Inertia::render('admin/dish/Create', [
-            'ingredients' => $ingredients,
-            'categories' => DishCategoryEnum::getCategories(),
-        ]);
+        return Inertia::render('admin/dish/Create', $query->execute());
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(DishCreateRequest $request)
+    public function store(DishCreateRequest $request, CreateDish $command): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $command->execute($request->validated(), $request->ingredients);
 
-        $dish = Dish::query()->create($validated);
-        $dish->ingredients()->sync($request->ingredients);
-        $dish->uploadImage();
+            return redirect()
+                ->route('dish.index')
+                ->with('success', 'Dish created successfully.');
+        } catch (Throwable $e) {
+            report($e);
 
-        return redirect()->route('dish.index')->with('success', 'Dish created successfully.');
+            return back()
+                ->withErrors('error', 'Something went wrong while creating the dish.');
+        }
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Dish $dish)
+    public function edit(Dish $dish, GetDishForEdit $query, GetDishFormData $formData): InertiaResponse
     {
-        $dish->load(['ingredients', 'images']);
-        $formattedDish = [
-            'id' => $dish->id,
-            'name' => $dish->name,
-            'category' => $dish->category,
-            'description' => $dish->description,
-            'price' => $dish->price,
-            'ingredients' => $dish->ingredients->map(fn($ingredient) => [
-                'id' => $ingredient->id,
-            ]),
-            'images' => $dish->images->map(fn($image) => [
-                'id' => $image->id,
-                'path' => Storage::disk('public')->url($image->path),
-            ]),
-        ];
-
-        $ingredients = Ingredient::all()->map(fn($ingredient) => [
-            'value' => $ingredient->id,
-            'label' => $ingredient->name,
-        ]);
-
         return Inertia::render('admin/dish/Edit', [
-            'dishToEdit' => $formattedDish,
-            'ingredients' => $ingredients,
-            'categories' => DishCategoryEnum::getCategories(),
+            'dishToEdit' => $query->execute($dish),
+            ...$formData->execute(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(DishUpdateRequest $request, Dish $dish)
+    public function update(DishUpdateRequest $request, Dish $dish, UpdateDish $command): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $command->execute($dish, $request->validated(), $request->ingredients);
 
-        $dish->update($validated);
-        $dish->ingredients()->sync($request->ingredients);
-        $dish->uploadImage();
+            return redirect()
+                ->route('dish.index')
+                ->with('success', 'Dish updated successfully.');
+        } catch (Throwable $e) {
+            report($e);
 
-        return redirect()->route('dish.index')->with('success', 'Dish updated successfully.');
+            return back()
+                ->withErrors('error', 'Something went wrong while updating the dish.');
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Dish $dish)
+    public function destroy(Dish $dish, DeleteDish $command): RedirectResponse
     {
-        $dish->delete();
+        try {
+            $command->execute($dish);
 
-        return redirect()->route('dish.index')->with('success', 'Dish deleted successfully.');
+            return redirect()
+                ->route('dish.index')
+                ->with('success', 'Dish deleted successfully.');
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withErrors('error', 'Something went wrong while deleting the dish.');
+        }
     }
 
     /**
      * @param Dish $dish
+     * @param ToggleDishAvailability $command
      * @return RedirectResponse
      */
-    public function available(Dish $dish)
+    public function available(Dish $dish, ToggleDishAvailability $command): RedirectResponse
     {
-        $dish->is_available = !$dish->is_available;
-        $dish->save();
+        $command->execute($dish);
 
-        return redirect()->route('dish.index')->with('success', 'Dish available successfully.');
+        return redirect()
+            ->route('dish.index')
+            ->with('success', 'Dish available successfully.');
     }
 }
