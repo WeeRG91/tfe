@@ -47,7 +47,11 @@ class DishController extends Controller
     public function store(DishCreateRequest $request, CreateDish $command): RedirectResponse
     {
         try {
-            $command->execute($request->validated(), $request->ingredients);
+            $command->execute(
+                $request->validated(),
+                $request->file('images'),
+                $request->ingredients
+            );
 
             return redirect()
                 ->route('dish.index')
@@ -77,7 +81,12 @@ class DishController extends Controller
     public function update(DishUpdateRequest $request, Dish $dish, UpdateDish $command): RedirectResponse
     {
         try {
-            $command->execute($dish, $request->validated(), $request->ingredients);
+            $command->execute(
+                $dish,
+                $request->validated(),
+                $request->file('images'),
+                $request->ingredients
+            );
 
             return redirect()
                 ->route('dish.index')

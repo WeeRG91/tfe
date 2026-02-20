@@ -157,7 +157,7 @@ const closeConfirmModal = () => {
                                     >{{ dishData.category.label }}</Badge
                                 >
                             </TableCell>
-                            <TableCell class="hidden md:table-cell"
+                            <TableCell class="hidden md:table-cell text-nowrap"
                                 >{{ dishData.price }} €</TableCell
                             >
                             <TableCell>
