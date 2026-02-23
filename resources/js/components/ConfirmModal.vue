@@ -2,13 +2,13 @@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-export type Type = 'destructive' | 'info';
+export type ModalType = 'destructive' | 'info';
 
 const props = defineProps<{
     open: boolean;
     onClose: () => void;
     message: string;
-    type: Type;
+    type: ModalType;
 }>();
 
 const emit = defineEmits<{(e: "confirm"): void}>();

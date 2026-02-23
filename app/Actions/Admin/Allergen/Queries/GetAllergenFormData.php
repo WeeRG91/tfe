@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Actions\Admin\Allergen\Queries;
+
+use App\Models\Ingredient;
+
+class GetAllergenFormData
+{
+    /**
+     * @return array
+     */
+    public function execute(): array
+    {
+        return [
+            'ingredients' => Ingredient::all()->map(fn ($ingredient) => [
+                'value' => $ingredient->id,
+                'label' => $ingredient->name,
+            ])
+        ];
+    }
+}

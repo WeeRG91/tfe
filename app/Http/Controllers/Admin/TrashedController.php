@@ -7,6 +7,7 @@ use App\Models\Allergen;
 use App\Models\Dish;
 use App\Models\Drink;
 use App\Models\Ingredient;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -22,7 +23,8 @@ class TrashedController extends Controller
      */
     private function getTrashedItems(string $model, string $type)
     {
-        return $model::onlyTrashed()
+        /** @var Model $model */
+        return $model::query()->onlyTrashed()
             ->with('images')
             ->get()
             ->map(fn($item) => [

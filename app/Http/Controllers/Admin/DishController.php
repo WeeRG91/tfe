@@ -54,13 +54,12 @@ class DishController extends Controller
             );
 
             return redirect()
-                ->route('dish.index')
-                ->with('success', 'Dish created successfully.');
+                ->route('dish.index');
         } catch (Throwable $e) {
             report($e);
 
             return back()
-                ->withErrors('error', 'Something went wrong while creating the dish.');
+                ->withErrors(['message' => 'Something went wrong while creating the dish']);
         }
     }
 
@@ -89,13 +88,12 @@ class DishController extends Controller
             );
 
             return redirect()
-                ->route('dish.index')
-                ->with('success', 'Dish updated successfully.');
+                ->route('dish.index');
         } catch (Throwable $e) {
             report($e);
 
             return back()
-                ->withErrors('error', 'Something went wrong while updating the dish.');
+                ->withErrors(['message' => 'Something went wrong while updating the dish']);
         }
     }
 
@@ -108,13 +106,12 @@ class DishController extends Controller
             $command->execute($dish);
 
             return redirect()
-                ->route('dish.index')
-                ->with('success', 'Dish deleted successfully.');
+                ->route('dish.index');
         } catch (Throwable $e) {
             report($e);
 
             return back()
-                ->withErrors('error', 'Something went wrong while deleting the dish.');
+                ->withErrors(['message' => 'Something went wrong while deleting the dish']);
         }
     }
 
@@ -128,7 +125,6 @@ class DishController extends Controller
         $command->execute($dish);
 
         return redirect()
-            ->route('dish.index')
-            ->with('success', 'Dish available successfully.');
+            ->route('dish.index');
     }
 }

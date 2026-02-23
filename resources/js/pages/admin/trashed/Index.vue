@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ConfirmModal from '@/components/ConfirmModal.vue';
+import ConfirmModal, { ModalType } from '@/components/ConfirmModal.vue';
 import { Badge } from '@/components/ui/badge';
 import {
     DropdownMenu,
@@ -18,7 +18,7 @@ import {
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import trashed from '@/routes/trashed';
 import type { BreadcrumbItem } from '@/types';
-import { TrashedType } from '@/types/trashed';
+import { TrashedModelType, TrashedType } from '@/types/trashed';
 import { Head, useForm } from '@inertiajs/vue3';
 import {
     EllipsisVerticalIcon,
@@ -41,15 +41,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
-const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalType = ref<ModalType>('info');
 const confirmModalAction = ref<() => void>(() => {});
 
 const trashedForm = useForm({
     id: null as number | null | undefined,
-    type: '',
+    type: '' as TrashedModelType,
 });
 
-const restoreTrashed = (id: number, type: string, name: string) => {
+const restoreTrashed = (id: number, type: TrashedModelType, name: string) => {
     trashedForm.id = id;
     trashedForm.type = type;
 
@@ -61,7 +61,7 @@ const restoreTrashed = (id: number, type: string, name: string) => {
     });
 };
 
-const forceDelete = (id: number, type: string, name: string) => {
+const forceDelete = (id: number, type: TrashedModelType, name: string) => {
     trashedForm.id = id;
     trashedForm.type = type;
 
@@ -72,8 +72,6 @@ const forceDelete = (id: number, type: string, name: string) => {
         },
     });
 };
-
-type TrashedModelType = 'Allergen' | 'Dish' | 'Drink' | 'Ingredient';
 
 const getColorType = (type: TrashedModelType) => {
     switch (type) {
@@ -92,7 +90,7 @@ const getColorType = (type: TrashedModelType) => {
 
 const openConfirmModal = (
     message: string,
-    type: 'destructive' | 'info',
+    type: ModalType,
     action: () => void,
 ) => {
     confirmModalMessage.value = message;
@@ -143,7 +141,11 @@ const closeConfirmModal = () => {
                             <TableCell>
                                 <Badge
                                     class="text-white/80"
-                                    :class="getColorType(trashedData.type)"
+                                    :class="
+                                        getColorType(
+                                            trashedData.type,
+                                        )
+                                    "
                                     >{{ trashedData.type }}</Badge
                                 >
                             </TableCell>
@@ -195,7 +197,11 @@ const closeConfirmModal = () => {
                             </TableCell>
                         </TableRow>
                         <TableRow v-if="props.trashedItems.length === 0">
-                            <TableCell class="text-center text-gray-300" :colspan="4">No trashed item yet</TableCell>
+                            <TableCell
+                                class="text-center text-gray-300"
+                                :colspan="4"
+                                >No trashed item yet</TableCell
+                            >
                         </TableRow>
                     </TableBody>
                 </Table>

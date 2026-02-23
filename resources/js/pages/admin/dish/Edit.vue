@@ -65,6 +65,9 @@ const submit = () => {
             dishForm.reset();
             toast.success('Dish successfully edited.');
         },
+        onError: (error) => {
+            toast.error(error.message);
+        }
     });
 };
 </script>

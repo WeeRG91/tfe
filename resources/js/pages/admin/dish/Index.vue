@@ -60,6 +60,9 @@ const deleteDish = (id: number) => {
             closeConfirmModal();
             toast.success('Dish successfully deleted.');
         },
+        onError: (error) => {
+            toast.error(error.message);
+        }
     });
 };
 
@@ -69,6 +72,9 @@ const toggleAvailability = (id: number) => {
             closeConfirmModal();
             toast.success('Dish availability updated successfully.');
         },
+        onError: (error) => {
+            toast.error(error.message);
+        }
     });
 };
 

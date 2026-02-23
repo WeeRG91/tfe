@@ -2,112 +2,132 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Ingredient\Commands\CreateIngredient;
+use App\Actions\Admin\Ingredient\Commands\DeleteIngredient;
+use App\Actions\Admin\Ingredient\Commands\UpdateIngredient;
+use App\Actions\Admin\Ingredient\Queries\GetIngredientForEdit;
+use App\Actions\Admin\Ingredient\Queries\GetIngredientFormData;
+use App\Actions\Admin\Ingredient\Queries\GetPaginatedIngredients;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\IngredientCreateRequest;
 use App\Http\Requests\Admin\IngredientUpdateRequest;
 use App\Http\Resources\Admin\IngredientResource;
-use App\Models\Allergen;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class IngredientController extends Controller
 {
     /**
+     * @param GetPaginatedIngredients $query
      * @return Response
      */
-    public function index()
+    public function index(GetPaginatedIngredients $query): Response
     {
-        $ingredients = Ingredient::query()
-            ->with(['allergen', 'images'])
-            ->where('deleted_at', null)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-
         return Inertia::render('admin/ingredient/Index', [
-            'ingredients' => IngredientResource::collection($ingredients),
+            'ingredients' => $query->execute(),
         ]);
     }
 
     /**
+     * @param GetIngredientFormData $query
      * @return Response
      */
-    public function create()
+    public function create(GetIngredientFormData $query): Response
     {
-        $allergens = Allergen::all()->map(fn($allergen) => [
-            'value' => $allergen->id,
-            'label' => $allergen->name,
-        ]);
-
-        return Inertia::render('admin/ingredient/Create', [
-            'allergens' => $allergens,
-        ]);
+        return Inertia::render('admin/ingredient/Create', $query->execute());
     }
 
     /**
      * @param IngredientCreateRequest $request
+     * @param CreateIngredient $command
      * @return RedirectResponse
      */
-    public function store(IngredientCreateRequest $request)
+    public function store(
+        IngredientCreateRequest $request,
+        CreateIngredient $command
+    ): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $command->execute(
+                $request->validated(),
+                $request->file('images') ?? []
+            );
 
-        $ingredient = Ingredient::query()->create($validated);
-        $ingredient->uploadImage();
+            return redirect()
+                ->route('ingredient.index');
+        } catch (Throwable $e) {
+            report($e);
 
-        return redirect()->route('ingredient.index')->with('success', 'Ingredient created successfully.');
+            return back()
+                ->withErrors(['message' => 'Something went wrong while creating the ingredient']);
+        }
     }
 
     /**
      * @param Ingredient $ingredient
+     * @param GetIngredientFormData $formData
+     * @param GetIngredientForEdit $query
      * @return Response
      */
-    public function edit(Ingredient $ingredient)
+    public function edit(
+        Ingredient $ingredient,
+        GetIngredientFormData $formData,
+        GetIngredientForEdit $query
+    ): Response
     {
-        $ingredient->load('allergen');
-        $formattedIngredient = [
-            'id' => $ingredient->id,
-            'name' => $ingredient->name,
-            'description' => $ingredient->description,
-            'allergen' => $ingredient->allergen->id ?? null,
-            'images' => $ingredient->images->map(fn($image) => [
-                'id' => $image->id,
-                'path' => Storage::disk('public')->url($image->path),
-            ]),
-        ];
-
-        $allergens = Allergen::all()->map(fn($allergen) => [
-            'value' => $allergen->id,
-            'label' => $allergen->name,
-        ]);
-
         return Inertia::render('admin/ingredient/Edit', [
-            'ingredientToEdit' => $formattedIngredient,
-            'allergens' => $allergens,
+            'ingredientToEdit' => $query->execute($ingredient),
+            ...$formData->execute(),
         ]);
     }
 
     /**
      * @param IngredientUpdateRequest $request
      * @param Ingredient $ingredient
+     * @param UpdateIngredient $command
      * @return RedirectResponse
      */
-    public function update(IngredientUpdateRequest $request, Ingredient $ingredient)
+    public function update(
+        IngredientUpdateRequest $request,
+        Ingredient $ingredient,
+        UpdateIngredient $command
+    ): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $command->execute(
+                $ingredient,
+                $request->validated(),
+                $request->file('images') ?? []
+            );
 
-        $ingredient->update($validated);
-        $ingredient->uploadImage();
+            return redirect()
+                ->route('ingredient.index');
+        } catch (Throwable $e) {
+            report($e);
 
-        return redirect()->route('ingredient.index')->with('success', 'Ingredient updated successfully.');
+            return back()
+                ->withErrors(['message' => 'Something went wrong while updating the ingredient']);
+        }
     }
 
-    public function destroy(Ingredient $ingredient)
+    public function destroy(
+        Ingredient $ingredient,
+        DeleteIngredient $command
+    ): RedirectResponse
     {
-        $ingredient->delete();
+        try {
+            $command->execute($ingredient);
 
-        return redirect()->route('ingredient.index')->with('success', 'Ingredient deleted successfully.');
+            return redirect()
+                ->route('ingredient.index');
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withErrors(['message' => 'Something went wrong while deleting the ingredient']);
+        }
     }
 }

@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Allergen\Commands\CreateAllergen;
+use App\Actions\Admin\Allergen\Commands\DeleteAllergen;
+use App\Actions\Admin\Allergen\Commands\UpdateAllergen;
+use App\Actions\Admin\Allergen\Queries\GetAllergenForEdit;
+use App\Actions\Admin\Allergen\Queries\GetAllergenFormData;
+use App\Actions\Admin\Allergen\Queries\GetPaginatedAllergens;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AllergenCreateRequest;
 use App\Http\Requests\Admin\AllergenUpdateRequest;
@@ -12,127 +18,120 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class AllergenController extends Controller
 {
     /**
+     * @param GetPaginatedAllergens $query
      * @return Response
      */
-    public function index()
+    public function index(GetPaginatedAllergens $query): Response
     {
-        $allergens = Allergen::query()
-            ->with(['ingredients', 'images'])
-            ->where('deleted_at', null)
-            ->orderBy('name')
-            ->paginate(10);
-
         return Inertia::render('admin/allergen/Index', [
-            'allergens' => AllergenResource::collection($allergens),
+            'allergens' => $query->execute(),
         ]);
     }
 
     /**
+     * @param GetAllergenFormData $query
      * @return Response
      */
-    public function create()
+    public function create(GetAllergenFormData $query): Response
     {
-        $ingredients = Ingredient::all()->map(fn($ingredient) => [
-            'value' => $ingredient->id,
-            'label' => $ingredient->name,
-        ]);
-
-        return Inertia::render('admin/allergen/Create', [
-            'ingredients' => $ingredients,
-        ]);
+        return Inertia::render('admin/allergen/Create', $query->execute());
     }
 
     /**
      * @param AllergenCreateRequest $request
+     * @param CreateAllergen $command
      * @return RedirectResponse
      */
-    public function store(AllergenCreateRequest $request)
+    public function store(
+        AllergenCreateRequest $request,
+        CreateAllergen $command
+    ): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $command->execute(
+                $request->validated(),
+                $request->file('images')
+            );
 
-        $allergen = Allergen::query()->create([
-            'name' => $validated['name'],
-            'description' => $validated['description'],
-        ]);
-        $allergen->uploadImage();
+            return redirect()
+                ->route('allergen.index');
+        } catch (Throwable $e) {
+            report($e);
 
-        if (!empty($validated['ingredients'])) {
-            Ingredient::query()
-                ->whereIn('id', $validated['ingredients'])
-                ->update(['allergen_id' => $allergen->id]);
+            return back()
+                ->withErrors(['message' => 'Something went wrong while creating the allergen']);
         }
-
-        return redirect()->route('allergen.index')->with('success', 'Allergen successfully created.');
     }
 
     /**
      * @param Allergen $allergen
+     * @param GetAllergenForEdit $query
+     * @param GetAllergenFormData $formData
      * @return Response
      */
-    public function edit(Allergen $allergen)
+    public function edit(
+        Allergen $allergen,
+        GetAllergenForEdit $query,
+        GetAllergenFormData $formData
+    ): Response
     {
-        $allergen->load(['ingredients', 'images']);
-        $formattedAllergen = [
-            'id' => $allergen->id,
-            'name' => $allergen->name,
-            'description' => $allergen->description,
-            'ingredients' => $allergen->ingredients->map(fn($ingredient) => [
-                'id' => $ingredient->id,
-            ]),
-            'images' => $allergen->images->map(fn($image) => [
-                'id' => $image->id,
-                'path' => Storage::disk('public')->url($image->path),
-            ]),
-        ];
-
-        $ingredients = Ingredient::all()->map(fn($ingredient) => [
-            'value' => $ingredient->id,
-            'label' => $ingredient->name,
-        ]);
-
         return Inertia::render('admin/allergen/Edit', [
-            'allergenToEdit' => $formattedAllergen,
-            'ingredients' => $ingredients,
+            'allergenToEdit' => $query->execute($allergen),
+            ...$formData->execute(),
         ]);
     }
 
     /**
      * @param AllergenUpdateRequest $request
      * @param Allergen $allergen
+     * @param UpdateAllergen $command
      * @return RedirectResponse
      */
-    public function update(AllergenUpdateRequest $request, Allergen $allergen)
+    public function update(
+        AllergenUpdateRequest $request,
+        Allergen $allergen,
+        UpdateAllergen $command
+    ): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $command->execute(
+                $allergen,
+                $request->validated(),
+                $request->file('images') ?? []
+            );
 
-        $allergen->update([
-            'name' => $validated['name'],
-            'description' => $validated['description'],
-        ]);
-        $allergen->uploadImage();
+            return redirect()
+                ->route('allergen.index');
+        } catch (Throwable $e) {
+            report($e);
 
-        Ingredient::query()->where('allergen_id', $allergen->id)->update(['allergen_id' => null]);
-
-        if (!empty($validated['ingredients'])) {
-            Ingredient::query()->whereIn('id', $validated['ingredients'])
-                ->update(['allergen_id' => $allergen->id]);
+            return back()
+                ->withErrors(['message' => 'Something went wrong while updating the allergen']);
         }
-
-        return redirect()->route('allergen.index')->with('success', 'Allergen successfully updated.');
     }
 
     /**
      * @param Allergen $allergen
+     * @param DeleteAllergen $command
      * @return RedirectResponse
      */
-    public function destroy(Allergen $allergen)
+    public function destroy(Allergen $allergen, DeleteAllergen $command): RedirectResponse
     {
-        $allergen->delete();
+        try {
+            $command->execute($allergen);
 
-        return redirect()->route('allergen.index')->with('success', 'Allergen successfully deleted.');
+            return redirect()
+                ->route('allergen.index');
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withErrors(['message' => 'Something went wrong while deleting the allergen']);
+        }
     }
 }

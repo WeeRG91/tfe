@@ -2,114 +2,130 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Drink\Commands\CreateDrink;
+use App\Actions\Admin\Drink\Commands\DeleteDrink;
+use App\Actions\Admin\Drink\Commands\ToggleDrinkAvailability;
+use App\Actions\Admin\Drink\Commands\UpdateDrink;
+use App\Actions\Admin\Drink\Queries\GetDrinkForEdit;
+use App\Actions\Admin\Drink\Queries\GetDrinkFormData;
+use App\Actions\Admin\Drink\Queries\GetPaginatedDrinks;
 use App\Enums\DrinkCategoryEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DrinkCreateRequest;
 use App\Http\Requests\Admin\DrinkUpdateRequest;
-use App\Http\Resources\Admin\DrinkResource;
 use App\Models\Drink;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use function Termwind\render;
+use Inertia\Response;
+use Throwable;
 
 class DrinkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(GetPaginatedDrinks $query): Response
     {
-        $drinks = Drink::query()
-            ->with(['images'])
-            ->where('deleted_at', null)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-
         return Inertia::render('admin/drink/Index', [
-            'drinks' => DrinkResource::collection($drinks),
+            'drinks' => $query->execute(),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(GetDrinkFormData $query): Response
     {
-        return Inertia::render('admin/drink/Create', [
-            'categories' => DrinkCategoryEnum::getCategories(),
-        ]);
+        return Inertia::render('admin/drink/Create', $query->execute());
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(DrinkCreateRequest $request)
+    public function store(DrinkCreateRequest $request, CreateDrink $command): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $command->execute(
+                $request->validated(),
+                $request->file('images')
+            );
 
-        $drink = Drink::query()->create($validated);
-        $drink->uploadImage();
+            return redirect()
+                ->route('drink.index');
+        } catch (Throwable $e) {
+            report($e);
 
-        return redirect()->route('drink.index')->with('success', 'Drink created successfully.');
+            return back()
+                ->withErrors(['message' => 'Something went wrong while creating the drink']);
+        }
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Drink $drink)
+    public function edit(
+        Drink $drink,
+        GetDrinkForEdit $query,
+        GetDrinkFormData $formData
+    ): Response
     {
-        $drink->load(['images']);
-        $formattedDrink = [
-            'id' => $drink->id,
-            'name' => $drink->name,
-            'description' => $drink->description,
-            'category' => $drink->category,
-            'price' => $drink->price,
-            'images' => $drink->images->map(fn($image) => [
-                'id' => $image->id,
-                'path' => Storage::disk('public')->url($image->path),
-            ]),
-        ];
-
         return Inertia::render('admin/drink/Edit', [
-            'drinkToEdit' => $formattedDrink,
-            'categories' => DrinkCategoryEnum::getCategories(),
+            'drinkToEdit' => $query->execute($drink),
+            ...$formData->execute(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(DrinkUpdateRequest $request, Drink $drink)
+    public function update(DrinkUpdateRequest $request, Drink $drink, UpdateDrink $command): RedirectResponse
     {
-        $validated = $request->validated();
+        try {
+            $command->execute(
+                $drink,
+                $request->validated(),
+                $request->file('images')
+            );
 
-        $drink->update($validated);
-        $drink->uploadImage();
+            return redirect()
+                ->route('drink.index');
+        } catch (Throwable $e) {
+            report($e);
 
-        return redirect()->route('drink.index')->with('success', 'Drink updated successfully.');
+            return back()
+                ->withErrors(['message' => 'Something went wrong while updating the drink']);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Drink $drink)
+    public function destroy(Drink $drink, DeleteDrink $command): RedirectResponse
     {
-        $drink->delete();
+        try {
+            $command->execute($drink);
 
-        return redirect()->route('drink.index')->with('success', 'Drink deleted successfully.');
+            return redirect()
+                ->route('drink.index');
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withErrors(['message' => 'Something went wrong while deleting the drink']);
+        }
     }
 
     /**
      * @param Drink $drink
+     * @param ToggleDrinkAvailability $command
      * @return RedirectResponse
      */
-    public function available(Drink $drink)
+    public function available(Drink $drink, ToggleDrinkAvailability $command): RedirectResponse
     {
-        $drink->is_available = !$drink->is_available;
-        $drink->save();
+        $command->execute($drink);
 
-        return redirect()->route('drink.index')->with('success', 'Drink is available.');
+        return redirect()->route('drink.index');
     }
 }
