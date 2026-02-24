@@ -42,15 +42,4 @@ class ImageService
         }
         $image->delete();
     }
-
-    /**
-     * @param $model
-     * @return void
-     */
-    public function deleteAll($model): void
-    {
-        foreach ($model->images as $image) {
-            $this->delete($image);
-        }
-    }
 }

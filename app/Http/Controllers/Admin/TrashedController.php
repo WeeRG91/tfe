@@ -2,79 +2,43 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Trashed\Commands\ForceDeleteTrashedItem;
+use App\Actions\Admin\Trashed\Commands\RestoreTrashedItem;
+use App\Actions\Admin\Trashed\Queries\GetAllTrashedItems;
+use App\Enums\TrashTypeEnum;
 use App\Http\Controllers\Controller;
-use App\Models\Allergen;
-use App\Models\Dish;
-use App\Models\Drink;
-use App\Models\Ingredient;
+use App\Http\Requests\Admin\TrashedRequest;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class TrashedController extends Controller
 {
     /**
-     * @param string $model
-     * @param string $type
-     * @return array
-     */
-    private function getTrashedItems(string $model, string $type)
-    {
-        /** @var Model $model */
-        return $model::query()->onlyTrashed()
-            ->with('images')
-            ->get()
-            ->map(fn($item) => [
-                'id' => $item->id,
-                'name' => $item->name,
-                'image' => $item->images->first()
-                    ? Storage::disk('public')->url($item->images->first()->path)
-                    : Storage::disk('public')->url('images/picture.png'),
-                'type' => $type,
-                'deleted_at' => $item->deleted_at->toDateTimeString(),
-            ])
-            ->toArray();
-    }
-
-    /**
+     * @param GetAllTrashedItems $query
      * @return Response
      */
-    public function index()
+    public function index(GetAllTrashedItems $query): Response
     {
-        $trashedItems = collect([
-            ...$this->getTrashedItems(Dish::class, 'Dish'),
-            ...$this->getTrashedItems(Ingredient::class, 'Ingredient'),
-            ...$this->getTrashedItems(Allergen::class, 'Allergen'),
-            ...$this->getTrashedItems(Drink::class, 'Drink'),
-        ])->sortByDesc('deleted_at')->values();
-
         return Inertia::render('admin/trashed/Index', [
-            'trashedItems' => $trashedItems,
+            'trashedItems' => $query->execute(),
         ]);
     }
 
     /**
-     * @param Request $request
+     * @param TrashedRequest $request
+     * @param RestoreTrashedItem $command
      * @return RedirectResponse
      */
-    public function restore(Request $request)
+    public function restore(TrashedRequest $request, RestoreTrashedItem $command): RedirectResponse
     {
-        $request->validate([
-            'id' => 'required|integer',
-            'type' => 'required|string|in:Dish,Ingredient,Allergen,Drink',
-        ]);
+        $validated = $request->validated();
 
-        $modelClass = match ($request->type) {
-            'Dish' => Dish::class,
-            'Ingredient' => Ingredient::class,
-            'Allergen' => Allergen::class,
-            'Drink' => Drink::class,
-        };
-
-        $item = $modelClass::onlyTrashed()->find($request->id);
+        /** @var Model&SoftDeletes $item */
+        $item = $command->execute($validated['id'], TrashTypeEnum::from($validated['type']));
 
         if (!$item) {
             return redirect()->back()->with('error', 'Item not found or not trashed.');
@@ -86,46 +50,27 @@ class TrashedController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param TrashedRequest $request
+     * @param ForceDeleteTrashedItem $command
      * @return RedirectResponse
      */
-    public function forceDelete(Request $request)
+    public function forceDelete(TrashedRequest $request, ForceDeleteTrashedItem $command): RedirectResponse
     {
-        $request->validate([
-            'id' => 'required|integer',
-            'type' => 'required|string|in:Dish,Ingredient,Allergen,Drink',
-        ]);
+        $validated = $request->validated();
 
-        $modelClass = match ($request->type) {
-            'Dish' => Dish::class,
-            'Ingredient' => Ingredient::class,
-            'Allergen' => Allergen::class,
-            'Drink' => Drink::class,
-        };
+        try {
+            $item = $command->execute($validated['id'], TrashTypeEnum::from($validated['type']));
 
-        $item = $modelClass::onlyTrashed()->find($request->id);
-
-        if (!$item) {
-            return redirect()->back()->with('error', 'Item not found or not trashed.');
-        }
-
-        if ($request->type == 'Dish') {
-            $item->ingredients()->detach();
-        } elseif ($request->type == 'Ingredient') {
-            $item->dish()->detach();
-        }
-
-        if (method_exists($item, 'images')) {
-            foreach ($item->images as $image) {
-                if (Storage::disk('public')->exists($image->path)) {
-                    Storage::disk('public')->delete($image->path);
-                }
-                $image->delete();
+            if (!$item) {
+                return redirect()->back()->with('error', 'Item not found or not trashed.');
             }
+
+            return redirect()->back()->with('success', "{$item->name} deleted successfully.");
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withErrors(['message' => 'Something went wrong while deleting the dish']);
         }
-
-        $item->forceDelete();
-
-        return redirect()->back()->with('success', "{$item->name} deleted successfully.");
     }
 }
