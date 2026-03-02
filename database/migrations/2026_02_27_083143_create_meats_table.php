@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('allergen_ingredient', function (Blueprint $table) {
-            $table->foreignId('allergen_id')->constrained('allergens')->cascadeOnDelete();
-            $table->foreignId('ingredient_id')->constrained('ingredients')->cascadeOnDelete();
+        Schema::create('meats', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->decimal('extra_price', 8, 2)->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('allergen_ingredient');
+        Schema::dropIfExists('meats');
     }
 };

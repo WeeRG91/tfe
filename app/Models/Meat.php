@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Allergen extends Model
+class Meat extends Model
 {
     use SoftDeletes;
 
@@ -18,8 +18,8 @@ class Allergen extends Model
         return $this->morphMany(Image::class, 'imageable');
     }
 
-    public function ingredients(): HasMany
+    public function dishes(): BelongsToMany
     {
-        return $this->hasMany(Ingredient::class);
+        return $this->belongsToMany(Dish::class);
     }
 }

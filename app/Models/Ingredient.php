@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\HasImages;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,10 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ingredient extends Model
 {
-    use SoftDeletes, HasImages;
-
-    protected string $folder = 'images/ingredient';
-    protected string $imageInput = 'images';
+    use SoftDeletes;
 
     protected $guarded = ['id'];
 

@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('allergen_ingredient');
+        Schema::table('allergens', function (Blueprint $table) {
+            $table->string('main_image')->nullable()->after('description');
+        });
     }
 
     /**
@@ -19,10 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::create('allergen_ingredient', function (Blueprint $table) {
-            $table->foreignId('allergen_id')->constrained('allergens')->cascadeOnDelete();
-            $table->foreignId('ingredient_id')->constrained('ingredients')->cascadeOnDelete();
-            $table->timestamps();
+        Schema::table('allergens', function (Blueprint $table) {
+            $table->dropColumn('main_image');
         });
     }
 };

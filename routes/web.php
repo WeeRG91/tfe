@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DishController;
 use App\Http\Controllers\Admin\DrinkController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\IngredientController;
+use App\Http\Controllers\Admin\MeatController;
 use App\Http\Controllers\Admin\TrashedController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -54,6 +55,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{allergen}/edit', 'edit')->name('edit');
         Route::post('/{allergen}', 'update')->name('update');
         Route::delete('/{allergen}', 'destroy')->name('destroy');
+    });
+
+    Route::controller(MeatController::class)->prefix('meats')->name('meat.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
     });
 
     Route::controller(TrashedController::class)->prefix('trashed')->name('trashed.')->group(function () {

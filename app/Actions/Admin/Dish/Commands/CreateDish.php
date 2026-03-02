@@ -23,7 +23,7 @@ readonly class CreateDish
     public function execute(array $data, array $files, array $ingredientIds): Dish
     {
         return DB::transaction(function () use ($data, $files, $ingredientIds) {
-            $dish = Dish::create($data);
+            $dish = Dish::query()->create($data);
 
             $dish->ingredients()->sync($ingredientIds);
 

@@ -26,10 +26,8 @@ class DishController extends Controller
      */
     public function index(GetPaginatedDishes $query): InertiaResponse
     {
-        $dishes = $query->execute();
-
         return Inertia::render('admin/dish/Index', [
-            'dishes' => DishResource::collection($dishes),
+            'dishes' => $query->execute(),
         ]);
     }
 

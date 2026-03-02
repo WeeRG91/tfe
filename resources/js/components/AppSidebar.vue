@@ -21,6 +21,7 @@ import { Link } from '@inertiajs/vue3';
 import {
     BeanOff,
     BookOpen,
+    Beef,
     Wine,
     Carrot,
     Folder,
@@ -30,6 +31,7 @@ import {
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import drink from '@/routes/drink';
+import meat from '@/routes/meat';
 
 const mainNavItems: NavItem[] = [
     {
@@ -51,6 +53,11 @@ const mainNavItems: NavItem[] = [
         title: 'Ingredients',
         href: ingredient.index(),
         icon: Carrot,
+    },
+    {
+        title: 'Meats',
+        href: meat.index(),
+        icon: Beef,
     },
     {
         title: 'Allergens',

@@ -2,18 +2,18 @@
 
 namespace App\Actions\Admin\Dish\Queries;
 
+use App\Http\Resources\Admin\DishResource;
 use App\Models\Dish;
-use Illuminate\Pagination\LengthAwarePaginator;
-use LaravelIdea\Helper\App\Models\_IH_Dish_C;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GetPaginatedDishes
 {
     /**
-     * @return array|LengthAwarePaginator|_IH_Dish_C
+     * @return AnonymousResourceCollection
      */
-    public function execute(): array|LengthAwarePaginator|_IH_Dish_C
+    public function execute(): AnonymousResourceCollection
     {
-        return Dish::query()
+        $dishes = Dish::query()
             ->with([
                 'ingredients.allergen.images',
                 'images'
@@ -21,5 +21,7 @@ class GetPaginatedDishes
             ->where('deleted_at', null)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
+        return DishResource::collection($dishes);
     }
 }
