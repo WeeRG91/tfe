@@ -1,7 +1,7 @@
 export type DishType = {
     id: number;
     name: string;
-    image: string;
+    main_image: string;
     images: { id: number; path: string }[];
     description: string;
     price: number;

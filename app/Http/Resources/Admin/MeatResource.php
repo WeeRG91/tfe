@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,7 +20,9 @@ class MeatResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'extra_price' => $this->extra_price,
-            'main_image' => Storage::disk('public')->url($this->main_image) ?? Storage::disk('public')->url('images/picture.png'),
+            'main_image' => $this->main_image
+                ? Storage::disk('public')->url($this->main_image)
+                : Storage::disk('public')->url('images/picture.png'),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
         ];

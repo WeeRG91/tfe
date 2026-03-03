@@ -1,72 +1,67 @@
 <script setup lang="ts">
+import FormNumberInput from '@/components/FormNumberInput.vue';
 import FormTextInput from '@/components/FormTextInput.vue';
 import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
-import MultipleSelect from '@/components/MultipleSelect.vue';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import allergen from '@/routes/allergen';
-import type { BreadcrumbItem } from '@/types';
-import {
-    EditAllergenType,
-    ErrorType,
-    IngredientOptionType,
-} from '@/types/allergen';
+import meat from '@/routes/meat';
+import { BreadcrumbItem } from '@/types';
+import { EditMeatType, MeatErrorType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
-import { SquarePenIcon, X } from 'lucide-vue-next';
+import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
-    allergenToEdit: EditAllergenType;
-    ingredients: IngredientOptionType[];
-    errors: ErrorType;
+    meatToEdit: EditMeatType;
+    errors: MeatErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Allergens',
-        href: allergen.index().url,
+        title: 'Meats',
+        href: meat.index().url,
     },
     {
         title: 'Edit',
-        href: allergen.edit(props.allergenToEdit.id).url,
+        href: meat.edit(props.meatToEdit.id).url,
     },
 ];
 
-const selectedIngredients = ref<number[]>(
-    props.allergenToEdit.ingredients?.map((i) => i.id) ?? [],
-);
-const name = ref<string>(props.allergenToEdit.name ?? '');
-const description = ref<string>(props.allergenToEdit.description ?? '');
-const imageFile = ref<File[]>([]);
+const name = ref<string>(props.meatToEdit.name || '');
+const description = ref<string>(props.meatToEdit.description || '');
+const extra_price = ref<number | null>(props.meatToEdit.extra_price || null);
+const image_files = ref<File[]>([]);
 
-const allergenForm = useForm({
+const meatForm = useForm({
     name: '',
     description: '',
-    ingredients: [] as number[],
+    extra_price: null as number | null,
     images: [] as File[],
 });
 
 const submit = () => {
-    allergenForm.name = name.value;
-    allergenForm.description = description.value;
-    allergenForm.ingredients = selectedIngredients.value;
-    allergenForm.images = imageFile.value;
+    meatForm.name = name.value;
+    meatForm.description = description.value;
+    meatForm.extra_price = extra_price.value;
+    meatForm.images = image_files.value;
 
-    allergenForm.post(allergen.update(props.allergenToEdit.id).url, {
+    meatForm.post(meat.update(props.meatToEdit.id).url, {
         forceFormData: true,
         onSuccess: () => {
-            allergenForm.reset();
-            toast.success('Allergen successfully edited.');
+            meatForm.reset();
+            toast.success('Meat Successfully edited.');
+        },
+        onError: (error) => {
+            toast.error(error.message);
         },
     });
 };
 </script>
 
 <template>
-    <Head :title="`Edit the allergen '${props.allergenToEdit.name}'`" />
+    <Head :title="`Edit the meat '${props.meatToEdit.name}'`" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -78,7 +73,7 @@ const submit = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Allergen Information
+                            Meat Information
                         </h2>
 
                         <FormTextInput
@@ -96,11 +91,11 @@ const submit = () => {
                             :error="props.errors.description"
                         />
 
-                        <MultipleSelect
-                            v-model="selectedIngredients"
-                            :options="props.ingredients"
-                            label="Ingredients"
-                            :error="props.errors.ingredients"
+                        <FormNumberInput
+                            id="extra_price"
+                            label="Extra price"
+                            v-model="extra_price"
+                            :error="props.errors.extra_price"
                         />
                     </div>
                     <div
@@ -111,38 +106,22 @@ const submit = () => {
                         </h2>
 
                         <ImageUploader
-                            v-model="imageFile"
-                            :existingImages="props.allergenToEdit.images"
+                            v-model="image_files"
+                            :existing-images="props.meatToEdit.images"
                         />
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
                     <Button type="button" variant="secondary">
-                        <a
-                            :href="allergen.index().url"
-                            class="flex items-center"
-                        >
+                        <a :href="meat.index().url" class="flex items-center">
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="allergenForm.processing"
-                        ><SquarePenIcon
-                            v-if="!allergenForm.processing"
-                        /><Spinner v-else /> Edit</Button
+                    <Button type="submit" :disabled="meatForm.processing"
+                        ><CirclePlus /> Edit</Button
                     >
                 </div>
             </form>
         </div>
     </AdminLayout>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>

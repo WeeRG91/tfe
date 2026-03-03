@@ -11,6 +11,7 @@ import { MeatErrorType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     errors: MeatErrorType;
@@ -44,6 +45,17 @@ const submit = () => {
     meatForm.description = description.value;
     meatForm.extra_price = extra_price.value;
     meatForm.images = image_files.value;
+
+    meatForm.post(meat.store().url, {
+        forceFormData: true,
+        onSuccess: () => {
+            meatForm.reset();
+            toast.success('Meat successfully created.');
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
 };
 </script>
 
@@ -97,10 +109,7 @@ const submit = () => {
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
                     <Button type="button" variant="secondary">
-                        <a
-                            :href="meat.index().url"
-                            class="flex items-center"
-                        >
+                        <a :href="meat.index().url" class="flex items-center">
                             <X /> Cancel
                         </a>
                     </Button>

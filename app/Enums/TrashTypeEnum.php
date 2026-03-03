@@ -6,6 +6,7 @@ use App\Models\Allergen;
 use App\Models\Dish;
 use App\Models\Drink;
 use App\Models\Ingredient;
+use App\Models\Meat;
 
 enum TrashTypeEnum: string
 {
@@ -13,6 +14,7 @@ enum TrashTypeEnum: string
     case Ingredient = 'Ingredient';
     case Allergen = 'Allergen';
     case Drink = 'Drink';
+    case Meat = 'Meat';
 
     public function model(): string
     {
@@ -21,6 +23,7 @@ enum TrashTypeEnum: string
             self::Ingredient => Ingredient::class,
             self::Allergen => Allergen::class,
             self::Drink => Drink::class,
+            self::Meat => Meat::class,
         };
     }
 }

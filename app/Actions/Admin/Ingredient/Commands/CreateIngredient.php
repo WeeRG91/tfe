@@ -26,6 +26,10 @@ readonly class CreateIngredient
 
             if (!empty($files)) {
                 $this->imageService->upload($ingredient, $files);
+
+                $ingredient->update([
+                    'main_image' => $ingredient->mainImage->path,
+                ]);
             }
 
             return $ingredient;

@@ -7,23 +7,23 @@ use App\Services\ImageService;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-readonly class CreateMeat
+readonly class UpdateMeat
 {
     public function __construct(
-        private ImageService $imageService,
+        private ImageService $imageService
     ) {}
 
-
     /**
+     * @param Meat $meat
      * @param array $data
      * @param array $files
      * @return Meat
      * @throws Throwable
      */
-    public function execute(array $data, array $files = []): Meat
+    public function execute(Meat $meat, array $data, array $files = []): Meat
     {
-        return DB::transaction(function () use ($data, $files) {
-            $meat = Meat::query()->create($data);
+        return DB::transaction(function () use ($meat, $data, $files) {
+            $meat->update($data);
 
             if (!empty($files)) {
                 $this->imageService->upload($meat, $files);

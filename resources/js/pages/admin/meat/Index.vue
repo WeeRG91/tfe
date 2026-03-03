@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -15,9 +16,10 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import meat from '@/routes/meat';
 import { BreadcrumbItem, Paginated } from '@/types';
 import { MeatType } from '@/types/meat';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import {
     EllipsisVerticalIcon,
     EyeIcon,
@@ -25,7 +27,8 @@ import {
     SquarePlusIcon,
     TrashIcon,
 } from 'lucide-vue-next';
-import meat from '@/routes/meat';
+import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     meats: Paginated<MeatType>;
@@ -37,6 +40,40 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: meat.index().url,
     },
 ];
+
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
+
+const meatForm = useForm({});
+
+const deleteMeat = (id: number) => {
+    meatForm.delete(meat.destroy(id).url, {
+        onSuccess: () => {
+            closeConfirmModal();
+            toast.success('Allergen successfully deleted.');
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        },
+    });
+};
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
+};
 </script>
 
 <template>
@@ -108,7 +145,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                                     <DropdownMenuContent>
                                         <DropdownMenuItem>
                                             <a
-                                                href="#"
+                                                :href="
+                                                    meat.edit(meatData.id).url
+                                                "
                                                 class="flex gap-2"
                                             >
                                                 <SquarePenIcon /> Edit
@@ -117,7 +156,16 @@ const breadcrumbs: BreadcrumbItem[] = [
                                         <DropdownMenuItem>
                                             <EyeIcon /> View
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this allergen?',
+                                                    'destructive',
+                                                    () =>
+                                                        deleteMeat(meatData.id),
+                                                )
+                                            "
+                                        >
                                             <TrashIcon /> Delete
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
@@ -133,6 +181,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </TableRow>
                     </TableBody>
                 </Table>
+
+                <ConfirmModal
+                    :open="confirmModalOpen"
+                    :onClose="closeConfirmModal"
+                    :message="confirmModalMessage"
+                    :type="confirmModalType"
+                    @confirm="confirmModalAction"
+                />
             </div>
         </div>
     </AdminLayout>

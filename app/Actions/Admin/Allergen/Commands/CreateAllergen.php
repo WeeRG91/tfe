@@ -27,6 +27,10 @@ readonly class CreateAllergen
 
             if (!empty($files)) {
                 $this->imageService->upload($allergen, $files);
+
+                $allergen->update([
+                    'main_image' => $allergen->mainImage->path,
+                ]);
             }
 
             if (!empty($data['ingredients'])) {

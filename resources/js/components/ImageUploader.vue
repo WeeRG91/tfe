@@ -50,6 +50,7 @@ const handleDrop = (event: DragEvent) => {
 };
 
 const handleImageChange = (event: Event) => {
+    event.preventDefault();
     const target = event.target as HTMLInputElement;
     const selectedImages = Array.from(target.files || []);
     addImages(selectedImages);

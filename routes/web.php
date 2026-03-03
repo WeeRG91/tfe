@@ -60,6 +60,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(MeatController::class)->prefix('meats')->name('meat.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{meat}/edit', 'edit')->name('edit');
+        Route::post('/{meat}', 'update')->name('update');
+        Route::delete('/{meat}', 'destroy')->name('destroy');
     });
 
     Route::controller(TrashedController::class)->prefix('trashed')->name('trashed.')->group(function () {

@@ -148,7 +148,7 @@ const closeConfirmModal = () => {
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
-                                    :src="dishData.image"
+                                    :src="dishData.main_image"
                                     :alt="dishData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />

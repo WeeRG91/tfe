@@ -29,6 +29,10 @@ readonly class CreateDish
 
             if (!empty($files)) {
                 $this->imageService->upload($dish, $files);
+
+                $dish->update([
+                    'main_image' => $dish->mainImage->path,
+                ]);
             }
 
             return $dish;

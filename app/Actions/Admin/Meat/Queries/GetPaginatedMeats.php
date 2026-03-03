@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Meat\Queries;
 
-use App\Http\Resources\MeatResource;
+use App\Http\Resources\Admin\MeatResource;
 use App\Models\Meat;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

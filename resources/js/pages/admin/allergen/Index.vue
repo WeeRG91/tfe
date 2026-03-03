@@ -57,6 +57,9 @@ const deleteAllergen = (id: number) => {
             closeConfirmModal();
             toast.success('Allergen successfully deleted.');
         },
+        onError: (error) => {
+            toast.error(error.message)
+        },
     });
 };
 
@@ -123,7 +126,7 @@ const closeConfirmModal = () => {
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
-                                    :src="allergenData.image"
+                                    :src="allergenData.main_image"
                                     :alt="allergenData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />

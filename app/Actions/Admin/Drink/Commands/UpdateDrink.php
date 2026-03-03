@@ -27,6 +27,10 @@ readonly class UpdateDrink
 
             if (!empty($files)) {
                 $this->imageService->upload($drink, $files);
+
+                $drink->update([
+                    'main_image' => $drink->mainImage->path,
+                ]);
             }
 
             return $drink;

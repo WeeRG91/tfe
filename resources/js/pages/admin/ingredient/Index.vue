@@ -126,7 +126,7 @@ const closeConfirmModal = () => {
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
-                                    :src="ingredientData.image"
+                                    :src="ingredientData.main_image"
                                     :alt="ingredientData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />
@@ -136,8 +136,8 @@ const closeConfirmModal = () => {
                             </TableCell>
                             <TableCell class="group relative">
                                 <img
-                                    v-if="ingredientData.allergen?.image"
-                                    :src="ingredientData.allergen?.image"
+                                    v-if="ingredientData.allergen?.main_image"
+                                    :src="ingredientData.allergen?.main_image"
                                     :alt="ingredientData.allergen?.name"
                                     class="h-8 w-8 rounded-full"
                                 />
