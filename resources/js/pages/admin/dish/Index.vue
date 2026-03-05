@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ConfirmModal from '@/components/ConfirmModal.vue';
-import DishDetailModal from '@/components/admin/dish/DishDetailModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,12 +20,11 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
 import type { BreadcrumbItem, Paginated } from '@/types';
 import { DishType } from '@/types/dish';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import {
     CircleCheckBigIcon,
     CircleXIcon,
     EllipsisVerticalIcon,
-    EyeIcon,
     SquarePenIcon,
     SquarePlusIcon,
     TrashIcon,
@@ -45,8 +43,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const selectedDish = ref<DishType | null>(null);
-const detailModalOpen = ref<boolean>(false);
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
@@ -62,7 +58,7 @@ const deleteDish = (id: number) => {
         },
         onError: (error) => {
             toast.error(error.message);
-        }
+        },
     });
 };
 
@@ -74,17 +70,8 @@ const toggleAvailability = (id: number) => {
         },
         onError: (error) => {
             toast.error(error.message);
-        }
+        },
     });
-};
-
-const openDishDetailModal = (dish: DishType) => {
-    selectedDish.value = dish;
-    detailModalOpen.value = true;
-};
-
-const closeDishDetailModal = () => {
-    detailModalOpen.value = false;
 };
 
 const openConfirmModal = (
@@ -100,6 +87,10 @@ const openConfirmModal = (
 
 const closeConfirmModal = () => {
     confirmModalOpen.value = false;
+};
+
+const goToEdit = (id: number) => {
+    router.visit(dish.edit(id).url);
 };
 </script>
 
@@ -144,7 +135,8 @@ const closeConfirmModal = () => {
                         <TableRow
                             v-for="dishData in props.dishes.data"
                             :key="dishData.id"
-                            @dblclick="openDishDetailModal(dishData)"
+                            @dblclick="goToEdit(dishData.id)"
+                            class="cursor-pointer"
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
@@ -163,7 +155,7 @@ const closeConfirmModal = () => {
                                     >{{ dishData.category.label }}</Badge
                                 >
                             </TableCell>
-                            <TableCell class="hidden md:table-cell text-nowrap"
+                            <TableCell class="hidden text-nowrap md:table-cell"
                                 >{{ dishData.price }} €</TableCell
                             >
                             <TableCell>
@@ -203,16 +195,12 @@ const closeConfirmModal = () => {
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            @click="openDishDetailModal(dishData)"
-                                        >
-                                            <EyeIcon /> View
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to delete this dish?',
                                                     'destructive',
-                                                    () => deleteDish(dishData.id),
+                                                    () =>
+                                                        deleteDish(dishData.id),
                                                 )
                                             "
                                         >
@@ -227,7 +215,10 @@ const closeConfirmModal = () => {
                                                 openConfirmModal(
                                                     'Are you sure you want to mark this dish as unavailable?',
                                                     'info',
-                                                    () => toggleAvailability(dishData.id),
+                                                    () =>
+                                                        toggleAvailability(
+                                                            dishData.id,
+                                                        ),
                                                 )
                                             "
                                         >
@@ -239,7 +230,10 @@ const closeConfirmModal = () => {
                                                 openConfirmModal(
                                                     'Are you sure you want to mark this dish as available?',
                                                     'info',
-                                                    () => toggleAvailability(dishData.id),
+                                                    () =>
+                                                        toggleAvailability(
+                                                            dishData.id,
+                                                        ),
                                                 )
                                             "
                                         >
@@ -250,16 +244,14 @@ const closeConfirmModal = () => {
                             </TableCell>
                         </TableRow>
                         <TableRow v-if="props.dishes.data.length === 0">
-                            <TableCell class="text-center text-gray-300" :colspan="7">No dish yet</TableCell>
+                            <TableCell
+                                class="text-center text-gray-300"
+                                :colspan="7"
+                                >No dish yet</TableCell
+                            >
                         </TableRow>
                     </TableBody>
                 </Table>
-
-                <DishDetailModal
-                    :open="detailModalOpen"
-                    :selectedDish="selectedDish"
-                    :onClose="closeDishDetailModal"
-                />
 
                 <ConfirmModal
                     :open="confirmModalOpen"

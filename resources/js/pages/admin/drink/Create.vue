@@ -8,15 +8,16 @@ import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/drink';
 import { BreadcrumbItem } from '@/types';
-import { CategoryEnumType, ErrorType } from '@/types/drink';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { CategoryOptionType } from '@/types/category';
+import { DrinkErrorType } from '@/types/drink';
 
 const props = defineProps<{
-    categories: CategoryEnumType[];
-    errors: ErrorType;
+    categories: CategoryOptionType[];
+    errors: DrinkErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -34,7 +35,7 @@ const selectedCategory = ref<number | null>(null);
 const name = ref<string>('');
 const description = ref<string>('');
 const price = ref<number | null>(null);
-const imageFile = ref<File[]>([]);
+const images = ref<File[]>([]);
 
 const drinkForm = useForm({
     name: '',
@@ -49,15 +50,20 @@ const submit = () => {
     drinkForm.description = description.value;
     drinkForm.price = price.value;
     drinkForm.category = selectedCategory.value;
-    drinkForm.images = imageFile.value;
+    drinkForm.images = images.value;
 
     drinkForm.post(drink.store().url, {
         forceFormData: true,
         onSuccess: () => {
             drinkForm.reset();
             toast.success('Drink successfully created.');
-        }
-    })
+        },
+        onError: (error) => {
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please check the form.');
+        },
+    });
 };
 </script>
 
@@ -112,7 +118,7 @@ const submit = () => {
                             Photos
                         </h2>
 
-                        <ImageUploader v-model="imageFile" />
+                        <ImageUploader v-model="images" />
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">

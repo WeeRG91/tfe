@@ -2,7 +2,6 @@
 
 namespace App\Actions\Admin\Ingredient\Queries;
 
-use App\Http\Resources\Admin\IngredientResource;
 use App\Models\Allergen;
 
 class GetIngredientFormData

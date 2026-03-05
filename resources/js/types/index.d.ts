@@ -1,5 +1,8 @@
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
+import { MeatErrorType, MeatOptionType } from '@/types/meat';
+import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
+import { DishErrorType } from '@/types/dish';
 
 export interface Auth {
     user: User;
@@ -24,6 +27,7 @@ export type AppPageProps<
     quote: { message: string; author: string };
     auth: Auth;
     sidebarOpen: boolean;
+    flash: FlashProps;
 };
 
 export interface User {
@@ -35,6 +39,11 @@ export interface User {
     created_at: string;
     updated_at: string;
 }
+
+export type FlashProps = {
+    createdIngredient?: IngredientOptionType;
+    createdMeat?: MeatOptionType;
+};
 
 export type BreadcrumbItemType = BreadcrumbItem;
 
@@ -67,4 +76,10 @@ export type Link = {
     label: string;
     page: number;
     url: string;
+};
+
+export type ErrorType = {
+    dishErrors?: DishErrorType;
+    meatErrors?: MeatErrorType;
+    ingredientErrors?: IngredientErrorType;
 };

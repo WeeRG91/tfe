@@ -5,13 +5,13 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import meat from '@/routes/meat';
 import { BreadcrumbItem } from '@/types';
 import { MeatErrorType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import meat from '@/routes/meat';
 
 const props = defineProps<{
     errors: MeatErrorType;
@@ -31,7 +31,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const name = ref<string>('');
 const description = ref<string>('');
 const extra_price = ref<number | null>(null);
-const image_files = ref<File[]>([]);
+const images = ref<File[]>([]);
 
 const meatForm = useForm({
     name: '',
@@ -44,7 +44,7 @@ const submit = () => {
     meatForm.name = name.value;
     meatForm.description = description.value;
     meatForm.extra_price = extra_price.value;
-    meatForm.images = image_files.value;
+    meatForm.images = images.value;
 
     meatForm.post(meat.store().url, {
         forceFormData: true,
@@ -53,7 +53,9 @@ const submit = () => {
             toast.success('Meat successfully created.');
         },
         onError: (error) => {
-            toast.error(error.message);
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please check the form.');
         },
     });
 };
@@ -104,7 +106,7 @@ const submit = () => {
                             Photos
                         </h2>
 
-                        <ImageUploader v-model="image_files" />
+                        <ImageUploader v-model="images" />
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">

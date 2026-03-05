@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import IngredientDetailModal from '@/components/admin/ingredient/IngredientDetailModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,10 +19,9 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem, Paginated } from '@/types';
 import { IngredientType } from '@/types/ingredient';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import {
     EllipsisVerticalIcon,
-    EyeIcon,
     SquarePenIcon,
     SquarePlusIcon,
     TrashIcon,
@@ -42,8 +40,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const selectedIngredient = ref<IngredientType | null>(null);
-const detailModalOpen = ref<boolean>(false);
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
@@ -60,15 +56,6 @@ const deleteIngredient = (id: number) => {
     });
 };
 
-const openIngredientDetailModal = (ingredient: IngredientType) => {
-    selectedIngredient.value = ingredient;
-    detailModalOpen.value = true;
-};
-
-const closeIngredientDetailModal = () => {
-    detailModalOpen.value = false;
-};
-
 const openConfirmModal = (
     message: string,
     type: 'destructive' | 'info',
@@ -82,6 +69,10 @@ const openConfirmModal = (
 
 const closeConfirmModal = () => {
     confirmModalOpen.value = false;
+};
+
+const goToEdit = (id: number) => {
+    router.visit(ingredient.edit(id).url);
 };
 </script>
 
@@ -120,9 +111,8 @@ const closeConfirmModal = () => {
                         <TableRow
                             v-for="ingredientData in props.ingredients.data"
                             :key="ingredientData.id"
-                            @dblclick="
-                                openIngredientDetailModal(ingredientData)
-                            "
+                            @dblclick="goToEdit(ingredientData.id)"
+                            class="cursor-pointer"
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
@@ -178,15 +168,6 @@ const closeConfirmModal = () => {
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="
-                                                openIngredientDetailModal(
-                                                    ingredientData,
-                                                )
-                                            "
-                                        >
-                                            <EyeIcon /> View
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to delete this ingredient?',
                                                     'destructive',
@@ -212,12 +193,6 @@ const closeConfirmModal = () => {
                         </TableRow>
                     </TableBody>
                 </Table>
-
-                <IngredientDetailModal
-                    :open="detailModalOpen"
-                    :selectedIngredient="selectedIngredient"
-                    :onClose="closeIngredientDetailModal"
-                />
 
                 <ConfirmModal
                     :open="confirmModalOpen"

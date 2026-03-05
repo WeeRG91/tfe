@@ -12,7 +12,6 @@ use App\Actions\Admin\Dish\Queries\GetPaginatedDishes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DishCreateRequest;
 use App\Http\Requests\Admin\DishUpdateRequest;
-use App\Http\Resources\Admin\DishResource;
 use App\Models\Dish;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -47,7 +46,8 @@ class DishController extends Controller
         try {
             $command->execute(
                 $request->validated(),
-                $request->file('images'),
+                $request->file('images') ?? [],
+                $request->meats,
                 $request->ingredients
             );
 
@@ -81,7 +81,8 @@ class DishController extends Controller
             $command->execute(
                 $dish,
                 $request->validated(),
-                $request->file('images'),
+                $request->file('images') ?? [],
+                $request->meats,
                 $request->ingredients
             );
 

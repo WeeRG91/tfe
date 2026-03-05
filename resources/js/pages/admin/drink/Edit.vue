@@ -9,16 +9,18 @@ import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/drink';
 import { BreadcrumbItem } from '@/types';
-import { CategoryEnumType, EditDrinkType, ErrorType } from '@/types/drink';
 import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { EditDrinkType } from '@/types/drink';
+import { CategoryOptionType } from '@/types/category';
+import { DishErrorType } from '@/types/dish';
 
 const props = defineProps<{
     drinkToEdit: EditDrinkType;
-    categories: CategoryEnumType[];
-    errors: ErrorType;
+    categories: CategoryOptionType[];
+    errors: DishErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -36,7 +38,7 @@ const selectedCategory = ref<number | null>(props.drinkToEdit.category ?? null);
 const name = ref<string>(props.drinkToEdit.name ?? '');
 const description = ref<string>(props.drinkToEdit.description ?? '');
 const price = ref<number | null>(props.drinkToEdit.price ?? null);
-const imageFile = ref<File[]>([]);
+const images = ref<File[]>([]);
 
 const drinkForm = useForm({
     name: '',
@@ -51,13 +53,18 @@ const submit = () => {
     drinkForm.description = description.value;
     drinkForm.price = price.value;
     drinkForm.category = selectedCategory.value;
-    drinkForm.images = imageFile.value;
+    drinkForm.images = images.value;
 
     drinkForm.post(drink.update(props.drinkToEdit.id).url, {
         forceFormData: true,
         onSuccess: () => {
             drinkForm.reset();
             toast.success('Drink successfully edited.');
+        },
+        onError: (error) => {
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please check the form.');
         },
     });
 };
@@ -115,7 +122,7 @@ const submit = () => {
                         </h2>
 
                         <ImageUploader
-                            v-model="imageFile"
+                            v-model="images"
                             :existingImages="props.drinkToEdit.images"
                         />
                     </div>

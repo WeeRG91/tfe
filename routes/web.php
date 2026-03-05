@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
+        Route::post('/quick-create', 'quickCreate')->name('quick-create');
         Route::get('/{ingredient}/edit', 'edit')->name('edit');
         Route::post('/{ingredient}', 'update')->name('update');
         Route::delete('/{ingredient}', 'destroy')->name('destroy');
@@ -61,6 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
+        Route::post('/quick-create', 'quickCreate')->name('quick-create');
         Route::get('/{meat}/edit', 'edit')->name('edit');
         Route::post('/{meat}', 'update')->name('update');
         Route::delete('/{meat}', 'destroy')->name('destroy');

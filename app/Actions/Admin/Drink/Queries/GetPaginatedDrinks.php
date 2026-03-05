@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Drink\Queries;
 
-use App\Http\Resources\Admin\DrinkResource;
+use App\Http\Resources\Admin\Drink\DrinkResource;
 use App\Models\Drink;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

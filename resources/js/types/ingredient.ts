@@ -14,15 +14,22 @@ export type EditIngredientType = {
     name: string;
     description: string;
     allergen: number;
+    main_image: string;
     images: { id: number; path: string }[];
 };
 
-export type AllergenOptionType = {
+export type IngredientAllergenType = {
+    id: number;
+    name: string;
+    allergen: { id: number; name: string; image: string };
+};
+
+export type IngredientOptionType = {
     value: number;
     label: string;
 };
 
-export type ErrorType = {
+export type IngredientErrorType = {
     name: string;
     description: string;
     allergen: string;

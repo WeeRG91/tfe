@@ -41,12 +41,13 @@ class TrashedController extends Controller
         $item = $command->execute($validated['id'], TrashTypeEnum::from($validated['type']));
 
         if (!$item) {
-            return redirect()->back()->with('error', 'Item not found or not trashed.');
+            return back()->withErrors(['message', 'Item not found or not trashed.']);
         }
 
         $item->restore();
 
-        return redirect()->back()->with('success', "{$item->name} restored successfully.");
+        return redirect()
+            ->route('trashed.index');
     }
 
     /**
@@ -62,15 +63,16 @@ class TrashedController extends Controller
             $item = $command->execute($validated['id'], TrashTypeEnum::from($validated['type']));
 
             if (!$item) {
-                return redirect()->back()->with('error', 'Item not found or not trashed.');
+                return back()->withErrors(['message', 'Item not found or not trashed.']);
             }
 
-            return redirect()->back()->with('success', "{$item->name} deleted successfully.");
+            return redirect()
+                ->route('trashed.index');
         } catch (Throwable $e) {
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while deleting the dish']);
+                ->withErrors(['message' => 'Something went wrong while deleting']);
         }
     }
 }

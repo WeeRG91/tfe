@@ -1,3 +1,5 @@
+import { CategoryOptionType } from '@/types/category';
+
 export type DrinkType = {
     id: number;
     name: string;
@@ -5,7 +7,7 @@ export type DrinkType = {
     images: { id: number; path: string }[];
     description: string;
     price: number;
-    category: CategoryEnumType;
+    category: CategoryOptionType;
     is_available: string;
     created_at: string;
     updated_at: string;
@@ -17,16 +19,11 @@ export type EditDrinkType = {
     category: number;
     description: string;
     price: number;
+    main_image: string;
     images: { id: number; path: string }[];
 }
 
-export type CategoryEnumType = {
-    value: number;
-    label: string;
-    color: string;
-}
-
-export type ErrorType = {
+export type DrinkErrorType = {
     name?: string;
     description?: string;
     price?: string;

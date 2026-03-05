@@ -34,11 +34,11 @@ class Dish extends Model
 
     public function ingredients(): BelongsToMany
     {
-        return $this->belongsToMany(Ingredient::class);
+        return $this->belongsToMany(Ingredient::class, 'dish_ingredients');
     }
 
     public function meats(): BelongsToMany
     {
-        return $this->belongsToMany(Meat::class);
+        return $this->belongsToMany(Meat::class, 'dish_meats');
     }
 }

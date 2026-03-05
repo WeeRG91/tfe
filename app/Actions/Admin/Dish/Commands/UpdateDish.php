@@ -21,11 +21,12 @@ readonly class UpdateDish
      * @return Dish
      * @throws Throwable
      */
-    public function execute(Dish $dish, array $data, array $files, array $ingredientIds): Dish
+    public function execute(Dish $dish, array $data, array $files, array $meatIds, array $ingredientIds): Dish
     {
-        return DB::transaction(function () use ($dish, $data, $files,$ingredientIds) {
+        return DB::transaction(function () use ($dish, $data, $files, $meatIds, $ingredientIds) {
             $dish->update($data);
 
+            $dish->meats()->sync($meatIds);
             $dish->ingredients()->sync($ingredientIds);
 
             if (!empty($files)) {

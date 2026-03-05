@@ -1,18 +1,14 @@
+import { IngredientAllergenType } from '@/types/ingredient';
+
 export type AllergenType = {
     id: number;
     name: string;
     description: string;
-    ingredients: IngredientType[];
+    ingredients: IngredientAllergenType[];
     main_image: string;
     images: { id: number; path: string }[];
     created_at: string;
     updated_at: string;
-};
-
-export type IngredientType = {
-    id: number;
-    name: string;
-    allergen: { id: number; name: string; image: string };
 };
 
 export type EditAllergenType = {
@@ -20,15 +16,16 @@ export type EditAllergenType = {
     name: string;
     description: string;
     ingredients: { id: number }[];
+    main_image: string;
     images: { id: number; path: string }[];
 };
 
-export type IngredientOptionType = {
+export type AllergenOptionType = {
     value: number;
     label: string;
 };
 
-export type ErrorType = {
+export type AllergenErrorType = {
     name: string;
     description: string;
     ingredients: string;

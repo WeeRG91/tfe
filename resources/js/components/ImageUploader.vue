@@ -105,7 +105,7 @@ watch(
         @dragover.prevent="isDragging = true"
         @dragleave="isDragging = false"
         @drop="handleDrop"
-        class="relative flex flex-1 flex-col items-center justify-start rounded-2xl border-2 border-dashed bg-transparent p-6 text-gray-600 transition-all duration-200"
+        class="relative flex min-h-24 flex-1 flex-col items-center justify-start rounded-2xl border-2 border-dashed bg-transparent p-6 text-gray-600 transition-all duration-200"
         :class="{
             'border-blue-500 bg-blue-50': isDragging,
             'border-red-500 bg-red-50': error && !isDragging,
@@ -129,7 +129,9 @@ watch(
             class="absolute inset-0 flex flex-col items-center justify-center space-y-2 text-center"
         >
             <ImagePlus :class="error ? 'text-red-500' : ''" />
-            <p class="text-sm" :class="error ? 'text-red-500' : ''">Drag and drop images here, or click to browse</p>
+            <p class="text-sm" :class="error ? 'text-red-500' : ''">
+                Drag and drop images here, or click to browse
+            </p>
         </div>
 
         <div v-else class="grid w-full grid-cols-2 gap-3 md:grid-cols-3">
@@ -147,7 +149,7 @@ watch(
                 <button
                     type="button"
                     @click.stop="removeExistingImage(index)"
-                    class="absolute top-2 right-2 z-999 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
+                    class="absolute top-2 right-2 z-50 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
                 >
                     ✕
                 </button>
@@ -166,7 +168,7 @@ watch(
                 <button
                     type="button"
                     @click.stop="removeImage(index)"
-                    class="absolute top-2 right-2 z-999 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
+                    class="absolute top-2 right-2 z-50 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
                 >
                     ✕
                 </button>
@@ -182,13 +184,13 @@ watch(
             </div>
         </transition>
     </div>
-    <span v-if="error" class="text-sm text-red-500">{{error}}</span>
+    <span v-if="error" class="text-sm text-red-500">{{ error }}</span>
 </template>
 
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.2s;
+    transition: opacity 0.3s;
 }
 .fade-enter-from,
 .fade-leave-to {

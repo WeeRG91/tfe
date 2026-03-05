@@ -15,16 +15,18 @@ readonly class CreateDish
 
     /**
      * @param array $data
-     * @param array $ingredientIds
      * @param array $files
+     * @param array $meatIds
+     * @param array $ingredientIds
      * @return Dish
      * @throws Throwable
      */
-    public function execute(array $data, array $files, array $ingredientIds): Dish
+    public function execute(array $data, array $files, array $meatIds, array $ingredientIds): Dish
     {
-        return DB::transaction(function () use ($data, $files, $ingredientIds) {
+        return DB::transaction(function () use ($data, $files, $meatIds, $ingredientIds) {
             $dish = Dish::query()->create($data);
 
+            $dish->meats()->sync($meatIds);
             $dish->ingredients()->sync($ingredientIds);
 
             if (!empty($files)) {

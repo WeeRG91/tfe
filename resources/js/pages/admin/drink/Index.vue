@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DrinkDetailModal from '@/components/admin/drink/DrinkDetailModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,12 +20,11 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/drink';
 import type { BreadcrumbItem, Paginated } from '@/types';
 import { DrinkType } from '@/types/drink';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import {
     CircleCheckBigIcon,
     CircleXIcon,
     EllipsisVerticalIcon,
-    EyeIcon,
     SquarePenIcon,
     SquarePlusIcon,
     TrashIcon,
@@ -38,8 +36,6 @@ const props = defineProps<{
     drinks: Paginated<DrinkType>;
 }>();
 
-console.log(props.drinks);
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Drinks',
@@ -47,8 +43,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const selectedDrink = ref<DrinkType | null>(null);
-const detailModalOpen = ref<boolean>(false);
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
@@ -74,15 +68,6 @@ const toggleAvailability = (id: number) => {
     });
 };
 
-const openDrinkDetailModal = (drink: DrinkType) => {
-    selectedDrink.value = drink;
-    detailModalOpen.value = true;
-};
-
-const closeDrinkDetailModal = () => {
-    detailModalOpen.value = false;
-};
-
 const openConfirmModal = (
     message: string,
     type: 'destructive' | 'info',
@@ -96,6 +81,10 @@ const openConfirmModal = (
 
 const closeConfirmModal = () => {
     confirmModalOpen.value = false;
+};
+
+const goToEdit = (id: number) => {
+    router.visit(drink.edit(id).url);
 };
 </script>
 
@@ -140,7 +129,8 @@ const closeConfirmModal = () => {
                         <TableRow
                             v-for="drinkData in props.drinks.data"
                             :key="drinkData.id"
-                            @dblclick="openDrinkDetailModal(drinkData)"
+                            @dblclick="goToEdit(drinkData.id)"
+                            class="cursor-pointer"
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img
@@ -199,9 +189,6 @@ const closeConfirmModal = () => {
                                             >
                                                 <SquarePenIcon /> Edit
                                             </a>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem @click="openDrinkDetailModal(drinkData)">
-                                            <EyeIcon /> View
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="
@@ -263,12 +250,6 @@ const closeConfirmModal = () => {
                         </TableRow>
                     </TableBody>
                 </Table>
-
-                <DrinkDetailModal
-                    :open="detailModalOpen"
-                    :selectedDrink="selectedDrink"
-                    :onClose="closeDrinkDetailModal"
-                />
 
                 <ConfirmModal
                     :open="confirmModalOpen"

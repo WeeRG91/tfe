@@ -1,27 +1,21 @@
+import { CategoryOptionType } from '@/types/category';
+import {
+    IngredientAllergenType,
+    IngredientErrorType,
+} from '@/types/ingredient';
+import { MeatErrorType } from '@/types/meat';
+
 export type DishType = {
     id: number;
     name: string;
     main_image: string;
-    images: { id: number; path: string }[];
     description: string;
     price: number;
-    ingredients: IngredientType[];
-    category: CategoryEnumType;
+    ingredients: IngredientAllergenType[];
+    category: CategoryOptionType;
     is_available: string;
     created_at: string;
     updated_at: string;
-};
-
-export type IngredientType = {
-    id: number;
-    name: string;
-    allergen: { id: number; name: string; image: string };
-};
-
-export type CategoryEnumType = {
-    value: number;
-    label: string;
-    color: string;
 };
 
 export type EditDishType = {
@@ -30,25 +24,17 @@ export type EditDishType = {
     category: number;
     description: string;
     price: number;
+    meats: {id: number}[];
     ingredients: { id: number }[];
+    main_image: string;
     images: { id: number; path: string }[];
 };
 
-export type CategoryOptionType = {
-    value: number;
-    label: string;
-    color: string;
-};
-
-export type IngredientOptionType = {
-    value: number;
-    label: string;
-};
-
-export type ErrorType = {
+export type DishErrorType = {
     name?: string;
     description?: string;
     price?: string;
+    meats?: string;
     ingredients?: string;
     category?: string;
 };

@@ -27,7 +27,7 @@ class Ingredient extends Model
 
     public function dish(): BelongsToMany
     {
-        return $this->belongsToMany(Dish::class);
+        return $this->belongsToMany(Dish::class, 'dish_ingredients');
     }
 
     public function allergen(): BelongsTo

@@ -58,6 +58,11 @@ const restoreTrashed = (id: number, type: TrashedModelType, name: string) => {
             closeConfirmModal();
             toast.success(`${name} has been restored.`);
         },
+        onError: (error) => {
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please try again.');
+        },
     });
 };
 
@@ -69,6 +74,11 @@ const forceDelete = (id: number, type: TrashedModelType, name: string) => {
         onSuccess: () => {
             closeConfirmModal();
             toast.success(`${name} has been permanently deleted.`);
+        },
+        onError: (error) => {
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please try again.');
         },
     });
 };
@@ -83,6 +93,8 @@ const getColorType = (type: TrashedModelType) => {
             return 'bg-[#A390E4]';
         case 'Allergen':
             return 'bg-[#C69DD2]';
+        case 'Meat':
+            return 'bg-[#C16E70]';
         default:
             return 'bg-black';
     }
@@ -141,11 +153,7 @@ const closeConfirmModal = () => {
                             <TableCell>
                                 <Badge
                                     class="text-white/80"
-                                    :class="
-                                        getColorType(
-                                            trashedData.type,
-                                        )
-                                    "
+                                    :class="getColorType(trashedData.type)"
                                     >{{ trashedData.type }}</Badge
                                 >
                             </TableCell>

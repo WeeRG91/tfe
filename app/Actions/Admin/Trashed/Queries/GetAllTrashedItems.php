@@ -44,7 +44,7 @@ class GetAllTrashedItems
                     ? Storage::disk('public')->url($item->images->first()->path)
                     : Storage::disk('public')->url("images/picture.png"),
                 'type' => $type,
-                'deleted_at' => $item->deleted_at,
+                'deleted_at' => $item->deleted_at->toDateTimeString(),
             ])
             ->toArray();
     }

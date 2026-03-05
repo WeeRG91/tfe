@@ -19,7 +19,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import meat from '@/routes/meat';
 import { BreadcrumbItem, Paginated } from '@/types';
 import { MeatType } from '@/types/meat';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import {
     EllipsisVerticalIcon,
     EyeIcon,
@@ -74,6 +74,10 @@ const openConfirmModal = (
 const closeConfirmModal = () => {
     confirmModalOpen.value = false;
 };
+
+const goToEdit = (id: number) => {
+    router.visit(meat.edit(id).url);
+};
 </script>
 
 <template>
@@ -111,6 +115,8 @@ const closeConfirmModal = () => {
                         <TableRow
                             v-for="meatData in props.meats.data"
                             :key="meatData.id"
+                            @dblclick="goToEdit(meatData.id)"
+                            class="cursor-pointer"
                         >
                             <TableCell class="flex items-center gap-4">
                                 <img

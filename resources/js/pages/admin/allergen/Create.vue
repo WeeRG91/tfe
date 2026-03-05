@@ -2,21 +2,21 @@
 import FormTextInput from '@/components/FormTextInput.vue';
 import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
+import MultipleSelect from '@/components/MultipleSelect.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import allergen from '@/routes/allergen';
 import type { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { ErrorType, IngredientOptionType } from '@/types/allergen';
-import allergen from '@/routes/allergen';
-import MultipleSelect from '@/components/MultipleSelect.vue';
-
+import { IngredientOptionType } from '@/types/ingredient';
+import { AllergenErrorType } from '@/types/allergen';
 
 const props = defineProps<{
     ingredients: IngredientOptionType[];
-    errors: ErrorType;
+    errors: AllergenErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -33,7 +33,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const selectedIngredients = ref<number[]>([]);
 const name = ref<string>('');
 const description = ref<string>('');
-const imageFile = ref<File[]>([]);
+const images = ref<File[]>([]);
 
 const allergenForm = useForm({
     name: '',
@@ -46,13 +46,16 @@ const submit = () => {
     allergenForm.name = name.value;
     allergenForm.description = description.value;
     allergenForm.ingredients = selectedIngredients.value;
-    allergenForm.images = imageFile.value;
+    allergenForm.images = images.value;
 
     allergenForm.post(allergen.store().url, {
         forceFormData: true,
         onSuccess: () => {
             allergenForm.reset();
             toast.success('Allergen successfully created.');
+        },
+        onError: (error) => {
+            toast.error(error.message);
         },
     });
 };
@@ -103,7 +106,7 @@ const submit = () => {
                             Photos
                         </h2>
 
-                        <ImageUploader v-model="imageFile" />
+                        <ImageUploader v-model="images" />
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
@@ -123,14 +126,3 @@ const submit = () => {
         </div>
     </AdminLayout>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>

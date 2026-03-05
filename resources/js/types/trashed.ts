@@ -1,4 +1,4 @@
-export type TrashedModelType = 'Allergen' | 'Dish' | 'Drink' | 'Ingredient';
+export type TrashedModelType = 'Allergen' | 'Dish' | 'Drink' | 'Ingredient' | 'Meat';
 
 export type TrashedType = {
     id: number;

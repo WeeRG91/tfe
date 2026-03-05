@@ -5,22 +5,33 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import MultipleSelect from '@/components/MultipleSelect.vue';
 import Select from '@/components/Select.vue';
+import CreateIngredientModal from '@/components/admin/ingredient/CreateIngredientModal.vue';
+import CreateMeatModal from '@/components/admin/meat/CreateMeatModal.vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
-import type { BreadcrumbItem } from '@/types';
-import { CategoryOptionType, EditDishType, IngredientOptionType } from '@/types/dish';
+import type { BreadcrumbItem, ErrorType } from '@/types';
+import { CategoryOptionType } from '@/types/category';
+import { EditDishType } from '@/types/dish';
+import { IngredientOptionType } from '@/types/ingredient';
+import { MeatOptionType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { AllergenOptionType } from '@/types/allergen';
 
 const props = defineProps<{
     dishToEdit: EditDishType;
+    meats: MeatOptionType[];
     ingredients: IngredientOptionType[];
     categories: CategoryOptionType[];
+    allergens: AllergenOptionType[];
+    errors: ErrorType;
 }>();
+
+console.log(props.dishToEdit);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -33,6 +44,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const showCreateMeatModal = ref<boolean>(false);
+const showCreateIngredientModal = ref<boolean>(false);
+const selectedMeats = ref<number[]>(props.dishToEdit.meats?.map((m) => m.id));
 const selectedIngredients = ref<number[]>(
     props.dishToEdit.ingredients?.map((i) => i.id),
 );
@@ -40,13 +54,16 @@ const selectedCategory = ref<number | null>(props.dishToEdit.category ?? null);
 const name = ref(props.dishToEdit.name ?? '');
 const description = ref(props.dishToEdit.description ?? '');
 const price = ref(props.dishToEdit.price ?? 0);
-const imageFile = ref<File[]>([]);
+const images = ref<File[]>([]);
+const ingredients = ref<IngredientOptionType[]>([...props.ingredients]);
+const meats = ref<MeatOptionType[]>([...props.meats]);
 
 const dishForm = useForm({
     name: '',
     description: '',
     price: null as number | null,
     category: null as number | null | undefined,
+    meats: [] as number[],
     ingredients: [] as number[],
     images: [] as File[],
 });
@@ -56,19 +73,46 @@ const submit = () => {
     dishForm.description = description.value;
     dishForm.price = price.value;
     dishForm.category = selectedCategory.value;
+    dishForm.meats = selectedMeats.value;
     dishForm.ingredients = selectedIngredients.value;
-    dishForm.images = imageFile.value;
+    dishForm.images = images.value;
 
     dishForm.post(dish.update(props.dishToEdit.id).url, {
         forceFormData: true,
+        errorBag: 'dishErrors',
         onSuccess: () => {
             dishForm.reset();
             toast.success('Dish successfully edited.');
         },
         onError: (error) => {
-            toast.error(error.message);
-        }
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please check the form.');
+        },
     });
+};
+
+const handleIngredientCreated = (ingredient: IngredientOptionType) => {
+    ingredients.value = [...ingredients.value, ingredient];
+    selectedIngredients.value = [
+        ...selectedIngredients.value,
+        ingredient.value,
+    ];
+    closeCreateIngredientModal();
+};
+
+const closeCreateIngredientModal = () => {
+    showCreateIngredientModal.value = false;
+};
+
+const handleMeatCreated = (meat: MeatOptionType) => {
+    meats.value = [...meats.value, meat];
+    selectedMeats.value = [...selectedMeats.value, meat.value];
+    closeCreateMeatModal();
+};
+
+const closeCreateMeatModal = () => {
+    showCreateMeatModal.value = false;
 };
 </script>
 
@@ -88,31 +132,49 @@ const submit = () => {
                             Dish Information
                         </h2>
 
-                        <FormTextInput id="name" label="Name" v-model="name" />
+                        <FormTextInput
+                            id="name"
+                            label="Name"
+                            v-model="name"
+                            :error="props.errors?.dishErrors?.name"
+                        />
 
                         <FormTextarea
                             id="description"
                             label="Description"
                             v-model="description"
                             :rows="5"
+                            :error="props.errors?.dishErrors?.description"
                         />
 
                         <FormNumberInput
                             id="price"
                             label="Price (€)"
                             v-model="price"
+                            :error="props.errors?.dishErrors?.price"
+                        />
+
+                        <MultipleSelect
+                            v-model="selectedMeats"
+                            :options="props.meats"
+                            label="Meat Options"
+                            :error="props.errors?.dishErrors?.meats"
+                            @create="showCreateMeatModal = true"
                         />
 
                         <MultipleSelect
                             v-model="selectedIngredients"
                             :options="props.ingredients"
                             label="Ingredients"
+                            :error="props.errors?.dishErrors?.ingredients"
+                            @create="showCreateIngredientModal = true"
                         />
 
                         <Select
                             v-model="selectedCategory"
                             :options="props.categories"
                             label="Category"
+                            :error="props.errors?.dishErrors?.category"
                         />
                     </div>
                     <div
@@ -123,7 +185,7 @@ const submit = () => {
                         </h2>
 
                         <ImageUploader
-                            v-model="imageFile"
+                            v-model="images"
                             :existingImages="props.dishToEdit.images"
                         />
                     </div>
@@ -142,17 +204,21 @@ const submit = () => {
                     >
                 </div>
             </form>
+
+            <CreateMeatModal
+                :open="showCreateMeatModal"
+                :onClose="closeCreateMeatModal"
+                :errors="props.errors.meatErrors"
+                @create="handleMeatCreated"
+            />
+
+            <CreateIngredientModal
+                :allergens="props.allergens"
+                :open="showCreateIngredientModal"
+                :onClose="closeCreateIngredientModal"
+                :errors="props.errors.ingredientErrors"
+                @create="handleIngredientCreated"
+            />
         </div>
     </AdminLayout>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>

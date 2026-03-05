@@ -4,24 +4,21 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import ingredient from '@/routes/ingredient';
-import {
-    AllergenOptionType,
-    EditIngredientType,
-    ErrorType,
-} from '@/types/ingredient';
-import { Spinner } from '@/components/ui/spinner';
+import { EditIngredientType, IngredientErrorType } from '@/types/ingredient';
+import { AllergenOptionType } from '@/types/allergen';
 
 const props = defineProps<{
     ingredientToEdit: EditIngredientType;
     allergens: AllergenOptionType[];
-    errors: ErrorType;
+    errors: IngredientErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -40,7 +37,7 @@ const selectedAllergen = ref<number | null>(
 );
 const name = ref<string>(props.ingredientToEdit.name ?? '');
 const description = ref<string>(props.ingredientToEdit.description ?? '');
-const imageFile = ref<File[]>([]);
+const images = ref<File[]>([]);
 
 const ingredientForm = useForm({
     name: '',
@@ -53,13 +50,18 @@ const submit = () => {
     ingredientForm.name = name.value;
     ingredientForm.description = description.value;
     ingredientForm.allergen_id = selectedAllergen.value;
-    ingredientForm.images = imageFile.value;
+    ingredientForm.images = images.value;
 
     ingredientForm.post(ingredient.update(props.ingredientToEdit.id).url, {
         forceFormData: true,
         onSuccess: () => {
             ingredientForm.reset();
             toast.success('Ingredient successfully updated.');
+        },
+        onError: (error) => {
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please check the form.');
         },
     });
 };
@@ -111,7 +113,7 @@ const submit = () => {
                         </h2>
 
                         <ImageUploader
-                            v-model="imageFile"
+                            v-model="images"
                             :existingImages="props.ingredientToEdit.images"
                         />
                     </div>
@@ -126,24 +128,12 @@ const submit = () => {
                         </a>
                     </Button>
                     <Button type="submit" :disabled="ingredientForm.processing"
-                        ><SquarePenIcon v-if="!ingredientForm.processing" /><Spinner
-                            v-else
-                        />
-                        Edit</Button
+                        ><SquarePenIcon
+                            v-if="!ingredientForm.processing"
+                        /><Spinner v-else /> Edit</Button
                     >
                 </div>
             </form>
         </div>
     </AdminLayout>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>

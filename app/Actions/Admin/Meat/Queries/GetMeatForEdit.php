@@ -2,6 +2,7 @@
 
 namespace App\Actions\Admin\Meat\Queries;
 
+use App\Http\Resources\Admin\Meat\MeatEditResource;
 use App\Models\Meat;
 use Illuminate\Support\Facades\Storage;
 
@@ -9,21 +10,12 @@ class GetMeatForEdit
 {
     /**
      * @param Meat $meat
-     * @return array
+     * @return MeatEditResource
      */
-    public function execute(Meat $meat): array
+    public function execute(Meat $meat): MeatEditResource
     {
         $meat->load('images');
 
-        return [
-            'id' => $meat->id,
-            'name' => $meat->name,
-            'description' => $meat->description,
-            'extra_price' => $meat->extra_price,
-            'images' => $meat->images->map(fn ($image) => [
-                'id' => $image->id,
-                'path' => Storage::disk('public')->url($image->path),
-            ]),
-        ];
+        return new MeatEditResource($meat);
     }
 }

@@ -11,7 +11,6 @@ use App\Actions\Admin\Ingredient\Queries\GetPaginatedIngredients;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\IngredientCreateRequest;
 use App\Http\Requests\Admin\IngredientUpdateRequest;
-use App\Http\Resources\Admin\IngredientResource;
 use App\Models\Ingredient;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -58,6 +57,36 @@ class IngredientController extends Controller
 
             return redirect()
                 ->route('ingredient.index');
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withErrors(['message' => 'Something went wrong while creating the ingredient']);
+        }
+    }
+
+    /**
+     * @param IngredientCreateRequest $request
+     * @param CreateIngredient $command
+     * @return RedirectResponse
+     */
+    public function quickCreate(
+        IngredientCreateRequest $request,
+        CreateIngredient $command
+    ): RedirectResponse
+    {
+        try {
+            $ingredient = $command->execute(
+                $request->validated(),
+                $request->file('images') ?? []
+            );
+
+            return back()->with([
+                'createdIngredient' => [
+                    'value' => $ingredient->id,
+                    'label' => $ingredient->name,
+                ],
+            ]);
         } catch (Throwable $e) {
             report($e);
 

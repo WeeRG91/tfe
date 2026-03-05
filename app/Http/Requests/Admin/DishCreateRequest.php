@@ -29,6 +29,7 @@ class DishCreateRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'category' => ['required', new Enum(DishCategoryEnum::class)],
             'price' => ['required', 'numeric'],
+            'meats' => ['required', 'array', 'exists:meats,id'],
             'ingredients' => ['required', 'array', 'exists:ingredients,id'],
             'images' => ['nullable', 'array'],
         ];

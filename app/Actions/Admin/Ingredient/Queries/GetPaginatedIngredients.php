@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Ingredient\Queries;
 
-use App\Http\Resources\Admin\IngredientResource;
+use App\Http\Resources\Admin\Ingredient\IngredientResource;
 use App\Models\Ingredient;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

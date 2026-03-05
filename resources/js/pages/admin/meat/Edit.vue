@@ -32,7 +32,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const name = ref<string>(props.meatToEdit.name || '');
 const description = ref<string>(props.meatToEdit.description || '');
 const extra_price = ref<number | null>(props.meatToEdit.extra_price || null);
-const image_files = ref<File[]>([]);
+const images = ref<File[]>([]);
 
 const meatForm = useForm({
     name: '',
@@ -45,7 +45,7 @@ const submit = () => {
     meatForm.name = name.value;
     meatForm.description = description.value;
     meatForm.extra_price = extra_price.value;
-    meatForm.images = image_files.value;
+    meatForm.images = images.value;
 
     meatForm.post(meat.update(props.meatToEdit.id).url, {
         forceFormData: true,
@@ -54,7 +54,9 @@ const submit = () => {
             toast.success('Meat Successfully edited.');
         },
         onError: (error) => {
-            toast.error(error.message);
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please check the form.');
         },
     });
 };
@@ -106,7 +108,7 @@ const submit = () => {
                         </h2>
 
                         <ImageUploader
-                            v-model="image_files"
+                            v-model="images"
                             :existing-images="props.meatToEdit.images"
                         />
                     </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { Check, Plus } from 'lucide-vue-next';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 interface Option {
     value: number;
@@ -15,11 +16,21 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: number[]): void;
+    (e: 'create'): void;
 }>();
 
 const selectedValues = ref<number[]>([...props.modelValue]);
 const isDropdownOpen = ref(false);
 const dropdownRef = ref<HTMLDivElement | null>(null);
+const searchQuery = ref<string>('');
+
+const filteredOptions = computed(() => {
+    if (!searchQuery.value) return props.options;
+
+    return props.options.filter((option) =>
+        option.label.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    );
+});
 
 watch(
     () => props.modelValue,
@@ -40,6 +51,10 @@ const toggleOptions = (value: number) => {
 
 const toggleDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value;
+
+    if (!isDropdownOpen.value) {
+        searchQuery.value = '';
+    }
 };
 
 const getSelectedLabels = () => {
@@ -55,6 +70,7 @@ const handleClickOutside = (event: MouseEvent) => {
         !dropdownRef.value.contains(event.target as Node)
     ) {
         isDropdownOpen.value = false;
+        searchQuery.value = '';
     }
 };
 
@@ -80,7 +96,7 @@ onBeforeUnmount(() => {
                         : 'border-gray-300 focus:border-blue-600 dark:border-gray-600 dark:focus:border-blue-500'
                 "
             >
-                <div class="flex flex-wrap gap-1">
+                <div class="flex gap-1">
                     <span
                         v-for="label in getSelectedLabels()"
                         :key="label"
@@ -119,20 +135,10 @@ onBeforeUnmount(() => {
                 >{{ label }}</label
             >
             <div
-                class="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2"
+                class="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer rounded-full text-gray-500 transition-all duration-300 hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-300"
+                @click="emit('create')"
             >
-                <svg
-                    class="h-4 w-4 text-gray-500"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 9l-7 7-7-7"
-                    />
-                </svg>
+                <Plus class="h-5 w-5" />
             </div>
         </div>
 
@@ -141,8 +147,16 @@ onBeforeUnmount(() => {
             v-if="isDropdownOpen"
             class="minimal-scrollbar absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-[#0a0a0a]"
         >
+            <div class="sticky top-0 bg-white p-2 dark:bg-[#0a0a0a]">
+                <input
+                    v-model="searchQuery"
+                    type="text"
+                    placeholder="Search..."
+                    class="w-full rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                />
+            </div>
             <div
-                v-for="option in props.options"
+                v-for="option in filteredOptions"
                 :key="option.value"
                 @click="toggleOptions(option.value)"
                 class="flex cursor-pointer items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -152,22 +166,26 @@ onBeforeUnmount(() => {
                     ),
                 }"
             >
-                <div class="flex h-5 items-center">
-                    <input
-                        type="checkbox"
-                        :checked="selectedValues.includes(option.value)"
-                        class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-                        readonly
-                    />
-                </div>
                 <label
-                    class="ms-2 w-full cursor-pointer py-1 text-sm font-medium text-gray-900 dark:text-gray-300"
+                    class="ms-2 flex w-full cursor-pointer justify-between py-1 text-sm font-medium text-gray-900 dark:text-gray-300"
                 >
-                    {{ option.label }}
+                    <span>{{ option.label }}</span>
+                    <span v-if="selectedValues.includes(option.value)">
+                        <Check class="h-5 w-5" />
+                    </span>
                 </label>
             </div>
+
+            <div
+                v-if="filteredOptions.length === 0"
+                class="px-3 py-2 text-center text-sm text-gray-500 dark:text-gray-400"
+            >
+                No results found.
+            </div>
         </div>
-        <span v-if="props.error" class="text-sm text-red-500">{{props.error}}</span>
+        <span v-if="props.error" class="text-sm text-red-500">{{
+            props.error
+        }}</span>
     </div>
 </template>
 

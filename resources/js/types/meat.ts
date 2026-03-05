@@ -13,7 +13,13 @@ export type EditMeatType = {
     name: string;
     description: string;
     extra_price: number;
+    main_image: string;
     images: { id: number; path: string }[];
+};
+
+export type MeatOptionType = {
+    value: number;
+    label: string;
 };
 
 export type MeatErrorType = {

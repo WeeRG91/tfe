@@ -47,11 +47,41 @@ class MeatController extends Controller
         try {
             $command->execute(
                 $request->validated(),
-                $request->file('images'),
+                $request->file('images') ?? [],
             );
 
             return redirect()
                 ->route('meat.index');
+        } catch (Throwable $e) {
+            report($e);
+
+            return back()
+                ->withErrors(['message' => 'Something went wrong while creating the meat']);
+        }
+    }
+
+    /**
+     * @param MeatCreateRequest $request
+     * @param CreateMeat $command
+     * @return RedirectResponse
+     */
+    public function quickCreate(
+        MeatCreateRequest $request,
+        CreateMeat $command
+    ): RedirectResponse
+    {
+        try {
+            $meat = $command->execute(
+                $request->validated(),
+                $request->file('images') ?? [],
+            );
+
+            return back()->with([
+                'createdMeat' => [
+                    'value' => $meat->id,
+                    'label' => $meat->name,
+                ],
+            ]);
         } catch (Throwable $e) {
             report($e);
 

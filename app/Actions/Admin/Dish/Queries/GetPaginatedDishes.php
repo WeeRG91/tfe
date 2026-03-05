@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Dish\Queries;
 
-use App\Http\Resources\Admin\DishResource;
+use App\Http\Resources\Admin\Dish\DishResource;
 use App\Models\Dish;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

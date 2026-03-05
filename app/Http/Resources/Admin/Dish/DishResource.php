@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Resources\Admin;
+namespace App\Http\Resources\Admin\Dish;
 
+use App\Enums\DishCategoryEnum;
+use App\Http\Resources\Admin\Ingredient\IngredientWithAllergenResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class MeatResource extends JsonResource
+class DishResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,11 +20,14 @@ class MeatResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'description' => $this->description,
-            'extra_price' => $this->extra_price,
             'main_image' => $this->main_image
                 ? Storage::disk('public')->url($this->main_image)
-                : Storage::disk('public')->url('images/picture.png'),
+                : Storage::disk('public')->url('/images/picture.png'),
+            'description' => $this->description,
+            'price' => $this->price,
+            'is_available' => $this->is_available ? 'Available' : 'Unavailable',
+            'ingredients' => IngredientWithAllergenResource::collection($this->whenLoaded('ingredients')),
+            'category' => DishCategoryEnum::getCategory($this->category),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
         ];

@@ -8,11 +8,8 @@ import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import allergen from '@/routes/allergen';
 import type { BreadcrumbItem } from '@/types';
-import {
-    EditAllergenType,
-    ErrorType,
-    IngredientOptionType,
-} from '@/types/allergen';
+import { AllergenErrorType, EditAllergenType } from '@/types/allergen';
+import { IngredientOptionType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -21,7 +18,7 @@ import { toast } from 'vue-sonner';
 const props = defineProps<{
     allergenToEdit: EditAllergenType;
     ingredients: IngredientOptionType[];
-    errors: ErrorType;
+    errors: AllergenErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -60,6 +57,9 @@ const submit = () => {
         onSuccess: () => {
             allergenForm.reset();
             toast.success('Allergen successfully edited.');
+        },
+        onError: (error) => {
+            toast.error(error.message);
         },
     });
 };
@@ -135,14 +135,3 @@ const submit = () => {
         </div>
     </AdminLayout>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>

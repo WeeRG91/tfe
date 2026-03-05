@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Http\Resources\Admin;
+namespace App\Http\Resources\Admin\Ingredient;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class AllergenWithImagesResource extends JsonResource
+class IngredientEditResource extends JsonResource
 {
+    public static $wrap = null;
+
     /**
      * Transform the resource into an array.
      *
@@ -18,9 +20,15 @@ class AllergenWithImagesResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'description' => $this->desciption,
+            'allergen' => $this->allergen->id ?? null,
             'main_image' => $this->main_image
                 ? Storage::disk('public')->url($this->main_image)
-                : Storage::disk('public')->url('/images/picture.png'),
+                : null,
+            'images' => $this->images->map(fn ($image) => [
+                'id' => $image->id,
+                'path' => Storage::disk('public')->url($image->path),
+            ]),
         ];
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Allergen\Queries;
 
-use App\Http\Resources\Admin\AllergenResource;
+use App\Http\Resources\Admin\Allergen\AllergenResource;
 use App\Models\Allergen;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
