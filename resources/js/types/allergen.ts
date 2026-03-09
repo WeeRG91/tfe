@@ -1,12 +1,8 @@
-import { IngredientAllergenType } from '@/types/ingredient';
-
 export type AllergenType = {
     id: number;
     name: string;
     description: string;
-    ingredients: IngredientAllergenType[];
     main_image: string;
-    images: { id: number; path: string }[];
     created_at: string;
     updated_at: string;
 };

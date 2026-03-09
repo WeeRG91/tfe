@@ -9,39 +9,50 @@ use App\Actions\Admin\Drink\Commands\UpdateDrink;
 use App\Actions\Admin\Drink\Queries\GetDrinkForEdit;
 use App\Actions\Admin\Drink\Queries\GetDrinkFormData;
 use App\Actions\Admin\Drink\Queries\GetPaginatedDrinks;
-use App\Enums\DrinkCategoryEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DrinkCreateRequest;
 use App\Http\Requests\Admin\DrinkUpdateRequest;
 use App\Models\Drink;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 class DrinkController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @return InertiaResponse
      */
-    public function index(GetPaginatedDrinks $query): Response
+    public function index(): InertiaResponse
     {
-        return Inertia::render('admin/drink/Index', [
-            'drinks' => $query->execute(),
-        ]);
+        return Inertia::render('admin/drink/Index');
     }
 
     /**
-     * Show the form for creating a new resource.
+     * @param GetPaginatedDrinks $query
+     * @return JsonResponse
      */
-    public function create(GetDrinkFormData $query): Response
+    public function getDrinks(GetPaginatedDrinks $query): JsonResponse
+    {
+        $drinks = $query->execute();
+
+        return response()->json($drinks);
+    }
+
+    /**
+     * @param GetDrinkFormData $query
+     * @return InertiaResponse
+     */
+    public function create(GetDrinkFormData $query): InertiaResponse
     {
         return Inertia::render('admin/drink/Create', $query->execute());
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @param DrinkCreateRequest $request
+     * @param CreateDrink $command
+     * @return RedirectResponse
      */
     public function store(DrinkCreateRequest $request, CreateDrink $command): RedirectResponse
     {
@@ -63,13 +74,16 @@ class DrinkController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @param Drink $drink
+     * @param GetDrinkForEdit $query
+     * @param GetDrinkFormData $formData
+     * @return InertiaResponse
      */
     public function edit(
         Drink $drink,
         GetDrinkForEdit $query,
         GetDrinkFormData $formData
-    ): Response
+    ): InertiaResponse
     {
         return Inertia::render('admin/drink/Edit', [
             'drinkToEdit' => $query->execute($drink),
@@ -78,7 +92,10 @@ class DrinkController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param DrinkUpdateRequest $request
+     * @param Drink $drink
+     * @param UpdateDrink $command
+     * @return RedirectResponse
      */
     public function update(DrinkUpdateRequest $request, Drink $drink, UpdateDrink $command): RedirectResponse
     {
@@ -100,7 +117,9 @@ class DrinkController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param Drink $drink
+     * @param DeleteDrink $command
+     * @return RedirectResponse
      */
     public function destroy(Drink $drink, DeleteDrink $command): RedirectResponse
     {

@@ -9,15 +9,23 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class GetPaginatedMeats
 {
     /**
-     * @return AnonymousResourceCollection
+     * @return array
      */
-    public function execute(): AnonymousResourceCollection
+    public function execute(): array
     {
         $meats = Meat::query()
             ->with('images')
             ->orderByDesc('created_at')
-            ->paginate(10);
+            ->cursorPaginate(10);
 
-        return MeatResource::collection($meats);
+        return [
+            'data' => MeatResource::collection($meats),
+            'path' => $meats->path(),
+            'per_page' => $meats->perPage(),
+            'next_cursor' => $meats->nextCursor()?->encode(),
+            'next_page_url' => $meats->nextPageUrl(),
+            'prev_cursor' => $meats->previousCursor()?->encode(),
+            'prev_page_url' => $meats->previousPageUrl(),
+        ];
     }
 }

@@ -4,7 +4,6 @@ export type DrinkType = {
     id: number;
     name: string;
     main_image: string;
-    images: { id: number; path: string }[];
     description: string;
     price: number;
     category: CategoryOptionType;

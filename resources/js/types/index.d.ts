@@ -1,8 +1,9 @@
+import { DishErrorType } from '@/types/dish';
+import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
+import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
-import { MeatErrorType, MeatOptionType } from '@/types/meat';
-import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
-import { DishErrorType } from '@/types/dish';
+import { AllergenErrorType } from '@/types/allergen';
 
 export interface Auth {
     user: User;
@@ -78,8 +79,19 @@ export type Link = {
     url: string;
 };
 
+export type CursorPaginated<T> = {
+    data: T[];
+    path: string;
+    per_page: number;
+    next_cursor: string | null;
+    next_page_url: string | null;
+    prev_cursor: string | null;
+    prev_page_url: string | null;
+};
+
 export type ErrorType = {
     dishErrors?: DishErrorType;
     meatErrors?: MeatErrorType;
     ingredientErrors?: IngredientErrorType;
+    allergenErrors: AllergenErrorType;
 };

@@ -9,16 +9,24 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class GetPaginatedAllergens
 {
     /**
-     * @return AnonymousResourceCollection
+     * @return array
      */
-    public function execute(): AnonymousResourceCollection
+    public function execute(): array
     {
         $allergens = Allergen::query()
             ->with(['ingredients', 'images'])
             ->where('deleted_at', null)
             ->orderBy('name')
-            ->paginate(10);
+            ->cursorPaginate(15);
 
-        return AllergenResource::collection($allergens);
+        return [
+            'data' => AllergenResource::collection($allergens),
+            'path' => $allergens->path(),
+            'per_page' => $allergens->perPage(),
+            'next_cursor' => $allergens->nextCursor()?->encode(),
+            'next_page_url' => $allergens->nextPageUrl(),
+            'prev_cursor' => $allergens->previousCursor()?->encode(),
+            'prev_page_url' => $allergens->previousPageUrl(),
+        ];
     }
 }

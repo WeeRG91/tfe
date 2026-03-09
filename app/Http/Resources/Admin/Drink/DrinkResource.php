@@ -22,10 +22,6 @@ class DrinkResource extends JsonResource
             'main_image' => $this->main_image
                 ? Storage::disk('public')->url($this->main_image)
                 : Storage::disk('public')->url('/images/picture.png'),
-            'images' => $this->images->map(fn($image) => [
-                'id' => $image->id,
-                'path' => Storage::disk('public')->url($image->path),
-            ]),
             'description' => $this->description,
             'price' => $this->price,
             'is_available' => $this->is_available ? 'Available' : 'Unavailable',

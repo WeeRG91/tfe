@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\IngredientCreateRequest;
 use App\Http\Requests\Admin\IngredientUpdateRequest;
 use App\Models\Ingredient;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,14 +21,22 @@ use Throwable;
 class IngredientController extends Controller
 {
     /**
-     * @param GetPaginatedIngredients $query
      * @return Response
      */
-    public function index(GetPaginatedIngredients $query): Response
+    public function index(): Response
     {
-        return Inertia::render('admin/ingredient/Index', [
-            'ingredients' => $query->execute(),
-        ]);
+        return Inertia::render('admin/ingredient/Index');
+    }
+
+    /**
+     * @param GetPaginatedIngredients $query
+     * @return JsonResponse
+     */
+    public function getIngredients(GetPaginatedIngredients $query): JsonResponse
+    {
+        $ingredients = $query->execute();
+
+        return response()->json($ingredients);
     }
 
     /**

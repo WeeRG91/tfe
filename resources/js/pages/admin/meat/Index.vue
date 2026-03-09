@@ -17,9 +17,10 @@ import {
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import meat from '@/routes/meat';
-import { BreadcrumbItem, Paginated } from '@/types';
+import { BreadcrumbItem, CursorPaginated } from '@/types';
 import { MeatType } from '@/types/meat';
 import { Head, router, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import {
     EllipsisVerticalIcon,
     EyeIcon,
@@ -27,12 +28,8 @@ import {
     SquarePlusIcon,
     TrashIcon,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-
-const props = defineProps<{
-    meats: Paginated<MeatType>;
-}>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -45,6 +42,11 @@ const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
+const meats = ref<MeatType[]>([]);
+const nextCursor = ref<string | null>(null);
+const isLoading = ref<boolean>(false);
+const sentinel = ref<HTMLElement | null>(null);
+const observer = ref<IntersectionObserver | null>(null);
 
 const meatForm = useForm({});
 
@@ -55,7 +57,9 @@ const deleteMeat = (id: number) => {
             toast.success('Allergen successfully deleted.');
         },
         onError: (error) => {
-            toast.error(error.message);
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please try again.');
         },
     });
 };
@@ -78,6 +82,52 @@ const closeConfirmModal = () => {
 const goToEdit = (id: number) => {
     router.visit(meat.edit(id).url);
 };
+
+const loadMeats = async () => {
+    if (isLoading.value) return;
+
+    isLoading.value = true;
+
+    try {
+        const response = await axios.get<CursorPaginated<MeatType>>(
+            '/meats/get-meats',
+            {
+                params: { cursor: nextCursor.value },
+            },
+        );
+        const newMeats = response.data;
+        meats.value.push(...newMeats.data);
+        nextCursor.value = newMeats.next_cursor;
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to load more ingredients.');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+onMounted(() => {
+    loadMeats();
+
+    observer.value = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    loadMeats();
+                }
+            });
+        },
+        {
+            root: null,
+            rootMargin: '100px',
+            threshold: 0.1,
+        },
+    );
+
+    watch(sentinel, (element) => {
+        if (element) observer.value?.observe(element);
+    });
+});
 </script>
 
 <template>
@@ -85,10 +135,10 @@ const goToEdit = (id: number) => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-t-xl p-4"
         >
             <div
-                class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
+                class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <div class="m-2 flex cursor-pointer justify-end">
                     <a :href="meat.create().url">
@@ -113,7 +163,7 @@ const goToEdit = (id: number) => {
                     </TableHeader>
                     <TableBody>
                         <TableRow
-                            v-for="meatData in props.meats.data"
+                            v-for="meatData in meats"
                             :key="meatData.id"
                             @dblclick="goToEdit(meatData.id)"
                             class="cursor-pointer"
@@ -129,19 +179,19 @@ const goToEdit = (id: number) => {
                                 </span>
                             </TableCell>
                             <TableCell class="group relative">
-                                <span class="whitespace-nowrap">{{
-                                    meatData.extra_price
-                                }}</span>
+                                <span class="whitespace-nowrap">
+                                    +{{ meatData.extra_price }} €
+                                </span>
                             </TableCell>
                             <TableCell
-                                ><span class="whitespace-nowrap">{{
-                                    meatData.created_at
-                                }}</span></TableCell
-                            >
+                                ><span class="whitespace-nowrap">
+                                    {{ meatData.created_at }}</span
+                                >
+                            </TableCell>
                             <TableCell
-                                ><span class="whitespace-nowrap">{{
-                                    meatData.updated_at
-                                }}</span>
+                                ><span class="whitespace-nowrap">
+                                    {{ meatData.updated_at }}
+                                </span>
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
@@ -178,7 +228,17 @@ const goToEdit = (id: number) => {
                                 </DropdownMenu>
                             </TableCell>
                         </TableRow>
-                        <TableRow v-if="props.meats.data.length === 0">
+
+                        <tr ref="sentinel" v-if="nextCursor">
+                            <td
+                                :colspan="5"
+                                class="py-2 text-center text-gray-500"
+                            >
+                                Loading more ingredients...
+                            </td>
+                        </tr>
+
+                        <TableRow v-if="meats.length === 0">
                             <TableCell
                                 class="text-center text-gray-300"
                                 :colspan="5"

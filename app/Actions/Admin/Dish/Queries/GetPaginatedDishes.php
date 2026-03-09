@@ -4,14 +4,13 @@ namespace App\Actions\Admin\Dish\Queries;
 
 use App\Http\Resources\Admin\Dish\DishResource;
 use App\Models\Dish;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GetPaginatedDishes
 {
     /**
-     * @return AnonymousResourceCollection
+     * @return array
      */
-    public function execute(): AnonymousResourceCollection
+    public function execute(): array
     {
         $dishes = Dish::query()
             ->with([
@@ -20,8 +19,16 @@ class GetPaginatedDishes
             ])
             ->where('deleted_at', null)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->cursorPaginate(15);
 
-        return DishResource::collection($dishes);
+        return [
+            'data' => DishResource::collection($dishes),
+            'path' => $dishes->path(),
+            'per_page' => $dishes->perPage(),
+            'next_cursor' => $dishes->nextCursor()?->encode(),
+            'next_page_url' => $dishes->nextPageUrl(),
+            'prev_cursor' => $dishes->previousCursor()?->encode(),
+            'prev_page_url' => $dishes->previousPageUrl(),
+        ];
     }
 }

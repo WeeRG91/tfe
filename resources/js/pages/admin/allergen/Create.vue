@@ -3,20 +3,22 @@ import FormTextInput from '@/components/FormTextInput.vue';
 import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import MultipleSelect from '@/components/MultipleSelect.vue';
+import CreateIngredientModal from '@/components/admin/ingredient/CreateIngredientModal.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import allergen from '@/routes/allergen';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, ErrorType } from '@/types';
+import { AllergenOptionType } from '@/types/allergen';
+import { IngredientOptionType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { IngredientOptionType } from '@/types/ingredient';
-import { AllergenErrorType } from '@/types/allergen';
 
 const props = defineProps<{
     ingredients: IngredientOptionType[];
-    errors: AllergenErrorType;
+    allergens: AllergenOptionType[];
+    errors: ErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -30,10 +32,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const showCreateIngredientModal = ref<boolean>(false);
 const selectedIngredients = ref<number[]>([]);
 const name = ref<string>('');
 const description = ref<string>('');
 const images = ref<File[]>([]);
+const ingredients = ref<IngredientOptionType[]>(props.ingredients);
 
 const allergenForm = useForm({
     name: '',
@@ -50,14 +54,30 @@ const submit = () => {
 
     allergenForm.post(allergen.store().url, {
         forceFormData: true,
+        errorBag: 'allergenErrors',
         onSuccess: () => {
             allergenForm.reset();
             toast.success('Allergen successfully created.');
         },
         onError: (error) => {
-            toast.error(error.message);
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please check the form.');
         },
     });
+};
+
+const handleIngredientCreated = (ingredient: IngredientOptionType) => {
+    ingredients.value = [...ingredients.value, ingredient];
+    selectedIngredients.value = [
+        ...selectedIngredients.value,
+        ingredient.value,
+    ];
+    closeCreateIngredientModal();
+};
+
+const closeCreateIngredientModal = () => {
+    showCreateIngredientModal.value = false;
 };
 </script>
 
@@ -81,7 +101,7 @@ const submit = () => {
                             id="name"
                             label="Name"
                             v-model="name"
-                            :error="props.errors.name"
+                            :error="props.errors.allergenErrors?.name"
                         />
 
                         <FormTextarea
@@ -89,14 +109,15 @@ const submit = () => {
                             label="Description"
                             v-model="description"
                             :rows="5"
-                            :error="props.errors.description"
+                            :error="props.errors.allergenErrors?.description"
                         />
 
                         <MultipleSelect
                             v-model="selectedIngredients"
-                            :options="props.ingredients"
+                            :options="ingredients"
                             label="Ingredients"
-                            :error="props.errors.ingredients"
+                            :error="props.errors.allergenErrors?.ingredients"
+                            @create="showCreateIngredientModal = true"
                         />
                     </div>
                     <div
@@ -123,6 +144,14 @@ const submit = () => {
                     >
                 </div>
             </form>
+
+            <CreateIngredientModal
+                :open="showCreateIngredientModal"
+                :onClose="closeCreateIngredientModal"
+                :allergens="props.allergens"
+                :errors="props.errors.ingredientErrors"
+                @create="handleIngredientCreated"
+            />
         </div>
     </AdminLayout>
 </template>

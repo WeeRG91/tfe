@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DishCreateRequest;
 use App\Http\Requests\Admin\DishUpdateRequest;
 use App\Models\Dish;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -21,17 +22,27 @@ use Throwable;
 class DishController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @return InertiaResponse
      */
-    public function index(GetPaginatedDishes $query): InertiaResponse
+    public function index(): InertiaResponse
     {
-        return Inertia::render('admin/dish/Index', [
-            'dishes' => $query->execute(),
-        ]);
+        return Inertia::render('admin/dish/Index');
     }
 
     /**
-     * Show the form for creating a new resource.
+     * @param GetPaginatedDishes $query
+     * @return JsonResponse
+     */
+    public function getDishes(GetPaginatedDishes $query): JsonResponse
+    {
+        $dishes = $query->execute();
+
+        return response()->json($dishes);
+    }
+
+    /**
+     * @param GetDishFormData $query
+     * @return InertiaResponse
      */
     public function create(GetDishFormData $query): InertiaResponse
     {
@@ -39,7 +50,9 @@ class DishController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @param DishCreateRequest $request
+     * @param CreateDish $command
+     * @return RedirectResponse
      */
     public function store(DishCreateRequest $request, CreateDish $command): RedirectResponse
     {
@@ -62,7 +75,10 @@ class DishController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @param Dish $dish
+     * @param GetDishForEdit $query
+     * @param GetDishFormData $formData
+     * @return InertiaResponse
      */
     public function edit(Dish $dish, GetDishForEdit $query, GetDishFormData $formData): InertiaResponse
     {
@@ -73,7 +89,10 @@ class DishController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param DishUpdateRequest $request
+     * @param Dish $dish
+     * @param updateDish $command
+     * @return RedirectResponse
      */
     public function update(DishUpdateRequest $request, Dish $dish, UpdateDish $command): RedirectResponse
     {
@@ -97,7 +116,9 @@ class DishController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param Dish $dish
+     * @param DeleteDish $command
+     * @return RedirectResponse
      */
     public function destroy(Dish $dish, DeleteDish $command): RedirectResponse
     {

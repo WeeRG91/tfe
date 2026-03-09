@@ -18,9 +18,10 @@ import {
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/drink';
-import type { BreadcrumbItem, Paginated } from '@/types';
+import type { BreadcrumbItem, CursorPaginated } from '@/types';
 import { DrinkType } from '@/types/drink';
 import { Head, router, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import {
     CircleCheckBigIcon,
     CircleXIcon,
@@ -29,12 +30,8 @@ import {
     SquarePlusIcon,
     TrashIcon,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-
-const props = defineProps<{
-    drinks: Paginated<DrinkType>;
-}>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -47,6 +44,11 @@ const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
+const drinks = ref<DrinkType[]>([]);
+const nextCursor = ref<string | null>(null);
+const isLoading = ref<boolean>(false);
+const sentinel = ref<HTMLElement | null>(null);
+const observer = ref<IntersectionObserver | null>(null);
 
 const drinkForm = useForm({});
 
@@ -56,6 +58,11 @@ const deleteDrink = (id: number) => {
             closeConfirmModal();
             toast.success('Drink successfully deleted.');
         },
+        onError: (error) => {
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please try again.');
+        },
     });
 };
 
@@ -64,6 +71,11 @@ const toggleAvailability = (id: number) => {
         onSuccess: () => {
             closeConfirmModal();
             toast.success('Drink availability updated successfully.');
+        },
+        onError: (error) => {
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please try again.');
         },
     });
 };
@@ -86,6 +98,57 @@ const closeConfirmModal = () => {
 const goToEdit = (id: number) => {
     router.visit(drink.edit(id).url);
 };
+
+const loadDrinks = async () => {
+    if (isLoading.value) return;
+
+    isLoading.value = true;
+
+    try {
+        const response = await axios.get<CursorPaginated<DrinkType>>(
+            '/drinks/get-drinks',
+            {
+                params: { cursor: nextCursor.value },
+            },
+        );
+        const newDrinks = response.data;
+        drinks.value.push(...newDrinks.data);
+        nextCursor.value = newDrinks.next_cursor;
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to load more ingredients.');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+onMounted(() => {
+    loadDrinks();
+
+    observer.value = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    loadDrinks();
+                }
+            });
+        },
+        {
+            root: null,
+            rootMargin: '100px',
+            threshold: 0.1,
+        },
+    );
+
+    watch(sentinel, (element) => {
+        if (element) observer.value?.observe(element);
+    });
+});
+
+onBeforeUnmount(() => {
+    if (observer.value && sentinel.value)
+        observer.value.unobserve(sentinel.value);
+});
 </script>
 
 <template>
@@ -93,10 +156,10 @@ const goToEdit = (id: number) => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-t-xl p-4"
         >
             <div
-                class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
+                class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <div class="m-2 flex cursor-pointer justify-end">
                     <a :href="drink.create().url">
@@ -127,7 +190,7 @@ const goToEdit = (id: number) => {
                     </TableHeader>
                     <TableBody>
                         <TableRow
-                            v-for="drinkData in props.drinks.data"
+                            v-for="drinkData in drinks"
                             :key="drinkData.id"
                             @dblclick="goToEdit(drinkData.id)"
                             class="cursor-pointer"
@@ -241,7 +304,17 @@ const goToEdit = (id: number) => {
                                 </DropdownMenu>
                             </TableCell>
                         </TableRow>
-                        <TableRow v-if="props.drinks.data.length === 0">
+
+                        <tr ref="sentinel" v-if="nextCursor">
+                            <td
+                                :colspan="5"
+                                class="py-2 text-center text-gray-500"
+                            >
+                                Loading more ingredients...
+                            </td>
+                        </tr>
+
+                        <TableRow v-if="drinks.length === 0">
                             <TableCell
                                 class="text-center text-gray-300"
                                 :colspan="7"

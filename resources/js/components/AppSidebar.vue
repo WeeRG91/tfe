@@ -65,7 +65,7 @@ const mainNavItems: NavItem[] = [
         icon: BeanOff,
     },
     {
-        title: 'Trashed',
+        title: 'Bin',
         href: trashed.index(),
         icon: Trash,
     },

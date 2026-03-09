@@ -17,21 +17,18 @@ import {
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import ingredient from '@/routes/ingredient';
-import type { BreadcrumbItem, Paginated } from '@/types';
+import type { BreadcrumbItem, CursorPaginated } from '@/types';
 import { IngredientType } from '@/types/ingredient';
 import { Head, router, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import {
     EllipsisVerticalIcon,
     SquarePenIcon,
     SquarePlusIcon,
     TrashIcon,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-
-const props = defineProps<{
-    ingredients: Paginated<IngredientType>;
-}>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -44,6 +41,11 @@ const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
+const ingredients = ref<IngredientType[]>([]);
+const nextCursor = ref<string | null>(null);
+const isLoading = ref<boolean>(false);
+const sentinel = ref<HTMLElement | null>(null);
+const observer = ref<IntersectionObserver | null>(null);
 
 const ingredientForm = useForm({});
 
@@ -52,6 +54,11 @@ const deleteIngredient = (id: number) => {
         onSuccess: () => {
             closeConfirmModal();
             toast.success('Ingredient successfully deleted.');
+        },
+        onError: (error) => {
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please try again.');
         },
     });
 };
@@ -74,6 +81,57 @@ const closeConfirmModal = () => {
 const goToEdit = (id: number) => {
     router.visit(ingredient.edit(id).url);
 };
+
+const loadIngredients = async () => {
+    if (isLoading.value) return;
+
+    isLoading.value = true;
+
+    try {
+        const response = await axios.get<CursorPaginated<IngredientType>>(
+            '/ingredients/get-ingredients',
+            {
+                params: { cursor: nextCursor.value },
+            },
+        );
+        const newIngredients = response.data;
+        ingredients.value.push(...newIngredients.data);
+        nextCursor.value = newIngredients.next_cursor;
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to load more ingredients.');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+onMounted(() => {
+    loadIngredients();
+
+    observer.value = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    loadIngredients();
+                }
+            });
+        },
+        {
+            root: null,
+            rootMargin: '100px',
+            threshold: 0.1,
+        },
+    );
+
+    watch(sentinel, (element) => {
+        if (element) observer.value?.observe(element);
+    });
+});
+
+onBeforeUnmount(() => {
+    if (observer.value && sentinel.value)
+        observer.value.unobserve(sentinel.value);
+});
 </script>
 
 <template>
@@ -81,10 +139,10 @@ const goToEdit = (id: number) => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-t-xl p-4"
         >
             <div
-                class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
+                class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <div class="m-2 flex cursor-pointer justify-end">
                     <a :href="ingredient.create().url">
@@ -109,7 +167,7 @@ const goToEdit = (id: number) => {
                     </TableHeader>
                     <TableBody>
                         <TableRow
-                            v-for="ingredientData in props.ingredients.data"
+                            v-for="ingredientData in ingredients"
                             :key="ingredientData.id"
                             @dblclick="goToEdit(ingredientData.id)"
                             class="cursor-pointer"
@@ -184,7 +242,17 @@ const goToEdit = (id: number) => {
                                 </DropdownMenu>
                             </TableCell>
                         </TableRow>
-                        <TableRow v-if="props.ingredients.data.length === 0">
+
+                        <tr ref="sentinel" v-if="nextCursor">
+                            <td
+                                :colspan="5"
+                                class="py-2 text-center text-gray-500"
+                            >
+                                Loading more ingredients...
+                            </td>
+                        </tr>
+
+                        <TableRow v-if="ingredients.length === 0">
                             <TableCell
                                 class="text-center text-gray-300"
                                 :colspan="5"

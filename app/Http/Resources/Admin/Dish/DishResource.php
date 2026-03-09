@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Admin\Dish;
 
 use App\Enums\DishCategoryEnum;
-use App\Http\Resources\Admin\Ingredient\IngredientWithAllergenResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +25,6 @@ class DishResource extends JsonResource
             'description' => $this->description,
             'price' => $this->price,
             'is_available' => $this->is_available ? 'Available' : 'Unavailable',
-            'ingredients' => IngredientWithAllergenResource::collection($this->whenLoaded('ingredients')),
             'category' => DishCategoryEnum::getCategory($this->category),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),

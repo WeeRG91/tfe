@@ -139,7 +139,7 @@ watch(
             <div
                 v-for="(url, index) in existingImagesPreviewUrls"
                 :key="index"
-                class="group relative z-999"
+                class="group relative z-50"
             >
                 <img
                     :src="url"
@@ -158,7 +158,7 @@ watch(
             <div
                 v-for="(url, index) in previewUrls"
                 :key="index"
-                class="group relative z-999"
+                class="group relative z-50"
             >
                 <img
                     :src="url"

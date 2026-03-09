@@ -12,29 +12,38 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AllergenCreateRequest;
 use App\Http\Requests\Admin\AllergenUpdateRequest;
 use App\Models\Allergen;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 class AllergenController extends Controller
 {
     /**
-     * @param GetPaginatedAllergens $query
-     * @return Response
+     * @return InertiaResponse
      */
-    public function index(GetPaginatedAllergens $query): Response
+    public function index(): InertiaResponse
     {
-        return Inertia::render('admin/allergen/Index', [
-            'allergens' => $query->execute(),
-        ]);
+        return Inertia::render('admin/allergen/Index');
+    }
+
+    /**
+     * @param GetPaginatedAllergens $query
+     * @return JsonResponse
+     */
+    public function getAllergens(GetPaginatedAllergens $query): JsonResponse
+    {
+        $allergens = $query->execute();
+
+        return response()->json($allergens);
     }
 
     /**
      * @param GetAllergenFormData $query
-     * @return Response
+     * @return InertiaResponse
      */
-    public function create(GetAllergenFormData $query): Response
+    public function create(GetAllergenFormData $query): InertiaResponse
     {
         return Inertia::render('admin/allergen/Create', $query->execute());
     }
@@ -69,13 +78,13 @@ class AllergenController extends Controller
      * @param Allergen $allergen
      * @param GetAllergenForEdit $query
      * @param GetAllergenFormData $formData
-     * @return Response
+     * @return InertiaResponse
      */
     public function edit(
         Allergen $allergen,
         GetAllergenForEdit $query,
         GetAllergenFormData $formData
-    ): Response
+    ): InertiaResponse
     {
         return Inertia::render('admin/allergen/Edit', [
             'allergenToEdit' => $query->execute($allergen),

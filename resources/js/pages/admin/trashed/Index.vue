@@ -121,10 +121,10 @@ const closeConfirmModal = () => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-t-xl p-4"
         >
             <div
-                class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
+                class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <Table>
                     <TableHeader>
@@ -146,22 +146,23 @@ const closeConfirmModal = () => {
                                     :alt="trashedData.name"
                                     class="hidden h-8 w-8 rounded-lg md:block"
                                 />
-                                <span class="whitespace-nowrap">{{
-                                    trashedData.name
-                                }}</span></TableCell
-                            >
+                                <span class="whitespace-nowrap">
+                                    {{ trashedData.name }}
+                                </span>
+                            </TableCell>
                             <TableCell>
                                 <Badge
                                     class="text-white/80"
                                     :class="getColorType(trashedData.type)"
-                                    >{{ trashedData.type }}</Badge
                                 >
+                                    {{ trashedData.type }}
+                                </Badge>
                             </TableCell>
-                            <TableCell
-                                ><span class="whitespace-nowrap">{{
-                                    trashedData.deleted_at
-                                }}</span></TableCell
-                            >
+                            <TableCell>
+                                <span class="whitespace-nowrap">
+                                    {{ trashedData.deleted_at }}
+                                </span>
+                            </TableCell>
                             <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger>

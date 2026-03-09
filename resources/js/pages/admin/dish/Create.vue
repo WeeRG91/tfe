@@ -28,8 +28,6 @@ const props = defineProps<{
     errors: ErrorType;
 }>();
 
-console.log(props);
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dishes',
@@ -49,8 +47,8 @@ const selectedCategory = ref<number | null>(null);
 const name = ref<string>('');
 const description = ref<string>('');
 const price = ref<number | null>(null);
-const ingredients = ref<IngredientOptionType[]>([...props.ingredients]);
-const meats = ref<MeatOptionType[]>([...props.meats]);
+const ingredients = ref<IngredientOptionType[]>(props.ingredients);
+const meats = ref<MeatOptionType[]>(props.meats);
 const imageFile = ref<File[]>([]);
 
 const dishForm = useForm({

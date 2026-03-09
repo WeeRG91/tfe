@@ -3,12 +3,13 @@ import FormTextInput from '@/components/FormTextInput.vue';
 import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import MultipleSelect from '@/components/MultipleSelect.vue';
+import CreateIngredientModal from '@/components/admin/ingredient/CreateIngredientModal.vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import allergen from '@/routes/allergen';
-import type { BreadcrumbItem } from '@/types';
-import { AllergenErrorType, EditAllergenType } from '@/types/allergen';
+import type { BreadcrumbItem, ErrorType } from '@/types';
+import { AllergenOptionType, EditAllergenType } from '@/types/allergen';
 import { IngredientOptionType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
@@ -18,7 +19,8 @@ import { toast } from 'vue-sonner';
 const props = defineProps<{
     allergenToEdit: EditAllergenType;
     ingredients: IngredientOptionType[];
-    errors: AllergenErrorType;
+    allergens: AllergenOptionType[];
+    errors: ErrorType;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -32,12 +34,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const showCreateIngredientModal = ref<boolean>(false);
 const selectedIngredients = ref<number[]>(
     props.allergenToEdit.ingredients?.map((i) => i.id) ?? [],
 );
 const name = ref<string>(props.allergenToEdit.name ?? '');
 const description = ref<string>(props.allergenToEdit.description ?? '');
-const imageFile = ref<File[]>([]);
+const images = ref<File[]>([]);
+const ingredients = ref<IngredientOptionType[]>(props.ingredients);
 
 const allergenForm = useForm({
     name: '',
@@ -50,18 +54,34 @@ const submit = () => {
     allergenForm.name = name.value;
     allergenForm.description = description.value;
     allergenForm.ingredients = selectedIngredients.value;
-    allergenForm.images = imageFile.value;
+    allergenForm.images = images.value;
 
     allergenForm.post(allergen.update(props.allergenToEdit.id).url, {
         forceFormData: true,
+        errorBag: 'allergenErrors',
         onSuccess: () => {
             allergenForm.reset();
             toast.success('Allergen successfully edited.');
         },
         onError: (error) => {
-            toast.error(error.message);
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please check the form.');
         },
     });
+};
+
+const handleIngredientCreated = (ingredient: IngredientOptionType) => {
+    ingredients.value = [...ingredients.value, ingredient];
+    selectedIngredients.value = [
+        ...selectedIngredients.value,
+        ingredient.value,
+    ];
+    closeCreateIngredientModal();
+};
+
+const closeCreateIngredientModal = () => {
+    showCreateIngredientModal.value = false;
 };
 </script>
 
@@ -85,7 +105,7 @@ const submit = () => {
                             id="name"
                             label="Name"
                             v-model="name"
-                            :error="props.errors.name"
+                            :error="props.errors.allergenErrors?.name"
                         />
 
                         <FormTextarea
@@ -93,14 +113,15 @@ const submit = () => {
                             label="Description"
                             v-model="description"
                             :rows="5"
-                            :error="props.errors.description"
+                            :error="props.errors.allergenErrors?.description"
                         />
 
                         <MultipleSelect
                             v-model="selectedIngredients"
-                            :options="props.ingredients"
+                            :options="ingredients"
                             label="Ingredients"
-                            :error="props.errors.ingredients"
+                            :error="props.errors.allergenErrors?.ingredients"
+                            @create="showCreateIngredientModal = true"
                         />
                     </div>
                     <div
@@ -111,7 +132,7 @@ const submit = () => {
                         </h2>
 
                         <ImageUploader
-                            v-model="imageFile"
+                            v-model="images"
                             :existingImages="props.allergenToEdit.images"
                         />
                     </div>
@@ -132,6 +153,14 @@ const submit = () => {
                     >
                 </div>
             </form>
+
+            <CreateIngredientModal
+                :open="showCreateIngredientModal"
+                :onClose="closeCreateIngredientModal"
+                :allergens="props.allergens"
+                :errors="props.errors.ingredientErrors"
+                @create="handleIngredientCreated"
+            />
         </div>
     </AdminLayout>
 </template>

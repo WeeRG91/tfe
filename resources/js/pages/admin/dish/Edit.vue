@@ -55,8 +55,8 @@ const name = ref(props.dishToEdit.name ?? '');
 const description = ref(props.dishToEdit.description ?? '');
 const price = ref(props.dishToEdit.price ?? 0);
 const images = ref<File[]>([]);
-const ingredients = ref<IngredientOptionType[]>([...props.ingredients]);
-const meats = ref<MeatOptionType[]>([...props.meats]);
+const ingredients = ref<IngredientOptionType[]>(props.ingredients);
+const meats = ref<MeatOptionType[]>(props.meats);
 
 const dishForm = useForm({
     name: '',

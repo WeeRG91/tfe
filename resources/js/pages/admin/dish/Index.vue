@@ -18,9 +18,10 @@ import {
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
-import type { BreadcrumbItem, Paginated } from '@/types';
+import type { BreadcrumbItem, CursorPaginated } from '@/types';
 import { DishType } from '@/types/dish';
 import { Head, router, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import {
     CircleCheckBigIcon,
     CircleXIcon,
@@ -29,12 +30,8 @@ import {
     SquarePlusIcon,
     TrashIcon,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-
-const props = defineProps<{
-    dishes: Paginated<DishType>;
-}>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -47,6 +44,11 @@ const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
+const dishes = ref<DishType[]>([]);
+const nextCursor = ref<string | null>(null);
+const isLoading = ref<boolean>(false);
+const sentinel = ref<HTMLElement | null>(null);
+const observer = ref<IntersectionObserver | null>(null);
 
 const dishForm = useForm({});
 
@@ -57,7 +59,9 @@ const deleteDish = (id: number) => {
             toast.success('Dish successfully deleted.');
         },
         onError: (error) => {
-            toast.error(error.message);
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please try again.');
         },
     });
 };
@@ -69,7 +73,9 @@ const toggleAvailability = (id: number) => {
             toast.success('Dish availability updated successfully.');
         },
         onError: (error) => {
-            toast.error(error.message);
+            if (error.message) toast.error(error.meessage);
+
+            toast.error('Something went wrong. Please try again.');
         },
     });
 };
@@ -92,6 +98,56 @@ const closeConfirmModal = () => {
 const goToEdit = (id: number) => {
     router.visit(dish.edit(id).url);
 };
+
+const loadDishes = async () => {
+    if (isLoading.value) return;
+
+    isLoading.value = true;
+
+    try {
+        const response = await axios.get<CursorPaginated<DishType>>(
+            '/dishes/get-dishes',
+            {
+                params: { cursor: nextCursor.value },
+            },
+        );
+        const newDishes = response.data;
+        dishes.value.push(...newDishes.data);
+        nextCursor.value = newDishes.next_cursor;
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to load more dishes.');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+onMounted(() => {
+    loadDishes();
+
+    observer.value = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    loadDishes();
+                }
+            });
+        },
+        {
+            root: null,
+            rootMargin: '100px',
+            threshold: 0.1,
+        },
+    );
+
+    watch(sentinel, (element) => {
+        if (element) observer.value?.observe(element);
+    });
+});
+
+onBeforeUnmount(() => {
+    if (observer.value && sentinel.value) observer.value.unobserve(sentinel.value);
+});
 </script>
 
 <template>
@@ -99,10 +155,10 @@ const goToEdit = (id: number) => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-t-xl p-4"
         >
             <div
-                class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
+                class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <div class="m-2 flex cursor-pointer justify-end">
                     <a :href="dish.create().url">
@@ -133,7 +189,7 @@ const goToEdit = (id: number) => {
                     </TableHeader>
                     <TableBody>
                         <TableRow
-                            v-for="dishData in props.dishes.data"
+                            v-for="dishData in dishes"
                             :key="dishData.id"
                             @dblclick="goToEdit(dishData.id)"
                             class="cursor-pointer"
@@ -243,7 +299,17 @@ const goToEdit = (id: number) => {
                                 </DropdownMenu>
                             </TableCell>
                         </TableRow>
-                        <TableRow v-if="props.dishes.data.length === 0">
+
+                        <tr ref="sentinel" v-if="nextCursor">
+                            <td
+                                :colspan="5"
+                                class="py-2 text-center text-gray-500"
+                            >
+                                Loading more dishes...
+                            </td>
+                        </tr>
+
+                        <TableRow v-if="dishes.length === 0">
                             <TableCell
                                 class="text-center text-gray-300"
                                 :colspan="7"

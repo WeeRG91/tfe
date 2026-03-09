@@ -212,7 +212,6 @@ onBeforeUnmount(() => {
     background: rgb(156 163 175);
 }
 
-/* Dark mode */
 .dark .minimal-scrollbar {
     scrollbar-color: rgb(75 85 99) transparent;
 }

@@ -9,16 +9,24 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class GetPaginatedDrinks
 {
     /**
-     * @return AnonymousResourceCollection
+     * @return array
      */
-    public function execute(): AnonymousResourceCollection
+    public function execute(): array
     {
         $drinks = Drink::query()
             ->with(['images'])
             ->where('deleted_at', null)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->cursorPaginate(10);
 
-        return DrinkResource::collection($drinks);
+        return [
+            'data' => DrinkResource::collection($drinks),
+            'path' => $drinks->path(),
+            'per_page' => $drinks->perPage(),
+            'next_cursor' => $drinks->nextCursor()?->encode(),
+            'next_page_url' => $drinks->nextPageUrl(),
+            'prev_cursor' => $drinks->previousCursor()?->encode(),
+            'prev_page_url' => $drinks->previousPageUrl(),
+        ];
     }
 }

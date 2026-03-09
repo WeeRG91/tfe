@@ -1,9 +1,4 @@
 import { CategoryOptionType } from '@/types/category';
-import {
-    IngredientAllergenType,
-    IngredientErrorType,
-} from '@/types/ingredient';
-import { MeatErrorType } from '@/types/meat';
 
 export type DishType = {
     id: number;
@@ -11,7 +6,6 @@ export type DishType = {
     main_image: string;
     description: string;
     price: number;
-    ingredients: IngredientAllergenType[];
     category: CategoryOptionType;
     is_available: string;
     created_at: string;
@@ -24,7 +18,7 @@ export type EditDishType = {
     category: number;
     description: string;
     price: number;
-    meats: {id: number}[];
+    meats: { id: number }[];
     ingredients: { id: number }[];
     main_image: string;
     images: { id: number; path: string }[];
