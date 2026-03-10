@@ -2,31 +2,26 @@
 
 namespace App\Actions\Admin\Drink\Queries;
 
+use App\Actions\Support\BaseCursorPagination;
 use App\Http\Resources\Admin\Drink\DrinkResource;
 use App\Models\Drink;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Request;
 
-class GetPaginatedDrinks
+class GetPaginatedDrinks extends BaseCursorPagination
 {
     /**
+     * @param Request $request
      * @return array
      */
-    public function execute(): array
+    public function execute(Request $request): array
     {
-        $drinks = Drink::query()
-            ->with(['images'])
-            ->where('deleted_at', null)
-            ->orderBy('created_at', 'desc')
-            ->cursorPaginate(10);
+        $query = Drink::query()
+            ->with(['images']);
 
-        return [
-            'data' => DrinkResource::collection($drinks),
-            'path' => $drinks->path(),
-            'per_page' => $drinks->perPage(),
-            'next_cursor' => $drinks->nextCursor()?->encode(),
-            'next_page_url' => $drinks->nextPageUrl(),
-            'prev_cursor' => $drinks->previousCursor()?->encode(),
-            'prev_page_url' => $drinks->previousPageUrl(),
-        ];
+        $query = $this->filters($query, $request);
+
+        $drinks = $this->paginate($query, 15);
+
+        return $this->formatPagination($drinks, DrinkResource::class);
     }
 }

@@ -2,30 +2,26 @@
 
 namespace App\Actions\Admin\Ingredient\Queries;
 
+use App\Actions\Support\BaseCursorPagination;
 use App\Http\Resources\Admin\Ingredient\IngredientResource;
 use App\Models\Ingredient;
+use Illuminate\Http\Request;
 
-class GetPaginatedIngredients
+class GetPaginatedIngredients extends BaseCursorPagination
 {
     /**
+     * @param Request $request
      * @return array
      */
-    public function execute(): array
+    public function execute(Request $request): array
     {
-        $ingredients = Ingredient::query()
-            ->with(['allergen', 'images'])
-            ->where('deleted_at', null)
-            ->orderBy('created_at', 'desc')
-            ->cursorPaginate(15);
+        $query = Ingredient::query()
+            ->with(['allergen', 'images']);
 
-        return [
-            'data' => IngredientResource::collection($ingredients),
-            'path' => $ingredients->path(),
-            'per_page' => $ingredients->perPage(),
-            'next_cursor' => $ingredients->nextCursor()?->encode(),
-            'next_page_url' => $ingredients->nextPageUrl(),
-            'prev_cursor' => $ingredients->previousCursor()?->encode(),
-            'prev_page_url' => $ingredients->previousPageUrl(),
-        ];
+        $query = $this->filters($query, $request);
+
+        $ingredients = $this->paginate($query, 15);
+
+        return $this->formatPagination($ingredients, IngredientResource::class);
     }
 }

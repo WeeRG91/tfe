@@ -9,12 +9,14 @@ use App\Actions\Admin\Dish\Commands\updateDish;
 use App\Actions\Admin\Dish\Queries\GetDishForEdit;
 use App\Actions\Admin\Dish\Queries\GetDishFormData;
 use App\Actions\Admin\Dish\Queries\GetPaginatedDishes;
+use App\Enums\DishCategoryEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DishCreateRequest;
 use App\Http\Requests\Admin\DishUpdateRequest;
 use App\Models\Dish;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Throwable;
@@ -26,16 +28,19 @@ class DishController extends Controller
      */
     public function index(): InertiaResponse
     {
-        return Inertia::render('admin/dish/Index');
+        return Inertia::render('admin/dish/Index', [
+            'categories' => DishCategoryEnum::getCategories(),
+        ]);
     }
 
     /**
+     * @param Request $request
      * @param GetPaginatedDishes $query
      * @return JsonResponse
      */
-    public function getDishes(GetPaginatedDishes $query): JsonResponse
+    public function getDishes(Request $request, GetPaginatedDishes $query): JsonResponse
     {
-        $dishes = $query->execute();
+        $dishes = $query->execute($request);
 
         return response()->json($dishes);
     }

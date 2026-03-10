@@ -11,9 +11,11 @@ use App\Actions\Admin\Ingredient\Queries\GetPaginatedIngredients;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\IngredientCreateRequest;
 use App\Http\Requests\Admin\IngredientUpdateRequest;
+use App\Models\Allergen;
 use App\Models\Ingredient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
@@ -25,16 +27,24 @@ class IngredientController extends Controller
      */
     public function index(): Response
     {
-        return Inertia::render('admin/ingredient/Index');
+        $allergens = Allergen::all()->map(fn ($allergen) => [
+            'value' => $allergen->id,
+            'label' => $allergen->name,
+        ]);
+
+        return Inertia::render('admin/ingredient/Index', [
+            'allergens' => $allergens,
+        ]);
     }
 
     /**
+     * @param Request $request
      * @param GetPaginatedIngredients $query
      * @return JsonResponse
      */
-    public function getIngredients(GetPaginatedIngredients $query): JsonResponse
+    public function getIngredients(Request $request, GetPaginatedIngredients $query): JsonResponse
     {
-        $ingredients = $query->execute();
+        $ingredients = $query->execute($request);
 
         return response()->json($ingredients);
     }

@@ -11,7 +11,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\MeatCreateRequest;
 use App\Http\Requests\Admin\MeatUpdateRequest;
 use App\Models\Meat;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Throwable;
@@ -26,9 +28,14 @@ class MeatController extends Controller
         return Inertia::render('admin/meat/Index');
     }
 
-    public function getMeats(GetPaginatedMeats $query)
+    /**
+     * @param Request $request
+     * @param GetPaginatedMeats $query
+     * @return JsonResponse
+     */
+    public function getMeats(Request $request, GetPaginatedMeats $query)
     {
-        $meats = $query->execute();
+        $meats = $query->execute($request);
 
         return response()->json($meats);
     }
@@ -135,6 +142,11 @@ class MeatController extends Controller
         }
     }
 
+    /**
+     * @param Meat $meat
+     * @param DeleteMeat $command
+     * @return RedirectResponse
+     */
     public function destroy(Meat $meat, DeleteMeat $command): RedirectResponse
     {
         try {

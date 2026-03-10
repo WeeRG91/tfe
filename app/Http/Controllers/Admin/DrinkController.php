@@ -9,12 +9,14 @@ use App\Actions\Admin\Drink\Commands\UpdateDrink;
 use App\Actions\Admin\Drink\Queries\GetDrinkForEdit;
 use App\Actions\Admin\Drink\Queries\GetDrinkFormData;
 use App\Actions\Admin\Drink\Queries\GetPaginatedDrinks;
+use App\Enums\DrinkCategoryEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DrinkCreateRequest;
 use App\Http\Requests\Admin\DrinkUpdateRequest;
 use App\Models\Drink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Throwable;
@@ -26,16 +28,19 @@ class DrinkController extends Controller
      */
     public function index(): InertiaResponse
     {
-        return Inertia::render('admin/drink/Index');
+        return Inertia::render('admin/drink/Index', [
+            'categories' => DrinkCategoryEnum::getCategories(),
+        ]);
     }
 
     /**
+     * @param Request $request
      * @param GetPaginatedDrinks $query
      * @return JsonResponse
      */
-    public function getDrinks(GetPaginatedDrinks $query): JsonResponse
+    public function getDrinks(Request $request, GetPaginatedDrinks $query): JsonResponse
     {
-        $drinks = $query->execute();
+        $drinks = $query->execute($request);
 
         return response()->json($drinks);
     }

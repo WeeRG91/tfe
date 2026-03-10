@@ -2,30 +2,26 @@
 
 namespace App\Actions\Admin\Meat\Queries;
 
+use App\Actions\Support\BaseCursorPagination;
 use App\Http\Resources\Admin\Meat\MeatResource;
 use App\Models\Meat;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Request;
 
-class GetPaginatedMeats
+class GetPaginatedMeats extends BaseCursorPagination
 {
     /**
+     * @param Request $request
      * @return array
      */
-    public function execute(): array
+    public function execute(Request $request): array
     {
-        $meats = Meat::query()
-            ->with('images')
-            ->orderByDesc('created_at')
-            ->cursorPaginate(10);
+        $query = Meat::query()
+            ->with('images');
 
-        return [
-            'data' => MeatResource::collection($meats),
-            'path' => $meats->path(),
-            'per_page' => $meats->perPage(),
-            'next_cursor' => $meats->nextCursor()?->encode(),
-            'next_page_url' => $meats->nextPageUrl(),
-            'prev_cursor' => $meats->previousCursor()?->encode(),
-            'prev_page_url' => $meats->previousPageUrl(),
-        ];
+        $query = $this->filters($query, $request);
+
+        $meats = $this->paginate($query, 15);
+
+        return $this->formatPagination($meats, MeatResource::class);
     }
 }

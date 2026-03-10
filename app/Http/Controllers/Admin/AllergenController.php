@@ -14,6 +14,7 @@ use App\Http\Requests\Admin\AllergenUpdateRequest;
 use App\Models\Allergen;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Throwable;
@@ -29,12 +30,13 @@ class AllergenController extends Controller
     }
 
     /**
+     * @param Request $request
      * @param GetPaginatedAllergens $query
      * @return JsonResponse
      */
-    public function getAllergens(GetPaginatedAllergens $query): JsonResponse
+    public function getAllergens(Request $request, GetPaginatedAllergens $query): JsonResponse
     {
-        $allergens = $query->execute();
+        $allergens = $query->execute($request);
 
         return response()->json($allergens);
     }

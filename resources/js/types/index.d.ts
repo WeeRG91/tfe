@@ -1,9 +1,9 @@
+import { AllergenErrorType } from '@/types/allergen';
 import { DishErrorType } from '@/types/dish';
 import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
 import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
-import { AllergenErrorType } from '@/types/allergen';
 
 export interface Auth {
     user: User;
@@ -95,3 +95,5 @@ export type ErrorType = {
     ingredientErrors?: IngredientErrorType;
     allergenErrors: AllergenErrorType;
 };
+
+export type FilterType = 'all' | 'available' | 'unavailable' | 'deleted';

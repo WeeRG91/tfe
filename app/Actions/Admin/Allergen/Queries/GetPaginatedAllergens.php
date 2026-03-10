@@ -2,31 +2,26 @@
 
 namespace App\Actions\Admin\Allergen\Queries;
 
+use App\Actions\Support\BaseCursorPagination;
 use App\Http\Resources\Admin\Allergen\AllergenResource;
 use App\Models\Allergen;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Request;
 
-class GetPaginatedAllergens
+class GetPaginatedAllergens extends BaseCursorPagination
 {
     /**
+     * @param Request $request
      * @return array
      */
-    public function execute(): array
+    public function execute(Request $request): array
     {
-        $allergens = Allergen::query()
-            ->with(['ingredients', 'images'])
-            ->where('deleted_at', null)
-            ->orderBy('name')
-            ->cursorPaginate(15);
+        $query = Allergen::query()
+            ->with(['ingredients', 'images']);
 
-        return [
-            'data' => AllergenResource::collection($allergens),
-            'path' => $allergens->path(),
-            'per_page' => $allergens->perPage(),
-            'next_cursor' => $allergens->nextCursor()?->encode(),
-            'next_page_url' => $allergens->nextPageUrl(),
-            'prev_cursor' => $allergens->previousCursor()?->encode(),
-            'prev_page_url' => $allergens->previousPageUrl(),
-        ];
+        $query = $this->filters($query, $request);
+
+        $allergens = $this->paginate($query, 15);
+
+        return $this->formatPagination($allergens, AllergenResource::class);
     }
 }
