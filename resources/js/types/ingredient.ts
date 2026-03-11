@@ -1,11 +1,12 @@
 export type IngredientType = {
     id: number;
     name: string;
-    allergen: { id: number; name: string; main_image: string };
-    description: string;
+    allergen: { id: number; name: string; main_image: string } | null;
+    description: string | null;
     main_image: string;
     created_at: string;
     updated_at: string;
+    deleted_at: string | null;
 };
 
 export type EditIngredientType = {

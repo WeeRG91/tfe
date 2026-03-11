@@ -4,7 +4,7 @@ namespace App\Actions\Admin\Meat\Commands;
 
 use App\Models\Meat;
 
-class DeleteMeat
+class RestoreMeat
 {
     /**
      * @param int $id
@@ -12,8 +12,8 @@ class DeleteMeat
      */
     public function execute(int $id): void
     {
-        $meat = Meat::query()->findOrFail($id);
+        $meat = Meat::onlyTrashed()->findOrFail($id);
 
-        $meat->delete();
+        $meat->restore();
     }
 }

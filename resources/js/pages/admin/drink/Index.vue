@@ -21,13 +21,15 @@ import drink from '@/routes/drink';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { DrinkType } from '@/types/drink';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
+import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
 import {
     ChevronDownIcon,
     CircleCheckBigIcon,
     CircleXIcon,
     EllipsisVerticalIcon,
+    RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
     SquarePlusIcon,
@@ -36,7 +38,7 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import { watchDebounced } from '@vueuse/core';
+import { DishType } from '@/types/dish';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -57,39 +59,80 @@ const drinks = ref<DrinkType[]>([]);
 const nextCursor = ref<string | null>(null);
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
+const scrollContainer = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 const filter = ref<FilterType>('all');
 const category = ref<number | null>(null);
 const search = ref<string | null>(null);
 
-const drinkForm = useForm({});
+const toggleAvailability = async (id: number) => {
+    try {
+        const response = await axios.patch(drink.available(id).url);
 
-const deleteDrink = (id: number) => {
-    drinkForm.delete(drink.destroy(id).url, {
-        onSuccess: () => {
-            closeConfirmModal();
-            toast.success('Drink successfully deleted.');
-        },
-        onError: (error) => {
-            if (error.message) toast.error(error.meessage);
+        const updatedDish = response.data.drink as DishType;
 
-            toast.error('Something went wrong. Please try again.');
-        },
-    });
+        const index = drinks.value.findIndex((d) => d.id === id);
+
+        if (index !== -1) {
+            drinks.value[index] = updatedDish;
+        }
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to update drink availability');
+        }
+    } finally {
+        closeConfirmModal();
+    }
 };
 
-const toggleAvailability = (id: number) => {
-    drinkForm.patch(drink.available(id).url, {
-        onSuccess: () => {
-            closeConfirmModal();
-            toast.success('Drink availability updated successfully.');
-        },
-        onError: (error) => {
-            if (error.message) toast.error(error.meessage);
+const moveToBin = async (id: number) => {
+    try {
+        const response = await axios.delete(drink.destroy(id).url);
 
-            toast.error('Something went wrong. Please try again.');
-        },
-    });
+        drinks.value = drinks.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to move dish to bin');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const restoreDrink = async (id: number) => {
+    try {
+        const response = await axios.post(drink.restore(id).url);
+
+        drinks.value = drinks.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to restore drink');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const deleteDrink = async (id: number) => {
+    try {
+        const response = await axios.delete(drink.forceDelete(id).url);
+
+        drinks.value = drinks.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to delete drink');
+        }
+    } finally {
+        closeConfirmModal();
+    }
 };
 
 const openConfirmModal = (
@@ -133,7 +176,7 @@ const loadDrinks = async () => {
         nextCursor.value = newDrinks.next_cursor;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more ingredients.');
+        toast.error('Failed to load more drinks.');
     } finally {
         isLoading.value = false;
     }
@@ -142,7 +185,14 @@ const loadDrinks = async () => {
 const applyFilters = () => {
     drinks.value = [];
     nextCursor.value = null;
+
+    observer.value?.disconnect();
+
     loadDrinks();
+
+    if (sentinel.value) {
+        observer.value?.observe(sentinel.value);
+    }
 };
 
 const changeFilter = (value: FilterType) => {
@@ -207,6 +257,7 @@ onBeforeUnmount(() => {
             class="flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-t-xl p-4"
         >
             <div
+                ref="scrollContainer"
                 class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <div
@@ -444,7 +495,10 @@ onBeforeUnmount(() => {
                             <TableHead class="hidden md:table-cell"
                                 >Created at</TableHead
                             >
-                            <TableHead>Updated at</TableHead>
+                            <TableHead v-if="filter !== 'deleted'"
+                                >Updated at</TableHead
+                            >
+                            <TableHead v-else>Deleted at</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -492,9 +546,14 @@ onBeforeUnmount(() => {
                                     {{ drinkData.created_at }}
                                 </span>
                             </TableCell>
-                            <TableCell
+                            <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">
                                     {{ drinkData.updated_at }}
+                                </span>
+                            </TableCell>
+                            <TableCell v-else
+                                ><span class="whitespace-nowrap">
+                                    {{ drinkData.deleted_at }}
                                 </span>
                             </TableCell>
                             <TableCell>
@@ -502,7 +561,37 @@ onBeforeUnmount(() => {
                                     <DropdownMenuTrigger>
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
+                                    <DropdownMenuContent
+                                        v-if="filter === 'deleted'"
+                                    >
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    `Are you sure you want to restore this drink?`,
+                                                    'info',
+                                                    () =>
+                                                        restoreDrink(
+                                                            drinkData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <RotateCcwIcon /> Restore
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this drink?',
+                                                    'destructive',
+                                                    () =>
+                                                        deleteDrink(drinkData.id),
+                                                )
+                                            "
+                                        >
+                                            <TrashIcon /> Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                    <DropdownMenuContent v-else>
                                         <DropdownMenuItem>
                                             <a
                                                 :href="
@@ -516,16 +605,14 @@ onBeforeUnmount(() => {
                                         <DropdownMenuItem
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this dish?',
+                                                    'Are you sure you want to move this dish to bin?',
                                                     'destructive',
                                                     () =>
-                                                        deleteDrink(
-                                                            drinkData.id,
-                                                        ),
+                                                        moveToBin(drinkData.id),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon /> Move to bin
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
@@ -534,7 +621,7 @@ onBeforeUnmount(() => {
                                             "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to mark this dish as unavailable?',
+                                                    'Are you sure you want to mark this drink as unavailable?',
                                                     'info',
                                                     () =>
                                                         toggleAvailability(
@@ -549,7 +636,7 @@ onBeforeUnmount(() => {
                                             v-else
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to mark this dish as available?',
+                                                    'Are you sure you want to mark this drink as available?',
                                                     'info',
                                                     () =>
                                                         toggleAvailability(

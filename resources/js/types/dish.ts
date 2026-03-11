@@ -4,12 +4,13 @@ export type DishType = {
     id: number;
     name: string;
     main_image: string;
-    description: string;
+    description: string | null;
     price: number;
     category: CategoryOptionType;
     is_available: string;
     created_at: string;
     updated_at: string;
+    deleted_at: string | null;
 };
 
 export type EditDishType = {

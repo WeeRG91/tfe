@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\Admin\Meat\Commands\CreateMeat;
 use App\Actions\Admin\Meat\Commands\DeleteMeat;
+use App\Actions\Admin\Meat\Commands\ForceDeleteMeat;
+use App\Actions\Admin\Meat\Commands\RestoreMeat;
 use App\Actions\Admin\Meat\Commands\UpdateMeat;
 use App\Actions\Admin\Meat\Queries\GetMeatForEdit;
 use App\Actions\Admin\Meat\Queries\GetPaginatedMeats;
@@ -143,22 +145,44 @@ class MeatController extends Controller
     }
 
     /**
-     * @param Meat $meat
+     * @param int $id
      * @param DeleteMeat $command
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function destroy(Meat $meat, DeleteMeat $command): RedirectResponse
+    public function destroy(int $id, DeleteMeat $command): JsonResponse
     {
-        try {
-            $command->execute($meat);
+        $command->execute($id);
 
-            return redirect()
-                ->route('meat.index');
-        } catch (Throwable $e) {
-            report($e);
+        return response()->json([
+            'message' => 'Meat successfully moved to bin',
+        ]);
+    }
 
-            return back()
-                ->withErrors(['message' => 'Something went wrong while deleting the meat']);
-        }
+    /**
+     * @param int $id
+     * @param RestoreMeat $command
+     * @return JsonResponse
+     */
+    public function restore(int $id, RestoreMeat $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Meat successfully restored',
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param ForceDeleteMeat $command
+     * @return JsonResponse
+     */
+    public function forceDelete(int $id, ForceDeleteMeat $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Meat successfully deleted',
+        ]);
     }
 }

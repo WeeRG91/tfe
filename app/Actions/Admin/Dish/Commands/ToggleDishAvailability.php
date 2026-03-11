@@ -2,18 +2,23 @@
 
 namespace App\Actions\Admin\Dish\Commands;
 
+use App\Http\Resources\Admin\Dish\DishResource;
 use App\Models\Dish;
 
 class ToggleDishAvailability
 {
     /**
-     * @param Dish $dish
-     * @return void
+     * @param int $id
+     * @return DishResource
      */
-    public function execute(Dish $dish): void
+    public function execute(int $id): DishResource
     {
+        $dish = Dish::findOrFail($id);
+
         $dish->update([
             'is_available' => !$dish->is_available,
         ]);
+
+        return new DishResource($dish);
     }
 }

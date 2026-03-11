@@ -9,7 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="scrollable relative w-full flex-1 overflow-auto max-h-[calc(100vh-150px)] sm:pb-3">
+  <div class="scrollable relative w-full flex-1 overflow-auto max-h-[calc(100vh-180px)]">
     <table :class="cn('w-full caption-bottom text-sm', props.class)">
       <slot />
     </table>

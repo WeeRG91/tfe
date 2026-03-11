@@ -26,8 +26,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', 'store')->name('store');
         Route::get('/{dish}/edit', 'edit')->name('edit');
         Route::post('/{dish}', 'update')->name('update');
-        Route::delete('/{dish}', 'destroy')->name('destroy');
-        Route::patch('/{dish}/available', 'available')->name('available');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::patch('/{id}/available', 'available')->name('available');
+        Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::delete('/{id}/forceDelete', 'forceDelete')->name('forceDelete');
     });
 
     Route::controller(DrinkController::class)->prefix('drinks')->name('drink.')->group(function () {
@@ -37,8 +39,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', 'store')->name('store');
         Route::get('/{drink}/edit', 'edit')->name('edit');
         Route::post('/{drink}', 'update')->name('update');
-        Route::delete('/{drink}', 'destroy')->name('destroy');
-        Route::patch('/{drink}/available', 'available')->name('available');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::patch('/{id}/available', 'available')->name('available');
+        Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::delete('/{id}/forceDelete', 'forceDelete')->name('forceDelete');
     });
 
     Route::controller(IngredientController::class)->prefix('ingredients')->name('ingredient.')->group(function () {
@@ -49,7 +53,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/quick-create', 'quickCreate')->name('quick-create');
         Route::get('/{ingredient}/edit', 'edit')->name('edit');
         Route::post('/{ingredient}', 'update')->name('update');
-        Route::delete('/{ingredient}', 'destroy')->name('destroy');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::delete('/{id}/forceDelete', 'forceDelete')->name('forceDelete');
     });
 
     Route::controller(AllergenController::class)->prefix('allergens')->name('allergen.')->group(function () {
@@ -59,7 +65,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', 'store')->name('store');
         Route::get('/{allergen}/edit', 'edit')->name('edit');
         Route::post('/{allergen}', 'update')->name('update');
-        Route::delete('/{allergen}', 'destroy')->name('destroy');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::delete('/{id}/forceDelete', 'forceDelete')->name('forceDelete');
     });
 
     Route::controller(MeatController::class)->prefix('meats')->name('meat.')->group(function () {
@@ -70,13 +78,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/quick-create', 'quickCreate')->name('quick-create');
         Route::get('/{meat}/edit', 'edit')->name('edit');
         Route::post('/{meat}', 'update')->name('update');
-        Route::delete('/{meat}', 'destroy')->name('destroy');
-    });
-
-    Route::controller(TrashedController::class)->prefix('trashed')->name('trashed.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::post('/restore', 'restore')->name('restore');
-        Route::post('/forceDelete', 'forceDelete')->name('forceDelete');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::delete('/{id}/forceDelete', 'forceDelete')->name('forceDelete');
     });
 
     Route::controller(ImageController::class)->prefix('images')->name('image.')->group(function () {

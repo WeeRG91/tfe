@@ -4,13 +4,14 @@ export type DrinkType = {
     id: number;
     name: string;
     main_image: string;
-    description: string;
+    description: string | null;
     price: number;
     category: CategoryOptionType;
     is_available: string;
     created_at: string;
     updated_at: string;
-}
+    deleted_at: string | null;
+};
 
 export type EditDrinkType = {
     id: number;
@@ -20,11 +21,11 @@ export type EditDrinkType = {
     price: number;
     main_image: string;
     images: { id: number; path: string }[];
-}
+};
 
 export type DrinkErrorType = {
     name?: string;
     description?: string;
     price?: string;
     category?: string;
-}
+};

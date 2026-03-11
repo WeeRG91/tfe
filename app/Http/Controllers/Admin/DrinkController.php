@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\Admin\Drink\Commands\CreateDrink;
 use App\Actions\Admin\Drink\Commands\DeleteDrink;
+use App\Actions\Admin\Drink\Commands\ForceDeleteDrink;
+use App\Actions\Admin\Drink\Commands\RestoreDrink;
 use App\Actions\Admin\Drink\Commands\ToggleDrinkAvailability;
 use App\Actions\Admin\Drink\Commands\UpdateDrink;
 use App\Actions\Admin\Drink\Queries\GetDrinkForEdit;
@@ -64,7 +66,7 @@ class DrinkController extends Controller
         try {
             $command->execute(
                 $request->validated(),
-                $request->file('images')
+                $request->file('images') ?? []
             );
 
             return redirect()
@@ -122,34 +124,59 @@ class DrinkController extends Controller
     }
 
     /**
-     * @param Drink $drink
+     * @param int $id
      * @param DeleteDrink $command
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function destroy(Drink $drink, DeleteDrink $command): RedirectResponse
+    public function destroy(int $id, DeleteDrink $command): JsonResponse
     {
-        try {
-            $command->execute($drink);
+        $command->execute($id);
 
-            return redirect()
-                ->route('drink.index');
-        } catch (Throwable $e) {
-            report($e);
-
-            return back()
-                ->withErrors(['message' => 'Something went wrong while deleting the drink']);
-        }
+        return response()->json([
+            'message' => 'Drink successfully moved to bin',
+        ]);
     }
 
     /**
-     * @param Drink $drink
+     * @param int $id
      * @param ToggleDrinkAvailability $command
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function available(Drink $drink, ToggleDrinkAvailability $command): RedirectResponse
+    public function available(int $id, ToggleDrinkAvailability $command): JsonResponse
     {
-        $command->execute($drink);
+        $drink = $command->execute($id);
 
-        return redirect()->route('drink.index');
+        return response()->json([
+            'message' => 'Drink availability successfully updated',
+            'drink' => $drink,
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param RestoreDrink $command
+     * @return JsonResponse
+     */
+    public function restore(int $id, RestoreDrink $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Drink successfully restored',
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param ForceDeleteDrink $command
+     * @return JsonResponse
+     */
+    public function forceDelete(int $id, ForceDeleteDrink $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Drink successfully deleted',
+        ]);
     }
 }

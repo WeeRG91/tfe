@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\Admin\Ingredient\Commands\CreateIngredient;
 use App\Actions\Admin\Ingredient\Commands\DeleteIngredient;
+use App\Actions\Admin\Ingredient\Commands\ForceDeleteIngredient;
+use App\Actions\Admin\Ingredient\Commands\RestoreIngredient;
 use App\Actions\Admin\Ingredient\Commands\UpdateIngredient;
 use App\Actions\Admin\Ingredient\Queries\GetIngredientForEdit;
 use App\Actions\Admin\Ingredient\Queries\GetIngredientFormData;
@@ -161,21 +163,45 @@ class IngredientController extends Controller
         }
     }
 
-    public function destroy(
-        Ingredient $ingredient,
-        DeleteIngredient $command
-    ): RedirectResponse
+    /**
+     * @param int $id
+     * @param DeleteIngredient $command
+     * @return JsonResponse
+     */
+    public function destroy(int $id, DeleteIngredient $command): JsonResponse
     {
-        try {
-            $command->execute($ingredient);
+        $command->execute($id);
 
-            return redirect()
-                ->route('ingredient.index');
-        } catch (Throwable $e) {
-            report($e);
+        return response()->json([
+            'message' => 'Ingredient successfully moved to bin',
+        ]);
+    }
 
-            return back()
-                ->withErrors(['message' => 'Something went wrong while deleting the ingredient']);
-        }
+    /**
+     * @param int $id
+     * @param RestoreIngredient $command
+     * @return JsonResponse
+     */
+    public function restore(int $id, RestoreIngredient $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Ingredient successfully restored',
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param ForceDeleteIngredient $command
+     * @return JsonResponse
+     */
+    public function forceDelete(int $id, ForceDeleteIngredient $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Ingredient successfully deleted',
+        ]);
     }
 }

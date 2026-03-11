@@ -25,7 +25,7 @@ class Ingredient extends Model
         return $this->morphOne(Image::class, 'imageable')->latestOfMany();
     }
 
-    public function dish(): BelongsToMany
+    public function dishes(): BelongsToMany
     {
         return $this->belongsToMany(Dish::class, 'dish_ingredients');
     }

@@ -3,10 +3,8 @@
 namespace App\Actions\Admin\Drink\Commands;
 
 use App\Models\Drink;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
-class DeleteDrink
+class RestoreDrink
 {
     /**
      * @param int $id
@@ -14,8 +12,8 @@ class DeleteDrink
      */
     public function execute(int $id): void
     {
-        $drink = Drink::findOrFail($id);
+        $drink = Drink::onlyTrashed()->findOrFail($id);
 
-        $drink->delete();
+        $drink->restore();
     }
 }

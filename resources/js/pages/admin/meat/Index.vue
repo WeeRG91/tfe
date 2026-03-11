@@ -19,11 +19,12 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import meat from '@/routes/meat';
 import { BreadcrumbItem, CursorPaginated, type FilterType } from '@/types';
 import { MeatType } from '@/types/meat';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
+import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
 import {
     EllipsisVerticalIcon,
-    EyeIcon,
+    RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
     SquarePlusIcon,
@@ -32,7 +33,6 @@ import {
 } from 'lucide-vue-next';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import { watchDebounced } from '@vueuse/core';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -49,24 +49,57 @@ const meats = ref<MeatType[]>([]);
 const nextCursor = ref<string | null>(null);
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
+const scrollContainer = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 const filter = ref<FilterType>('all');
 const search = ref<string | null>(null);
 
-const meatForm = useForm({});
+const moveToBin = async (id: number) => {
+    try {
+        const response = await axios.delete(meat.destroy(id).url);
 
-const deleteMeat = (id: number) => {
-    meatForm.delete(meat.destroy(id).url, {
-        onSuccess: () => {
-            closeConfirmModal();
-            toast.success('Allergen successfully deleted.');
-        },
-        onError: (error) => {
-            if (error.message) toast.error(error.meessage);
+        meats.value = meats.value.filter((d) => d.id !== id);
 
-            toast.error('Something went wrong. Please try again.');
-        },
-    });
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to move meat to bin');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const restoreMeat = async (id: number) => {
+    try {
+        const response = await axios.post(meat.restore(id).url);
+
+        meats.value = meats.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to restore meat');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const deleteMeat = async (id: number) => {
+    try {
+        const response = await axios.delete(meat.forceDelete(id).url);
+
+        meats.value = meats.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to delete meat');
+        }
+    } finally {
+        closeConfirmModal();
+    }
 };
 
 const openConfirmModal = (
@@ -109,7 +142,7 @@ const loadMeats = async () => {
         nextCursor.value = newMeats.next_cursor;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more ingredients.');
+        toast.error('Failed to load more meats.');
     } finally {
         isLoading.value = false;
     }
@@ -118,7 +151,14 @@ const loadMeats = async () => {
 const applyFilters = () => {
     meats.value = [];
     nextCursor.value = null;
+
+    observer.value?.disconnect();
+
     loadMeats();
+
+    if (sentinel.value) {
+        observer.value?.observe(sentinel.value);
+    }
 };
 
 const changeFilter = (value: FilterType) => {
@@ -172,6 +212,7 @@ onMounted(() => {
             class="flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-t-xl p-4"
         >
             <div
+                ref="scrollContainer"
                 class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <div
@@ -310,7 +351,10 @@ onMounted(() => {
                             <TableHead>Name</TableHead>
                             <TableHead>Extra price</TableHead>
                             <TableHead>Created at</TableHead>
-                            <TableHead>Updated at</TableHead>
+                            <TableHead v-if="filter !== 'deleted'"
+                                >Updated at</TableHead
+                            >
+                            <TableHead v-else>Deleted at</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -341,9 +385,14 @@ onMounted(() => {
                                     {{ meatData.created_at }}</span
                                 >
                             </TableCell>
-                            <TableCell
+                            <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">
                                     {{ meatData.updated_at }}
+                                </span>
+                            </TableCell>
+                            <TableCell v-else
+                                ><span class="whitespace-nowrap">
+                                    {{ meatData.deleted_at }}
                                 </span>
                             </TableCell>
                             <TableCell>
@@ -351,7 +400,39 @@ onMounted(() => {
                                     <DropdownMenuTrigger>
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
+                                    <DropdownMenuContent
+                                        v-if="filter === 'deleted'"
+                                    >
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    `Are you sure you want to restore this meat?`,
+                                                    'info',
+                                                    () =>
+                                                        restoreMeat(
+                                                            meatData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <RotateCcwIcon /> Restore
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this meat?',
+                                                    'destructive',
+                                                    () =>
+                                                        deleteMeat(
+                                                            meatData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <TrashIcon /> Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                    <DropdownMenuContent v-else>
                                         <DropdownMenuItem>
                                             <a
                                                 :href="
@@ -362,20 +443,17 @@ onMounted(() => {
                                                 <SquarePenIcon /> Edit
                                             </a>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                            <EyeIcon /> View
-                                        </DropdownMenuItem>
                                         <DropdownMenuItem
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this allergen?',
+                                                    'Are you sure you want to move this meat to bin?',
                                                     'destructive',
                                                     () =>
-                                                        deleteMeat(meatData.id),
+                                                        moveToBin(meatData.id),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon /> Move to bin
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

@@ -19,10 +19,12 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import allergen from '@/routes/allergen';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { AllergenType } from '@/types/allergen';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
+import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
 import {
     EllipsisVerticalIcon,
+    RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
     SquarePlusIcon,
@@ -31,7 +33,6 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import { watchDebounced } from '@vueuse/core';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -48,24 +49,57 @@ const allergens = ref<AllergenType[]>([]);
 const nextCursor = ref<string | null>(null);
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
+const scrollContainer = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 const filter = ref<FilterType>('all');
 const search = ref<string | null>(null);
 
-const allergenForm = useForm({});
+const moveToBin = async (id: number) => {
+    try {
+        const response = await axios.delete(allergen.destroy(id).url);
 
-const deleteAllergen = (id: number) => {
-    allergenForm.delete(allergen.destroy(id).url, {
-        onSuccess: () => {
-            closeConfirmModal();
-            toast.success('Allergen successfully deleted.');
-        },
-        onError: (error) => {
-            if (error.message) toast.error(error.meessage);
+        allergens.value = allergens.value.filter((d) => d.id !== id);
 
-            toast.error('Something went wrong. Please try again.');
-        },
-    });
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to move allergen to bin');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const restoreAllergen = async (id: number) => {
+    try {
+        const response = await axios.post(allergen.restore(id).url);
+
+        allergens.value = allergens.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to restore allergen');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const deleteAllergen = async (id: number) => {
+    try {
+        const response = await axios.delete(allergen.forceDelete(id).url);
+
+        allergens.value = allergens.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to delete allergen');
+        }
+    } finally {
+        closeConfirmModal();
+    }
 };
 
 const openConfirmModal = (
@@ -108,7 +142,7 @@ const loadAllergens = async () => {
         nextCursor.value = newAllergen.next_cursor;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more dishes.');
+        toast.error('Failed to load more allergens.');
     } finally {
         isLoading.value = false;
     }
@@ -117,7 +151,14 @@ const loadAllergens = async () => {
 const applyFilters = () => {
     allergens.value = [];
     nextCursor.value = null;
+
+    observer.value?.disconnect();
+
     loadAllergens();
+
+    if (sentinel.value) {
+        observer.value?.observe(sentinel.value);
+    }
 };
 
 const changeFilter = (value: FilterType) => {
@@ -176,6 +217,7 @@ onBeforeUnmount(() => {
             class="flex h-full flex-1 flex-col gap-4 overflow-hidden rounded-t-xl p-4"
         >
             <div
+                ref="scrollContainer"
                 class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <div
@@ -313,7 +355,10 @@ onBeforeUnmount(() => {
                         <TableRow>
                             <TableHead>Name</TableHead>
                             <TableHead>Created at</TableHead>
-                            <TableHead>Updated at</TableHead>
+                            <TableHead v-if="filter !== 'deleted'"
+                                >Updated at</TableHead
+                            >
+                            <TableHead v-else>Deleted at</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -339,9 +384,13 @@ onBeforeUnmount(() => {
                                     allergenData.created_at
                                 }}</span></TableCell
                             >
-                            <TableCell
+                            <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">{{
                                     allergenData.updated_at
+                                }}</span> </TableCell
+                            ><TableCell v-else
+                                ><span class="whitespace-nowrap">{{
+                                    allergenData.deleted_at
                                 }}</span>
                             </TableCell>
                             <TableCell>
@@ -349,7 +398,39 @@ onBeforeUnmount(() => {
                                     <DropdownMenuTrigger>
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
+                                    <DropdownMenuContent
+                                        v-if="filter === 'deleted'"
+                                    >
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    `Are you sure you want to restore this allergen?`,
+                                                    'info',
+                                                    () =>
+                                                        restoreAllergen(
+                                                            allergenData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <RotateCcwIcon /> Restore
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this allergen?',
+                                                    'destructive',
+                                                    () =>
+                                                        deleteAllergen(
+                                                            allergenData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <TrashIcon /> Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                    <DropdownMenuContent v-else>
                                         <DropdownMenuItem>
                                             <a
                                                 :href="
@@ -365,16 +446,16 @@ onBeforeUnmount(() => {
                                         <DropdownMenuItem
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this allergen?',
+                                                    'Are you sure you want to move this allergen to bin?',
                                                     'destructive',
                                                     () =>
-                                                        deleteAllergen(
+                                                        moveToBin(
                                                             allergenData.id,
                                                         ),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon /> Move to bin
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

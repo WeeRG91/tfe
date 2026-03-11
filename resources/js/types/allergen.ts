@@ -1,10 +1,11 @@
 export type AllergenType = {
     id: number;
     name: string;
-    description: string;
+    description: string | null;
     main_image: string;
     created_at: string;
     updated_at: string;
+    deleted_at: string | null
 };
 
 export type EditAllergenType = {

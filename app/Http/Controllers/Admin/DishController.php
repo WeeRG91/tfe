@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\Admin\Dish\Commands\CreateDish;
 use App\Actions\Admin\Dish\Commands\DeleteDish;
+use App\Actions\Admin\Dish\Commands\ForceDeleteDish;
+use App\Actions\Admin\Dish\Commands\RestoreDish;
 use App\Actions\Admin\Dish\Commands\ToggleDishAvailability;
 use App\Actions\Admin\Dish\Commands\updateDish;
 use App\Actions\Admin\Dish\Queries\GetDishForEdit;
@@ -121,35 +123,59 @@ class DishController extends Controller
     }
 
     /**
-     * @param Dish $dish
+     * @param int $id
      * @param DeleteDish $command
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function destroy(Dish $dish, DeleteDish $command): RedirectResponse
+    public function destroy(int $id, DeleteDish $command): JsonResponse
     {
-        try {
-            $command->execute($dish);
+        $command->execute($id);
 
-            return redirect()
-                ->route('dish.index');
-        } catch (Throwable $e) {
-            report($e);
-
-            return back()
-                ->withErrors(['message' => 'Something went wrong while deleting the dish']);
-        }
+        return response()->json([
+            'message' => 'Dish successfully moved to bin',
+        ]);
     }
 
     /**
-     * @param Dish $dish
+     * @param int $id
      * @param ToggleDishAvailability $command
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function available(Dish $dish, ToggleDishAvailability $command): RedirectResponse
+    public function available(int $id, ToggleDishAvailability $command): JsonResponse
     {
-        $command->execute($dish);
+        $dish = $command->execute($id);
 
-        return redirect()
-            ->route('dish.index');
+        return response()->json([
+            'message' => 'Dish availability successfully updated',
+            'dish' => $dish,
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param RestoreDish $command
+     * @return JsonResponse
+     */
+    public function restore(int $id, RestoreDish $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Dish successfully restored',
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param ForceDeleteDish $command
+     * @return JsonResponse
+     */
+    public function forceDelete(int $id, ForceDeleteDish $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Dish successfully deleted',
+        ]);
     }
 }

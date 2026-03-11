@@ -15,7 +15,6 @@ import { dashboard } from '@/routes';
 import allergen from '@/routes/allergen';
 import dish from '@/routes/dish';
 import ingredient from '@/routes/ingredient';
-import trashed from '@/routes/trashed';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
@@ -27,7 +26,6 @@ import {
     Folder,
     LayoutGrid,
     Salad,
-    Trash,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import drink from '@/routes/drink';
@@ -63,11 +61,6 @@ const mainNavItems: NavItem[] = [
         title: 'Allergens',
         href: allergen.index(),
         icon: BeanOff,
-    },
-    {
-        title: 'Bin',
-        href: trashed.index(),
-        icon: Trash,
     },
 ];
 

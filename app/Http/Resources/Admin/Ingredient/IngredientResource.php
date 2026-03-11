@@ -24,8 +24,9 @@ class IngredientResource extends JsonResource
                 ? Storage::disk('public')->url($this->main_image)
                 : Storage::disk('public')->url('images/picture.png'),
             'allergen' => new AllergenWithImagesResource($this->whenLoaded('allergen')),
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
+            'created_at' => $this->created_at?->toDateString(),
+            'updated_at' => $this->updated_at?->toDateString(),
+            'deleted_at' => $this->deleted_at?->toDateString(),
         ];
     }
 }

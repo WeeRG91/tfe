@@ -21,7 +21,7 @@ import dish from '@/routes/dish';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { DishType } from '@/types/dish';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
 import {
@@ -29,6 +29,7 @@ import {
     CircleCheckBigIcon,
     CircleXIcon,
     EllipsisVerticalIcon,
+    RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
     SquarePlusIcon,
@@ -57,39 +58,80 @@ const dishes = ref<DishType[]>([]);
 const nextCursor = ref<string | null>(null);
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
+const scrollContainer = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 const filter = ref<FilterType>('all');
 const category = ref<number | null>(null);
 const search = ref<string | null>(null);
 
-const dishForm = useForm({});
+const toggleAvailability = async (id: number) => {
+    try {
+        const response = await axios.patch(dish.available(id).url);
 
-const deleteDish = (id: number) => {
-    dishForm.delete(dish.destroy(id).url, {
-        onSuccess: () => {
-            closeConfirmModal();
-            toast.success('Dish successfully deleted.');
-        },
-        onError: (error) => {
-            if (error.message) toast.error(error.meessage);
+        const updatedDish = response.data.dish as DishType;
 
-            toast.error('Something went wrong. Please try again.');
-        },
-    });
+        const index = dishes.value.findIndex((d) => d.id === id);
+
+        if (index !== -1) {
+            dishes.value[index] = updatedDish;
+        }
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to update dish availability');
+        }
+    } finally {
+        closeConfirmModal();
+    }
 };
 
-const toggleAvailability = (id: number) => {
-    dishForm.patch(dish.available(id).url, {
-        onSuccess: () => {
-            closeConfirmModal();
-            toast.success('Dish availability updated successfully.');
-        },
-        onError: (error) => {
-            if (error.message) toast.error(error.meessage);
+const moveToBin = async (id: number) => {
+    try {
+        const response = await axios.delete(dish.destroy(id).url);
 
-            toast.error('Something went wrong. Please try again.');
-        },
-    });
+        dishes.value = dishes.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to move dish to bin');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const restoreDish = async (id: number) => {
+    try {
+        const response = await axios.post(dish.restore(id).url);
+
+        dishes.value = dishes.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to restore dish');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const deleteDish = async (id: number) => {
+    try {
+        const response = await axios.delete(dish.forceDelete(id).url);
+
+        dishes.value = dishes.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to delete dish');
+        }
+    } finally {
+        closeConfirmModal();
+    }
 };
 
 const openConfirmModal = (
@@ -142,7 +184,14 @@ const loadDishes = async () => {
 const applyFilters = () => {
     dishes.value = [];
     nextCursor.value = null;
+
+    observer.value?.disconnect();
+
     loadDishes();
+
+    if (sentinel.value) {
+        observer.value?.observe(sentinel.value);
+    }
 };
 
 const changeFilter = (value: FilterType) => {
@@ -207,6 +256,7 @@ onBeforeUnmount(() => {
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-t-xl p-4"
         >
             <div
+                ref="scrollContainer"
                 class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
             >
                 <div
@@ -444,7 +494,10 @@ onBeforeUnmount(() => {
                             <TableHead class="hidden md:table-cell"
                                 >Created at</TableHead
                             >
-                            <TableHead>Updated at</TableHead>
+                            <TableHead v-if="filter !== 'deleted'"
+                                >Updated at</TableHead
+                            >
+                            <TableHead v-else>Deleted at</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -490,9 +543,14 @@ onBeforeUnmount(() => {
                                     {{ dishData.created_at }}
                                 </span>
                             </TableCell>
-                            <TableCell
+                            <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">
                                     {{ dishData.updated_at }}
+                                </span>
+                            </TableCell>
+                            <TableCell v-else
+                                ><span class="whitespace-nowrap">
+                                    {{ dishData.deleted_at }}
                                 </span>
                             </TableCell>
                             <TableCell>
@@ -500,7 +558,37 @@ onBeforeUnmount(() => {
                                     <DropdownMenuTrigger>
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
+                                    <DropdownMenuContent
+                                        v-if="filter === 'deleted'"
+                                    >
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    `Are you sure you want to restore this dish?`,
+                                                    'info',
+                                                    () =>
+                                                        restoreDish(
+                                                            dishData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <RotateCcwIcon /> Restore
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this dish?',
+                                                    'destructive',
+                                                    () =>
+                                                        deleteDish(dishData.id),
+                                                )
+                                            "
+                                        >
+                                            <TrashIcon /> Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                    <DropdownMenuContent v-else>
                                         <DropdownMenuItem>
                                             <a
                                                 :href="
@@ -514,14 +602,14 @@ onBeforeUnmount(() => {
                                         <DropdownMenuItem
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this dish?',
+                                                    'Are you sure you want to move this dish to bin?',
                                                     'destructive',
                                                     () =>
-                                                        deleteDish(dishData.id),
+                                                        moveToBin(dishData.id),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon /> Move to bin
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="

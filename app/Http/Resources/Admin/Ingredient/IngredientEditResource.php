@@ -20,7 +20,7 @@ class IngredientEditResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'description' => $this->desciption,
+            'description' => $this->description,
             'allergen' => $this->allergen->id ?? null,
             'main_image' => $this->main_image
                 ? Storage::disk('public')->url($this->main_image)

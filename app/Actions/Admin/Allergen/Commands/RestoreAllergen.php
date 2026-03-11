@@ -3,11 +3,8 @@
 namespace App\Actions\Admin\Allergen\Commands;
 
 use App\Models\Allergen;
-use App\Models\Ingredient;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
-class DeleteAllergen
+class RestoreAllergen
 {
     /**
      * @param int $id
@@ -15,8 +12,8 @@ class DeleteAllergen
      */
     public function execute(int $id): void
     {
-       $allergen = Allergen::findOrFail($id);
+        $allergen = Allergen::onlyTrashed()->findOrFail($id);
 
-       $allergen->delete();
+        $allergen->restore();
     }
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Actions\Admin\Allergen\Commands\CreateAllergen;
 use App\Actions\Admin\Allergen\Commands\DeleteAllergen;
+use App\Actions\Admin\Allergen\Commands\ForceDeleteAllergen;
+use App\Actions\Admin\Allergen\Commands\RestoreAllergen;
 use App\Actions\Admin\Allergen\Commands\UpdateAllergen;
 use App\Actions\Admin\Allergen\Queries\GetAllergenForEdit;
 use App\Actions\Admin\Allergen\Queries\GetAllergenFormData;
@@ -124,22 +126,44 @@ class AllergenController extends Controller
     }
 
     /**
-     * @param Allergen $allergen
+     * @param int $id
      * @param DeleteAllergen $command
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function destroy(Allergen $allergen, DeleteAllergen $command): RedirectResponse
+    public function destroy(int $id, DeleteAllergen $command): JsonResponse
     {
-        try {
-            $command->execute($allergen);
+        $command->execute($id);
 
-            return redirect()
-                ->route('allergen.index');
-        } catch (Throwable $e) {
-            report($e);
+        return response()->json([
+            'message' => 'Allergen successfully moved to bin',
+        ]);
+    }
 
-            return back()
-                ->withErrors(['message' => 'Something went wrong while deleting the allergen']);
-        }
+    /**
+     * @param int $id
+     * @param RestoreAllergen $command
+     * @return JsonResponse
+     */
+    public function restore(int $id, RestoreAllergen $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Allergen successfully restored.',
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @param ForceDeleteAllergen $command
+     * @return JsonResponse
+     */
+    public function forceDelete(int $id, ForceDeleteAllergen $command): JsonResponse
+    {
+        $command->execute($id);
+
+        return response()->json([
+            'message' => 'Allergen successfully deleted.',
+        ]);
     }
 }

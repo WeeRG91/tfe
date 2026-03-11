@@ -1,11 +1,12 @@
 export type MeatType = {
     id: number;
     name: string;
-    description: string;
+    description: string | null;
     extra_price: number;
     main_image: string;
     created_at: string;
     updated_at: string;
+    deleted_at: string | null;
 };
 
 export type EditMeatType = {

@@ -3,10 +3,8 @@
 namespace App\Actions\Admin\Dish\Commands;
 
 use App\Models\Dish;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
-class DeleteDish
+class RestoreDish
 {
     /**
      * @param int $id
@@ -14,8 +12,8 @@ class DeleteDish
      */
     public function execute(int $id): void
     {
-       $dish = Dish::findOrFail($id);
+        $dish = Dish::onlyTrashed()->findOrFail($id);
 
-       $dish->delete();
+        $dish->restore();
     }
 }

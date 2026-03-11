@@ -30,7 +30,7 @@ const confirm = () => {
                     Cancel
                 </Button>
                 <Button v-if="type === 'destructive'" variant="destructive" @click="confirm">
-                    Delete
+                    Confirm
                 </Button>
                 <Button v-if="type === 'info'" @click="confirm">
                     Confirm

@@ -20,12 +20,13 @@ import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { AllergenOptionType } from '@/types/allergen';
 import { IngredientType } from '@/types/ingredient';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
 import {
     ChevronDownIcon,
     EllipsisVerticalIcon,
+    RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
     SquarePlusIcon,
@@ -60,20 +61,52 @@ const filter = ref<FilterType>('all');
 const allergen = ref<number | null>(null);
 const search = ref<string | null>(null);
 
-const ingredientForm = useForm({});
+const moveToBin = async (id: number) => {
+    try {
+        const response = await axios.delete(ingredient.destroy(id).url);
 
-const deleteIngredient = (id: number) => {
-    ingredientForm.delete(ingredient.destroy(id).url, {
-        onSuccess: () => {
-            closeConfirmModal();
-            toast.success('Ingredient successfully deleted.');
-        },
-        onError: (error) => {
-            if (error.message) toast.error(error.meessage);
+        ingredients.value = ingredients.value.filter((d) => d.id !== id);
 
-            toast.error('Something went wrong. Please try again.');
-        },
-    });
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to move ingredient to bin');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const restoreIngredient = async (id: number) => {
+    try {
+        const response = await axios.post(ingredient.restore(id).url);
+
+        ingredients.value = ingredients.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to restore ingredient');
+        }
+    } finally {
+        closeConfirmModal();
+    }
+};
+
+const deleteIngredient = async (id: number) => {
+    try {
+        const response = await axios.delete(ingredient.forceDelete(id).url);
+
+        ingredients.value = ingredients.value.filter((d) => d.id !== id);
+
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Failed to delete ingredient');
+        }
+    } finally {
+        closeConfirmModal();
+    }
 };
 
 const openConfirmModal = (
@@ -394,7 +427,10 @@ onBeforeUnmount(() => {
                             <TableHead>Name</TableHead>
                             <TableHead>Allergen</TableHead>
                             <TableHead>Created at</TableHead>
-                            <TableHead>Updated at</TableHead>
+                            <TableHead v-if="filter !== 'deleted'"
+                                >Updated at</TableHead
+                            >
+                            <TableHead v-else>Deleted at</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -434,9 +470,14 @@ onBeforeUnmount(() => {
                                     ingredientData.created_at
                                 }}</span></TableCell
                             >
-                            <TableCell
+                            <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">{{
                                     ingredientData.updated_at
+                                }}</span>
+                            </TableCell>
+                            <TableCell v-else
+                                ><span class="whitespace-nowrap">{{
+                                    ingredientData.deleted_at
                                 }}</span>
                             </TableCell>
                             <TableCell>
@@ -444,7 +485,39 @@ onBeforeUnmount(() => {
                                     <DropdownMenuTrigger>
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
+                                    <DropdownMenuContent
+                                        v-if="filter === 'deleted'"
+                                    >
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    `Are you sure you want to restore this ingredient?`,
+                                                    'info',
+                                                    () =>
+                                                        restoreIngredient(
+                                                            ingredientData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <RotateCcwIcon /> Restore
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            @click="
+                                                openConfirmModal(
+                                                    'Are you sure you want to delete this drink?',
+                                                    'destructive',
+                                                    () =>
+                                                        deleteIngredient(
+                                                            ingredientData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <TrashIcon /> Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                    <DropdownMenuContent v-else>
                                         <DropdownMenuItem>
                                             <a
                                                 :href="
@@ -460,16 +533,16 @@ onBeforeUnmount(() => {
                                         <DropdownMenuItem
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this ingredient?',
+                                                    'Are you sure you want to move this ingredient to bin?',
                                                     'destructive',
                                                     () =>
-                                                        deleteIngredient(
+                                                        moveToBin(
                                                             ingredientData.id,
                                                         ),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon /> Move to bin
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
