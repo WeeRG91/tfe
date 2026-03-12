@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
                                     )!.value,
                                 )
                             "
-                            class="ml-1 hover:text-blue-600"
+                            class="ml-1 cursor-pointer hover:text-blue-600"
                         >
                             ×
                         </button>

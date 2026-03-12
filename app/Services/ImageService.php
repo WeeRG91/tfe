@@ -40,6 +40,22 @@ class ImageService
         if (Storage::disk('public')->exists($image->path)) {
             Storage::disk('public')->delete($image->path);
         }
+
         $image->delete();
+    }
+
+    /**
+     * @param Image $image
+     * @return void
+     */
+    public function setMainImage(Image $image): void
+    {
+        $model = $image->imageable;
+
+        if ($model) {
+            $model->update([
+                'main_image' => $image->path,
+            ]);
+        }
     }
 }

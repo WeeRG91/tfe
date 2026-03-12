@@ -9,13 +9,13 @@ import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/drink';
 import { BreadcrumbItem } from '@/types';
+import { CategoryOptionType } from '@/types/category';
+import { DishErrorType } from '@/types/dish';
+import { EditDrinkType } from '@/types/drink';
 import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { EditDrinkType } from '@/types/drink';
-import { CategoryOptionType } from '@/types/category';
-import { DishErrorType } from '@/types/dish';
 
 const props = defineProps<{
     drinkToEdit: EditDrinkType;
@@ -124,6 +124,7 @@ const submit = () => {
                         <ImageUploader
                             v-model="images"
                             :existingImages="props.drinkToEdit.images"
+                            :mainImage="props.drinkToEdit.main_image"
                         />
                     </div>
                 </div>
@@ -133,7 +134,10 @@ const submit = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="drinkForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="drinkForm.processing"
                         ><SquarePenIcon v-if="!drinkForm.processing" /><Spinner
                             v-else
                         />

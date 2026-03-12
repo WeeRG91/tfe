@@ -139,7 +139,10 @@ const closeCreateIngredientModal = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="allergenForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="allergenForm.processing"
                         ><CirclePlus /> Create</Button
                     >
                 </div>

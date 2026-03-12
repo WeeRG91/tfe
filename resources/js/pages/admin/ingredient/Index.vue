@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
                                         filter === 'all' ? 'default' : 'outline'
                                     "
                                     @click="changeFilter('all')"
-                                    class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                    class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm cursor-pointer"
                                     :class="
                                         filter !== 'all' &&
                                         'hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -269,7 +269,7 @@ onBeforeUnmount(() => {
                                             : 'outline'
                                     "
                                     @click="changeFilter('deleted')"
-                                    class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                    class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm cursor-pointer"
                                     :class="[
                                         filter === 'deleted'
                                             ? 'bg-rose-600 hover:bg-rose-700 dark:bg-rose-600'
@@ -378,7 +378,7 @@ onBeforeUnmount(() => {
                         {{ filter }}
                         <button
                             @click="changeFilter('all')"
-                            class="ml-1 hover:text-blue-600"
+                            class="ml-1 cursor-pointer hover:text-blue-600"
                         >
                             ×
                         </button>
@@ -393,7 +393,7 @@ onBeforeUnmount(() => {
                                 allergen = null;
                                 applyFilters();
                             "
-                            class="ml-1 hover:text-purple-600"
+                            class="ml-1 cursor-pointer hover:text-purple-600"
                         >
                             ×
                         </button>
@@ -408,14 +408,14 @@ onBeforeUnmount(() => {
                                 search = '';
                                 applyFilters();
                             "
-                            class="ml-1 hover:text-amber-600"
+                            class="ml-1 cursor-pointer hover:text-amber-600"
                         >
                             ×
                         </button>
                     </span>
                     <button
                         @click="resetAllFilters"
-                        class="ml-auto hidden text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
+                        class="ml-auto cursor-pointer hidden text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
                         Clear all
                     </button>

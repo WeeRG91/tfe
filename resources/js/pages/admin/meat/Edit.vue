@@ -110,6 +110,7 @@ const submit = () => {
                         <ImageUploader
                             v-model="images"
                             :existing-images="props.meatToEdit.images"
+                            :mainImage="props.meatToEdit.main_image"
                         />
                     </div>
                 </div>
@@ -119,7 +120,10 @@ const submit = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="meatForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="meatForm.processing"
                         ><CirclePlus /> Edit</Button
                     >
                 </div>

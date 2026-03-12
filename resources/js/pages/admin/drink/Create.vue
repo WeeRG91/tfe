@@ -8,12 +8,12 @@ import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/drink';
 import { BreadcrumbItem } from '@/types';
+import { CategoryOptionType } from '@/types/category';
+import { DrinkErrorType } from '@/types/drink';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { CategoryOptionType } from '@/types/category';
-import { DrinkErrorType } from '@/types/drink';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -127,7 +127,10 @@ const submit = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="drinkForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="drinkForm.processing"
                         ><CirclePlus /> Create</Button
                     >
                 </div>

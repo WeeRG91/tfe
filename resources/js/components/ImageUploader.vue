@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import image from '@/routes/image';
-import { useForm } from '@inertiajs/vue3';
-import { ImagePlus } from 'lucide-vue-next';
+import axios from 'axios';
+import { ImagePlus, Star } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     modelValue: File[];
     existingImages?: { id: number; path: string }[];
+    mainImage?: string;
 }>();
 
 const emit = defineEmits<{
@@ -15,12 +16,12 @@ const emit = defineEmits<{
 }>();
 
 const images = ref<File[]>(props.modelValue || []);
+const existingMainImage = ref<string | null>(props.mainImage || null);
 const existingImagesPreviewUrls = ref<string[]>(
     props.existingImages?.map((img) => img.path) || [],
 );
 const previewUrls = ref<string[]>([]);
 const isDragging = ref<boolean>(false);
-const imageForm = useForm({});
 const error = ref<string>();
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
@@ -76,15 +77,37 @@ const removeImage = (index: number) => {
     updatePreviewImages();
 };
 
-const removeExistingImage = (index: number) => {
+const removeExistingImage = async (index: number) => {
     const imageToRemove = props.existingImages?.[index];
-    if (imageToRemove) {
+    if (!imageToRemove) return;
+
+    try {
+        const response = await axios.delete(
+            image.destroy(imageToRemove.id).url,
+        );
         existingImagesPreviewUrls.value.splice(index, 1);
-        imageForm.delete(image.destroy(imageToRemove.id).url, {
-            onSuccess: () => {
-                toast.success('Image removed successfully.');
-            },
-        });
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Something went wrong. Please try again later.');
+        }
+    }
+};
+
+const setMainImage = async (index: number) => {
+    const imageToSetMain = props.existingImages?.[index];
+    if (!imageToSetMain) return;
+
+    try {
+        const response = await axios.post(
+            image.setMainImage(imageToSetMain.id).url,
+        );
+        existingMainImage.value = imageToSetMain.path;
+        toast.success(response.data.message);
+    } catch (error) {
+        if (error) {
+            toast.error('Something went wrong. Please try again later.');
+        }
     }
 };
 
@@ -116,7 +139,7 @@ watch(
             type="file"
             multiple
             accept="image/*"
-            class="absolute inset-0 z-999 cursor-pointer opacity-0"
+            class="absolute inset-0 z-10 cursor-pointer opacity-0"
             @change="handleImageChange"
         />
 
@@ -139,7 +162,7 @@ watch(
             <div
                 v-for="(url, index) in existingImagesPreviewUrls"
                 :key="index"
-                class="group relative z-50"
+                class="group relative z-10"
             >
                 <img
                     :src="url"
@@ -147,18 +170,33 @@ watch(
                     alt=""
                 />
                 <button
+                    v-if="url !== existingMainImage"
                     type="button"
                     @click.stop="removeExistingImage(index)"
-                    class="absolute top-2 right-2 z-50 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+                    class="absolute top-2 right-2 z-20 cursor-pointer rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
                 >
                     ✕
+                </button>
+                <button
+                    type="button"
+                    @click.stop="setMainImage(index)"
+                    :disabled="url === existingMainImage"
+                    :class="url !== existingMainImage ? 'cursor-pointer' : ''"
+                    class="absolute top-2 left-2 z-20 rounded-full bg-transparent text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+                >
+                    <Star
+                        class="h-5.5 w-5.5"
+                        :class="
+                            url === existingMainImage ? 'fill-yellow-400' : ''
+                        "
+                    />
                 </button>
             </div>
             <!--new uploaded images-->
             <div
                 v-for="(url, index) in previewUrls"
                 :key="index"
-                class="group relative z-50"
+                class="group relative z-10"
             >
                 <img
                     :src="url"
@@ -168,7 +206,7 @@ watch(
                 <button
                     type="button"
                     @click.stop="removeImage(index)"
-                    class="absolute top-2 right-2 z-50 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+                    class="absolute top-2 right-2 z-20 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
                 >
                     ✕
                 </button>

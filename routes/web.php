@@ -85,6 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::controller(ImageController::class)->prefix('images')->name('image.')->group(function () {
         Route::delete('/{image}', 'destroy')->name('destroy');
+        Route::post('/{image}/set-main-image', 'setMainImage')->name('set-main-image');
     });
 });
 

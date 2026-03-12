@@ -134,6 +134,7 @@ const closeCreateIngredientModal = () => {
                         <ImageUploader
                             v-model="images"
                             :existingImages="props.allergenToEdit.images"
+                            :mainImage="props.allergenToEdit.main_image"
                         />
                     </div>
                 </div>
@@ -146,7 +147,10 @@ const closeCreateIngredientModal = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="allergenForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="allergenForm.processing"
                         ><SquarePenIcon
                             v-if="!allergenForm.processing"
                         /><Spinner v-else /> Edit</Button

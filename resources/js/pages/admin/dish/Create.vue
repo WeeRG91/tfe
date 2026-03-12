@@ -186,7 +186,10 @@ const closeCreateMeatModal = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="dishForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="dishForm.processing"
                         ><CirclePlus /> Create</Button
                     >
                 </div>

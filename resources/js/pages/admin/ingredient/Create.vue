@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem } from '@/types';
+import { AllergenOptionType } from '@/types/allergen';
+import { IngredientErrorType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { AllergenOptionType } from '@/types/allergen';
-import { IngredientErrorType } from '@/types/ingredient';
 
 const props = defineProps<{
     allergens: AllergenOptionType[];
@@ -120,7 +120,10 @@ const submit = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="ingredientForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="ingredientForm.processing"
                         ><CirclePlus /> Create</Button
                     >
                 </div>

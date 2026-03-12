@@ -20,6 +20,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/drink';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { CategoryOptionType } from '@/types/category';
+import { DishType } from '@/types/dish';
 import { DrinkType } from '@/types/drink';
 import { Head, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
@@ -38,7 +39,6 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import { DishType } from '@/types/dish';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -273,7 +273,7 @@ onBeforeUnmount(() => {
                                     filter === 'all' ? 'default' : 'outline'
                                 "
                                 @click="changeFilter('all')"
-                                class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                 :class="
                                     filter !== 'all' &&
                                     'hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -290,7 +290,7 @@ onBeforeUnmount(() => {
                                         : 'outline'
                                 "
                                 @click="changeFilter('available')"
-                                class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                 :class="[
                                     filter === 'available'
                                         ? 'bg-green-600 hover:bg-green-700 dark:bg-green-600'
@@ -308,7 +308,7 @@ onBeforeUnmount(() => {
                                         : 'outline'
                                 "
                                 @click="changeFilter('unavailable')"
-                                class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                 :class="[
                                     filter === 'unavailable'
                                         ? 'bg-amber-600 hover:bg-amber-700 dark:bg-amber-600'
@@ -324,7 +324,7 @@ onBeforeUnmount(() => {
                                     filter === 'deleted' ? 'default' : 'outline'
                                 "
                                 @click="changeFilter('deleted')"
-                                class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                 :class="[
                                     filter === 'deleted'
                                         ? 'bg-rose-600 hover:bg-rose-700 dark:bg-rose-600'
@@ -440,7 +440,7 @@ onBeforeUnmount(() => {
                         {{ filter }}
                         <button
                             @click="changeFilter('all')"
-                            class="ml-1 hover:text-blue-600"
+                            class="ml-1 cursor-pointer hover:text-blue-600"
                         >
                             ×
                         </button>
@@ -455,7 +455,7 @@ onBeforeUnmount(() => {
                                 category = null;
                                 applyFilters();
                             "
-                            class="ml-1 hover:text-purple-600"
+                            class="ml-1 cursor-pointer hover:text-purple-600"
                         >
                             ×
                         </button>
@@ -470,14 +470,14 @@ onBeforeUnmount(() => {
                                 search = '';
                                 applyFilters();
                             "
-                            class="ml-1 hover:text-amber-600"
+                            class="ml-1 cursor-pointer hover:text-amber-600"
                         >
                             ×
                         </button>
                     </span>
                     <button
                         @click="resetAllFilters"
-                        class="ml-auto hidden text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
+                        class="ml-auto cursor-pointer hidden text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
                         Clear all
                     </button>
@@ -584,7 +584,9 @@ onBeforeUnmount(() => {
                                                     'Are you sure you want to delete this drink?',
                                                     'destructive',
                                                     () =>
-                                                        deleteDrink(drinkData.id),
+                                                        deleteDrink(
+                                                            drinkData.id,
+                                                        ),
                                                 )
                                             "
                                         >

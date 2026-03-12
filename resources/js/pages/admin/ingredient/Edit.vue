@@ -8,12 +8,12 @@ import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem } from '@/types';
+import { AllergenOptionType } from '@/types/allergen';
+import { EditIngredientType, IngredientErrorType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { EditIngredientType, IngredientErrorType } from '@/types/ingredient';
-import { AllergenOptionType } from '@/types/allergen';
 
 const props = defineProps<{
     ingredientToEdit: EditIngredientType;
@@ -115,6 +115,7 @@ const submit = () => {
                         <ImageUploader
                             v-model="images"
                             :existingImages="props.ingredientToEdit.images"
+                            :mainImage="props.ingredientToEdit.main_image"
                         />
                     </div>
                 </div>
@@ -127,7 +128,10 @@ const submit = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="ingredientForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="ingredientForm.processing"
                         ><SquarePenIcon
                             v-if="!ingredientForm.processing"
                         /><Spinner v-else /> Edit</Button

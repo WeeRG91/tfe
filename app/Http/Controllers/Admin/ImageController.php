@@ -4,23 +4,36 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Image;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
+use App\Services\ImageService;
+use Illuminate\Http\JsonResponse;
 
 class ImageController extends Controller
 {
     /**
      * @param Image $image
-     * @return RedirectResponse
+     * @param ImageService $imageService
+     * @return JsonResponse
      */
-    public function destroy(Image $image)
+    public function setMainImage(Image $image, ImageService $imageService): JsonResponse
     {
-        if (Storage::disk('public')->exists($image->path)) {
-            Storage::disk('public')->delete($image->path);
-        }
+        $imageService->setMainImage($image);
 
-        $image->delete();
+        return response()->json([
+            'message' => 'Main image successfully set',
+        ]);
+    }
 
-        return redirect()->back()->with('success', 'Image deleted successfully.');
+    /**
+     * @param Image $image
+     * @param ImageService $imageService
+     * @return JsonResponse
+     */
+    public function destroy(Image $image, ImageService $imageService): JsonResponse
+    {
+        $imageService->delete($image);
+
+        return response()->json([
+            'message' => 'Image successfully deleted',
+        ]);
     }
 }

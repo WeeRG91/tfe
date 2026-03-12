@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
 import type { BreadcrumbItem, ErrorType } from '@/types';
+import { AllergenOptionType } from '@/types/allergen';
 import { CategoryOptionType } from '@/types/category';
 import { EditDishType } from '@/types/dish';
 import { IngredientOptionType } from '@/types/ingredient';
@@ -20,7 +21,6 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { AllergenOptionType } from '@/types/allergen';
 
 const props = defineProps<{
     dishToEdit: EditDishType;
@@ -187,6 +187,7 @@ const closeCreateMeatModal = () => {
                         <ImageUploader
                             v-model="images"
                             :existingImages="props.dishToEdit.images"
+                            :mainImage="props.dishToEdit.main_image"
                         />
                     </div>
                 </div>
@@ -196,7 +197,10 @@ const closeCreateMeatModal = () => {
                             <X /> Cancel
                         </a>
                     </Button>
-                    <Button type="submit" :disabled="dishForm.processing"
+                    <Button
+                        type="submit"
+                        class="cursor-pointer"
+                        :disabled="dishForm.processing"
                         ><SquarePenIcon v-if="!dishForm.processing" /><Spinner
                             v-else
                         />
