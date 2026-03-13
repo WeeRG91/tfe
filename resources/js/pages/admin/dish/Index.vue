@@ -29,6 +29,7 @@ import {
     CircleCheckBigIcon,
     CircleXIcon,
     EllipsisVerticalIcon,
+    Loader,
     RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
@@ -272,7 +273,7 @@ onBeforeUnmount(() => {
                                     filter === 'all' ? 'default' : 'outline'
                                 "
                                 @click="changeFilter('all')"
-                                class="text-xs cursor-pointer shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                 :class="
                                     filter !== 'all' &&
                                     'hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -289,7 +290,7 @@ onBeforeUnmount(() => {
                                         : 'outline'
                                 "
                                 @click="changeFilter('available')"
-                                class="text-xs cursor-pointer shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                 :class="[
                                     filter === 'available'
                                         ? 'bg-green-600 hover:bg-green-700 dark:bg-green-600'
@@ -307,7 +308,7 @@ onBeforeUnmount(() => {
                                         : 'outline'
                                 "
                                 @click="changeFilter('unavailable')"
-                                class="text-xs cursor-pointer shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                 :class="[
                                     filter === 'unavailable'
                                         ? 'bg-amber-600 hover:bg-amber-700 dark:bg-amber-600'
@@ -323,7 +324,7 @@ onBeforeUnmount(() => {
                                     filter === 'deleted' ? 'default' : 'outline'
                                 "
                                 @click="changeFilter('deleted')"
-                                class="text-xs cursor-pointer shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
+                                class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                 :class="[
                                     filter === 'deleted'
                                         ? 'bg-rose-600 hover:bg-rose-700 dark:bg-rose-600'
@@ -476,7 +477,7 @@ onBeforeUnmount(() => {
                     </span>
                     <button
                         @click="resetAllFilters"
-                        class="ml-auto cursor-pointer hidden text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
+                        class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
                         Clear all
                     </button>
@@ -654,19 +655,29 @@ onBeforeUnmount(() => {
                                 :colspan="5"
                                 class="py-2 text-center text-gray-500"
                             >
-                                Loading more dishes...
+                                <Loader
+                                    class="mx-auto animate-spin text-muted-foreground"
+                                />
                             </td>
                         </tr>
-
-                        <TableRow v-if="dishes.length === 0">
-                            <TableCell
-                                class="text-center text-gray-300"
-                                :colspan="7"
-                                >No dish yet</TableCell
-                            >
-                        </TableRow>
                     </TableBody>
                 </Table>
+
+                <div
+                    v-if="isLoading"
+                    class="flex h-24 items-center justify-center sm:h-32"
+                >
+                    <Loader
+                        class="mx-auto animate-spin text-muted-foreground"
+                    />
+                </div>
+
+                <div
+                    v-if="dishes.length === 0 && !isLoading"
+                    class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
+                >
+                    No dish yet
+                </div>
 
                 <ConfirmModal
                     :open="confirmModalOpen"

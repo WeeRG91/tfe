@@ -17,6 +17,7 @@ import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { Loader } from 'lucide-vue-next';
 
 const props = defineProps<{
     open: boolean;
@@ -34,6 +35,7 @@ const name = ref<string>('');
 const description = ref<string>('');
 const extra_price = ref<number | null>(null);
 const images = ref<File[]>([]);
+const isLoading = ref<boolean>(false);
 
 const meatForm = useForm({
     name: '',
@@ -43,6 +45,8 @@ const meatForm = useForm({
 });
 
 const submit = () => {
+    isLoading.value = true;
+
     meatForm.name = name.value;
     meatForm.description = description.value;
     meatForm.extra_price = extra_price.value;
@@ -61,6 +65,9 @@ const submit = () => {
             if (error.message) toast.error(error.meessage);
 
             toast.error('Something went wrong. Please check the form.');
+        },
+        onFinish: () => {
+            isLoading.value = false;
         },
     });
 };
@@ -103,12 +110,15 @@ const submit = () => {
             </div>
 
             <DialogFooter>
-                <Button variant="secondary" @click="props.onClose()">
+                <Button variant="secondary" @click="props.onClose()" class="sm:w-24">
                     Cancel
                 </Button>
 
-                <Button :disabled="meatForm.processing" @click="submit">
-                    Create
+                <Button :disabled="meatForm.processing" @click="submit" class="sm:w-24">
+                    <span v-if="isLoading">
+                        <Loader class="animate-spin text-muted-foreground" />
+                    </span>
+                    <span v-else>Create</span>
                 </Button>
             </DialogFooter>
         </DialogContent>

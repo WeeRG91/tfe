@@ -26,6 +26,7 @@ import axios from 'axios';
 import {
     ChevronDownIcon,
     EllipsisVerticalIcon,
+    Loader,
     RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
@@ -252,7 +253,7 @@ onBeforeUnmount(() => {
                                         filter === 'all' ? 'default' : 'outline'
                                     "
                                     @click="changeFilter('all')"
-                                    class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm cursor-pointer"
+                                    class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                     :class="
                                         filter !== 'all' &&
                                         'hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -269,7 +270,7 @@ onBeforeUnmount(() => {
                                             : 'outline'
                                     "
                                     @click="changeFilter('deleted')"
-                                    class="text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm cursor-pointer"
+                                    class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
                                     :class="[
                                         filter === 'deleted'
                                             ? 'bg-rose-600 hover:bg-rose-700 dark:bg-rose-600'
@@ -415,7 +416,7 @@ onBeforeUnmount(() => {
                     </span>
                     <button
                         @click="resetAllFilters"
-                        class="ml-auto cursor-pointer hidden text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
+                        class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
                         Clear all
                     </button>
@@ -554,19 +555,29 @@ onBeforeUnmount(() => {
                                 :colspan="5"
                                 class="py-2 text-center text-gray-500"
                             >
-                                Loading more ingredients...
+                                <Loader
+                                    class="mx-auto animate-spin text-muted-foreground"
+                                />
                             </td>
                         </tr>
-
-                        <TableRow v-if="ingredients.length === 0">
-                            <TableCell
-                                class="text-center text-gray-300"
-                                :colspan="5"
-                                >No ingredient yet</TableCell
-                            >
-                        </TableRow>
                     </TableBody>
                 </Table>
+
+                <div
+                    v-if="isLoading"
+                    class="flex h-24 items-center justify-center sm:h-32"
+                >
+                    <Loader
+                        class="mx-auto animate-spin text-muted-foreground"
+                    />
+                </div>
+
+                <div
+                    v-if="ingredients.length === 0 && !isLoading"
+                    class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
+                >
+                    No dish yet
+                </div>
 
                 <ConfirmModal
                     :open="confirmModalOpen"

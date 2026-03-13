@@ -97,3 +97,18 @@ export type ErrorType = {
 };
 
 export type FilterType = 'all' | 'available' | 'unavailable' | 'deleted';
+
+export type GlobalSearchType = {
+    dish: SearchType[];
+    drink: SearchType[];
+    ingredient: SearchType[];
+    meat: SearchType[];
+    allergen: SearchType[];
+};
+
+export type SearchType = {
+    type: string;
+    id: number;
+    name: string;
+    main_image: string;
+};

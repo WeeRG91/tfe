@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AllergenController;
 use App\Http\Controllers\Admin\DishController;
 use App\Http\Controllers\Admin\DrinkController;
+use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\MeatController;
@@ -86,6 +87,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(ImageController::class)->prefix('images')->name('image.')->group(function () {
         Route::delete('/{image}', 'destroy')->name('destroy');
         Route::post('/{image}/set-main-image', 'setMainImage')->name('set-main-image');
+    });
+
+    Route::controller(GlobalSearchController::class)->prefix('global-search')->name('global-search.')->group(function () {
+        Route::get('/', 'search')->name('search');
     });
 });
 

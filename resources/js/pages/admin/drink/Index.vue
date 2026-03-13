@@ -30,6 +30,7 @@ import {
     CircleCheckBigIcon,
     CircleXIcon,
     EllipsisVerticalIcon,
+    Loader,
     RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
@@ -477,7 +478,7 @@ onBeforeUnmount(() => {
                     </span>
                     <button
                         @click="resetAllFilters"
-                        class="ml-auto cursor-pointer hidden text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
+                        class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
                         Clear all
                     </button>
@@ -659,19 +660,29 @@ onBeforeUnmount(() => {
                                 :colspan="5"
                                 class="py-2 text-center text-gray-500"
                             >
-                                Loading more ingredients...
+                                <Loader
+                                    class="mx-auto animate-spin text-muted-foreground"
+                                />
                             </td>
                         </tr>
-
-                        <TableRow v-if="drinks.length === 0">
-                            <TableCell
-                                class="text-center text-gray-300"
-                                :colspan="7"
-                                >No drink yet</TableCell
-                            >
-                        </TableRow>
                     </TableBody>
                 </Table>
+
+                <div
+                    v-if="isLoading"
+                    class="flex h-24 items-center justify-center sm:h-32"
+                >
+                    <Loader
+                        class="mx-auto animate-spin text-muted-foreground"
+                    />
+                </div>
+
+                <div
+                    v-if="drinks.length === 0 && !isLoading"
+                    class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
+                >
+                    No dish yet
+                </div>
 
                 <ConfirmModal
                     :open="confirmModalOpen"

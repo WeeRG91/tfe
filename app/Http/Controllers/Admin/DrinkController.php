@@ -110,7 +110,7 @@ class DrinkController extends Controller
             $command->execute(
                 $drink,
                 $request->validated(),
-                $request->file('images')
+                $request->file('images') ?? []
             );
 
             return redirect()

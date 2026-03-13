@@ -18,6 +18,7 @@ import {
 import { toast } from 'vue-sonner';
 import { AllergenOptionType } from '@/types/allergen';
 import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
+import { Loader } from 'lucide-vue-next';
 
 const props = defineProps<{
     open: boolean;
@@ -36,6 +37,7 @@ const selectedAllergen = ref<number | null>(null);
 const name = ref<string>('');
 const description = ref<string>('');
 const images = ref<File[]>([]);
+const isLoading = ref<boolean>(false);
 
 const ingredientForm = useForm({
     name: '',
@@ -45,6 +47,8 @@ const ingredientForm = useForm({
 });
 
 const submit = () => {
+    isLoading.value = true;
+
     ingredientForm.name = name.value;
     ingredientForm.description = description.value;
     ingredientForm.allergen_id = selectedAllergen.value;
@@ -53,7 +57,7 @@ const submit = () => {
     ingredientForm.post(ingredient.quickCreate().url, {
         forceFormData: true,
         preserveScroll: true,
-        errorBag: "ingredientErrors",
+        errorBag: 'ingredientErrors',
         onSuccess: () => {
             ingredientForm.reset();
             const newIngredient = page.props.flash
@@ -65,6 +69,9 @@ const submit = () => {
 
             toast.error('Something went wrong. Please check the form.');
         },
+        onFinish: () => {
+            isLoading.value = false;
+        }
     });
 };
 </script>
@@ -106,12 +113,19 @@ const submit = () => {
             </div>
 
             <DialogFooter>
-                <Button variant="secondary" @click="props.onClose()">
+                <Button variant="secondary" @click="props.onClose()" class="sm:w-24">
                     Cancel
                 </Button>
 
-                <Button :disabled="ingredientForm.processing" @click="submit">
-                    Create
+                <Button
+                    :disabled="ingredientForm.processing"
+                    @click="submit"
+                    class="sm:w-24"
+                >
+                    <span v-if="isLoading">
+                        <Loader class="animate-spin text-muted-foreground" />
+                    </span>
+                    <span v-else>Create</span>
                 </Button>
             </DialogFooter>
         </DialogContent>

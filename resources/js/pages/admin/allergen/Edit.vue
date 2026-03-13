@@ -5,14 +5,13 @@ import ImageUploader from '@/components/ImageUploader.vue';
 import MultipleSelect from '@/components/MultipleSelect.vue';
 import CreateIngredientModal from '@/components/admin/ingredient/CreateIngredientModal.vue';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import allergen from '@/routes/allergen';
 import type { BreadcrumbItem, ErrorType } from '@/types';
 import { AllergenOptionType, EditAllergenType } from '@/types/allergen';
 import { IngredientOptionType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
-import { SquarePenIcon, X } from 'lucide-vue-next';
+import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -42,6 +41,7 @@ const name = ref<string>(props.allergenToEdit.name ?? '');
 const description = ref<string>(props.allergenToEdit.description ?? '');
 const images = ref<File[]>([]);
 const ingredients = ref<IngredientOptionType[]>(props.ingredients);
+const isLoading = ref<boolean>(false);
 
 const allergenForm = useForm({
     name: '',
@@ -51,6 +51,8 @@ const allergenForm = useForm({
 });
 
 const submit = () => {
+    isLoading.value = true;
+
     allergenForm.name = name.value;
     allergenForm.description = description.value;
     allergenForm.ingredients = selectedIngredients.value;
@@ -67,6 +69,9 @@ const submit = () => {
             if (error.message) toast.error(error.meessage);
 
             toast.error('Something went wrong. Please check the form.');
+        },
+        onFinish: () => {
+            isLoading.value = false;
         },
     });
 };
@@ -139,7 +144,7 @@ const closeCreateIngredientModal = () => {
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
-                    <Button type="button" variant="secondary">
+                    <Button type="button" variant="secondary" class="w-24">
                         <a
                             :href="allergen.index().url"
                             class="flex items-center"
@@ -149,12 +154,24 @@ const closeCreateIngredientModal = () => {
                     </Button>
                     <Button
                         type="submit"
-                        class="cursor-pointer"
+                        class="w-24 cursor-pointer"
                         :disabled="allergenForm.processing"
-                        ><SquarePenIcon
-                            v-if="!allergenForm.processing"
-                        /><Spinner v-else /> Edit</Button
                     >
+                        <span
+                            v-if="isLoading"
+                            class="flex items-center justify-center gap-2"
+                        >
+                            <Loader
+                                class="animate-spin text-muted-foreground"
+                            />
+                        </span>
+                        <span
+                            v-else
+                            class="flex items-center justify-center gap-2"
+                        >
+                            <SquarePenIcon /> Edit
+                        </span>
+                    </Button>
                 </div>
             </form>
 

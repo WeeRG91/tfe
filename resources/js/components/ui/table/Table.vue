@@ -16,7 +16,7 @@ const props = defineProps<{
   </div>
 </template>
 
-<style>
+<style scoped>
 .scrollable::-webkit-scrollbar {
     width: 4px;
     height: 4px;

@@ -8,7 +8,6 @@ import Select from '@/components/Select.vue';
 import CreateIngredientModal from '@/components/admin/ingredient/CreateIngredientModal.vue';
 import CreateMeatModal from '@/components/admin/meat/CreateMeatModal.vue';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/dish';
 import type { BreadcrumbItem, ErrorType } from '@/types';
@@ -18,7 +17,7 @@ import { EditDishType } from '@/types/dish';
 import { IngredientOptionType } from '@/types/ingredient';
 import { MeatOptionType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
-import { SquarePenIcon, X } from 'lucide-vue-next';
+import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -57,6 +56,7 @@ const price = ref(props.dishToEdit.price ?? 0);
 const images = ref<File[]>([]);
 const ingredients = ref<IngredientOptionType[]>(props.ingredients);
 const meats = ref<MeatOptionType[]>(props.meats);
+const isLoading = ref<boolean>(false);
 
 const dishForm = useForm({
     name: '',
@@ -69,6 +69,8 @@ const dishForm = useForm({
 });
 
 const submit = () => {
+    isLoading.value = true;
+
     dishForm.name = name.value;
     dishForm.description = description.value;
     dishForm.price = price.value;
@@ -88,6 +90,9 @@ const submit = () => {
             if (error.message) toast.error(error.meessage);
 
             toast.error('Something went wrong. Please check the form.');
+        },
+        onFinish: () => {
+            isLoading.value = false;
         },
     });
 };
@@ -192,20 +197,34 @@ const closeCreateMeatModal = () => {
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
-                    <Button type="button" variant="secondary">
-                        <a :href="dish.index().url" class="flex items-center">
+                    <Button type="button" variant="secondary" class="w-24">
+                        <a
+                            :href="dish.index().url"
+                            class="flex items-center justify-center gap-2"
+                        >
                             <X /> Cancel
                         </a>
                     </Button>
                     <Button
                         type="submit"
-                        class="cursor-pointer"
+                        class="w-24 cursor-pointer"
                         :disabled="dishForm.processing"
-                        ><SquarePenIcon v-if="!dishForm.processing" /><Spinner
-                            v-else
-                        />
-                        Edit</Button
                     >
+                        <span
+                            v-if="isLoading"
+                            class="flex items-center justify-center gap-2"
+                        >
+                            <Loader
+                                class="animate-spin text-muted-foreground"
+                            />
+                        </span>
+                        <span
+                            v-else
+                            class="flex items-center justify-center gap-2"
+                        >
+                            <SquarePenIcon /> Edit
+                        </span>
+                    </Button>
                 </div>
             </form>
 

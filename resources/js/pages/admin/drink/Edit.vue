@@ -5,7 +5,6 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/drink';
 import { BreadcrumbItem } from '@/types';
@@ -13,7 +12,7 @@ import { CategoryOptionType } from '@/types/category';
 import { DishErrorType } from '@/types/dish';
 import { EditDrinkType } from '@/types/drink';
 import { Head, useForm } from '@inertiajs/vue3';
-import { SquarePenIcon, X } from 'lucide-vue-next';
+import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -39,6 +38,7 @@ const name = ref<string>(props.drinkToEdit.name ?? '');
 const description = ref<string>(props.drinkToEdit.description ?? '');
 const price = ref<number | null>(props.drinkToEdit.price ?? null);
 const images = ref<File[]>([]);
+const isLoading = ref<boolean>(false);
 
 const drinkForm = useForm({
     name: '',
@@ -49,6 +49,8 @@ const drinkForm = useForm({
 });
 
 const submit = () => {
+    isLoading.value = true;
+
     drinkForm.name = name.value;
     drinkForm.description = description.value;
     drinkForm.price = price.value;
@@ -65,6 +67,9 @@ const submit = () => {
             if (error.message) toast.error(error.meessage);
 
             toast.error('Something went wrong. Please check the form.');
+        },
+        onFinish: () => {
+            isLoading.value = false;
         },
     });
 };
@@ -129,20 +134,31 @@ const submit = () => {
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end gap-4">
-                    <Button type="button" variant="secondary">
+                    <Button type="button" variant="secondary" class="w-24">
                         <a :href="drink.index().url" class="flex items-center">
                             <X /> Cancel
                         </a>
                     </Button>
                     <Button
                         type="submit"
-                        class="cursor-pointer"
+                        class="w-24 cursor-pointer"
                         :disabled="drinkForm.processing"
-                        ><SquarePenIcon v-if="!drinkForm.processing" /><Spinner
-                            v-else
-                        />
-                        Edit</Button
                     >
+                        <span
+                            v-if="isLoading"
+                            class="flex items-center justify-center gap-2"
+                        >
+                            <Loader
+                                class="animate-spin text-muted-foreground"
+                            />
+                        </span>
+                        <span
+                            v-else
+                            class="flex items-center justify-center gap-2"
+                        >
+                            <SquarePenIcon /> Edit
+                        </span>
+                    </Button>
                 </div>
             </form>
         </div>
