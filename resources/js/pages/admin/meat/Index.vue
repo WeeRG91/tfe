@@ -56,6 +56,8 @@ const filter = ref<FilterType>('all');
 const search = ref<string | null>(null);
 
 const moveToBin = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.delete(meat.destroy(id).url);
 
@@ -67,11 +69,14 @@ const moveToBin = async (id: number) => {
             toast.error('Failed to move meat to bin');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const restoreMeat = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.post(meat.restore(id).url);
 
@@ -83,11 +88,14 @@ const restoreMeat = async (id: number) => {
             toast.error('Failed to restore meat');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const deleteMeat = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.delete(meat.forceDelete(id).url);
 
@@ -99,6 +107,7 @@ const deleteMeat = async (id: number) => {
             toast.error('Failed to delete meat');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
@@ -493,6 +502,7 @@ onMounted(() => {
                     :onClose="closeConfirmModal"
                     :message="confirmModalMessage"
                     :type="confirmModalType"
+                    :isLoading="isLoading"
                     @confirm="confirmModalAction"
                 />
             </div>

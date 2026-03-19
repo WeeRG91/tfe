@@ -7,17 +7,22 @@ use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\MeatController;
-use App\Http\Controllers\Admin\TrashedController;
+use App\Http\Controllers\Client\MenuController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    return Inertia::render('client/Home');
 })->name('home');
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::controller(MenuController::class)->prefix('menu')->name('menu.')->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/get-dishes', 'getDishes')->name('get-dishes');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(DishController::class)->prefix('dishes')->name('dish.')->group(function () {

@@ -1,0 +1,78 @@
+<script setup lang="ts">
+import { ClientDishType } from '@/types/dish';
+
+const props = defineProps<{
+    dish: ClientDishType;
+}>();
+</script>
+
+<template>
+    <div
+        class="group flex h-full flex-col overflow-hidden rounded-md border bg-white transition hover:shadow-lg"
+    >
+        <div class="overflow-hidden">
+            <img
+                :src="props.dish.main_image"
+                :alt="props.dish.name"
+                class="h-48 w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+        </div>
+
+        <div class="flex flex-1 flex-col p-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold uppercase">
+                    {{ props.dish.name }}
+                </h3>
+                <span class="font-semibold text-red-500">
+                    €{{ props.dish.price }}
+                </span>
+            </div>
+
+            <p class="mt-2 line-clamp-2 text-sm text-gray-600">
+                {{ props.dish.description }}
+            </p>
+
+            <div class="mt-auto">
+                <div class="mt-3 flex items-center justify-between">
+                    <div class="flex items-center gap-1">
+                        <span
+                            v-for="i in 5"
+                            :key="i"
+                            class="text-sm"
+                            :class="
+                                i <= 3 ? 'text-yellow-400' : 'text-gray-300'
+                            "
+                        >
+                            ★
+                        </span>
+
+                        <span class="ml-1 text-xs text-gray-400">
+                            ({{ 3 }})
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-1 text-sm text-gray-500">
+                        <span class="text-red-500">♥</span>
+                        <span>{{ 0 }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-3 flex items-center justify-between">
+                    <span
+                        class="text-xs tracking-widest text-gray-400 uppercase"
+                    >
+                        {{ props.dish.category.label }}
+                    </span>
+
+                    <button
+                        class="text-sm text-red-500 transition hover:underline"
+                    >
+                        View →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped></style>

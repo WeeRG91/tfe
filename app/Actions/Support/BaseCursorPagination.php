@@ -41,7 +41,7 @@ abstract class BaseCursorPagination
         );
 
         $query->when($request->search, fn ($q) =>
-            $q->where('name', 'LIKE', '%' . $request->search . '%')
+            $q->where('name', 'LIKE', "$request->search%")
         );
 
         return $query;
@@ -55,7 +55,7 @@ abstract class BaseCursorPagination
     protected function paginate(Builder $query, int $perPage): CursorPaginator
     {
         return $query
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->cursorPaginate($perPage);
     }
 

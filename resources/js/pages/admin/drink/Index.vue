@@ -67,6 +67,8 @@ const category = ref<number | null>(null);
 const search = ref<string | null>(null);
 
 const toggleAvailability = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.patch(drink.available(id).url);
 
@@ -84,11 +86,14 @@ const toggleAvailability = async (id: number) => {
             toast.error('Failed to update drink availability');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const moveToBin = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.delete(drink.destroy(id).url);
 
@@ -100,11 +105,14 @@ const moveToBin = async (id: number) => {
             toast.error('Failed to move dish to bin');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const restoreDrink = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.post(drink.restore(id).url);
 
@@ -116,11 +124,14 @@ const restoreDrink = async (id: number) => {
             toast.error('Failed to restore drink');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const deleteDrink = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.delete(drink.forceDelete(id).url);
 
@@ -132,6 +143,7 @@ const deleteDrink = async (id: number) => {
             toast.error('Failed to delete drink');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
@@ -689,6 +701,7 @@ onBeforeUnmount(() => {
                     :onClose="closeConfirmModal"
                     :message="confirmModalMessage"
                     :type="confirmModalType"
+                    :isLoading="isLoading"
                     @confirm="confirmModalAction"
                 />
             </div>

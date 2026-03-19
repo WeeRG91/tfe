@@ -66,6 +66,8 @@ const category = ref<number | null>(null);
 const search = ref<string | null>(null);
 
 const toggleAvailability = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.patch(dish.available(id).url);
 
@@ -83,11 +85,14 @@ const toggleAvailability = async (id: number) => {
             toast.error('Failed to update dish availability');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const moveToBin = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.delete(dish.destroy(id).url);
 
@@ -99,11 +104,14 @@ const moveToBin = async (id: number) => {
             toast.error('Failed to move dish to bin');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const restoreDish = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.post(dish.restore(id).url);
 
@@ -115,11 +123,14 @@ const restoreDish = async (id: number) => {
             toast.error('Failed to restore dish');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const deleteDish = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.delete(dish.forceDelete(id).url);
 
@@ -131,6 +142,7 @@ const deleteDish = async (id: number) => {
             toast.error('Failed to delete dish');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
@@ -684,6 +696,7 @@ onBeforeUnmount(() => {
                     :onClose="closeConfirmModal"
                     :message="confirmModalMessage"
                     :type="confirmModalType"
+                    :isLoading="isLoading"
                     @confirm="confirmModalAction"
                 />
             </div>

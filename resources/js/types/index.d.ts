@@ -112,3 +112,8 @@ export type SearchType = {
     name: string;
     main_image: string;
 };
+
+export type SearchResultType = {
+    key: 'dish' | 'drink' | 'ingredient' | 'meat' | 'allergen';
+    label: string;
+};

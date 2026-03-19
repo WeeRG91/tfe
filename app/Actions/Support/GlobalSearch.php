@@ -31,7 +31,9 @@ class GlobalSearch
             'type' => $type,
             'id' => $item->id,
             'name' => $item->name,
-            'main_image' => $item->main_image ? Storage::disk('public')->url($item->main_image) : Storage::disk('public')->url('/images/picture.png'),
+            'main_image' => $item->main_image
+                ? Storage::disk('public')->url($item->main_image)
+                : Storage::disk('public')->url('/images/picture.png'),
         ])->toArray();
     }
 
@@ -45,7 +47,7 @@ class GlobalSearch
 
         foreach ($this->models as $type => $model) {
             $items = $model::query()
-                ->where('name', 'LIKE', "%$query%")
+                ->where('name', 'LIKE', "$query%")
                 ->limit(5)
                 ->get();
 

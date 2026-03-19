@@ -56,6 +56,8 @@ const filter = ref<FilterType>('all');
 const search = ref<string | null>(null);
 
 const moveToBin = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.delete(allergen.destroy(id).url);
 
@@ -67,11 +69,14 @@ const moveToBin = async (id: number) => {
             toast.error('Failed to move allergen to bin');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const restoreAllergen = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.post(allergen.restore(id).url);
 
@@ -83,11 +88,14 @@ const restoreAllergen = async (id: number) => {
             toast.error('Failed to restore allergen');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
 
 const deleteAllergen = async (id: number) => {
+    isLoading.value = true;
+
     try {
         const response = await axios.delete(allergen.forceDelete(id).url);
 
@@ -99,6 +107,7 @@ const deleteAllergen = async (id: number) => {
             toast.error('Failed to delete allergen');
         }
     } finally {
+        isLoading.value = false;
         closeConfirmModal();
     }
 };
@@ -497,6 +506,7 @@ onBeforeUnmount(() => {
                     :onClose="closeConfirmModal"
                     :message="confirmModalMessage"
                     :type="confirmModalType"
+                    :isLoading="isLoading"
                     @confirm="confirmModalAction"
                 />
             </div>

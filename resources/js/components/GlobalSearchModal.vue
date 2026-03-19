@@ -12,11 +12,11 @@ import dish from '@/routes/dish';
 import drink from '@/routes/drink';
 import ingredient from '@/routes/ingredient';
 import meat from '@/routes/meat';
-import { GlobalSearchType } from '@/types';
+import { GlobalSearchType, SearchResultType } from '@/types';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { CornerDownLeft, Loader } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
     open: boolean;
@@ -46,6 +46,18 @@ watch(query, async (value) => {
     }
 });
 
+const resultTypes: SearchResultType[] = [
+    { key: 'dish', label: 'Dishes' },
+    { key: 'drink', label: 'Drinks' },
+    { key: 'ingredient', label: 'Ingredients' },
+    { key: 'meat', label: 'Meats' },
+    { key: 'allergen', label: 'Allergens' },
+];
+
+const filteredResultTypes = computed(() => {
+    return resultTypes.filter((type) => results.value?.[type.key]?.length);
+});
+
 const goToEdit = (type: string, id: number) => {
     switch (type) {
         case 'dish':
@@ -72,7 +84,6 @@ const goToEdit = (type: string, id: number) => {
 <template>
     <Dialog :open="open" @update:open="props.onClose">
         <DialogContent class="gap-0 overflow-hidden p-0 sm:max-w-2xl">
-            <!-- HEADER -->
             <DialogHeader class="border-b px-6 py-4">
                 <DialogTitle class="text-lg font-semibold">
                     Global Search
@@ -82,7 +93,6 @@ const goToEdit = (type: string, id: number) => {
                 </DialogDescription>
             </DialogHeader>
 
-            <!-- SEARCH INPUT -->
             <div class="border-b px-6 py-4">
                 <Input
                     v-model="query"
@@ -111,15 +121,15 @@ const goToEdit = (type: string, id: number) => {
                     Start typing to search…
                 </div>
 
-                <div v-if="results?.dish?.length">
+                <div v-for="type in filteredResultTypes" :key="type.key">
                     <h3
                         class="mb-2 border-b text-xs text-muted-foreground uppercase"
                     >
-                        Dishes
+                        {{ type.label }}
                     </h3>
 
                     <div
-                        v-for="item in results.dish"
+                        v-for="item in results![type.key]"
                         :key="item.id"
                         @click="goToEdit(item.type, item.id)"
                         class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition hover:bg-muted"
@@ -137,131 +147,7 @@ const goToEdit = (type: string, id: number) => {
                         </div>
 
                         <CornerDownLeft
-                            class="h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                        />
-                    </div>
-                </div>
-
-                <div v-if="results?.drink?.length">
-                    <h3
-                        class="mb-2 border-b text-xs text-muted-foreground uppercase"
-                    >
-                        Drinks
-                    </h3>
-
-                    <div
-                        v-for="item in results.drink"
-                        :key="item.id"
-                        @click="goToEdit(item.type, item.id)"
-                        class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition hover:bg-muted"
-                    >
-                        <div class="flex items-center justify-center gap-3">
-                            <img
-                                v-if="item.main_image"
-                                :src="item.main_image"
-                                :alt="item.name"
-                                class="h-9 w-9 rounded object-cover"
-                            />
-                            <span class="text-sm font-medium">
-                                {{ item.name }}
-                            </span>
-                        </div>
-
-                        <CornerDownLeft
-                            class="h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                        />
-                    </div>
-                </div>
-
-                <div v-if="results?.ingredient?.length">
-                    <h3
-                        class="mb-2 border-b text-xs text-muted-foreground uppercase"
-                    >
-                        Ingredients
-                    </h3>
-
-                    <div
-                        v-for="item in results.ingredient"
-                        :key="item.id"
-                        @click="goToEdit(item.type, item.id)"
-                        class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition hover:bg-muted"
-                    >
-                        <div class="flex items-center justify-center gap-3">
-                            <img
-                                v-if="item.main_image"
-                                :src="item.main_image"
-                                :alt="item.name"
-                                class="h-9 w-9 rounded object-cover"
-                            />
-                            <span class="text-sm font-medium">
-                                {{ item.name }}
-                            </span>
-                        </div>
-
-                        <CornerDownLeft
-                            class="h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                        />
-                    </div>
-                </div>
-
-                <div v-if="results?.meat?.length">
-                    <h3
-                        class="mb-2 border-b text-xs text-muted-foreground uppercase"
-                    >
-                        Meats
-                    </h3>
-
-                    <div
-                        v-for="item in results.meat"
-                        :key="item.id"
-                        @click="goToEdit(item.type, item.id)"
-                        class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition hover:bg-muted"
-                    >
-                        <div class="flex items-center justify-center gap-3">
-                            <img
-                                v-if="item.main_image"
-                                :src="item.main_image"
-                                :alt="item.name"
-                                class="h-9 w-9 rounded object-cover"
-                            />
-                            <span class="text-sm font-medium">
-                                {{ item.name }}
-                            </span>
-                        </div>
-
-                        <CornerDownLeft
-                            class="h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                        />
-                    </div>
-                </div>
-
-                <div v-if="results?.allergen?.length">
-                    <h3
-                        class="mb-2 border-b text-xs text-muted-foreground uppercase"
-                    >
-                        Allergens
-                    </h3>
-
-                    <div
-                        v-for="item in results.allergen"
-                        :key="item.id"
-                        @click="goToEdit(item.type, item.id)"
-                        class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition hover:bg-muted"
-                    >
-                        <div class="flex items-center justify-center gap-3">
-                            <img
-                                v-if="item.main_image"
-                                :src="item.main_image"
-                                :alt="item.name"
-                                class="h-9 w-9 rounded object-cover"
-                            />
-                            <span class="text-sm font-medium">
-                                {{ item.name }}
-                            </span>
-                        </div>
-
-                        <CornerDownLeft
-                            class="h-6 w-6 text-gray-400 group-hover:text-gray-500"
+                            class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
                         />
                     </div>
                 </div>

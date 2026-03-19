@@ -16,10 +16,7 @@ class GetPaginatedDishes extends BaseCursorPagination
     public function execute(Request $request): array
     {
         $query = Dish::query()
-            ->with([
-                'ingredients.allergen.images',
-                'images'
-            ]);
+            ->with(['images']);
 
         $query = $this->filters($query, $request);
 

@@ -33,3 +33,13 @@ export type DishErrorType = {
     ingredients?: string;
     category?: string;
 };
+
+export type ClientDishType = {
+    id: number;
+    name: string;
+    main_image: string;
+    description: string | null;
+    price: number;
+    category: CategoryOptionType;
+    is_available: string;
+};
