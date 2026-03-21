@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import menu from '@/routes/menu';
 import { ClientDishType } from '@/types/dish';
 
 const props = defineProps<{
@@ -18,7 +19,7 @@ const props = defineProps<{
             />
         </div>
 
-        <div class="flex flex-1 flex-col p-4">
+        <div class="flex flex-1 flex-col py-2 px-4">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold uppercase">
                     {{ props.dish.name }}
@@ -33,7 +34,7 @@ const props = defineProps<{
             </p>
 
             <div class="mt-auto">
-                <div class="mt-3 flex items-center justify-between">
+                <div class="mt-2 flex items-center justify-between">
                     <div class="flex items-center gap-1">
                         <span
                             v-for="i in 5"
@@ -51,24 +52,25 @@ const props = defineProps<{
                         </span>
                     </div>
 
-                    <div class="flex items-center gap-1 text-sm text-gray-500">
-                        <span class="text-red-500">♥</span>
+                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                        <span class="text-red-700">♥</span>
                         <span>{{ 0 }}</span>
                     </div>
                 </div>
 
-                <div class="mt-3 flex items-center justify-between">
+                <div class="mt-2 flex items-center justify-between gap-3">
                     <span
                         class="text-xs tracking-widest text-gray-400 uppercase"
                     >
                         {{ props.dish.category.label }}
                     </span>
 
-                    <button
-                        class="text-sm text-red-500 transition hover:underline"
+                    <a
+                        :href="menu.showDish(props.dish.id).url"
+                        class="text-sm text-red-500 transition"
                     >
-                        View →
-                    </button>
+                        View <span class="animate-arrow inline-block">→</span>
+                    </a>
                 </div>
             </div>
         </div>

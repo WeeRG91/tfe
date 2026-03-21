@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import AnimatedButton from '@/components/AnimatedButton.vue';
+import menu from '@/routes/menu';
 
 const slides = [
     {
@@ -104,8 +106,12 @@ onMounted(() => {
                 slides.length + (virtualIndex.value % slides.length);
 
             nextTick(() => {
-                if (desktopThumbnailContainer.value && window.innerWidth >= 768) {
-                    desktopThumbnailContainer.value.scrollTop = thumbnailOffset.value;
+                if (
+                    desktopThumbnailContainer.value &&
+                    window.innerWidth >= 768
+                ) {
+                    desktopThumbnailContainer.value.scrollTop =
+                        thumbnailOffset.value;
                 }
             });
         }
@@ -163,11 +169,11 @@ const goToSlide = (index: number) => {
             </p>
         </Transition>
 
-        <button
-            class="rounded-md border px-5 py-2 text-sm transition hover:bg-gray-100"
-        >
-            Let's get spicy →
-        </button>
+        <AnimatedButton
+            as="a"
+            :href="menu.index().url"
+            text="Let's get spicy"
+        />
     </section>
 
     <section class="px-8 pb-16">
@@ -183,28 +189,22 @@ const goToSlide = (index: number) => {
                     class="absolute inset-0 flex flex-col justify-end bg-black/10 p-6"
                 >
                     <Transition name="fade-slide" mode="out-in">
-                        <h2
-                            :key="slides[currentIndex].title"
-                            class="text-2xl sm:text-5xl font-bold text-white uppercase"
-                        >
-                            {{ slides[currentIndex].title }}
-                        </h2>
-                    </Transition>
-
-                    <Transition name="fade-slide" mode="out-in">
                         <p
                             :key="slides[currentIndex].word"
-                            class="text-xs sm:text-sm tracking-widest text-gray-100 uppercase"
+                            class="mb-2 text-xs tracking-widest text-red-500 uppercase sm:text-sm"
                         >
                             [ {{ slides[currentIndex].word }} ]
                         </p>
                     </Transition>
 
-                    <button
-                        class="mt-4 w-fit rounded bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600"
-                    >
-                        See more →
-                    </button>
+                    <Transition name="fade-slide" mode="out-in">
+                        <h2
+                            :key="slides[currentIndex].title"
+                            class="text-2xl font-bold text-white uppercase sm:text-5xl"
+                        >
+                            {{ slides[currentIndex].title }}
+                        </h2>
+                    </Transition>
                 </div>
             </div>
 

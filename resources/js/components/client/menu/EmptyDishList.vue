@@ -5,7 +5,7 @@
         class="flex h-full w-full flex-col items-center justify-center p-10 text-center"
     >
         <div
-            class="flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-3xl text-red-500"
+            class="flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-3xl text-red-500"
         >
             🍽️
         </div>

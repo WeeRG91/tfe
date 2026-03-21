@@ -1,4 +1,5 @@
 import { CategoryOptionType } from '@/types/category';
+import { ShowIngredientType } from '@/types/ingredient';
 
 export type DishType = {
     id: number;
@@ -42,4 +43,15 @@ export type ClientDishType = {
     price: number;
     category: CategoryOptionType;
     is_available: string;
+};
+
+export type ShowDishType = {
+    id: number;
+    name: string;
+    main_image: string;
+    description: string;
+    price: number;
+    is_available: string;
+    category: CategoryOptionType;
+    ingredients: ShowIngredientType[];
 };

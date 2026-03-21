@@ -16,6 +16,7 @@ class GetDishes extends BaseCursorPagination
      */
     public function execute(Request $request): AnonymousResourceCollection
     {
+        sleep(1);
         $query = Dish::query()
             ->with([
                 'ingredients.allergen.images',

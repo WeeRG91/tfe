@@ -22,6 +22,7 @@ Route::get('dashboard', function () {
 Route::controller(MenuController::class)->prefix('menu')->name('menu.')->group(function () {
     Route::get('/', 'index')->name('index');
     Route::get('/get-dishes', 'getDishes')->name('get-dishes');
+    Route::get('/{dish}/show-dish', 'showDish')->name('show-dish');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

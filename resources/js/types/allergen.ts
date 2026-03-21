@@ -27,3 +27,9 @@ export type AllergenErrorType = {
     description: string;
     ingredients: string;
 };
+
+export type ShowAllergenType = {
+    id: number;
+    name: string;
+    main_image: string;
+};

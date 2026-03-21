@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Actions\Client\GetDish;
 use App\Actions\Client\GetDishes;
 use App\Enums\DishCategoryEnum;
 use App\Http\Controllers\Controller;
@@ -27,5 +28,12 @@ class MenuController extends Controller
         $dishes = $query->execute($request);
 
         return response()->json($dishes);
+    }
+
+    public function showDish(Dish $dish, GetDish $query)
+    {
+        return Inertia::render('client/DishDetail', [
+            'dish' => $query->execute($dish),
+        ]);
     }
 }

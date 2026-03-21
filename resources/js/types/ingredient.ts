@@ -1,3 +1,5 @@
+import { ShowAllergenType } from '@/types/allergen';
+
 export type IngredientType = {
     id: number;
     name: string;
@@ -27,4 +29,11 @@ export type IngredientErrorType = {
     name: string;
     description: string;
     allergen: string;
+};
+
+export type ShowIngredientType = {
+    id: number;
+    name: string;
+    main_image: string;
+    allergen: ShowAllergenType;
 };
