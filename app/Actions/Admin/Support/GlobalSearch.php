@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Support;
+namespace App\Actions\Admin\Support;
 
 use App\Models\Allergen;
 use App\Models\Dish;
@@ -47,7 +47,7 @@ class GlobalSearch
 
         foreach ($this->models as $type => $model) {
             $items = $model::query()
-                ->where('name', 'LIKE', "$query%")
+                ->where('name', 'LIKE', "%$query%")
                 ->limit(5)
                 ->get();
 

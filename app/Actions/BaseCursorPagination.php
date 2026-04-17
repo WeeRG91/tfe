@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Support;
+namespace App\Actions;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -41,7 +41,7 @@ abstract class BaseCursorPagination
         );
 
         $query->when($request->search, fn ($q) =>
-            $q->where('name', 'LIKE', "$request->search%")
+            $q->where('name', 'LIKE', "%$request->search%")
         );
 
         return $query;

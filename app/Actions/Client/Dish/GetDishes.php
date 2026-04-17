@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Actions\Client;
+namespace App\Actions\Client\Dish;
 
-use App\Actions\Support\BaseCursorPagination;
+use App\Actions\BaseCursorPagination;
 use App\Http\Resources\Client\DishResource;
 use App\Models\Dish;
 use Illuminate\Http\Request;

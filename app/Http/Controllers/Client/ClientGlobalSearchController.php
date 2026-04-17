@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Client;
 
-use App\Actions\Admin\Support\GlobalSearch;
+use App\Actions\Client\Support\ClientGlobalSearch;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class GlobalSearchController extends Controller
+class ClientGlobalSearchController extends Controller
 {
     /**
      * @param Request $request
-     * @param GlobalSearch $search
+     * @param ClientGlobalSearch $search
      * @return JsonResponse
      */
-    public function search(Request $request, GlobalSearch $search): JsonResponse
+    public function search(Request $request, ClientGlobalSearch $search): JsonResponse
     {
         $query = $request->get('query');
 

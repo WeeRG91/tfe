@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
-import GlobalSearchModal from '@/components/GlobalSearchModal.vue';
+import GlobalSearchModal from '@/components/admin/GlobalSearchModal.vue';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItemType } from '@/types';
 import { Search } from 'lucide-vue-next';
@@ -54,7 +54,7 @@ onUnmounted(() => {
         <div>
             <button
                 @click="openModal"
-                class="flex items-center shadow-sm gap-2 rounded-md border px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted"
+                class="flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:bg-muted"
             >
                 <Search class="h-4 w-4" />
                 <span>Search</span>

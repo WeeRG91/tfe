@@ -49,7 +49,7 @@ watch(selectedCategory, () => {
 <template>
     <Head title="Menu Page" />
     <ClientLayout>
-        <section class="mx-auto max-w-6xl overflow-x-hidden px-6 py-4">
+        <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
                     [ Our Menu ]

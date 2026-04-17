@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Ingredient\Queries;
 
-use App\Actions\Support\BaseCursorPagination;
+use App\Actions\BaseCursorPagination;
 use App\Http\Resources\Admin\Ingredient\IngredientResource;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;

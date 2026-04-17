@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Meat\Queries;
 
-use App\Actions\Support\BaseCursorPagination;
+use App\Actions\BaseCursorPagination;
 use App\Http\Resources\Admin\Meat\MeatResource;
 use App\Models\Meat;
 use Illuminate\Http\Request;

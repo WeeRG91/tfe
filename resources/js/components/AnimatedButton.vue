@@ -44,7 +44,7 @@ const componentProps = computed(() => {
         :is="componentTag"
         v-bind="componentProps"
         :style="styleVars"
-        class="animated-btn group relative inline-flex cursor-pointer items-center gap-2.5 overflow-hidden rounded-md border border-b-gray-200 bg-[var(--btn-bg)] px-5 py-2.5 text-sm no-underline"
+        class="animated-btn group relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-b-gray-200 bg-[var(--btn-bg)] px-6 py-3 text-sm no-underline"
     >
         <span
             class="relative z-10 text-[var(--btn-text)] transition-colors duration-300 group-hover:text-[var(--btn-text-hover)]"
@@ -71,11 +71,13 @@ const componentProps = computed(() => {
     z-index: 0;
 }
 
-.animated-btn:hover::before {
-    clip-path: circle(12px at calc(100% - 20px) 50%);
-}
+@media (hover: hover) and (pointer: fine) {
+    .animated-btn:hover::before {
+        clip-path: circle(12px at calc(100% - 20px) 50%);
+    }
 
-.animated-btn:hover .arrow {
-    animation: arrow-move 1.2s ease-in-out infinite;
+    .animated-btn:hover .arrow {
+        animation: arrow-move 1.2s ease-in-out infinite;
+    }
 }
 </style>

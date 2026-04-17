@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import menu from '@/routes/menu';
 import { ClientDishType } from '@/types/dish';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps<{
     dish: ClientDishType;
 }>();
+
+const goToDetail = () => {
+    router.visit(menu.showDish(props.dish.id).url);
+};
 </script>
 
 <template>
     <div
-        class="group flex h-full flex-col overflow-hidden rounded-md border bg-white transition hover:shadow-lg"
+        @click="goToDetail"
+        class="group flex h-full flex-col overflow-hidden rounded-md border bg-white transition hover:shadow-lg cursor-pointer"
     >
         <div class="overflow-hidden">
             <img
@@ -19,7 +25,7 @@ const props = defineProps<{
             />
         </div>
 
-        <div class="flex flex-1 flex-col py-2 px-4">
+        <div class="flex flex-1 flex-col px-4 py-2">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold uppercase">
                     {{ props.dish.name }}
@@ -65,12 +71,9 @@ const props = defineProps<{
                         {{ props.dish.category.label }}
                     </span>
 
-                    <a
-                        :href="menu.showDish(props.dish.id).url"
-                        class="text-sm text-red-500 transition"
-                    >
-                        View <span class="animate-arrow inline-block">→</span>
-                    </a>
+                    <button @click.stop class="text-sm text-red-500 transition cursor-pointer">
+                        Add <span class="animate-arrow inline-block">→</span>
+                    </button>
                 </div>
             </div>
         </div>

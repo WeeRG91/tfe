@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\MeatController;
+use App\Http\Controllers\Client\ClientGlobalSearchController;
 use App\Http\Controllers\Client\MenuController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -96,6 +97,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::controller(GlobalSearchController::class)->prefix('global-search')->name('global-search.')->group(function () {
+        Route::get('/', 'search')->name('search');
+    });
+
+    Route::controller(ClientGlobalSearchController::class)->prefix('client-global-search')->name('client-global-search.')->group(function () {
         Route::get('/', 'search')->name('search');
     });
 });

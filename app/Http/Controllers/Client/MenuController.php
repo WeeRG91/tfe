@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Actions\Client\GetDish;
-use App\Actions\Client\GetDishes;
+use App\Actions\Client\Dish\GetDish;
+use App\Actions\Client\Dish\GetDishes;
 use App\Enums\DishCategoryEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Dish\DishResource;

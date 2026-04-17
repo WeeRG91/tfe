@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Client;
+namespace App\Actions\Client\Dish;
 
 use App\Http\Resources\Client\DishDetailResource;
 use App\Models\Dish;

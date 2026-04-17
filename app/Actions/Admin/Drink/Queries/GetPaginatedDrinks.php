@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Drink\Queries;
 
-use App\Actions\Support\BaseCursorPagination;
+use App\Actions\BaseCursorPagination;
 use App\Http\Resources\Admin\Drink\DrinkResource;
 use App\Models\Drink;
 use Illuminate\Http\Request;

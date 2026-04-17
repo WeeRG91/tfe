@@ -26,6 +26,11 @@ const props = defineProps<{
 const query = ref<string>('');
 const results = ref<GlobalSearchType | null>(null);
 const isLoading = ref<boolean>(false);
+const hasNoResults = computed(() => {
+    if (!results.value) return false;
+
+    return !Object.values(results.value).some((items) => items.length > 0);
+});
 
 watch(query, async (value) => {
     if (!value) {
@@ -119,6 +124,13 @@ const goToEdit = (type: string, id: number) => {
                     class="py-10 text-center text-sm text-muted-foreground"
                 >
                     Start typing to search…
+                </div>
+
+                <div
+                    v-else-if="hasNoResults && !isLoading"
+                    class="py-10 text-center text-sm text-muted-foreground"
+                >
+                    Not found what you are looking for !
                 </div>
 
                 <div v-for="type in filteredResultTypes" :key="type.key">

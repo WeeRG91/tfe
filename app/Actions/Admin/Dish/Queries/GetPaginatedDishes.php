@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Dish\Queries;
 
-use App\Actions\Support\BaseCursorPagination;
+use App\Actions\BaseCursorPagination;
 use App\Http\Resources\Admin\Dish\DishResource;
 use App\Models\Dish;
 use Illuminate\Http\Request;

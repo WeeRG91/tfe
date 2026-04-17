@@ -494,7 +494,7 @@ onMounted(() => {
                     v-if="meats.length === 0 && !isLoading"
                     class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
                 >
-                    No dish yet
+                    No meat yet
                 </div>
 
                 <ConfirmModal

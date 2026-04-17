@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin\Allergen\Queries;
 
-use App\Actions\Support\BaseCursorPagination;
+use App\Actions\BaseCursorPagination;
 use App\Http\Resources\Admin\Allergen\AllergenResource;
 use App\Models\Allergen;
 use Illuminate\Http\Request;

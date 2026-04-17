@@ -106,6 +106,11 @@ export type GlobalSearchType = {
     allergen: SearchType[];
 };
 
+export type ClientGlobalSearchType = {
+    dish: SearchType[];
+    drink: SearchType[];
+};
+
 export type SearchType = {
     type: string;
     id: number;
