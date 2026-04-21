@@ -12,27 +12,82 @@ import dish from '@/routes/dish';
 import drink from '@/routes/drink';
 import ingredient from '@/routes/ingredient';
 import meat from '@/routes/meat';
-import { GlobalSearchType, SearchResultType } from '@/types';
+import { GlobalSearchType, SearchResultType, SearchType } from '@/types';
 import { router } from '@inertiajs/vue3';
+import { useDebounceFn } from '@vueuse/core';
 import axios from 'axios';
-import { CornerDownLeft, Loader } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { CornerDownLeft, Loader, Search, X } from 'lucide-vue-next';
+import {
+    ComponentPublicInstance,
+    computed,
+    nextTick,
+    onMounted,
+    onUnmounted,
+    ref,
+    watch,
+} from 'vue';
 
 const props = defineProps<{
     open: boolean;
     onClose: () => void;
 }>();
 
+const resultTypes: SearchResultType[] = [
+    { key: 'dish', label: 'Dishes' },
+    { key: 'drink', label: 'Drinks' },
+    { key: 'ingredient', label: 'Ingredients' },
+    { key: 'meat', label: 'Meats' },
+    { key: 'allergen', label: 'Allergens' },
+];
+
 const query = ref<string>('');
 const results = ref<GlobalSearchType | null>(null);
 const isLoading = ref<boolean>(false);
+const inputRef = ref<HTMLInputElement | null>(null);
+const selectedIndex = ref<number>(-1);
+const itemRefs = ref<HTMLElement[]>([]);
+
 const hasNoResults = computed(() => {
     if (!results.value) return false;
 
     return !Object.values(results.value).some((items) => items.length > 0);
 });
 
-watch(query, async (value) => {
+const flatResults = computed(() => {
+    if (!results.value) return [];
+
+    return Object.entries(results.value).flatMap(([type, items]) =>
+        items.map((item) => ({
+            ...item,
+            type,
+        })),
+    );
+});
+
+const filteredResultTypes = computed(() => {
+    return resultTypes.filter((type) => results.value?.[type.key]?.length);
+});
+
+const totalResultsCount = computed(() => {
+    if (!results.value) return 0;
+
+    return Object.values(results.value).reduce(
+        (acc, items) => acc + items.length,
+        0,
+    );
+});
+
+const indexMap = computed(() => {
+    const map = new Map<string, number>();
+
+    flatResults.value.forEach((item, i) => {
+        map.set(`${item.type}-${item.id}`, i);
+    });
+
+    return map;
+});
+
+const search = useDebounceFn(async (value: string) => {
     if (!value) {
         results.value = null;
         return;
@@ -49,19 +104,40 @@ watch(query, async (value) => {
     } finally {
         isLoading.value = false;
     }
-});
+}, 300);
 
-const resultTypes: SearchResultType[] = [
-    { key: 'dish', label: 'Dishes' },
-    { key: 'drink', label: 'Drinks' },
-    { key: 'ingredient', label: 'Ingredients' },
-    { key: 'meat', label: 'Meats' },
-    { key: 'allergen', label: 'Allergens' },
-];
+const handleKeydown = (e: KeyboardEvent) => {
+    if (!props.open) return;
 
-const filteredResultTypes = computed(() => {
-    return resultTypes.filter((type) => results.value?.[type.key]?.length);
-});
+    switch (e.key) {
+        case 'ArrowDown':
+            e.preventDefault();
+            if (selectedIndex.value < flatResults.value.length - 1) {
+                selectedIndex.value++;
+            }
+            break;
+
+        case 'ArrowUp':
+            e.preventDefault();
+            if (selectedIndex.value > 0) {
+                selectedIndex.value--;
+            }
+            break;
+
+        case 'Enter':
+            e.preventDefault();
+            const item = flatResults.value[selectedIndex.value];
+            if (item) {
+                goToEdit(item.type, item.id);
+            }
+            break;
+
+        case 'Escape':
+            e.preventDefault();
+            props.onClose();
+            break;
+    }
+};
 
 const goToEdit = (type: string, id: number) => {
     switch (type) {
@@ -84,6 +160,58 @@ const goToEdit = (type: string, id: number) => {
             break;
     }
 };
+
+const isSelected = (item: SearchType) => {
+    const current = flatResults.value[selectedIndex.value];
+    return current?.id === item.id && current?.type === item.type;
+};
+
+const setItemRef = (
+    el: Element | ComponentPublicInstance | null,
+    index: number,
+) => {
+    if (el instanceof HTMLElement) {
+        itemRefs.value[index] = el;
+    }
+};
+
+const clearSearch = () => {
+    query.value = '';
+    results.value = null;
+    inputRef.value?.focus();
+};
+
+onMounted(() => {
+    window.addEventListener('keydown', handleKeydown);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown);
+});
+
+watch(query, search);
+
+watch(
+    () => props.open,
+    async (isOpen) => {
+        if (isOpen) {
+            await nextTick();
+            inputRef.value?.focus();
+        }
+    },
+);
+
+watch(selectedIndex, (index) => {
+    nextTick(() => {
+        itemRefs.value[index]?.scrollIntoView({
+            block: 'nearest',
+        });
+    });
+});
+
+watch(flatResults, () => {
+    itemRefs.value = [];
+});
 </script>
 
 <template>
@@ -98,13 +226,25 @@ const goToEdit = (type: string, id: number) => {
                 </DialogDescription>
             </DialogHeader>
 
-            <div class="border-b px-6 py-4">
-                <Input
-                    v-model="query"
-                    placeholder="Search dishes, drinks, ingredients..."
-                    class="h-11"
-                    autofocus
-                />
+            <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-5">
+                <div class="relative">
+                    <Search
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                    />
+                    <Input
+                        ref="inputRef"
+                        v-model="query"
+                        placeholder="Search dishes, drinks, ingredients..."
+                        class="h-12 rounded-xl border-gray-200 pr-10 pl-10 transition-all duration-200 focus:ring-0"
+                    />
+                    <button
+                        v-if="query"
+                        @click="clearSearch"
+                        class="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-0.5 transition-colors hover:bg-gray-100"
+                    >
+                        <X class="h-4 w-4 text-gray-400" />
+                    </button>
+                </div>
             </div>
 
             <div
@@ -133,18 +273,44 @@ const goToEdit = (type: string, id: number) => {
                     Not found what you are looking for !
                 </div>
 
+                <div
+                    v-else-if="results !== null && !isLoading"
+                    class="bg-gray-50/50"
+                >
+                    <p class="text-xs text-gray-500">
+                        Found {{ totalResultsCount }} result{{
+                            totalResultsCount !== 1 ? 's' : ''
+                        }}
+                    </p>
+                </div>
+
                 <div v-for="type in filteredResultTypes" :key="type.key">
                     <h3
-                        class="mb-2 border-b text-xs text-muted-foreground uppercase"
+                        class="flex mb-2 border-b text-xs text-muted-foreground uppercase"
                     >
-                        {{ type.label }}
+                        <span>{{ type.label }}</span>
+                        <span class="ml-auto text-xs text-gray-400">{{
+                            results![type.key].length
+                        }}</span>
                     </h3>
 
                     <div
+                        :ref="
+                            (el) => {
+                                const key = `${item.type}-${item.id}`;
+                                const i = indexMap.get(key);
+                                if (i !== undefined) {
+                                    setItemRef(el, i);
+                                }
+                            }
+                        "
                         v-for="item in results![type.key]"
                         :key="item.id"
                         @click="goToEdit(item.type, item.id)"
-                        class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition hover:bg-muted"
+                        :class="[
+                            'group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition',
+                            isSelected(item) ? 'bg-muted' : 'hover:bg-muted',
+                        ]"
                     >
                         <div class="flex items-center justify-center gap-3">
                             <img
@@ -159,9 +325,46 @@ const goToEdit = (type: string, id: number) => {
                         </div>
 
                         <CornerDownLeft
-                            class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                            :class="[
+                                'h-5 w-5 text-gray-400',
+                                isSelected(item)
+                                    ? 'text-gray-500'
+                                    : 'group-hover:text-gray-500',
+                            ]"
                         />
                     </div>
+                </div>
+            </div>
+
+            <div
+                class="flex items-center justify-between border-t border-gray-100 bg-gray-50/50 px-6 py-3 text-xs text-gray-500"
+            >
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-1">
+                        <kbd
+                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+                            >↑</kbd
+                        >
+                        <kbd
+                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+                            >↓</kbd
+                        >
+                        <span>to navigate</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <kbd
+                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+                            >Enter</kbd
+                        >
+                        <span>to select</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <kbd
+                        class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+                        >Esc</kbd
+                    >
+                    <span>to close</span>
                 </div>
             </div>
         </DialogContent>

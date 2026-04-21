@@ -15,7 +15,7 @@ const goToDetail = () => {
 <template>
     <div
         @click="goToDetail"
-        class="group flex h-full flex-col overflow-hidden rounded-md border bg-white transition hover:shadow-lg cursor-pointer"
+        class="group flex h-full cursor-pointer flex-col overflow-hidden rounded-md border bg-white transition hover:shadow-lg"
     >
         <div class="overflow-hidden">
             <img
@@ -71,7 +71,10 @@ const goToDetail = () => {
                         {{ props.dish.category.label }}
                     </span>
 
-                    <button @click.stop class="text-sm text-red-500 transition cursor-pointer">
+                    <button
+                        @click.stop
+                        class="cursor-pointer text-sm text-red-500 transition"
+                    >
                         Add <span class="animate-arrow inline-block">→</span>
                     </button>
                 </div>

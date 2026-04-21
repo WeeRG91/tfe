@@ -4,6 +4,7 @@ import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
 import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
+import { CategoryOptionType } from '@/types/category';
 
 export interface Auth {
     user: User;
@@ -106,15 +107,11 @@ export type GlobalSearchType = {
     allergen: SearchType[];
 };
 
-export type ClientGlobalSearchType = {
-    dish: SearchType[];
-    drink: SearchType[];
-};
-
 export type SearchType = {
     type: string;
     id: number;
     name: string;
+    category: CategoryOptionType;
     main_image: string;
 };
 

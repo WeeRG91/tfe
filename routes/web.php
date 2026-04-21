@@ -21,9 +21,15 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::controller(MenuController::class)->prefix('menu')->name('menu.')->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::get('/get-dishes', 'getDishes')->name('get-dishes');
-    Route::get('/{dish}/show-dish', 'showDish')->name('show-dish');
+    Route::get('/dishes', 'dish')->name('dish');
+    Route::get('/dishes/get-dishes', 'getDishes')->name('get-dishes');
+    Route::get('/dishes/{dish}/show-dish', 'showDish')->name('show-dish');
+    Route::get('/drinks', 'drink')->name('drink');
+    Route::get('/drinks/get-drinks', 'getDrinks')->name('get-drinks');
+});
+
+Route::controller(ClientGlobalSearchController::class)->prefix('client-global-search')->name('client-global-search.')->group(function () {
+    Route::get('/', 'search')->name('search');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -97,10 +103,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::controller(GlobalSearchController::class)->prefix('global-search')->name('global-search.')->group(function () {
-        Route::get('/', 'search')->name('search');
-    });
-
-    Route::controller(ClientGlobalSearchController::class)->prefix('client-global-search')->name('client-global-search.')->group(function () {
         Route::get('/', 'search')->name('search');
     });
 });

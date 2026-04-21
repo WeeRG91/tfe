@@ -1,37 +1,41 @@
 <script setup lang="ts">
-import DishCard from '@/components/client/menu/DishCard.vue';
-import DishCardSkeleton from '@/components/client/menu/DishCardSkeleton.vue';
-import EmptyDishList from '@/components/client/menu/EmptyDishList.vue';
+import DrinkCard from '@/components/client/drink/DrinkCard.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { CategoryOptionType } from '@/types/category';
-import { ClientDishType } from '@/types/dish';
+import { ClientDrinkType } from '@/types/drink';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import DrinkCardSkeleton from '@/components/client/drink/DrinkCardSkeleton.vue';
+import EmptyDrinkList from '@/components/client/drink/EmptyDrinkList.vue';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
 }>();
 
-const dishes = ref<ClientDishType[]>([]);
+const drinks = ref<ClientDrinkType[]>([]);
 const selectedCategory = ref<number | null>(null);
 const isLoading = ref<boolean>(false);
-const hasLoaded = ref<boolean>(false)
-const loadingDishes = async () => {
+const hasLoaded = ref<boolean>(false);
+
+const loadingDrinks = async () => {
     if (isLoading.value) return;
 
     isLoading.value = true;
 
     try {
-        const response = await axios.get<ClientDishType[]>('/menu/dishes/get-dishes', {
-            params: { category: selectedCategory.value },
-        });
+        const response = await axios.get<ClientDrinkType[]>(
+            '/menu/drinks/get-drinks',
+            {
+                params: { category: selectedCategory.value },
+            },
+        );
 
-        dishes.value = response.data;
+        drinks.value = response.data;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more dishes.');
+        toast.error('Failed to load more drinks');
     } finally {
         isLoading.value = false;
         hasLoaded.value = true;
@@ -39,28 +43,28 @@ const loadingDishes = async () => {
 };
 
 onMounted(() => {
-    loadingDishes();
+    loadingDrinks();
 });
 
 watch(selectedCategory, () => {
-    loadingDishes();
+    loadingDrinks();
 });
 </script>
 
 <template>
-    <Head title="Menu Page" />
+    <Head title="Drink Page" />
     <ClientLayout>
-        <section class="mx-auto max-w-6xl px-6 py-4">
-            <div class="mb-4">
+        <section class="mx-auto max-w-6xl px-6 py-4 mt-4">
+            <div class="mb-8">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
-                    [ Our Menu ]
+                    [ Our Drinks ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    Discover Our Dishes
+                    Choose Your Drinks
                 </h1>
             </div>
 
-            <div class="mb-4 flex flex-wrap items-center gap-4">
+            <div class="mb-8 flex flex-wrap items-center gap-4">
                 <button
                     @click="selectedCategory = null"
                     class="rounded-full border px-4 py-1 text-sm transition-all duration-500"
@@ -92,17 +96,17 @@ watch(selectedCategory, () => {
                 <div
                     v-if="isLoading"
                     key="skeletons"
-                    class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                    class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
                 >
-                    <DishCardSkeleton v-for="i in 6" :key="i" />
+                    <DrinkCardSkeleton v-for="i in 6" :key="i" />
                 </div>
 
                 <div
-                    v-else-if="hasLoaded && !dishes.length"
+                    v-else-if="hasLoaded && !drinks.length"
                     key="empty-list"
                     class="flex min-h-[500px] items-center justify-center sm:min-h-[600px]"
                 >
-                    <EmptyDishList />
+                    <EmptyDrinkList />
                 </div>
 
                 <div
@@ -110,10 +114,10 @@ watch(selectedCategory, () => {
                     key="content"
                     class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
                 >
-                    <DishCard
-                        v-for="dish in dishes"
-                        :key="dish.id"
-                        :dish="dish"
+                    <DrinkCard
+                        v-for="drink in drinks"
+                        :key="drink.id"
+                        :drink="drink"
                     />
                 </div>
             </Transition>

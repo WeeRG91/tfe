@@ -96,7 +96,7 @@ onBeforeUnmount(() => {
                         : 'border-gray-300 focus:border-blue-600 dark:border-gray-600 dark:focus:border-blue-500'
                 "
             >
-                <div class="flex gap-1">
+                <div class="flex flex-wrap gap-1 pr-5">
                     <span
                         v-for="label in getSelectedLabels()"
                         :key="label"
@@ -142,7 +142,6 @@ onBeforeUnmount(() => {
             </div>
         </div>
 
-        <!-- Dropdown Menu -->
         <div
             v-if="isDropdownOpen"
             class="minimal-scrollbar absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-[#0a0a0a]"

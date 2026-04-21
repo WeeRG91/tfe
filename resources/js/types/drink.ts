@@ -13,6 +13,16 @@ export type DrinkType = {
     deleted_at: string | null;
 };
 
+export type ClientDrinkType = {
+    id: number;
+    name: string;
+    main_image: string;
+    description: string;
+    price: number;
+    category: CategoryOptionType;
+    is_available: string;
+};
+
 export type EditDrinkType = {
     id: number;
     name: string;

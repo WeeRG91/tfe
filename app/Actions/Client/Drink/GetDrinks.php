@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Actions\Client\Dish;
+namespace App\Actions\Client\Drink;
 
 use App\Actions\BaseCursorPagination;
-use App\Http\Resources\Client\DishResource;
-use App\Models\Dish;
+use App\Http\Resources\Client\DrinkResource;
+use App\Models\Drink;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class GetDishes extends BaseCursorPagination
+class GetDrinks extends BaseCursorPagination
 {
     /**
      * @param Request $request
@@ -17,10 +17,10 @@ class GetDishes extends BaseCursorPagination
     public function execute(Request $request): AnonymousResourceCollection
     {
         sleep(1);
-        $query = Dish::query();
+        $query = Drink::query();
 
-        $dishes = $this->filters($query, $request)->get();
+        $drinks = $this->filters($query, $request)->get();
 
-        return DishResource::collection($dishes);
+        return DrinkResource::collection($drinks);
     }
 }

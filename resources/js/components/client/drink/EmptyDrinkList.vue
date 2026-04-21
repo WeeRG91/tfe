@@ -7,13 +7,13 @@
         <div
             class="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-3xl text-gray-500"
         >
-            🍽️
+            🍹
         </div>
 
-        <h3 class="mt-4 text-lg font-semibold">No dishes available</h3>
+        <h3 class="mt-4 text-lg font-semibold">No drinks available</h3>
 
         <p class="mt-2 max-w-sm text-sm text-gray-500">
-            We couldn’t find any dishes at the moment. Please check back later
+            We couldn’t find any drinks at the moment. Please check back later
             or try a different category.
         </p>
     </div>

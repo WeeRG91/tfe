@@ -2,6 +2,8 @@
 
 namespace App\Actions\Client\Support;
 
+use App\Enums\DishCategoryEnum;
+use App\Enums\DrinkCategoryEnum;
 use App\Models\Dish;
 use App\Models\Drink;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,6 +27,9 @@ class ClientGlobalSearch
             'type' => $type,
             'id' => $item->id,
             'name' => $item->name,
+            'category' => $type === 'dish'
+                ? DishCategoryEnum::getCategory($item->category)
+                : DrinkCategoryEnum::getCategory($item->category),
             'main_image' => $item->main_image
                 ? Storage::disk('public')->url($item->main_image)
                 : Storage::disk('public')->url("images/picture.png"),

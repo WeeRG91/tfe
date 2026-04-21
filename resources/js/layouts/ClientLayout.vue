@@ -2,12 +2,14 @@
 import ClientGlobalSearchModal from '@/components/client/ClientGlobalSearchModal.vue';
 import menu from '@/routes/menu';
 import {
+    HandPlatter,
     Info,
     LogIn,
     Menu,
+    NotepadText,
     Phone,
     Search,
-    ShoppingBag,
+    Wine,
     X,
 } from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -50,7 +52,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="flex min-h-screen flex-col overflow-x-hidden bg-white text-gray-900">
+    <div
+        class="flex min-h-screen flex-col overflow-x-hidden bg-white text-gray-900"
+    >
         <header class="flex items-center justify-between border-b px-8 py-3">
             <div class="text-xl font-bold text-red-500">
                 <a href="/">Restaurant</a>
@@ -58,16 +62,26 @@ onUnmounted(() => {
 
             <nav class="hidden gap-6 text-sm text-gray-600 md:flex">
                 <a
-                    :href="menu.index().url"
+                    :href="menu.dish().url"
                     :class="[
                         'text-sm',
-                        currentPath.startsWith(menu.index().url)
+                        currentPath.startsWith(menu.dish().url)
                             ? 'font-semibold text-red-500'
                             : 'text-gray-600',
                     ]"
                 >
                     Menu
                 </a>
+                <a
+                    :href="menu.drink().url"
+                    :class="[
+                        'text-sm',
+                        currentPath.startsWith(menu.drink().url)
+                            ? 'font-semibold text-red-500'
+                            : 'text-gray-600',
+                    ]"
+                    >Drinks</a
+                >
                 <a href="#">Orders</a>
                 <a href="#">About</a>
                 <a href="#">Contact</a>
@@ -127,13 +141,13 @@ onUnmounted(() => {
                     </button>
                 </div>
 
-                <nav class="flex flex-col p-4 gap-1">
+                <nav class="flex flex-col gap-1 p-4">
                     <a
                         @click="closeMobileMenu"
-                        :href="menu.index().url"
+                        :href="menu.dish().url"
                         :class="[
                             'group flex items-center gap-4 rounded-lg px-4 py-3 transition-colors',
-                            currentPath.startsWith(menu.index().url)
+                            currentPath.startsWith(menu.dish().url)
                                 ? 'bg-red-50 text-red-600'
                                 : 'text-gray-700 hover:bg-red-50 hover:text-red-600',
                         ]"
@@ -141,14 +155,37 @@ onUnmounted(() => {
                         <div
                             :class="[
                                 'rounded-lg p-2',
-                                currentPath.startsWith(menu.index().url)
+                                currentPath.startsWith(menu.dish().url)
                                     ? 'bg-red-100'
                                     : 'bg-gray-100 group-hover:bg-red-100',
                             ]"
                         >
-                            <ShoppingBag class="h-5 w-5" />
+                            <HandPlatter class="h-5 w-5" />
                         </div>
                         <span class="font-medium">Menu</span>
+                    </a>
+
+                    <a
+                        @click="closeMobileMenu"
+                        :href="menu.drink().url"
+                        :class="[
+                            'group flex items-center gap-4 rounded-lg px-4 py-3 transition-colors',
+                            currentPath.startsWith(menu.drink().url)
+                                ? 'bg-red-50 text-red-600'
+                                : 'text-gray-700 hover:bg-red-50 hover:text-red-600',
+                        ]"
+                    >
+                        <div
+                            :class="[
+                                'rounded-lg p-2',
+                                currentPath.startsWith(menu.drink().url)
+                                    ? 'bg-red-100'
+                                    : 'bg-gray-100 group-hover:bg-red-100',
+                            ]"
+                        >
+                            <Wine class="h-5 w-5" />
+                        </div>
+                        <span class="font-medium">Drinks</span>
                     </a>
 
                     <a
@@ -159,7 +196,7 @@ onUnmounted(() => {
                         <div
                             class="rounded-lg bg-gray-100 p-2 group-hover:bg-red-100"
                         >
-                            <Info class="h-5 w-5" />
+                            <NotepadText class="h-5 w-5" />
                         </div>
                         <span class="font-medium">Orders</span>
                     </a>

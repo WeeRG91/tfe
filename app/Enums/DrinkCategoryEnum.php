@@ -17,8 +17,8 @@ enum DrinkCategoryEnum: int
     public function label(): string
     {
         return match ($this) {
-            DrinkCategoryEnum::SOFT_DRINK => 'Soft Drink',
-            DrinkCategoryEnum::HOT_DRINK => 'Hot Drink',
+            DrinkCategoryEnum::SOFT_DRINK => 'Soft drink',
+            DrinkCategoryEnum::HOT_DRINK => 'Hot drink',
             DrinkCategoryEnum::SMOOTHIE => 'Smoothie',
             DrinkCategoryEnum::BEER => 'Beer',
             DrinkCategoryEnum::WINE => 'Wine',
