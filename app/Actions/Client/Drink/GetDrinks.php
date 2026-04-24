@@ -16,7 +16,6 @@ class GetDrinks extends BaseCursorPagination
      */
     public function execute(Request $request): AnonymousResourceCollection
     {
-        sleep(1);
         $query = Drink::query();
 
         $drinks = $this->filters($query, $request)->get();

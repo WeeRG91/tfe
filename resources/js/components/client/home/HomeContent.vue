@@ -171,7 +171,7 @@ const goToSlide = (index: number) => {
 
         <AnimatedButton
             as="a"
-            :href="menu.index().url"
+            :href="menu.dish().url"
             text="Let's get spicy"
         />
     </section>

@@ -41,4 +41,14 @@ class Dish extends Model
     {
         return $this->belongsToMany(Meat::class, 'dish_meats');
     }
+
+    public function cartItems(): MorphMany
+    {
+        return $this->morphMany(CartItem::class, 'item');
+    }
+
+    public function orderItems(): MorphMany
+    {
+        return $this->morphMany(OrderItem::class, 'item');
+    }
 }

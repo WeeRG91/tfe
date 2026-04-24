@@ -26,6 +26,29 @@ class DishResource extends JsonResource
             'price' => $this->price,
             'is_available' => $this->is_available ? 'Available' : 'Unavailable',
             'category' => DishCategoryEnum::getCategory($this->category),
+            'ingredients' => $this->whenLoaded('ingredients')->map(fn ($ingredient) => [
+                'id' => $ingredient->id,
+                'name' => $ingredient->name,
+                'main_image' => $ingredient->main_image
+                    ? Storage::disk('public')->url($ingredient->main_image)
+                    : Storage::disk('public')->url('/images/picture.png'),
+                'allergen' => $ingredient->allergen
+                    ? [
+                        'id' => $ingredient->allergen->id,
+                        'name' => $ingredient->allergen->name,
+                        'main_image' => $ingredient->allergen->main_image
+                            ? Storage::disk('public')->url($ingredient->allergen->main_image)
+                            : Storage::disk('public')->url('/images/picture.png'),
+                    ] : null,
+            ]),
+            'meats' => $this->whenLoaded('meats')->map(fn ($meat) => [
+                'id' => $meat->id,
+                'name' => $meat->name,
+                'extra_price' => $meat->extra_price,
+                'main_image' => $meat->main_image
+                    ? Storage::disk('public')->url($meat->main_image)
+                    : Storage::disk('public')->url('/images/picture.png'),
+            ]),
         ];
     }
 }

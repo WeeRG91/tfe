@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AddToCartModal from '@/components/client/cart/AddToCartModal.vue';
 import DishCard from '@/components/client/menu/DishCard.vue';
 import DishCardSkeleton from '@/components/client/menu/DishCardSkeleton.vue';
 import EmptyDishList from '@/components/client/menu/EmptyDishList.vue';
@@ -17,17 +18,27 @@ const props = defineProps<{
 const dishes = ref<ClientDishType[]>([]);
 const selectedCategory = ref<number | null>(null);
 const isLoading = ref<boolean>(false);
-const hasLoaded = ref<boolean>(false)
+const hasLoaded = ref<boolean>(false);
+const selectedDish = ref<ClientDishType | null>(null);
+const isAddModalOpen = ref<boolean>(false);
+
+const openAddModal = (dish: ClientDishType) => {
+    selectedDish.value = dish;
+    isAddModalOpen.value = true;
+};
+
 const loadingDishes = async () => {
     if (isLoading.value) return;
 
     isLoading.value = true;
 
     try {
-        const response = await axios.get<ClientDishType[]>('/menu/dishes/get-dishes', {
-            params: { category: selectedCategory.value },
-        });
-
+        const response = await axios.get<ClientDishType[]>(
+            '/menu/dishes/get-dishes',
+            {
+                params: { category: selectedCategory.value },
+            },
+        );
         dishes.value = response.data;
     } catch (error) {
         console.log(error);
@@ -114,10 +125,18 @@ watch(selectedCategory, () => {
                         v-for="dish in dishes"
                         :key="dish.id"
                         :dish="dish"
+                        @add="openAddModal"
                     />
                 </div>
             </Transition>
         </section>
+
+        <AddToCartModal
+            v-if="selectedDish"
+            :dish="selectedDish"
+            :open="isAddModalOpen"
+            @close="isAddModalOpen = false"
+        />
     </ClientLayout>
 </template>
 

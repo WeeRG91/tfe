@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import menu from '@/routes/menu';
 import { ClientDishType } from '@/types/dish';
 import { router } from '@inertiajs/vue3';
+import menu from '@/routes/menu';
 
 const props = defineProps<{
     dish: ClientDishType;
+}>();
+
+defineEmits<{
+    (e: 'add', dish: ClientDishType): void;
 }>();
 
 const goToDetail = () => {
@@ -72,7 +76,7 @@ const goToDetail = () => {
                     </span>
 
                     <button
-                        @click.stop
+                        @click.stop="$emit('add', props.dish)"
                         class="cursor-pointer text-sm text-red-500 transition"
                     >
                         Add <span class="animate-arrow inline-block">→</span>

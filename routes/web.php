@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\MeatController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\ClientGlobalSearchController;
 use App\Http\Controllers\Client\MenuController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,14 @@ Route::controller(MenuController::class)->prefix('menu')->name('menu.')->group(f
     Route::get('/drinks/get-drinks', 'getDrinks')->name('get-drinks');
 });
 
+Route::controller(CartController::class)->prefix('cart')->name('cart.')->group(function () {
+    Route::get('/checkout', 'checkout')->name('checkout');
+    Route::get('/get-cart', 'cart')->name('get-cart');
+    Route::post('/', 'addItem')->name('add-item');
+    Route::patch('/items/{cartItemId}/notes', 'updateNotes')->name('update-notes');
+    Route::delete('/items/{cartItemId}', 'removeItem')->name('remove-item');
+});
+
 Route::controller(ClientGlobalSearchController::class)->prefix('client-global-search')->name('client-global-search.')->group(function () {
     Route::get('/', 'search')->name('search');
 });
@@ -37,7 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/get-dishes', 'getDishes')->name('get-dishes');
         Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
+        Route::post('/', 'store')->name('stores');
         Route::get('/{dish}/edit', 'edit')->name('edit');
         Route::post('/{dish}', 'update')->name('update');
         Route::delete('/{id}', 'destroy')->name('destroy');
@@ -50,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/get-drinks', 'getDrinks')->name('get-drinks');
         Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
+        Route::post('/', 'store')->name('stores');
         Route::get('/{drink}/edit', 'edit')->name('edit');
         Route::post('/{drink}', 'update')->name('update');
         Route::delete('/{id}', 'destroy')->name('destroy');
@@ -63,7 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/get-ingredients', 'getIngredients')->name('get-ingredients');
         Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
+        Route::post('/', 'store')->name('stores');
         Route::post('/quick-create', 'quickCreate')->name('quick-create');
         Route::get('/{ingredient}/edit', 'edit')->name('edit');
         Route::post('/{ingredient}', 'update')->name('update');
@@ -76,7 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/get-allergens', 'getAllergens')->name('get-allergens');
         Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
+        Route::post('/', 'store')->name('stores');
         Route::get('/{allergen}/edit', 'edit')->name('edit');
         Route::post('/{allergen}', 'update')->name('update');
         Route::delete('/{id}', 'destroy')->name('destroy');
@@ -88,7 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/get-meats', 'getMeats')->name('get-meats');
         Route::get('/create', 'create')->name('create');
-        Route::post('/', 'store')->name('store');
+        Route::post('/', 'store')->name('stores');
         Route::post('/quick-create', 'quickCreate')->name('quick-create');
         Route::get('/{meat}/edit', 'edit')->name('edit');
         Route::post('/{meat}', 'update')->name('update');

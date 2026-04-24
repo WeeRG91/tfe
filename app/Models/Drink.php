@@ -30,4 +30,14 @@ class Drink extends Model
     {
         return $this->morphOne(Image::class, 'imageable')->latestOfMany();
     }
+
+    public function cartItems(): MorphMany
+    {
+        return $this->morphMany(CartItem::class, 'item');
+    }
+
+    public function orderItems(): MorphMany
+    {
+        return $this->morphMany(OrderItem::class, 'item');
+    }
 }

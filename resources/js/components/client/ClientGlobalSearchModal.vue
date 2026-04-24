@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import menu from '@/routes/menu';
 import { GlobalSearchType, SearchResultType, SearchType } from '@/types';
 import { router } from '@inertiajs/vue3';
+import { useDebounceFn } from '@vueuse/core';
 import axios from 'axios';
 import { CornerDownLeft, Loader, Search, Sparkles, X } from 'lucide-vue-next';
 import {
@@ -21,7 +14,6 @@ import {
     ref,
     watch,
 } from 'vue';
-import { useDebounceFn } from '@vueuse/core';
 
 const props = defineProps<{
     open: boolean;
@@ -167,10 +159,14 @@ const clearSearch = () => {
 
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
+    if (props.open) {
+        document.body.style.overflow = 'hidden';
+    }
 });
 
 onUnmounted(() => {
     window.removeEventListener('keydown', handleKeydown);
+    document.body.style.overflow = '';
 });
 
 watch(query, search);
@@ -180,8 +176,11 @@ watch(
     async (isOpen) => {
         if (isOpen) {
             selectedIndex.value = -1;
+            document.body.style.overflow = 'hidden';
             await nextTick();
             inputRef.value?.focus();
+        } else {
+            document.body.style.overflow = '';
         }
     },
 );
@@ -200,225 +199,273 @@ watch(flatResults, () => {
 </script>
 
 <template>
-    <Dialog :open="open" @update:open="props.onClose">
-        <DialogContent
-            class="gap-0 overflow-hidden p-0 sm:max-w-2xl"
-            @pointer-down-outside="props.onClose"
+    <Teleport to="body">
+        <div
+            v-if="open"
+            class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-sm transition-all duration-200"
+            @click.self="onClose"
         >
-            <DialogHeader class="border-b border-gray-100 px-6 py-5">
-                <DialogTitle
-                    class="flex items-center gap-2 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-xl font-semibold text-transparent"
-                >
-                    <Sparkles class="h-5 w-5 text-red-600" />
-                    Find your favorites
-                </DialogTitle>
-                <DialogDescription class="text-sm text-gray-500">
-                    Search through dishes and drinks
-                </DialogDescription>
-            </DialogHeader>
-
-            <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-5">
-                <div class="relative">
-                    <Search
-                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
-                    />
-                    <Input
-                        ref="inputRef"
-                        v-model="query"
-                        placeholder="Search dishes, drinks..."
-                        class="h-12 rounded-xl border-gray-200 pr-10 pl-10 transition-all duration-200 focus:ring-0"
-                    />
-                    <button
-                        v-if="query"
-                        @click="clearSearch"
-                        class="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-0.5 transition-colors hover:bg-gray-100"
-                    >
-                        <X class="h-4 w-4 text-gray-400" />
-                    </button>
-                </div>
-            </div>
-
-            <div class="scrollable max-h-[460px] overflow-y-auto bg-white">
-                <div
-                    v-if="isLoading"
-                    class="flex flex-col items-center justify-center gap-3 py-16"
-                >
-                    <Loader class="h-8 w-8 animate-spin text-blue-500" />
-                    <p class="text-sm text-gray-500">Searching...</p>
-                </div>
-
-                <div
-                    v-else-if="!query && !isLoading"
-                    class="flex flex-col items-center justify-center gap-3 py-16"
-                >
+            <div
+                class="relative w-full max-w-2xl animate-in duration-200 zoom-in-95 fade-in slide-in-from-top-4"
+            >
+                <div class="overflow-hidden rounded-2xl bg-white shadow-2xl">
                     <div
-                        class="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+                        class="border-b border-gray-100 px-4 py-4 sm:px-6 sm:py-5"
                     >
-                        <Search class="h-8 w-8 text-gray-400" />
-                    </div>
-                    <p class="text-sm text-gray-500">
-                        Start typing to search for dishes and drinks
-                    </p>
-                </div>
+                        <div class="flex justify-between items-center gap-2">
+                            <div
+                                class="flex items-center gap-2 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-lg font-semibold text-transparent sm:text-xl"
+                            >
+                                <Sparkles
+                                    class="h-4 w-4 text-red-600 sm:h-5 sm:w-5"
+                                />
+                                Find your favorites
+                            </div>
 
-                <div
-                    v-else-if="hasNoResults && !isLoading"
-                    class="flex flex-col items-center justify-center gap-3 py-16"
-                >
-                    <p class="text-base font-medium text-gray-700">
-                        No results found
-                    </p>
-                    <p class="text-sm text-gray-500">
-                        Try searching with different keywords
-                    </p>
-                </div>
-
-                <div v-else class="divide-y divide-gray-100">
-                    <div
-                        v-if="results !== null && !isLoading"
-                        class="bg-gray-50/50 px-6 py-3"
-                    >
-                        <p class="text-xs text-gray-500">
-                            Found {{ totalResultsCount }} result{{
-                                totalResultsCount !== 1 ? 's' : ''
-                            }}
+                            <button
+                                @click="props.onClose"
+                                class="rounded-full p-2 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
+                            >
+                                <X class="h-5 w-5" />
+                            </button>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500 sm:text-sm">
+                            Search through dishes and drinks
                         </p>
                     </div>
 
                     <div
-                        v-for="type in filteredResultTypes"
-                        :key="type.key"
-                        class="py-2"
+                        class="border-b border-gray-100 bg-gray-50/50 px-4 py-4 sm:px-6 sm:py-5"
                     >
-                        <div class="px-6 py-3">
-                            <h3
-                                class="flex items-center gap-2 text-xs font-semibold tracking-wider text-gray-500 uppercase"
+                        <div class="relative">
+                            <Search
+                                class="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-gray-400 sm:h-4 sm:w-4"
+                            />
+                            <input
+                                ref="inputRef"
+                                v-model="query"
+                                type="text"
+                                placeholder="Search dishes, drinks..."
+                                class="h-10 w-full rounded-xl border border-gray-200 bg-white pr-9 pl-9 text-sm text-gray-900 transition-all duration-200 placeholder:text-gray-400 focus:border-gray-300 focus:ring-2 focus:ring-gray-200 focus:outline-none sm:h-12 sm:pr-10 sm:pl-10 sm:text-base"
+                            />
+                            <button
+                                v-if="query"
+                                @click="clearSearch"
+                                class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-0.5 transition-colors hover:bg-gray-100 sm:right-3"
                             >
-                                <span>{{
-                                    type.key === 'dish' ? '🍽️' : '🍹'
-                                }}</span>
-                                <span>{{ type.label }}</span>
-                                <span class="ml-auto text-xs text-gray-400">{{
-                                    results![type.key].length
-                                }}</span>
-                            </h3>
+                                <X
+                                    class="h-3.5 w-3.5 text-gray-400 sm:h-4 sm:w-4"
+                                />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div
+                        class="scrollable max-h-[50vh] overflow-y-auto bg-white sm:max-h-[460px]"
+                    >
+                        <div
+                            v-if="isLoading"
+                            class="flex flex-col items-center justify-center gap-3 py-12 sm:py-16"
+                        >
+                            <Loader
+                                class="h-6 w-6 animate-spin text-gray-500 sm:h-8 sm:w-8"
+                            />
+                            <p class="text-xs text-gray-500 sm:text-sm">
+                                Searching...
+                            </p>
                         </div>
 
-                        <div class="space-y-1 px-3">
+                        <div
+                            v-else-if="!query && !isLoading"
+                            class="flex flex-col items-center justify-center gap-3 py-12 sm:py-16"
+                        >
                             <div
-                                :ref="
-                                    (el) => {
-                                        const key = `${item.type}-${item.id}`;
-                                        const i = indexMap.get(key);
-                                        if (i !== undefined) {
-                                            setItemRef(el, i);
-                                        }
-                                    }
-                                "
-                                v-for="(item, index) in results![type.key]"
-                                :key="item.id"
-                                @click="goToEdit(item.type, item.id)"
-                                :class="[
-                                    'group relative flex cursor-pointer items-center justify-between gap-3 rounded-lg p-3 transition-all duration-150',
-                                    isSelected(item)
-                                        ? 'scale-[1.02] bg-gradient-to-r from-gray-50 to-gray-100'
-                                        : 'hover:scale-[1.02] hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100',
-                                ]"
-                                :style="{ animationDelay: `${index * 30}ms` }"
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 sm:h-16 sm:w-16"
                             >
-                                <div
-                                    class="flex min-w-0 flex-1 items-center gap-4"
-                                >
-                                    <div class="relative">
-                                        <img
-                                            v-if="item.main_image"
-                                            :src="item.main_image"
-                                            :alt="item.name"
-                                            class="h-12 w-12 rounded-lg object-cover shadow-sm"
-                                        />
-                                        <div
-                                            v-else
-                                            class="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-gray-100 to-gray-200"
-                                        >
-                                            <span class="text-xl">{{
-                                                type.key === 'dish'
-                                                    ? '🍽️'
-                                                    : '🍹'
-                                            }}</span>
-                                        </div>
-                                    </div>
+                                <Search
+                                    class="h-6 w-6 text-gray-400 sm:h-8 sm:w-8"
+                                />
+                            </div>
+                            <p class="text-xs text-gray-500 sm:text-sm">
+                                Start typing to search for dishes and drinks
+                            </p>
+                        </div>
 
-                                    <div class="min-w-0 flex-1">
-                                        <p
-                                            :class="[
-                                                'truncate text-sm font-medium transition-colors',
-                                                isSelected(item)
-                                                    ? 'text-blue-600'
-                                                    : 'text-gray-900 group-hover:text-blue-600',
-                                            ]"
+                        <div
+                            v-else-if="hasNoResults && !isLoading"
+                            class="flex flex-col items-center justify-center gap-3 py-12 sm:py-16"
+                        >
+                            <p
+                                class="text-sm font-medium text-gray-700 sm:text-base"
+                            >
+                                No results found
+                            </p>
+                            <p class="text-xs text-gray-500 sm:text-sm">
+                                Try searching with different keywords
+                            </p>
+                        </div>
+
+                        <div v-else class="divide-y divide-gray-100">
+                            <div
+                                v-if="results !== null && !isLoading"
+                                class="bg-gray-50/50 px-4 py-2 sm:px-6 sm:py-3"
+                            >
+                                <p class="text-[10px] text-gray-500 sm:text-xs">
+                                    Found {{ totalResultsCount }} result{{
+                                        totalResultsCount !== 1 ? 's' : ''
+                                    }}
+                                </p>
+                            </div>
+
+                            <div
+                                v-for="type in filteredResultTypes"
+                                :key="type.key"
+                                class="py-2"
+                            >
+                                <div class="px-4 py-2 sm:px-6 sm:py-3">
+                                    <h3
+                                        class="flex items-center gap-2 text-[10px] font-semibold tracking-wider text-gray-500 uppercase sm:text-xs"
+                                    >
+                                        <span>{{
+                                            type.key === 'dish' ? '🍽️' : '🍹'
+                                        }}</span>
+                                        <span>{{ type.label }}</span>
+                                        <span
+                                            class="ml-auto text-[10px] text-gray-400 sm:text-xs"
+                                            >{{
+                                                results![type.key].length
+                                            }}</span
                                         >
-                                            {{ item.name }}
-                                        </p>
-                                        <p class="mt-0.5 text-xs text-gray-500">
-                                            {{ item.category.label }}
-                                        </p>
-                                    </div>
+                                    </h3>
                                 </div>
 
-                                <div
-                                    :class="[
-                                        'flex items-center gap-2 opacity-0 transition-opacity duration-200',
-                                        isSelected(item)
-                                            ? 'opacity-100'
-                                            : 'group-hover:opacity-100',
-                                    ]"
-                                >
-                                    <span class="text-xs text-gray-400"
-                                        >Enter</span
+                                <div class="space-y-1 px-2 sm:px-3">
+                                    <div
+                                        :ref="
+                                            (el) => {
+                                                const key = `${item.type}-${item.id}`;
+                                                const i = indexMap.get(key);
+                                                if (i !== undefined) {
+                                                    setItemRef(el, i);
+                                                }
+                                            }
+                                        "
+                                        v-for="(item, index) in results![
+                                            type.key
+                                        ]"
+                                        :key="item.id"
+                                        @click="goToEdit(item.type, item.id)"
+                                        :class="[
+                                            'group relative flex cursor-pointer items-center justify-between gap-2 rounded-lg p-2 transition-all duration-150 sm:gap-3 sm:p-3',
+                                            isSelected(item)
+                                                ? 'scale-[1.02] bg-gradient-to-r from-gray-50 to-gray-100'
+                                                : 'hover:scale-[1.02] hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100',
+                                        ]"
+                                        :style="{
+                                            animationDelay: `${index * 30}ms`,
+                                        }"
                                     >
-                                    <CornerDownLeft
-                                        class="h-4 w-4 text-gray-400"
-                                    />
+                                        <div
+                                            class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4"
+                                        >
+                                            <div class="relative">
+                                                <img
+                                                    v-if="item.main_image"
+                                                    :src="item.main_image"
+                                                    :alt="item.name"
+                                                    class="h-10 w-10 rounded-lg object-cover shadow-sm sm:h-12 sm:w-12"
+                                                />
+                                                <div
+                                                    v-else
+                                                    class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 sm:h-12 sm:w-12"
+                                                >
+                                                    <span
+                                                        class="text-base sm:text-xl"
+                                                        >{{
+                                                            type.key === 'dish'
+                                                                ? '🍽️'
+                                                                : '🍹'
+                                                        }}</span
+                                                    >
+                                                </div>
+                                            </div>
+
+                                            <div class="min-w-0 flex-1">
+                                                <p
+                                                    :class="[
+                                                        'truncate text-xs font-medium transition-colors sm:text-sm',
+                                                        isSelected(item)
+                                                            ? 'text-blue-600'
+                                                            : 'text-gray-900 group-hover:text-blue-600',
+                                                    ]"
+                                                >
+                                                    {{ item.name }}
+                                                </p>
+                                                <p
+                                                    class="mt-0.5 text-[10px] text-gray-500 sm:text-xs"
+                                                >
+                                                    {{ item.category.label }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            :class="[
+                                                'flex items-center gap-1 opacity-0 transition-opacity duration-200 sm:gap-2',
+                                                isSelected(item)
+                                                    ? 'opacity-100'
+                                                    : 'group-hover:opacity-100',
+                                            ]"
+                                        >
+                                            <span
+                                                class="text-[10px] text-gray-400 sm:text-xs"
+                                                >Enter</span
+                                            >
+                                            <CornerDownLeft
+                                                class="h-3 w-3 text-gray-400 sm:h-4 sm:w-4"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div
-                class="flex items-center justify-between border-t border-gray-100 bg-gray-50/50 px-6 py-3 text-xs text-gray-500"
-            >
-                <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-1">
-                        <kbd
-                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
-                            >↑</kbd
-                        >
-                        <kbd
-                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
-                            >↓</kbd
-                        >
-                        <span>to navigate</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <kbd
-                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
-                            >Enter</kbd
-                        >
-                        <span>to select</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-1">
-                    <kbd
-                        class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
-                        >Esc</kbd
+                    <div
+                        class="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 bg-gray-50/50 px-4 py-2 text-[10px] text-gray-500 sm:px-6 sm:py-3 sm:text-xs"
                     >
-                    <span>to close</span>
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <div class="flex items-center gap-1">
+                                <kbd
+                                    class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
+                                    >↑</kbd
+                                >
+                                <kbd
+                                    class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
+                                    >↓</kbd
+                                >
+                                <span>to navigate</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <kbd
+                                    class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
+                                    >Enter</kbd
+                                >
+                                <span>to select</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <kbd
+                                class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
+                                >Esc</kbd
+                            >
+                            <span>to close</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </DialogContent>
-    </Dialog>
+        </div>
+    </Teleport>
 </template>
 
 <style scoped>
@@ -441,28 +488,47 @@ watch(flatResults, () => {
     background: #a8a8a8;
 }
 
-/* Animation for results */
-@keyframes slideIn {
+@keyframes fade-in {
     from {
         opacity: 0;
-        transform: translateY(10px);
     }
     to {
         opacity: 1;
+    }
+}
+
+@keyframes zoom-in-95 {
+    from {
+        transform: scale(0.95);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes slide-in-from-top-4 {
+    from {
+        transform: translateY(-1rem);
+    }
+    to {
         transform: translateY(0);
     }
 }
 
-.group {
-    animation: slideIn 0.2s ease-out backwards;
+.animate-in {
+    animation-duration: 0.2s;
+    animation-fill-mode: both;
 }
 
-kbd {
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: linear-gradient(to bottom, #fafafa, #f0f0f0);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+.fade-in {
+    animation-name: fade-in;
+}
+
+.zoom-in-95 {
+    animation-name: zoom-in-95;
+}
+
+.slide-in-from-top-4 {
+    animation-name: slide-in-from-top-4;
 }
 </style>

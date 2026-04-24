@@ -3,6 +3,7 @@ import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/vue3';
 import axios from 'axios';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { createPinia } from 'pinia';
 import type { DefineComponent } from 'vue';
 import { createApp, Fragment, h } from 'vue';
 import { Toaster } from 'vue-sonner';
@@ -21,6 +22,8 @@ if (token) {
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+const pinia = createPinia();
+
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
     resolve: (name) =>
@@ -33,10 +36,16 @@ createInertiaApp({
             render: () =>
                 h(Fragment, [
                     h(App, props),
-                    h(Toaster, { position: 'top-right', richColors: true }),
+                    h(Toaster, {
+                        position: 'top-right',
+                        closeButton: true,
+                        closeButtonPosition: 'top-right',
+                        richColors: true,
+                    }),
                 ]),
         })
             .use(plugin)
+            .use(pinia)
             .mount(el);
     },
     progress: {

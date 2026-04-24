@@ -43,15 +43,11 @@ export type ClientDishType = {
     price: number;
     category: CategoryOptionType;
     is_available: string;
-};
-
-export type ShowDishType = {
-    id: number;
-    name: string;
-    main_image: string;
-    description: string;
-    price: number;
-    is_available: string;
-    category: CategoryOptionType;
     ingredients: ShowIngredientType[];
+    meats: {
+        id: number;
+        name: string;
+        extra_price: number;
+        main_image: string;
+    }[];
 };

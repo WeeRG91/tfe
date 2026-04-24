@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import AnimatedButton from '@/components/AnimatedButton.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
-import { ShowDishType } from '@/types/dish';
+import { ClientDishType } from '@/types/dish';
 import { Head } from '@inertiajs/vue3';
+import AddToCartModal from '@/components/client/cart/AddToCartModal.vue';
+import { ref } from 'vue';
 
 const props = defineProps<{
-    dish: ShowDishType;
+    dish: ClientDishType;
 }>();
+
+const isAddModalOpen = ref<boolean>(false);
+
+const openAddModal = () => {
+    isAddModalOpen.value = true;
+};
 </script>
 
 <template>
@@ -21,7 +29,7 @@ const props = defineProps<{
             >
                 <button
                     @click="$inertia.visit('/menu')"
-                    class="transition-colors hover:text-red-500 cursor-pointer"
+                    class="cursor-pointer transition-colors hover:text-red-500"
                 >
                     Menu
                 </button>
@@ -114,7 +122,7 @@ const props = defineProps<{
                             ></div>
                         </div>
 
-                        <div class="flex pl-1 sm:pl-0 flex-wrap gap-5">
+                        <div class="flex flex-wrap gap-5 pl-1 sm:pl-0">
                             <div
                                 v-for="ingredient in props.dish.ingredients"
                                 :key="ingredient.id"
@@ -172,11 +180,11 @@ const props = defineProps<{
                     <div class="flex-1"></div>
 
                     <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
-                        <AnimatedButton text="Add to cart" />
+                        <AnimatedButton @click="openAddModal" text="Add to cart" />
 
                         <button
                             class="inline-flex cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md active:scale-95"
-                            @click="$inertia.visit('/menu')"
+                            @click="$inertia.visit('/menu/dishes')"
                         >
                             Back to menu
                         </button>
@@ -194,6 +202,13 @@ const props = defineProps<{
                 </div>
             </div>
         </section>
+
+        <AddToCartModal
+            v-if="props.dish"
+            :dish="props.dish"
+            :open="isAddModalOpen"
+            @close="isAddModalOpen = false"
+        />
     </ClientLayout>
 </template>
 

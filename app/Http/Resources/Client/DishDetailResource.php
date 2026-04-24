@@ -43,6 +43,14 @@ class DishDetailResource extends JsonResource
                             : Storage::disk('public')->url('/images/picture.png'),
                     ] : null,
             ]),
+            'meats' => $this->whenLoaded('meats')->map(fn ($meat) => [
+                'id' => $meat->id,
+                'name' => $meat->name,
+                'extra_price' => $meat->extra_price,
+                'main_image' => $meat->main_image
+                    ? Storage::disk('public')->url($meat->main_image)
+                    : Storage::disk('public')->url('/images/picture.png'),
+            ]),
         ];
     }
 }

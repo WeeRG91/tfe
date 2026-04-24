@@ -13,7 +13,7 @@ class GetDish
      */
     public function execute(Dish $dish): DishDetailResource
     {
-        $dish->load(['ingredients.allergen']);
+        $dish->load(['ingredients.allergen', 'meats']);
 
         return new DishDetailResource($dish);
     }
