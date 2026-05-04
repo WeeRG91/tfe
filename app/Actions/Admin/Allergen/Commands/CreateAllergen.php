@@ -20,7 +20,7 @@ readonly class CreateAllergen
      * @return Allergen
      * @throws Throwable
      */
-    public function execute(array $data, array $files = []): Allergen
+    public function execute(array $data, array $files): Allergen
     {
         return DB::transaction(function () use ($data, $files) {
             $allergen = Allergen::create($data);

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\Allergen;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AllergenUpdateRequest extends FormRequest
+class AllergenCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

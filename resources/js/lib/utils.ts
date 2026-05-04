@@ -16,3 +16,7 @@ export function urlIsActive(
 export function toUrl(href: NonNullable<InertiaLinkProps['href']>) {
     return typeof href === 'string' ? href : href?.url;
 }
+
+export function formatPrice(price: number) {
+    return price.toFixed(2);
+}

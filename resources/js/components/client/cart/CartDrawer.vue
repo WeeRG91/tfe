@@ -1,15 +1,18 @@
 <script setup lang="ts">
+import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart';
 import {
+    Coffee,
     CreditCard,
     Minus,
     Plus,
     ShoppingBag,
     Trash2,
+    Utensils,
     X,
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
-import { onMounted, onUnmounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     open: boolean;
@@ -17,13 +20,72 @@ const props = defineProps<{
 }>();
 
 const cartStore = useCartStore();
-const { items, total } = storeToRefs(cartStore);
+const { items } = storeToRefs(cartStore);
 
-const removeItemFromCart = async (id: number) => {
+const loadingRemoveItemId = ref<number | null>(null);
+
+const dishItems = computed(() =>
+    items.value.filter((item) => item.item_type === 'dish'),
+);
+
+const drinkItems = computed(() =>
+    items.value.filter((item) => item.item_type === 'drink'),
+);
+
+const subtotalDishes = computed(() => {
+    return dishItems.value.reduce(
+        (sum, item) => sum + (item.total_price || 0),
+        0,
+    );
+});
+
+const subtotalDrinks = computed(() => {
+    return drinkItems.value.reduce(
+        (sum, item) => sum + (item.total_price || 0),
+        0,
+    );
+});
+
+const vatFood = computed(() => {
+    return subtotalDishes.value * 0.12;
+});
+
+const vatDrinks = computed(() => {
+    return subtotalDrinks.value * 0.21;
+});
+
+const subtotal = computed(() => {
+    return subtotalDishes.value + subtotalDrinks.value;
+});
+
+const totalVat = computed(() => {
+    return vatFood.value + vatDrinks.value;
+});
+
+const cartTotal = computed(() => {
+    return subtotal.value + totalVat.value;
+});
+
+const removeItemFromCart = async (cartItemId: number) => {
+    loadingRemoveItemId.value = cartItemId;
+
     try {
-        await cartStore.removeItem(id);
+        await cartStore.removeItem(cartItemId);
     } catch (error) {
         console.log('Failed to remove item: ', error);
+    } finally {
+        loadingRemoveItemId.value = null;
+    }
+};
+
+const updateQuantity = async (
+    cartItemId: number,
+    action: 'increase' | 'decrease',
+) => {
+    try {
+        await cartStore.updateQuantity(cartItemId, action);
+    } catch (error) {
+        console.log('Failed to update quantity: ', error);
     }
 };
 
@@ -109,157 +171,367 @@ watch(
                     </button>
                 </div>
 
-                <div v-else class="space-y-0 divide-y divide-gray-100">
-                    <div
-                        v-for="item in items"
-                        :key="item.id"
-                        class="group relative bg-white p-4 transition-all hover:bg-gray-50"
-                    >
-                        <div class="flex gap-4">
-                            <div
-                                class="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100"
-                            >
-                                <img
-                                    :src="item.item.main_image"
-                                    :alt="item.item.name"
-                                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                                />
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
-                                ></div>
+                <div v-else class="space-y-6">
+                    <div v-if="dishItems.length > 0" class="space-y-3">
+                        <div
+                            class="sticky top-0 z-10 bg-gray-50/95 px-4 py-2 backdrop-blur-sm"
+                        >
+                            <div class="flex items-center gap-2">
+                                <Utensils class="h-4 w-4 text-red-500" />
+                                <h3
+                                    class="text-sm font-semibold tracking-wide text-gray-600 uppercase"
+                                >
+                                    Dishes
+                                </h3>
+                                <span class="text-xs text-gray-400">
+                                    {{ dishItems.length }} items
+                                </span>
                             </div>
+                        </div>
 
-                            <div class="flex-1">
-                                <div
-                                    class="mb-2 flex items-start justify-between gap-2"
-                                >
-                                    <h3
-                                        class="line-clamp-2 flex-1 text-base font-semibold text-gray-800"
+                        <div class="space-y-0 divide-y divide-gray-100">
+                            <div
+                                v-for="item in dishItems"
+                                :key="item.id"
+                                class="group relative bg-white p-4 transition-all hover:bg-gray-50"
+                            >
+                                <div class="flex gap-4">
+                                    <div
+                                        class="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100"
                                     >
-                                        {{ item.item.name }}
-                                    </h3>
-                                    <button
-                                        @click.prevent="removeItemFromCart(item.id)"
-                                        class="rounded-full p-1.5 text-gray-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-red-50 hover:text-red-500"
-                                    >
-                                        <Trash2 class="h-4 w-4" />
-                                    </button>
-                                </div>
-
-                                <div
-                                    class="mb-3 flex w-full items-baseline justify-between"
-                                >
-                                    <div class="flex items-baseline gap-2">
-                                        <p
-                                            class="text-lg font-bold text-red-500"
-                                        >
-                                            €{{ item.unit_price }}
-                                        </p>
+                                        <img
+                                            :src="item.item.main_image"
+                                            :alt="item.item.name"
+                                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                        />
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+                                        ></div>
                                     </div>
 
-                                    <div
-                                        class="flex items-center gap-2 rounded-lg bg-gray-50 p-1"
-                                    >
-                                        <button
-                                            class="flex h-5 w-5 items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-500"
+                                    <div class="flex-1">
+                                        <div
+                                            class="mb-2 flex items-start justify-between gap-2"
                                         >
-                                            <Minus
-                                                class="h-2 w-2 text-gray-600"
-                                            />
-                                        </button>
-                                        <span
-                                            class="min-w-[32px] text-center text-sm font-semibold text-gray-800"
-                                        >
-                                            {{ item.quantity }}
-                                        </span>
-                                        <button
-                                            class="flex h-5 w-5 items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-500"
-                                        >
-                                            <Plus
-                                                class="h-2 w-2 text-gray-600"
-                                            />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="mt-2 space-y-1.5">
-                                    <div
-                                        v-if="item.meat"
-                                        class="flex items-center gap-1.5"
-                                    >
-                                        <span
-                                            class="text-xs font-medium text-gray-500"
-                                            >Meat:</span
-                                        >
-                                        <div class="flex items-center gap-1">
-                                            <span
-                                                class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700"
+                                            <h3
+                                                class="line-clamp-2 flex-1 text-base font-semibold text-gray-800"
                                             >
-                                                {{ item.meat.name }}
-                                            </span>
-                                            <span
-                                                class="text-xs font-medium text-amber-600"
-                                            >
-                                                +€{{ item.meat.extra_price }}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        v-if="item.removed_ingredients?.length"
-                                        class="flex items-center gap-1.5"
-                                    >
-                                        <span
-                                            class="text-xs font-medium text-gray-500"
-                                            >Removed:</span
-                                        >
-                                        <div class="flex flex-wrap gap-1">
-                                            <span
-                                                class="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600"
-                                            >
-                                                {{
-                                                    item.removed_ingredients
-                                                        .length
-                                                }}
-                                                ingredients
-                                            </span>
+                                                {{ item.item.name }}
+                                            </h3>
                                             <span
                                                 v-if="
-                                                    item.removed_ingredients[0]
+                                                    loadingRemoveItemId ===
+                                                    item.id
                                                 "
-                                                class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
+                                                class="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent p-1.5"
+                                            ></span>
+                                            <button
+                                                v-else
+                                                @click.prevent="
+                                                    removeItemFromCart(item.id)
+                                                "
+                                                class="rounded-full p-1 text-gray-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-red-50 hover:text-red-500"
                                             >
-                                                {{
-                                                    item.removed_ingredients[0]
-                                                        .name
-                                                }}
-                                            </span>
-                                            <span
+                                                <Trash2 class="h-4 w-4" />
+                                            </button>
+                                        </div>
+
+                                        <div
+                                            class="mb-3 flex w-full items-baseline justify-between"
+                                        >
+                                            <div
+                                                class="flex items-baseline gap-2"
+                                            >
+                                                <p
+                                                    class="text-lg font-bold text-red-500"
+                                                >
+                                                    €{{
+                                                        formatPrice(
+                                                            item.unit_price,
+                                                        )
+                                                    }}
+                                                </p>
+                                            </div>
+
+                                            <div
+                                                class="flex items-center gap-2 rounded-lg bg-gray-50 p-1"
+                                            >
+                                                <button
+                                                    @click.prevent="
+                                                        updateQuantity(
+                                                            item.id,
+                                                            'decrease',
+                                                        )
+                                                    "
+                                                    :disabled="
+                                                        item.quantity <= 1
+                                                    "
+                                                    class="flex h-5 w-5 items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                                >
+                                                    <Minus
+                                                        class="h-2 w-2 text-gray-600"
+                                                    />
+                                                </button>
+                                                <span
+                                                    class="min-w-[32px] text-center text-sm font-semibold text-gray-800"
+                                                >
+                                                    {{ item.quantity }}
+                                                </span>
+                                                <button
+                                                    @click.prevent="
+                                                        updateQuantity(
+                                                            item.id,
+                                                            'increase',
+                                                        )
+                                                    "
+                                                    class="flex h-5 w-5 items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-500"
+                                                >
+                                                    <Plus
+                                                        class="h-2 w-2 text-gray-600"
+                                                    />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-2 space-y-1.5">
+                                            <div
+                                                v-if="item.meat"
+                                                class="flex items-center gap-1.5"
+                                            >
+                                                <span
+                                                    class="text-xs font-medium text-gray-500"
+                                                    >Meat:</span
+                                                >
+                                                <div
+                                                    class="flex items-center gap-1"
+                                                >
+                                                    <span
+                                                        class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700"
+                                                    >
+                                                        {{ item.meat.name }}
+                                                    </span>
+                                                    <span
+                                                        class="text-xs font-medium text-amber-600"
+                                                    >
+                                                        +€{{
+                                                            formatPrice(
+                                                                item.meat
+                                                                    .extra_price,
+                                                            )
+                                                        }}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div
                                                 v-if="
-                                                    item.removed_ingredients[1]
-                                                "
-                                                class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
-                                            >
-                                                +{{
                                                     item.removed_ingredients
-                                                        .length - 1
-                                                }}
-                                            </span>
+                                                        ?.length
+                                                "
+                                                class="flex items-center gap-1.5"
+                                            >
+                                                <span
+                                                    class="text-xs font-medium text-gray-500"
+                                                    >Removed:</span
+                                                >
+                                                <div
+                                                    class="flex flex-wrap gap-1"
+                                                >
+                                                    <span
+                                                        class="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600"
+                                                    >
+                                                        {{
+                                                            item
+                                                                .removed_ingredients
+                                                                .length
+                                                        }}
+                                                        ingredients
+                                                    </span>
+                                                    <span
+                                                        v-if="
+                                                            item
+                                                                .removed_ingredients[0]
+                                                        "
+                                                        class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
+                                                    >
+                                                        {{
+                                                            item
+                                                                .removed_ingredients[0]
+                                                                .name
+                                                        }}
+                                                    </span>
+                                                    <span
+                                                        v-if="
+                                                            item
+                                                                .removed_ingredients[1]
+                                                        "
+                                                        class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
+                                                    >
+                                                        +{{
+                                                            item
+                                                                .removed_ingredients
+                                                                .length - 1
+                                                        }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="mt-3 border-t border-gray-100 pt-2"
+                                        >
+                                            <div
+                                                class="flex items-center justify-between text-xs"
+                                            >
+                                                <span class="text-gray-500"
+                                                    >Item total:</span
+                                                >
+                                                <span
+                                                    class="text-sm font-semibold text-gray-800"
+                                                    >€{{
+                                                        formatPrice(
+                                                            item.total_price,
+                                                        )
+                                                    }}</span
+                                                >
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
 
-                                <div class="mt-3 border-t border-gray-100 pt-2">
+                    <div v-if="drinkItems.length > 0" class="space-y-3">
+                        <div
+                            class="sticky top-0 z-10 bg-gray-50/95 px-4 py-2 backdrop-blur-sm"
+                        >
+                            <div class="flex items-center gap-2">
+                                <Coffee class="h-4 w-4 text-blue-500" />
+                                <h3
+                                    class="text-sm font-semibold tracking-wide text-gray-600 uppercase"
+                                >
+                                    Drinks
+                                </h3>
+                                <span class="text-xs text-gray-400">
+                                    {{ drinkItems.length }} items
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-0 divide-y divide-gray-100">
+                            <div
+                                v-for="item in drinkItems"
+                                :key="item.id"
+                                class="group relative bg-white p-4 transition-all hover:bg-gray-50"
+                            >
+                                <div class="flex gap-4">
                                     <div
-                                        class="flex items-center justify-between text-xs"
+                                        class="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100"
                                     >
-                                        <span class="text-gray-500"
-                                            >Item total:</span
+                                        <img
+                                            :src="item.item.main_image"
+                                            :alt="item.item.name"
+                                            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                        />
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+                                        ></div>
+                                    </div>
+
+                                    <div class="flex-1">
+                                        <div
+                                            class="mb-2 flex items-start justify-between gap-2"
                                         >
-                                        <span
-                                            class="text-sm font-semibold text-gray-800"
-                                            >€{{ item.total_price }}</span
+                                            <h3
+                                                class="line-clamp-2 flex-1 text-base font-semibold text-gray-800"
+                                            >
+                                                {{ item.item.name }}
+                                            </h3>
+                                            <span
+                                                v-if="
+                                                    loadingRemoveItemId ===
+                                                    item.id
+                                                "
+                                                class="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent p-1.5"
+                                            ></span>
+                                            <button
+                                                v-else
+                                                @click.prevent="
+                                                    removeItemFromCart(item.id)
+                                                "
+                                                class="rounded-full p-1 text-gray-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-red-50 hover:text-red-500"
+                                            >
+                                                <Trash2 class="h-4 w-4" />
+                                            </button>
+                                        </div>
+
+                                        <div
+                                            class="mb-3 flex w-full items-baseline justify-between"
                                         >
+                                            <p
+                                                class="text-lg font-bold text-blue-500"
+                                            >
+                                                €{{ item.unit_price }}
+                                            </p>
+
+                                            <div
+                                                class="flex items-center gap-2 rounded-lg bg-gray-50 p-1"
+                                            >
+                                                <button
+                                                    @click.prevent="
+                                                        updateQuantity(
+                                                            item.id,
+                                                            'decrease',
+                                                        )
+                                                    "
+                                                    :disabled="
+                                                        item.quantity <= 1
+                                                    "
+                                                    class="flex h-5 w-5 items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-blue-300 hover:bg-blue-50 hover:text-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                                >
+                                                    <Minus
+                                                        class="h-2 w-2 text-gray-600"
+                                                    />
+                                                </button>
+                                                <span
+                                                    class="min-w-[32px] text-center text-sm font-semibold text-gray-800"
+                                                >
+                                                    {{ item.quantity }}
+                                                </span>
+                                                <button
+                                                    @click.prevent="
+                                                        updateQuantity(
+                                                            item.id,
+                                                            'increase',
+                                                        )
+                                                    "
+                                                    class="flex h-5 w-5 items-center justify-center rounded-full border border-gray-200 bg-white transition-all hover:border-blue-300 hover:bg-blue-50 hover:text-blue-500"
+                                                >
+                                                    <Plus
+                                                        class="h-2 w-2 text-gray-600"
+                                                    />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="mt-3 border-t border-gray-100 pt-2"
+                                        >
+                                            <div
+                                                class="flex items-center justify-between text-xs"
+                                            >
+                                                <span class="text-gray-500"
+                                                    >Item total:</span
+                                                >
+                                                <span
+                                                    class="text-sm font-semibold text-gray-800"
+                                                    >€{{
+                                                        item.total_price
+                                                    }}</span
+                                                >
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -272,17 +544,27 @@ watch(
                 <div class="space-y-2 p-4">
                     <div class="flex justify-between text-sm text-gray-600">
                         <span>Subtotal</span>
-                        <span>€{{ total }}</span>
+                        <span>€{{ formatPrice(subtotal) }}</span>
                     </div>
                     <div class="flex justify-between text-sm text-gray-600">
-                        <span>Delivery Fee</span>
-                        <span class="text-green-600">Free</span>
+                        <span>VAT (12% - Food)</span>
+                        <span>€{{ formatPrice(vatFood) }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>VAT (21% - Drinks)</span>
+                        <span>€{{ formatPrice(vatDrinks) }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>Total VAT</span>
+                        <span>€{{ formatPrice(totalVat) }}</span>
                     </div>
                     <div
                         class="flex justify-between border-t border-gray-100 pt-3 text-base font-bold text-gray-800"
                     >
-                        <span>Total</span>
-                        <span class="text-red-500">€{{ total }}</span>
+                        <span>Total (incl. VAT)</span>
+                        <span class="text-red-500"
+                            >€{{ formatPrice(cartTotal) }}</span
+                        >
                     </div>
 
                     <button

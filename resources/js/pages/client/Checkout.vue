@@ -2,9 +2,10 @@
 import CartItemCard from '@/components/client/cart/CartItemCard.vue';
 import EmptyCartList from '@/components/client/cart/EmptyCartList.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
+import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart';
 import { Head } from '@inertiajs/vue3';
-import { CreditCard } from 'lucide-vue-next';
+import { Coffee, CreditCard, Utensils } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
@@ -12,21 +13,50 @@ import { toast } from 'vue-sonner';
 const cartStore = useCartStore();
 const { items } = storeToRefs(cartStore);
 
-const deliveryFee = ref<number>(2.99);
-const serviceFee = ref<number>(1.5);
 const updateNoteItemId = ref<number | null>(null);
+const loadingRemoveItemId = ref<number | null>(null);
+
+const dishItems = computed(() =>
+    items.value.filter((item) => item.item_type === 'dish'),
+);
+
+const drinkItems = computed(() =>
+    items.value.filter((item) => item.item_type === 'drink'),
+);
+
+const subtotalDishes = computed(() => {
+    return dishItems.value.reduce(
+        (sum, item) => sum + (item.total_price || 0),
+        0,
+    );
+});
+
+const subtotalDrinks = computed(() => {
+    return drinkItems.value.reduce(
+        (sum, item) => sum + (item.total_price || 0),
+        0,
+    );
+});
+
+const vatFood = computed(() => {
+    return subtotalDishes.value * 0.12;
+});
+
+const vatDrinks = computed(() => {
+    return subtotalDrinks.value * 0.21;
+});
+
+const totalVat = computed(() => {
+    return vatFood.value + vatDrinks.value;
+});
 
 const subtotal = computed(() => {
-    return items.value.reduce((sum, item) => sum + (item.total_price || 0), 0);
+    return subtotalDishes.value + subtotalDrinks.value;
 });
 
 const cartTotal = computed(() => {
-    return subtotal.value + deliveryFee.value + serviceFee.value;
+    return subtotal.value + totalVat.value;
 });
-
-const formatPrice = (price: number) => {
-    return price.toFixed(2);
-};
 
 const handleUpdateNotes = async (cartItemId: number, notes: string) => {
     try {
@@ -42,19 +72,30 @@ const handleUpdateNotes = async (cartItemId: number, notes: string) => {
     }
 };
 
-const handleUpdateQuantity = () => {};
+const handleUpdateQuantity = async (
+    cartItemId: number,
+    action: 'increase' | 'decrease',
+) => {
+    try {
+        await cartStore.updateQuantity(cartItemId, action);
+    } catch (error) {
+        console.log('Failed to update quantity: ', error);
+    }
+};
 
 const handleRemoveItem = async (cartItemId: number) => {
+    loadingRemoveItemId.value = cartItemId;
+
     try {
         const response = await cartStore.removeItem(cartItemId);
 
         toast.success(response.message);
     } catch (error) {
         console.log('Failed to remove item: ', error);
+    } finally {
+        loadingRemoveItemId.value = null;
     }
 };
-
-const placeOrder = () => {};
 </script>
 
 <template>
@@ -65,82 +106,146 @@ const placeOrder = () => {};
                 <p class="text-sm tracking-widest text-red-500 uppercase">
                     [ Checkout ]
                 </p>
-                <h1 class="text-4xl font-semibold uppercase md:text-5xl">
+                <h1 class="text-3xl font-semibold uppercase md:text-4xl">
                     Your Cart
                 </h1>
-                <p class="mt-2 text-gray-600">
-                    Review your order before proceeding to checkout
+                <p class="mt-1 text-sm text-gray-600">
+                    Review your cart before placing your order
                 </p>
             </div>
 
-            <div class="flex flex-col gap-8 lg:flex-row">
+            <div class="flex flex-col gap-6 lg:flex-row">
                 <div class="flex-1">
                     <div
                         v-if="!items.length"
                         key="empty-list"
-                        class="flex min-h-[500px] items-center justify-center sm:min-h-[600px]"
+                        class="flex min-h-[400px] items-center justify-center"
                     >
                         <EmptyCartList />
                     </div>
 
                     <div v-else key="content" class="space-y-4">
-                        <CartItemCard
-                            v-for="item in items"
-                            :key="item.id"
-                            :cart-item="item"
-                            :updateNoteItemId="updateNoteItemId"
-                            @update-quantity="handleUpdateQuantity"
-                            @remove="handleRemoveItem"
-                            @update-notes="handleUpdateNotes"
-                        />
+                        <div v-if="dishItems.length > 0" class="space-y-2">
+                            <div
+                                class="sticky top-0 z-10 py-1.5 backdrop-blur-sm"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <Utensils class="h-4 w-4 text-red-500" />
+                                    <h2
+                                        class="text-sm font-semibold tracking-wide text-gray-700 uppercase"
+                                    >
+                                        Dishes
+                                    </h2>
+                                    <span class="text-xs text-gray-400">
+                                        {{ dishItems.length }}
+                                    </span>
+                                </div>
+                                <div class="mt-0.5 h-0.5 w-10 bg-red-500"></div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <CartItemCard
+                                    v-for="item in dishItems"
+                                    :key="item.id"
+                                    :cart-item="item"
+                                    type="dish"
+                                    :update-note-item-id="updateNoteItemId"
+                                    :loading-remove-item-id="
+                                        loadingRemoveItemId
+                                    "
+                                    @update-quantity="handleUpdateQuantity"
+                                    @remove="handleRemoveItem"
+                                    @update-notes="handleUpdateNotes"
+                                />
+                            </div>
+                        </div>
+
+                        <div v-if="drinkItems.length > 0" class="space-y-2">
+                            <div
+                                class="sticky top-0 z-10 py-1.5 backdrop-blur-sm"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <Coffee class="h-4 w-4 text-blue-500" />
+                                    <h2
+                                        class="text-sm font-semibold tracking-wide text-gray-700 uppercase"
+                                    >
+                                        Drinks
+                                    </h2>
+                                    <span class="text-xs text-gray-400">
+                                        {{ drinkItems.length }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="mt-0.5 h-0.5 w-10 bg-blue-500"
+                                ></div>
+                            </div>
+
+                            <div class="space-y-3">
+                                <CartItemCard
+                                    v-for="item in drinkItems"
+                                    :key="item.id"
+                                    :cart-item="item"
+                                    type="drink"
+                                    :update-note-item-id="updateNoteItemId"
+                                    :loading-remove-item-id="
+                                        loadingRemoveItemId
+                                    "
+                                    @update-quantity="handleUpdateQuantity"
+                                    @remove="handleRemoveItem"
+                                    @update-notes="handleUpdateNotes"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div v-if="items.length" class="lg:w-96">
-                    <div class="sticky top-4 rounded-lg border bg-white p-6">
-                        <h2 class="mb-4 text-xl font-semibold uppercase">
+                <div v-if="items.length" class="lg:w-80">
+                    <div class="sticky top-6 rounded-lg border bg-white p-4">
+                        <h2 class="mb-3 text-lg font-semibold uppercase">
                             Order Summary
                         </h2>
 
-                        <div class="space-y-3 border-b pb-4">
+                        <div class="space-y-2 border-b pb-3 text-sm">
                             <div class="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
                                 <span>€{{ formatPrice(subtotal) }}</span>
                             </div>
                             <div class="flex justify-between text-gray-600">
-                                <span>Delivery Fee</span>
-                                <span>€{{ formatPrice(deliveryFee) }}</span>
+                                <span>VAT (12% - Food)</span>
+                                <span>€{{ formatPrice(vatFood) }}</span>
                             </div>
                             <div class="flex justify-between text-gray-600">
-                                <span>Service Fee</span>
-                                <span>€{{ formatPrice(serviceFee) }}</span>
+                                <span>VAT (21% - Drinks)</span>
+                                <span>€{{ formatPrice(vatDrinks) }}</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Total VAT</span>
+                                <span>€{{ formatPrice(totalVat) }}</span>
                             </div>
                         </div>
 
-                        <div
-                            class="mt-4 flex justify-between text-lg font-semibold"
-                        >
-                            <span>Total</span>
+                        <div class="mt-3 flex justify-between font-semibold">
+                            <span>Total (incl. VAT)</span>
                             <span class="text-red-500"
                                 >€{{ formatPrice(cartTotal) }}</span
                             >
                         </div>
 
-                        <div class="mt-6 space-y-3">
+                        <div class="mt-4 space-y-3">
                             <textarea
-                                placeholder="Special instructions or notes..."
-                                class="w-full rounded-md border p-3 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
-                                rows="3"
+                                placeholder="Special instructions..."
+                                class="w-full rounded-md border p-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
+                                rows="2"
                             ></textarea>
 
                             <button
-                                @click="placeOrder"
-                                class="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-red-500 to-red-600 py-3 text-white transition-all hover:shadow-lg hover:shadow-red-200"
+                                @click="$inertia.visit('/cart/place-order')"
+                                class="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 py-2 text-sm text-white transition-all hover:shadow-md hover:shadow-red-200"
                             >
                                 <span
                                     class="relative z-10 flex items-center justify-center gap-2 font-semibold"
                                 >
-                                    <CreditCard class="h-5 w-5" />
+                                    <CreditCard class="h-4 w-4" />
                                     Place your order
                                 </span>
                                 <div
@@ -149,7 +254,7 @@ const placeOrder = () => {};
                             </button>
                         </div>
 
-                        <div class="mt-4 text-center text-xs text-gray-500">
+                        <div class="mt-3 text-center text-xs text-gray-500">
                             <p>By placing your order, you agree to our</p>
                             <p>Terms of Service and Privacy Policy</p>
                         </div>

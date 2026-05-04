@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Client;
+namespace App\Http\Resources\Client\Drink;
 
 use App\Enums\DrinkCategoryEnum;
 use Illuminate\Http\Request;

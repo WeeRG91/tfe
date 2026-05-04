@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import AddDrinkToCartModal from '@/components/client/cart/AddDrinkToCartModal.vue';
 import DrinkCard from '@/components/client/drink/DrinkCard.vue';
+import DrinkCardSkeleton from '@/components/client/drink/DrinkCardSkeleton.vue';
+import EmptyDrinkList from '@/components/client/drink/EmptyDrinkList.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { CategoryOptionType } from '@/types/category';
 import { ClientDrinkType } from '@/types/drink';
@@ -7,8 +10,6 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import DrinkCardSkeleton from '@/components/client/drink/DrinkCardSkeleton.vue';
-import EmptyDrinkList from '@/components/client/drink/EmptyDrinkList.vue';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -18,6 +19,13 @@ const drinks = ref<ClientDrinkType[]>([]);
 const selectedCategory = ref<number | null>(null);
 const isLoading = ref<boolean>(false);
 const hasLoaded = ref<boolean>(false);
+const selectedDrink = ref<ClientDrinkType | null>(null);
+const isAddModalOpen = ref<boolean>(false);
+
+const openAddModal = (drink: ClientDrinkType) => {
+    selectedDrink.value = drink;
+    isAddModalOpen.value = true;
+};
 
 const loadingDrinks = async () => {
     if (isLoading.value) return;
@@ -54,7 +62,7 @@ watch(selectedCategory, () => {
 <template>
     <Head title="Drink Page" />
     <ClientLayout>
-        <section class="mx-auto max-w-6xl px-6 py-4 mt-4">
+        <section class="mx-auto mt-4 max-w-6xl px-6 py-4">
             <div class="mb-8">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
                     [ Our Drinks ]
@@ -118,10 +126,18 @@ watch(selectedCategory, () => {
                         v-for="drink in drinks"
                         :key="drink.id"
                         :drink="drink"
+                        @add="openAddModal"
                     />
                 </div>
             </Transition>
         </section>
+
+        <AddDrinkToCartModal
+            v-if="selectedDrink"
+            :drink="selectedDrink"
+            :open="isAddModalOpen"
+            @close="isAddModalOpen = false"
+        />
     </ClientLayout>
 </template>
 

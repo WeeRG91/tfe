@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { ClientDrinkType } from '@/types/drink';
+import { formatPrice } from '@/lib/utils';
 
 const props = defineProps<{
     drink: ClientDrinkType;
+}>();
+
+defineEmits<{
+    (e: 'add', drink: ClientDrinkType): void;
 }>();
 </script>
 
@@ -10,7 +15,7 @@ const props = defineProps<{
     <div
         class="group flex h-full cursor-pointer overflow-hidden rounded-md border bg-white transition hover:shadow-lg"
     >
-        <div class="relative h-full overflow-hidden w-44">
+        <div class="relative h-full w-44 overflow-hidden">
             <img
                 :src="props.drink.main_image"
                 :alt="props.drink.name"
@@ -35,7 +40,7 @@ const props = defineProps<{
                     {{ props.drink.name }}
                 </h3>
                 <span class="font-semibold whitespace-nowrap text-red-500">
-                    €{{ props.drink.price }}
+                    €{{ formatPrice(props.drink.price) }}
                 </span>
             </div>
 
@@ -73,7 +78,7 @@ const props = defineProps<{
                     </span>
 
                     <button
-                        @click.stop
+                        @click.stop="$emit('add', props.drink)"
                         class="text-sm text-red-500 transition group-hover:translate-x-1"
                     >
                         Add <span class="animate-arrow inline-block">→</span>

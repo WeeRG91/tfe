@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\Allergen;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class IngredientUpdateRequest extends FormRequest
+class AllergenUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,8 @@ class IngredientUpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'allergen_id' => ['nullable', 'exists:allergens,id'],
+            'ingredients' => ['nullable', 'array'],
+            'ingredients.*' => ['exists:ingredients,id'],
             'images' => ['nullable', 'array'],
         ];
     }

@@ -11,8 +11,8 @@ use App\Actions\Admin\Allergen\Queries\GetAllergenForEdit;
 use App\Actions\Admin\Allergen\Queries\GetAllergenFormData;
 use App\Actions\Admin\Allergen\Queries\GetPaginatedAllergens;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\AllergenCreateRequest;
-use App\Http\Requests\Admin\AllergenUpdateRequest;
+use App\Http\Requests\Admin\Allergen\AllergenCreateRequest;
+use App\Http\Requests\Admin\Allergen\AllergenUpdateRequest;
 use App\Models\Allergen;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -65,7 +65,7 @@ class AllergenController extends Controller
         try {
             $command->execute(
                 $request->validated(),
-                $request->file('images')
+                $request->file('images') ?? []
             );
 
             return redirect()

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Client;
+namespace App\Http\Resources\Client\Dish;
 
 use App\Enums\DishCategoryEnum;
 use Illuminate\Http\Request;

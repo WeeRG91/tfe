@@ -3,7 +3,7 @@
 namespace App\Actions\Client\Drink;
 
 use App\Actions\BaseCursorPagination;
-use App\Http\Resources\Client\DrinkResource;
+use App\Http\Resources\Client\Drink\DrinkResource;
 use App\Models\Drink;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

@@ -16,24 +16,24 @@ enum DishCategoryEnum: int
     public function label(): string
     {
         return match ($this) {
-            DishCategoryEnum::APPETIZER => 'Appetizer',
-            DishCategoryEnum::MAIN_COURSE => 'Main course',
-            DishCategoryEnum::SOUP => 'Soup',
-            DishCategoryEnum::NOODLES => 'Noodles',
-            DishCategoryEnum::DESSERT => 'Dessert',
-            DishCategoryEnum::VEGETARIAN => 'Vegetarian',
+            self::APPETIZER => 'Appetizer',
+            self::MAIN_COURSE => 'Main course',
+            self::SOUP => 'Soup',
+            self::NOODLES => 'Noodles',
+            self::DESSERT => 'Dessert',
+            self::VEGETARIAN => 'Vegetarian',
         };
     }
 
-    public static function getColor(DishCategoryEnum $case): string
+    public static function getColor(self $case): string
     {
         return match ($case) {
-            DishCategoryEnum::APPETIZER => 'bg-[#8B5CF6]/75',
-            DishCategoryEnum::MAIN_COURSE => 'bg-[#DC2626]/75',
-            DishCategoryEnum::SOUP => 'bg-[#EA580C]/75',
-            DishCategoryEnum::NOODLES => 'bg-[#D97706]/75',
-            DishCategoryEnum::DESSERT => 'bg-[#DB2777]/75',
-            DishCategoryEnum::VEGETARIAN => 'bg-[#059669]/75',
+            self::APPETIZER => 'bg-[#8B5CF6]/75',
+            self::MAIN_COURSE => 'bg-[#DC2626]/75',
+            self::SOUP => 'bg-[#EA580C]/75',
+            self::NOODLES => 'bg-[#D97706]/75',
+            self::DESSERT => 'bg-[#DB2777]/75',
+            self::VEGETARIAN => 'bg-[#059669]/75',
         };
     }
 
@@ -46,9 +46,12 @@ enum DishCategoryEnum: int
         ], self::cases());
     }
 
-    public static function getCategory(DishCategoryEnum $case): array
+    public static function getCategory(self $case): array
     {
-        return Arr::first(self::getCategories(), fn($item) => $item['value'] === $case->value);
+        return Arr::first(
+            self::getCategories(),
+            fn($item) => $item['value'] === $case->value
+        );
     }
 }
 

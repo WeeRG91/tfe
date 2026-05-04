@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\Drink;
 
+use App\Enums\DrinkCategoryEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
-class MeatCreateRequest extends FormRequest
+class DrinkCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +27,8 @@ class MeatCreateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'extra_price' => ['required', 'numeric'],
+            'category' => ['required', new Enum(DrinkCategoryEnum::class)],
+            'price' => ['required', 'numeric'],
             'images' => ['nullable', 'array'],
         ];
     }

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\Drink;
 
 use App\Enums\DrinkCategoryEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class DrinkCreateRequest extends FormRequest
+class DrinkUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

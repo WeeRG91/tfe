@@ -34,4 +34,20 @@ class Ingredient extends Model
     {
         return $this->belongsTo(Allergen::class);
     }
+
+    public function cartItems(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            CartItem::class,
+            'cart_item_removed_ingredients'
+        );
+    }
+
+    public function orderItems(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            OrderItem::class,
+            'order_item_removed_ingredients'
+        );
+    }
 }

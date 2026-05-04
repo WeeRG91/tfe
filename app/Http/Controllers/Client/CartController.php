@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Enums\OrderTypeEnum;
+use App\Enums\PaymentMethodEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Client\CartResource;
+use App\Http\Resources\Client\Address\AddressResource;
+use App\Http\Resources\Client\Cart\CartResource;
+use App\Models\Address;
 use App\Models\Cart;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
@@ -75,7 +79,18 @@ class CartController extends Controller
         return Inertia::render('client/Checkout');
     }
 
-    public function addItem(Request $request)
+    public function placeOrder()
+    {
+        $addresses = Address::query()->where('user_id', auth()->user()->id)->orderBy('is_default', 'desc')->get();
+
+        return Inertia::render('client/PlaceOrder', [
+            'orderTypes' => OrderTypeEnum::getTypes(),
+            'paymentMethods' => PaymentMethodEnum::getPaymentMethods(),
+            'addresses' => AddressResource::collection($addresses)->collection,
+        ]);
+    }
+
+    public function addDish(Request $request)
     {
         $cart = $this->getCart($request);
 
@@ -104,10 +119,13 @@ class CartController extends Controller
 
         if ($existingItem) {
             $existingItem->increment('quantity', $validated['quantity']);
-            $existingItem->load('item', 'meat', 'removedIngredients');
+            $existingItem->load('item', 'meat');
             $this->updatePrices($existingItem);
 
-            return response()->json($existingItem);
+            $itemName = $existingItem->item->name ?? 'Item';
+            return response()->json([
+                'message' => "{$itemName} added successfully to cart",
+            ]);
         }
 
         $item = $cart->items()->create([
@@ -122,11 +140,53 @@ class CartController extends Controller
             $item->removedIngredients()->sync($validated['removed_ingredients']);
         }
 
-        $item->load('item', 'meat', 'removedIngredients');
+        $item->load('item', 'meat');
         $this->updatePrices($item);
 
         $itemName = $item->item->name ?? 'Item';
+        return response()->json([
+            'message' => "{$itemName} added successfully to cart",
+        ]);
+    }
 
+    public function addDrink(Request $request)
+    {
+        $cart = $this->getCart($request);
+
+        $validated = $request->validate([
+            'item_id' => 'required',
+            'item_type' => 'required|in:dish,drink',
+            'quantity' => 'required|integer|min:1',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $existingItem = $cart->items()
+            ->where('item_id', $validated['item_id'])
+            ->where('item_type', $validated['item_type'])
+            ->first();
+
+        if ($existingItem) {
+            $existingItem->increment('quantity', $validated['quantity']);
+            $existingItem->load('item', 'meat');
+            $this->updatePrices($existingItem);
+
+            $itemName = $existingItem->item->name ?? 'Item';
+            return response()->json([
+                'message' => "{$itemName} added successfully to cart",
+            ]);
+        }
+
+        $item = $cart->items()->create([
+            'item_id' => $validated['item_id'],
+            'item_type' => $validated['item_type'],
+            'quantity' => $validated['quantity'],
+            'notes' => $validated['notes'],
+        ]);
+
+        $item->load('item', 'meat');
+        $this->updatePrices($item);
+
+        $itemName = $item->item->name ?? 'Item';
         return response()->json([
             'message' => "{$itemName} added successfully to cart",
         ]);
@@ -173,8 +233,42 @@ class CartController extends Controller
 
         $cartItem->update(['notes' => $validated['notes']]);
 
-        return response()->json([
-            'message' => "Notes updated"
+        return response()->noContent();
+    }
+
+    public function updateQuantity(Request $request, int $cartItemId)
+    {
+        $cart = $this->getCart($request);
+
+        $validated = $request->validate([
+            'action' => 'required|string|in:increase,decrease',
         ]);
+
+        $cartItem = $cart->items()->find($cartItemId);
+
+        if (!$cartItem) {
+            return response()->json([
+                'message' => 'Item not found',
+            ], 404);
+        }
+
+        if ($validated['action'] === 'increase') {
+            $cartItem->increment('quantity');
+        } else {
+            if ($cartItem->quantity <= 1) {
+                $cartItem->delete();
+
+                return response()->json([
+                    'message' => 'Item removed from cart'
+                ]);
+            }
+
+            $cartItem->decrement('quantity');
+        }
+
+        $cartItem->load('item', 'meat');
+        $this->updatePrices($cartItem);
+
+        return response()->noContent();
     }
 }

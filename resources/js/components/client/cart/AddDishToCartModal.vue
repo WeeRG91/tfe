@@ -4,6 +4,7 @@ import { ClientDishType } from '@/types/dish';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { formatPrice } from '@/lib/utils';
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -49,7 +50,7 @@ const addToCart = async () => {
     }
 
     try {
-        const response = await cartStore.addItem({
+        const response = await cartStore.addDish({
             item_id: props.dish.id,
             item_type: 'dish',
             meat_id: selectedMeat.value,
@@ -136,7 +137,7 @@ watch(
                                 {{ dish.name }}
                             </h2>
                             <span class="text-lg font-bold text-red-500">
-                                €{{ dish.price }}
+                                €{{ formatPrice(dish.price) }}
                             </span>
                         </div>
                     </div>
@@ -416,7 +417,7 @@ watch(
                             Total
                         </span>
                         <span class="text-2xl font-bold text-red-500">
-                            €{{ totalPrice.toFixed(2) }}
+                            €{{ formatPrice(totalPrice) }}
                         </span>
                     </div>
 

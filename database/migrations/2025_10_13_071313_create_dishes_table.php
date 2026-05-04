@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('price', 8, 2)->default(0);
-            $table->unsignedInteger('category');
+            $table->unsignedInteger('category')->default(0);
             $table->boolean('is_available')->default(true);
             $table->timestamps();
             $table->softDeletes();

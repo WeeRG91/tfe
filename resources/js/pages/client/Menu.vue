@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AddToCartModal from '@/components/client/cart/AddToCartModal.vue';
+import AddDishToCartModal from '@/components/client/cart/AddDishToCartModal.vue';
 import DishCard from '@/components/client/menu/DishCard.vue';
 import DishCardSkeleton from '@/components/client/menu/DishCardSkeleton.vue';
 import EmptyDishList from '@/components/client/menu/EmptyDishList.vue';
@@ -131,7 +131,7 @@ watch(selectedCategory, () => {
             </Transition>
         </section>
 
-        <AddToCartModal
+        <AddDishToCartModal
             v-if="selectedDish"
             :dish="selectedDish"
             :open="isAddModalOpen"

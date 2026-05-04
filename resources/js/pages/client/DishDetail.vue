@@ -3,7 +3,7 @@ import AnimatedButton from '@/components/AnimatedButton.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { ClientDishType } from '@/types/dish';
 import { Head } from '@inertiajs/vue3';
-import AddToCartModal from '@/components/client/cart/AddToCartModal.vue';
+import AddDishToCartModal from '@/components/client/cart/AddDishToCartModal.vue';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -203,7 +203,7 @@ const openAddModal = () => {
             </div>
         </section>
 
-        <AddToCartModal
+        <AddDishToCartModal
             v-if="props.dish"
             :dish="props.dish"
             :open="isAddModalOpen"

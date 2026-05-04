@@ -10,7 +10,7 @@ export type CartType = {
 export type CartItemType = {
     id: number;
     cart_id: number;
-    item_id:number;
+    item_id: number;
     item_type: string;
     item: CartDishType | CartDrinkType;
     meat: MeatItemType;
@@ -42,7 +42,7 @@ export type MeatItemType = {
     name: string;
     extra_price: number;
     main_image: string;
-}
+};
 
 export type RemovedIngredientType = {
     id: number;
@@ -50,11 +50,20 @@ export type RemovedIngredientType = {
     main_image: string;
 };
 
-export type AddToCartType = {
+export type AddDishToCartType = {
     item_id: number;
-    item_type: 'dish' | 'drink';
+    item_type: ItemType;
     meat_id: number;
     quantity: number;
     removed_ingredients?: number[];
     notes?: string;
-}
+};
+
+export type AddDrinkToCartType = {
+    item_id: number;
+    item_type: ItemType;
+    quantity: number;
+    notes?: string;
+};
+
+export type ItemType = 'dish' | 'drink';

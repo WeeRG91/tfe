@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\Dish;
 
 use App\Enums\DishCategoryEnum;
 use Illuminate\Contracts\Validation\ValidationRule;

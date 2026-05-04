@@ -2,6 +2,7 @@
 import { ClientDishType } from '@/types/dish';
 import { router } from '@inertiajs/vue3';
 import menu from '@/routes/menu';
+import { formatPrice } from '@/lib/utils';
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -35,7 +36,7 @@ const goToDetail = () => {
                     {{ props.dish.name }}
                 </h3>
                 <span class="font-semibold text-red-500">
-                    €{{ props.dish.price }}
+                    €{{ formatPrice(props.dish.price) }}
                 </span>
             </div>
 
