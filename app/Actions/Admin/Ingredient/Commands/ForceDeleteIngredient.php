@@ -11,6 +11,10 @@ readonly class ForceDeleteIngredient
         private ImageService $imageService
     ) {}
 
+    /**
+     * @param int $id
+     * @return void
+     */
     public function execute(int $id): void
     {
         $ingredient = Ingredient::onlyTrashed()->findOrFail($id);

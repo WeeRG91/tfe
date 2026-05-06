@@ -3,9 +3,6 @@
 namespace App\Actions\Admin\Allergen\Commands;
 
 use App\Models\Allergen;
-use App\Models\Ingredient;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class DeleteAllergen
 {

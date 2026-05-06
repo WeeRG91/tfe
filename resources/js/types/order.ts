@@ -21,7 +21,19 @@ export type OrderType = {
     cancelled_at: string;
     created_at: string;
     notes: string;
-    total_price: number;
+    total: number;
+    subtotal: number;
+    discount_rate: number;
+    discount_total: number;
+    vat_food_rate: number;
+    vat_food_amount: number;
+    final_food_inc_vat: number;
+    vat_drinks_rate: number;
+    vat_drinks_amount: number;
+    final_drinks_inc_vat: number;
+    vat_total: number;
+    net_total: number;
+    delivery_fee: number;
     items: OrderItemType[];
 };
 
@@ -35,7 +47,7 @@ export type OrderItemType = {
     removed_ingredients: RemovedIngredientType[];
     quantity: number;
     unit_price: number;
-    total_price: number;
+    total: number;
     notes: string;
 };
 
@@ -78,6 +90,7 @@ export type PlaceOrderPayloadType = {
     address_id?: number | null;
     payment_method: number;
     notes?: string | null;
+    used_points: number;
 };
 
 export type OrderTypeType = {

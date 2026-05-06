@@ -3,6 +3,7 @@ import AddAddressModal from '@/components/client/address/AddAddressModal.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { formatPrice } from '@/lib/utils';
 import address from '@/routes/address';
+import paymentOrder from '@/routes/payment-order';
 import { useCartStore } from '@/stores/cart';
 import { useOrderStore } from '@/stores/order';
 import { AddressType } from '@/types/address';
@@ -15,10 +16,12 @@ import {
     Check,
     CreditCard,
     Edit,
+    Gift,
     Home,
     MapPin,
     Phone,
     Plus,
+    Sparkles,
     Star,
     Store,
     Table,
@@ -29,7 +32,6 @@ import {
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import paymentOrder from '@/routes/payment-order';
 
 const props = defineProps<{
     orderTypes: OrderTypeType[];
@@ -55,11 +57,40 @@ const editingAddress = ref<AddressType | null>(null);
 const existingAddresses = ref<AddressType[]>(props.addresses ?? []);
 const deletedAddressId = ref<number | null>(null);
 const deliveryFee = ref<number>(2);
+const selectedDiscountType = ref<'points' | null>(null);
+const selectedPointsOption = ref<number>(0);
+
+// Points discount options
+const pointsOptions = [
+    { points: 300, discount: 5, label: '300 points → €5 off' },
+    { points: 550, discount: 10, label: '550 points → €10 off' },
+];
+
+const loyaltyPoints = computed(() => cart.value?.user?.loyalty_points ?? 0);
 
 const selectedOrderType = computed(() => {
     return props.orderTypes.find(
         (type) => type.value === selectedOrderTypeValue.value,
     );
+});
+
+// Calculate discount amount based on selected points
+const discountAmount = computed(() => {
+    if (!selectedDiscountType.value || !selectedPointsOption.value) return 0;
+
+    const selectedOption = pointsOptions.find(
+        (opt) => opt.points === selectedPointsOption.value,
+    );
+    return selectedOption ? selectedOption.discount : 0;
+});
+
+// Check if user has enough points for each option
+const isPointsOptionAvailable = (pointsRequired: number) => {
+    return loyaltyPoints.value >= pointsRequired;
+};
+
+const earnedPoints = computed(() => {
+    return Math.floor(cartTotal.value * 3);
 });
 
 // Minimum pickup time (current time + 30 minutes)
@@ -87,42 +118,51 @@ const drinkItems = computed(() =>
 );
 
 const subtotalDishes = computed(() => {
-    return dishItems.value.reduce(
-        (sum, item) => sum + (item.total_price || 0),
-        0,
-    );
+    return dishItems.value.reduce((sum, item) => sum + (item.total || 0), 0);
 });
 
 const subtotalDrinks = computed(() => {
-    return drinkItems.value.reduce(
-        (sum, item) => sum + (item.total_price || 0),
-        0,
-    );
-});
-
-const vatFood = computed(() => {
-    return subtotalDishes.value * 0.12;
-});
-
-const vatDrinks = computed(() => {
-    return subtotalDrinks.value * 0.21;
-});
-
-const totalVat = computed(() => {
-    return vatFood.value + vatDrinks.value;
+    return drinkItems.value.reduce((sum, item) => sum + (item.total || 0), 0);
 });
 
 const subtotal = computed(() => {
     return subtotalDishes.value + subtotalDrinks.value;
 });
 
-const cartTotal = computed(() => {
-    if (selectedOrderTypeValue.value === 3) {
-        return subtotal.value + totalVat.value + deliveryFee.value;
-    }
-
-    return subtotal.value + totalVat.value;
+const totalBeforeDiscount = computed(() => {
+    return selectedOrderTypeValue.value === 3
+        ? subtotal.value + deliveryFee.value
+        : subtotal.value;
 });
+
+const foodRatio = computed(() => {
+    return totalBeforeDiscount.value > 0
+        ? subtotalDishes.value / totalBeforeDiscount.value
+        : 0;
+});
+
+const drinksRatio = computed(() => {
+    return totalBeforeDiscount.value > 0
+        ? subtotalDrinks.value / totalBeforeDiscount.value
+        : 0;
+});
+
+const cartTotal = computed(() => {
+    return Math.max(totalBeforeDiscount.value - discountAmount.value, 0);
+});
+
+const finalFoodInclVat = computed(() => cartTotal.value * foodRatio.value);
+const finalDrinksInclVat = computed(() => cartTotal.value * drinksRatio.value);
+
+const vatFood = computed(() => {
+    return finalFoodInclVat.value - finalFoodInclVat.value / 1.12;
+});
+
+const vatDrinks = computed(() => {
+    return finalDrinksInclVat.value - finalDrinksInclVat.value / 1.21;
+});
+
+const totalVat = computed(() => vatFood.value + vatDrinks.value);
 
 const pickupTimeFormatted = computed(() => {
     if (!pickupTime.value) return '';
@@ -225,6 +265,16 @@ const deleteAddress = async (addressId: number) => {
     }
 };
 
+const applyPointsDiscount = (points: number) => {
+    selectedDiscountType.value = 'points';
+    selectedPointsOption.value = points;
+};
+
+const removeDiscount = () => {
+    selectedDiscountType.value = null;
+    selectedPointsOption.value = 0;
+};
+
 const placeOrder = async () => {
     if (!isFormValid.value || !selectedOrderType.value) {
         toast.error('Please complete all required fields');
@@ -242,6 +292,7 @@ const placeOrder = async () => {
             address_id: selectedAddressId.value,
             payment_method: paymentMethod.value!,
             notes: notes.value,
+            used_points: selectedPointsOption.value,
         });
 
         toast.success(response.message);
@@ -282,6 +333,9 @@ const onOrderTypeChange = async (typeValue: number) => {
         );
         selectedAddressId.value = defaultAddress ? defaultAddress.id : null;
     }
+
+    // Reset discount when order type changes
+    removeDiscount();
 };
 
 const getOrderTypeIcon = (orderType: OrderTypeType) => {
@@ -756,6 +810,158 @@ onMounted(() => {
                             </p>
                         </div>
 
+                        <!-- Loyalty Points Section -->
+                        <div
+                            class="rounded-lg border bg-gradient-to-r from-amber-50 to-yellow-50 p-6"
+                        >
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="mb-3 flex items-center gap-2">
+                                        <Sparkles
+                                            class="h-5 w-5 text-amber-500"
+                                        />
+                                        <h2
+                                            class="text-lg font-semibold text-amber-800"
+                                        >
+                                            Loyalty Rewards
+                                        </h2>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <p class="text-sm text-amber-700">
+                                            You have
+                                            <span
+                                                class="font-bold text-amber-900"
+                                                >{{ loyaltyPoints }}</span
+                                            >
+                                            loyalty points
+                                        </p>
+                                        <p class="mt-1 text-xs text-amber-600">
+                                            ✨ Earn 5 points per €1 spent on
+                                            this order
+                                        </p>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <p
+                                            class="text-sm font-medium text-amber-800"
+                                        >
+                                            Redeem your points:
+                                        </p>
+                                        <div class="flex flex-wrap gap-3">
+                                            <button
+                                                v-for="option in pointsOptions"
+                                                :key="option.points"
+                                                @click="
+                                                    applyPointsDiscount(
+                                                        option.points,
+                                                    )
+                                                "
+                                                :disabled="
+                                                    !isPointsOptionAvailable(
+                                                        option.points,
+                                                    )
+                                                "
+                                                :class="[
+                                                    'rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                                                    selectedPointsOption ===
+                                                    option.points
+                                                        ? 'bg-amber-600 text-white ring-2 ring-amber-400'
+                                                        : 'border border-amber-300 bg-white text-amber-700 hover:bg-amber-100',
+                                                    !isPointsOptionAvailable(
+                                                        option.points,
+                                                    ) &&
+                                                    selectedPointsOption !==
+                                                        option.points
+                                                        ? 'cursor-not-allowed opacity-50 hover:bg-white'
+                                                        : '',
+                                                ]"
+                                                :title="
+                                                    !isPointsOptionAvailable(
+                                                        option.points,
+                                                    )
+                                                        ? `Need ${option.points} points, you have ${loyaltyPoints}`
+                                                        : ''
+                                                "
+                                            >
+                                                {{ option.label }}
+                                                <span
+                                                    v-if="
+                                                        !isPointsOptionAvailable(
+                                                            option.points,
+                                                        )
+                                                    "
+                                                    class="ml-1 text-xs"
+                                                >
+                                                    (Need
+                                                    {{
+                                                        option.points -
+                                                        loyaltyPoints
+                                                    }}
+                                                    more)
+                                                </span>
+                                            </button>
+                                        </div>
+
+                                        <!-- Show message when user has points but not enough for any option -->
+                                        <div
+                                            v-if="
+                                                loyaltyPoints > 0 &&
+                                                loyaltyPoints < 300
+                                            "
+                                            class="mt-2 rounded-md bg-amber-100/50 p-2"
+                                        >
+                                            <p class="text-xs text-amber-700">
+                                                💡 You need
+                                                {{ 300 - loyaltyPoints }} more
+                                                points to unlock your first
+                                                discount! Complete this order to
+                                                earn {{ earnedPoints }} points.
+                                            </p>
+                                        </div>
+
+                                        <!-- Show info when user has 0 points -->
+                                        <div
+                                            v-if="loyaltyPoints === 0"
+                                            class="mt-2 rounded-md bg-amber-100/50 p-2"
+                                        >
+                                            <p class="text-xs text-amber-700">
+                                                💡 Start earning points with
+                                                every order! You'll earn
+                                                {{ earnedPoints }} points from
+                                                this order.
+                                            </p>
+                                        </div>
+
+                                        <div
+                                            v-if="selectedPointsOption"
+                                            class="mt-3 flex items-center justify-between rounded-md bg-amber-100 p-3"
+                                        >
+                                            <div
+                                                class="flex items-center gap-2"
+                                            >
+                                                <Gift
+                                                    class="h-4 w-4 text-amber-600"
+                                                />
+                                                <span
+                                                    class="text-sm text-amber-800"
+                                                >
+                                                    €{{ discountAmount }}
+                                                    discount applied
+                                                </span>
+                                            </div>
+                                            <button
+                                                @click="removeDiscount"
+                                                class="text-xs text-amber-600 underline hover:text-amber-800"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Order Items Summary -->
                         <div class="rounded-lg border bg-white p-6">
                             <h2
@@ -831,7 +1037,7 @@ onMounted(() => {
                                         <div
                                             class="ml-4 font-medium whitespace-nowrap"
                                         >
-                                            €{{ formatPrice(item.total_price) }}
+                                            €{{ formatPrice(item.total) }}
                                         </div>
                                     </div>
                                 </div>
@@ -841,15 +1047,14 @@ onMounted(() => {
                                 <div
                                     class="flex justify-between text-sm text-gray-600"
                                 >
-                                    <span>Subtotal</span>
-                                    <span>€{{ formatPrice(subtotal) }}</span>
-                                </div>
-                                <div
-                                    v-if="selectedOrderType?.value === 3"
-                                    class="flex justify-between text-sm text-gray-600"
-                                >
-                                    <span>Delivery Fee</span>
-                                    <span>€{{ formatPrice(deliveryFee) }}</span>
+                                    <span>Food</span>
+                                    <span
+                                        >€{{
+                                            formatPrice(
+                                                finalFoodInclVat - vatFood,
+                                            )
+                                        }}</span
+                                    >
                                 </div>
                                 <div
                                     class="flex justify-between text-sm text-gray-600"
@@ -860,8 +1065,52 @@ onMounted(() => {
                                 <div
                                     class="flex justify-between text-sm text-gray-600"
                                 >
+                                    <span>Drink</span>
+                                    <span
+                                        >€{{
+                                            formatPrice(
+                                                finalDrinksInclVat - vatDrinks,
+                                            )
+                                        }}</span
+                                    >
+                                </div>
+                                <div
+                                    class="flex justify-between text-sm text-gray-600"
+                                >
                                     <span>VAT (21% - Drinks)</span>
                                     <span>€{{ formatPrice(vatDrinks) }}</span>
+                                </div>
+                                <div
+                                    class="flex justify-between text-sm text-gray-600"
+                                >
+                                    <span>Total VAT</span>
+                                    <span>€{{ formatPrice(totalVat) }}</span>
+                                </div>
+                                <div
+                                    class="flex justify-between text-sm text-gray-600"
+                                >
+                                    <span>Subtotal</span>
+                                    <span>€{{ formatPrice(subtotal) }}</span>
+                                </div>
+                                <div
+                                    v-if="selectedOrderType?.value === 3"
+                                    class="flex justify-between border-t border-red-100 pt-2 text-sm text-red-600"
+                                >
+                                    <span>Delivery Fee</span>
+                                    <span
+                                        >+€{{ formatPrice(deliveryFee) }}</span
+                                    >
+                                </div>
+                                <div
+                                    v-if="discountAmount > 0"
+                                    class="flex justify-between border-t border-green-100 pt-2 text-sm text-green-600"
+                                >
+                                    <span>Discount (Loyalty Points)</span>
+                                    <span
+                                        >-€{{
+                                            formatPrice(discountAmount)
+                                        }}</span
+                                    >
                                 </div>
                                 <div
                                     class="flex justify-between pt-2 text-base font-semibold"
@@ -869,6 +1118,16 @@ onMounted(() => {
                                     <span>Total</span>
                                     <span class="text-red-500"
                                         >€{{ formatPrice(cartTotal) }}</span
+                                    >
+                                </div>
+
+                                <!-- Points to earn -->
+                                <div
+                                    class="mt-2 flex justify-between border-t border-gray-100 pt-2 text-xs text-amber-600"
+                                >
+                                    <span>🌟 Points to earn on this order</span>
+                                    <span class="font-medium"
+                                        >{{ earnedPoints }} points</span
                                     >
                                 </div>
                             </div>

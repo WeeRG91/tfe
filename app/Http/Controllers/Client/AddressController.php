@@ -2,30 +2,25 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Actions\Client\Address\Commands\CreateAddress;
+use App\Actions\Client\Address\Commands\DeleteAddress;
+use App\Actions\Client\Address\Commands\UpdateAddress;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Address\CreateAddressRequest;
 use App\Http\Requests\Client\Address\UpdateAddressRequest;
 use App\Http\Resources\Client\Address\AddressResource;
-use App\Models\Address;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class AddressController extends Controller
 {
-    public function store(CreateAddressRequest $request)
+    /**
+     * @param CreateAddressRequest $request
+     * @param CreateAddress $createAddress
+     * @return JsonResponse
+     */
+    public function store(CreateAddressRequest $request, CreateAddress $createAddress): JsonResponse
     {
-        $validated = $request->validated();
-
-        $user = auth()->user();
-
-        if (!empty($validated['is_default'])) {
-            Address::query()
-                ->where('user_id', $user->id)
-                ->update(['is_default' => false]);
-        }
-
-        $address = $user->addresses()->create([
-            ...$validated,
-        ]);
+        $address = $createAddress->execute($request->validated());
 
         return response()->json([
             'message' => 'Address saved',
@@ -33,69 +28,37 @@ class AddressController extends Controller
         ]);
     }
 
-    public function update(UpdateAddressRequest $request, int $addressId)
+    /**
+     * @param UpdateAddressRequest $request
+     * @param int $addressId
+     * @param UpdateAddress $updateAddress
+     * @return JsonResponse
+     */
+    public function update(UpdateAddressRequest $request, int $addressId, UpdateAddress $updateAddress): JsonResponse
     {
-        $existingAddress = Address::query()->findOrFail($addressId);
-        $user = auth()->user();
-
-        if (empty($existingAddress)) {
-            return response()->json([
-                'message' => 'Address not found',
-                'address' => null,
-            ]);
-        }
-
-        if ($existingAddress->user_id !== $user->id) {
-            return response()->json([
-                'message' => 'You cannot edit this address',
-                'address' => null,
-            ]);
-        }
-
-        $validated = $request->validated();
-
-        if (!empty($validated['is_default'])) {
-            Address::query()
-                ->where('user_id', $user->id)
-                ->where('id', '!=', $addressId)
-                ->update(['is_default' => false]);
-        }
-
-        $existingAddress->update($validated);
+        $result = $updateAddress->execute(
+            $addressId,
+            $request->validated()
+        );
 
         return response()->json([
-            'message' => 'Address updated',
-            'address' => new AddressResource($existingAddress),
+            'message' => $result['message'],
+            'address' => $result['address'],
         ]);
     }
 
-    public function destroy(int $addressId)
+    /**
+     * @param int $addressId
+     * @param DeleteAddress $deleteAddress
+     * @return JsonResponse
+     */
+    public function destroy(int $addressId, DeleteAddress $deleteAddress): JsonResponse
     {
-        $user = auth()->user();
-
-        $address = Address::query()->findOrFail($addressId);
-
-        if ($address->user_id !== $user->id) {
-            return response()->json([
-                'message' => 'You cannot delete this address',
-            ], 403);
-        }
-
-        $wasDefault = $address->is_default;
-        $address->delete();
-        $newDefaultAddress = null;
-
-        if ($wasDefault) {
-            $newDefaultAddress = Address::query()
-                ->where('user_id', $user->id)
-                ->first();
-
-            $newDefaultAddress?->update(['is_default' => true]);
-        }
+        $result = $deleteAddress->execute($addressId);
 
         return response()->json([
-            'message' => 'Address deleted',
-            'newDefaultAddressId' => $newDefaultAddress?->id,
+            'message' => $result['message'],
+            'newDefaultAddressId' => $result['address']?->id,
         ]);
     }
 }

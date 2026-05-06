@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Client\Drink;
+namespace App\Actions\Client\Drink\Queries;
 
 use App\Actions\BaseCursorPagination;
 use App\Http\Resources\Client\Drink\DrinkResource;

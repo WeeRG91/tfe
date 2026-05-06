@@ -60,6 +60,7 @@ class PlaceOrderRequest extends FormRequest
             ],
             'payment_method' => ['required', Rule::in(PaymentMethodEnum::values())],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'used_points' => ['nullable', 'integer', 'min:0'],
         ];
     }
 }

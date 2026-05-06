@@ -4,7 +4,6 @@ namespace App\Actions\Admin\Meat\Queries;
 
 use App\Http\Resources\Admin\Meat\MeatEditResource;
 use App\Models\Meat;
-use Illuminate\Support\Facades\Storage;
 
 class GetMeatForEdit
 {

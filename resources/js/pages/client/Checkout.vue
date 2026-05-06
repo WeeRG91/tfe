@@ -26,36 +26,20 @@ const drinkItems = computed(() =>
 
 const subtotalDishes = computed(() => {
     return dishItems.value.reduce(
-        (sum, item) => sum + (item.total_price || 0),
+        (sum, item) => sum + (item.total || 0),
         0,
     );
 });
 
 const subtotalDrinks = computed(() => {
     return drinkItems.value.reduce(
-        (sum, item) => sum + (item.total_price || 0),
+        (sum, item) => sum + (item.total || 0),
         0,
     );
 });
 
-const vatFood = computed(() => {
-    return subtotalDishes.value * 0.12;
-});
-
-const vatDrinks = computed(() => {
-    return subtotalDrinks.value * 0.21;
-});
-
-const totalVat = computed(() => {
-    return vatFood.value + vatDrinks.value;
-});
-
 const subtotal = computed(() => {
     return subtotalDishes.value + subtotalDrinks.value;
-});
-
-const cartTotal = computed(() => {
-    return subtotal.value + totalVat.value;
 });
 
 const handleUpdateNotes = async (cartItemId: number, notes: string) => {
@@ -205,29 +189,10 @@ const handleRemoveItem = async (cartItemId: number) => {
                             Order Summary
                         </h2>
 
-                        <div class="space-y-2 border-b pb-3 text-sm">
-                            <div class="flex justify-between text-gray-600">
-                                <span>Subtotal</span>
-                                <span>€{{ formatPrice(subtotal) }}</span>
-                            </div>
-                            <div class="flex justify-between text-gray-600">
-                                <span>VAT (12% - Food)</span>
-                                <span>€{{ formatPrice(vatFood) }}</span>
-                            </div>
-                            <div class="flex justify-between text-gray-600">
-                                <span>VAT (21% - Drinks)</span>
-                                <span>€{{ formatPrice(vatDrinks) }}</span>
-                            </div>
-                            <div class="flex justify-between text-gray-600">
-                                <span>Total VAT</span>
-                                <span>€{{ formatPrice(totalVat) }}</span>
-                            </div>
-                        </div>
-
                         <div class="mt-3 flex justify-between font-semibold">
                             <span>Total (incl. VAT)</span>
                             <span class="text-red-500"
-                                >€{{ formatPrice(cartTotal) }}</span
+                                >€{{ formatPrice(subtotal) }}</span
                             >
                         </div>
 

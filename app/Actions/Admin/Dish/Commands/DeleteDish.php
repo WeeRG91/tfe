@@ -3,8 +3,6 @@
 namespace App\Actions\Admin\Dish\Commands;
 
 use App\Models\Dish;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class DeleteDish
 {

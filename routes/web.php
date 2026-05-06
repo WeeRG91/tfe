@@ -35,7 +35,7 @@ Route::controller(MenuController::class)->prefix('menu')->name('menu.')->group(f
 Route::controller(CartController::class)->prefix('cart')->name('cart.')->group(function () {
     Route::get('/checkout', 'checkout')->name('checkout');
     Route::get('/place-order', 'placeOrder')->name('place-order');
-    Route::get('/get-cart', 'cart')->name('get-cart');
+    Route::get('/get-cart', 'getCart')->name('get-cart');
     Route::post('/items/add-dish', 'addDish')->name('add-dish');
     Route::post('/items/add-drink', 'addDrink')->name('add-drink');
     Route::patch('/items/{cartItemId}/notes', 'updateNotes')->name('update-notes');

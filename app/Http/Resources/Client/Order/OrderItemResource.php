@@ -51,7 +51,7 @@ class OrderItemResource extends JsonResource
                 ]) : [],
             'quantity' => $this->quantity,
             'unit_price' => $this->unit_price,
-            'total_price' => $this->total_price,
+            'total' => $this->total,
             'notes' => $this->notes,
         ];
     }

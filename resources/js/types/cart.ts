@@ -2,7 +2,7 @@ import { CategoryOptionType } from '@/types/category';
 
 export type CartType = {
     id: number;
-    user: { id: number; name: string; email: string };
+    user: { id: number; name: string; email: string; loyalty_points: number };
     guest_token: string;
     items: CartItemType[];
 };
@@ -17,7 +17,7 @@ export type CartItemType = {
     removed_ingredients: RemovedIngredientType[];
     quantity: number;
     unit_price: number;
-    total_price: number;
+    total: number;
     notes: string;
 };
 

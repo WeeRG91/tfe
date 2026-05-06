@@ -4,7 +4,6 @@ namespace App\Actions\Admin\Allergen\Queries;
 
 use App\Http\Resources\Admin\Allergen\AllergenEditResource;
 use App\Models\Allergen;
-use Illuminate\Support\Facades\Storage;
 
 class GetAllergenForEdit
 {

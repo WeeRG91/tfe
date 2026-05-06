@@ -6,6 +6,9 @@ use App\Enums\DrinkCategoryEnum;
 
 class GetDrinkFormData
 {
+    /**
+     * @return array
+     */
     public function execute(): array
     {
         return [

@@ -439,7 +439,7 @@ onMounted(() => {
                                         <div
                                             class="ml-4 font-medium whitespace-nowrap"
                                         >
-                                            €{{ formatPrice(item.total_price) }}
+                                            €{{ formatPrice(item.total) }}
                                         </div>
                                     </div>
                                 </div>
@@ -482,7 +482,7 @@ onMounted(() => {
                                     <span>Subtotal</span>
                                     <span
                                         >€{{
-                                            formatPrice(paidOrder.total_price)
+                                            formatPrice(paidOrder.total)
                                         }}</span
                                     >
                                 </div>
@@ -507,7 +507,7 @@ onMounted(() => {
                                 <span>Total Paid</span>
                                 <span class="text-green-600"
                                     >€{{
-                                        formatPrice(paidOrder.total_price)
+                                        formatPrice(paidOrder.total)
                                     }}</span
                                 >
                             </div>

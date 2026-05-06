@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Actions\Client\Dish\GetDish;
-use App\Actions\Client\Dish\GetDishes;
-use App\Actions\Client\Drink\GetDrinks;
+use App\Actions\Client\Dish\Queries\GetDish;
+use App\Actions\Client\Dish\Queries\GetDishes;
+use App\Actions\Client\Drink\Queries\GetDrinks;
 use App\Enums\DishCategoryEnum;
 use App\Enums\DrinkCategoryEnum;
 use App\Http\Controllers\Controller;
@@ -12,14 +12,14 @@ use App\Models\Dish;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 
 class MenuController extends Controller
 {
     /**
-     * @return Response
+     * @return InertiaResponse
      */
-    public function dish()
+    public function dish(): InertiaResponse
     {
         return Inertia::render('client/Menu', [
             'categories' => DishCategoryEnum::getCategories(),
@@ -31,7 +31,7 @@ class MenuController extends Controller
      * @param GetDishes $query
      * @return JsonResponse
      */
-    public function getDishes(Request $request, GetDishes $query)
+    public function getDishes(Request $request, GetDishes $query): JsonResponse
     {
         $dishes = $query->execute($request);
 
@@ -41,9 +41,9 @@ class MenuController extends Controller
     /**
      * @param Dish $dish
      * @param GetDish $query
-     * @return Response
+     * @return InertiaResponse
      */
-    public function showDish(Dish $dish, GetDish $query)
+    public function showDish(Dish $dish, GetDish $query): InertiaResponse
     {
         return Inertia::render('client/DishDetail', [
             'dish' => $query->execute($dish),
@@ -51,9 +51,9 @@ class MenuController extends Controller
     }
 
     /**
-     * @return Response
+     * @return InertiaResponse
      */
-    public function drink()
+    public function drink(): InertiaResponse
     {
         return Inertia::render('client/Drinks', [
             'categories' => DrinkCategoryEnum::getCategories(),
@@ -65,7 +65,7 @@ class MenuController extends Controller
      * @param GetDrinks $query
      * @return JsonResponse
      */
-    public function getDrinks(Request $request, GetDrinks $query)
+    public function getDrinks(Request $request, GetDrinks $query): JsonResponse
     {
         $drinks = $query->execute($request);
 

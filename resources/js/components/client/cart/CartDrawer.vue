@@ -34,36 +34,20 @@ const drinkItems = computed(() =>
 
 const subtotalDishes = computed(() => {
     return dishItems.value.reduce(
-        (sum, item) => sum + (item.total_price || 0),
+        (sum, item) => sum + (item.total || 0),
         0,
     );
 });
 
 const subtotalDrinks = computed(() => {
     return drinkItems.value.reduce(
-        (sum, item) => sum + (item.total_price || 0),
+        (sum, item) => sum + (item.total || 0),
         0,
     );
 });
 
-const vatFood = computed(() => {
-    return subtotalDishes.value * 0.12;
-});
-
-const vatDrinks = computed(() => {
-    return subtotalDrinks.value * 0.21;
-});
-
 const subtotal = computed(() => {
     return subtotalDishes.value + subtotalDrinks.value;
-});
-
-const totalVat = computed(() => {
-    return vatFood.value + vatDrinks.value;
-});
-
-const cartTotal = computed(() => {
-    return subtotal.value + totalVat.value;
 });
 
 const removeItemFromCart = async (cartItemId: number) => {
@@ -390,7 +374,7 @@ watch(
                                                     class="text-sm font-semibold text-gray-800"
                                                     >€{{
                                                         formatPrice(
-                                                            item.total_price,
+                                                            item.total,
                                                         )
                                                     }}</span
                                                 >
@@ -527,7 +511,7 @@ watch(
                                                 <span
                                                     class="text-sm font-semibold text-gray-800"
                                                     >€{{
-                                                        item.total_price
+                                                        item.total
                                                     }}</span
                                                 >
                                             </div>
@@ -542,28 +526,12 @@ watch(
 
             <div class="border-t border-gray-200 bg-white/95 backdrop-blur-sm">
                 <div class="space-y-2 p-4">
-                    <div class="flex justify-between text-sm text-gray-600">
-                        <span>Subtotal</span>
-                        <span>€{{ formatPrice(subtotal) }}</span>
-                    </div>
-                    <div class="flex justify-between text-sm text-gray-600">
-                        <span>VAT (12% - Food)</span>
-                        <span>€{{ formatPrice(vatFood) }}</span>
-                    </div>
-                    <div class="flex justify-between text-sm text-gray-600">
-                        <span>VAT (21% - Drinks)</span>
-                        <span>€{{ formatPrice(vatDrinks) }}</span>
-                    </div>
-                    <div class="flex justify-between text-sm text-gray-600">
-                        <span>Total VAT</span>
-                        <span>€{{ formatPrice(totalVat) }}</span>
-                    </div>
                     <div
-                        class="flex justify-between border-t border-gray-100 pt-3 text-base font-bold text-gray-800"
+                        class="flex justify-between p-3 text-base font-bold text-gray-800"
                     >
                         <span>Total (incl. VAT)</span>
                         <span class="text-red-500"
-                            >€{{ formatPrice(cartTotal) }}</span
+                            >€{{ formatPrice(subtotal) }}</span
                         >
                     </div>
 

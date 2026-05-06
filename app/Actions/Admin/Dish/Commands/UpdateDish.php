@@ -17,6 +17,7 @@ readonly class UpdateDish
      * @param Dish $dish
      * @param array $data
      * @param array $files
+     * @param array $meatIds
      * @param array $ingredientIds
      * @return Dish
      * @throws Throwable

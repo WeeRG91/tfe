@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamp('paid_at')->nullable()->after('confirmed_at');
             $table->timestamp('delivered_at')->nullable()->after('paid_at');
             $table->timestamp('completed_at')->nullable()->after('delivered_at');
-            $table->timestamp('cancelled_at')->nullable()->after('cancelled_at');
+            $table->timestamp('cancelled_at')->nullable()->after('completed_at');
             $table->text('notes')->nullable()->after('cancelled_at');
         });
     }
