@@ -402,10 +402,10 @@ watch(
                                 <span
                                     class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                                 ></span>
-                                {{ address ? 'Updating...' : 'Saving...' }}
+                                {{addressToEdit ? 'Updating...' : 'Saving...' }}
                             </span>
                             <span v-else>
-                                {{ address ? 'Update' : 'Save' }}
+                                {{ addressToEdit ? 'Update' : 'Save' }}
                             </span>
                         </button>
                     </div>

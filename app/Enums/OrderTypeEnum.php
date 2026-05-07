@@ -13,7 +13,7 @@ enum OrderTypeEnum: int
     public function label(): string
     {
         return match ($this) {
-            self::DINE_IN => 'Dine In',
+            self::DINE_IN => 'Dine-in',
             self::TAKEAWAY => 'Takeaway',
             self::DELIVERY => 'Delivery',
         };

@@ -128,6 +128,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(OrderController::class)->prefix('orders')->name('order.')->group(function () {
         Route::get('/', 'getOrders')->name('get-orders');
         Route::get('/{orderId}', 'getOrder')->name('get-order');
+        Route::get('/{orderId}/details', 'orderDetails')->name('order-details');
         Route::post('/place-order', 'placeOrder')->name('place-order');
     });
 

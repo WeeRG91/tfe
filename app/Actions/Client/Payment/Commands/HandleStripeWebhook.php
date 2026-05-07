@@ -6,6 +6,7 @@ use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Models\LoyaltyPointTransaction;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Webhook;
@@ -55,6 +56,7 @@ class HandleStripeWebhook
     private function handleSuccess($paymentIntent): void
     {
         $order = Order::query()->findOrFail($paymentIntent->metadata->order_id);
+        $user = User::query()->findOrFail($paymentIntent->metadata->user_id);
 
         $order->update([
             'payment_status' => PaymentStatusEnum::PAID,
@@ -66,11 +68,15 @@ class HandleStripeWebhook
         $earnedPoints = floor($order->total * 3);
 
         LoyaltyPointTransaction::query()->create([
-            'user_id' => auth()->user()->id,
+            'user_id' => $user->id,
             'order_id' => $order->id,
             'points' => $earnedPoints,
             'type' => 'earned',
             'description' => 'Points earned from order #' . $order->order_number,
+        ]);
+
+        User::query()->update([
+            'loyalty_points' => $user->loyalty_points + $earnedPoints,
         ]);
     }
 

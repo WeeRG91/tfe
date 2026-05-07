@@ -44,5 +44,22 @@ export const useOrderStore = defineStore('order', {
                 this.isLoading = false;
             }
         },
+
+        async getOrder(orderId: number) {
+            this.isLoading = true;
+
+            try {
+                const { data } = await axios.get(`/orders/${orderId}`);
+
+                this.currentOrder = data.order as OrderType;
+
+                return data;
+            } catch (error) {
+                console.error('Failed to fetch order:', error);
+                throw error;
+            } finally {
+                this.isLoading = false;
+            }
+        }
     },
 });

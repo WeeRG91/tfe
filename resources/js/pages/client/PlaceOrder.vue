@@ -3,6 +3,7 @@ import AddAddressModal from '@/components/client/address/AddAddressModal.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { formatPrice } from '@/lib/utils';
 import address from '@/routes/address';
+import order from '@/routes/order';
 import paymentOrder from '@/routes/payment-order';
 import { useCartStore } from '@/stores/cart';
 import { useOrderStore } from '@/stores/order';
@@ -12,7 +13,6 @@ import { PaymentMethodType } from '@/types/payment';
 import { Head, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import {
-    Calendar,
     Check,
     CreditCard,
     Edit,
@@ -28,6 +28,10 @@ import {
     Trash,
     Truck,
     User,
+    NotebookPen,
+    Soup,
+    CalendarDays,
+    HandCoins
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
@@ -60,7 +64,6 @@ const deliveryFee = ref<number>(2);
 const selectedDiscountType = ref<'points' | null>(null);
 const selectedPointsOption = ref<number>(0);
 
-// Points discount options
 const pointsOptions = [
     { points: 300, discount: 5, label: '300 points → €5 off' },
     { points: 550, discount: 10, label: '550 points → €10 off' },
@@ -297,12 +300,12 @@ const placeOrder = async () => {
 
         toast.success(response.message);
 
-        const order = response.order;
+        const placedOrder = response.order;
 
         if (paymentMethod.value === 1) {
-            //go to recap order page
+            router.visit(order.orderDetails(placedOrder.id).url);
         } else {
-            router.visit(paymentOrder.payment(order.id).url);
+            router.visit(paymentOrder.payment(placedOrder.id).url);
         }
     } catch (error) {
         console.log(error);
@@ -394,7 +397,7 @@ onMounted(() => {
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <Store class="h-5 w-5 text-red-500" />
+                                <Store class="h-5 w-5" />
                                 Order Type
                             </h2>
 
@@ -436,7 +439,7 @@ onMounted(() => {
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <Table class="h-5 w-5 text-red-500" />
+                                <Table class="h-5 w-5" />
                                 Table Details
                             </h2>
 
@@ -466,7 +469,7 @@ onMounted(() => {
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <Calendar class="h-5 w-5 text-red-500" />
+                                <CalendarDays class="h-5 w-5" />
                                 Pickup Information
                             </h2>
 
@@ -499,10 +502,9 @@ onMounted(() => {
                                         Pickup Phone *
                                     </label>
                                     <div class="relative">
-                                        <span
-                                            class="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400"
-                                            >📞</span
-                                        >
+                                        <Phone
+                                            class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                        />
                                         <input
                                             v-model="pickupPhone"
                                             type="tel"
@@ -553,7 +555,7 @@ onMounted(() => {
                                 <h2
                                     class="flex items-center gap-2 text-lg font-semibold uppercase"
                                 >
-                                    <MapPin class="h-5 w-5 text-red-500" />
+                                    <MapPin class="h-5 w-5" />
                                     Delivery Address
                                 </h2>
                                 <button
@@ -755,7 +757,7 @@ onMounted(() => {
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <CreditCard class="h-5 w-5 text-red-500" />
+                                <HandCoins class="h-5 w-5" />
                                 Payment Method
                             </h2>
 
@@ -795,7 +797,7 @@ onMounted(() => {
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <span class="text-xl">📝</span>
+                                <NotebookPen class="h-5 w-5" />
                                 Order Notes (Optional)
                             </h2>
 
@@ -967,7 +969,7 @@ onMounted(() => {
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <CreditCard class="h-5 w-5 text-red-500" />
+                                <Soup class="h-5 w-5" />
                                 Order Summary
                             </h2>
 
@@ -1045,6 +1047,7 @@ onMounted(() => {
 
                             <div class="mt-3 space-y-1 border-t pt-3">
                                 <div
+                                    v-if="finalFoodInclVat"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
                                     <span>Food</span>
@@ -1057,12 +1060,7 @@ onMounted(() => {
                                     >
                                 </div>
                                 <div
-                                    class="flex justify-between text-sm text-gray-600"
-                                >
-                                    <span>VAT (12% - Food)</span>
-                                    <span>€{{ formatPrice(vatFood) }}</span>
-                                </div>
-                                <div
+                                    v-if="finalDrinksInclVat"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
                                     <span>Drink</span>
@@ -1075,6 +1073,14 @@ onMounted(() => {
                                     >
                                 </div>
                                 <div
+                                    v-if="vatFood"
+                                    class="flex justify-between text-sm text-gray-600"
+                                >
+                                    <span>VAT (12% - Food)</span>
+                                    <span>€{{ formatPrice(vatFood) }}</span>
+                                </div>
+                                <div
+                                    v-if="vatDrinks"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
                                     <span>VAT (21% - Drinks)</span>

@@ -8,10 +8,21 @@ use App\Http\Requests\Client\Order\PlaceOrderRequest;
 use App\Http\Resources\Client\Order\OrderResource;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
+use Inertia\Inertia;
 use Throwable;
 
 class OrderController extends Controller
 {
+    public function orderDetails(int $orderId)
+    {
+        $order = Order::query()->findOrFail($orderId);
+        $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
+
+        return Inertia::render('client/OrderDetails', [
+            'order' => new OrderResource($order),
+        ]);
+    }
+
     /**
      * @return JsonResponse
      */

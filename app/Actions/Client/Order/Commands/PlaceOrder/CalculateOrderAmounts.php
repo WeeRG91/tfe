@@ -25,7 +25,7 @@ class CalculateOrderAmounts
             550 => 10,
         ];
 
-        $discountTotal = $rewards[$usedPoints] ?? null;
+        $discountTotal = $rewards[$usedPoints] ?? 0;
 
         $deliveryFee = $type === 3 ? 2 : 0;
 

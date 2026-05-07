@@ -17,7 +17,9 @@ class CreatePaymentIntent
      */
     public function execute(Order $order): array
     {
-        if ($order->user_id !== auth()->user()->id) {
+        $user = auth()->user();
+
+        if ($order->user_id !== $user->id) {
             return [
                 'message' => 'Unauthorized',
                 'client_secret' => null,
@@ -40,6 +42,7 @@ class CreatePaymentIntent
                 'payment_method_types' => ['card', 'bancontact'],
                 'metadata' => [
                     'order_id' => $order->id,
+                    'user_id' => $user->id,
                     'order_number' => $order->order_number,
                 ],
             ]);

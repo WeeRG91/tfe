@@ -1,73 +1,186 @@
 <script setup lang="ts">
 import ClientLayout from '@/layouts/ClientLayout.vue';
-import menu from '@/routes/menu';
-import order from '@/routes/order';
-import { OrderType } from '@/types/order';
 import { Head } from '@inertiajs/vue3';
-import axios from 'axios';
+import { OrderType } from '@/types/order';
 import {
-    Check,
     Clock,
-    CreditCard,
-    HandPlatter,
-    Info,
+    Check,
+    User,
     MapPin,
-    NotebookText,
-    Printer,
+    CreditCard,
     ShoppingBag,
     Smartphone,
-    Soup,
-    User,
+    Printer,
+    FileText,
+    CheckCircle,
+    Truck,
     Utensils,
+    Soup,
+    Coins
 } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
+import { formatPrice } from '@/lib/utils';
 
 const props = defineProps<{
-    orderToPay: OrderType;
+    order: OrderType;
 }>();
 
-const paidOrder = ref<OrderType>(props.orderToPay);
-const isPaid = computed(() => paidOrder.value?.payment_status.label === 'Paid');
+type OrderDateKey =
+    | 'created_at'
+    | 'confirmed_at'
+    | 'delivered_at'
+    | 'completed_at';
 
-// Order steps based on OrderStatusEnum
-const orderSteps = [
-    { value: 1, label: 'Order Placed', icon: 'Clock' },
-    { value: 2, label: 'Confirmed', icon: 'Check' },
-    { value: 3, label: 'Preparing', icon: 'Package' },
-    { value: 4, label: 'Ready', icon: 'Check' },
-    { value: 5, label: 'Out for Delivery', icon: 'Truck' },
-    { value: 6, label: 'Completed', icon: 'CheckCircle' },
-];
+type Step = {
+    value: number;
+    label: string;
+    description: string;
+    dateKey?: OrderDateKey;
+};
 
+const orderSteps = computed<Step[]>(() => {
+    const isDelivery = props.order.type?.label === 'Delivery';
+
+    const steps: Step[] = [
+        {
+            value: 1,
+            label: 'Order Placed',
+            description: 'Your order has been received',
+            dateKey: 'created_at',
+        },
+        {
+            value: 2,
+            label: 'Confirmed',
+            description: 'Restaurant has confirmed your order',
+            dateKey: 'confirmed_at',
+        },
+    ];
+
+    if (isDelivery) {
+        steps.push(
+            {
+                value: 3,
+                label: 'Preparing',
+                description: 'Your order is being prepared',
+            },
+            {
+                value: 4,
+                label: 'Ready',
+                description: 'Your order is ready for pickup',
+            },
+            {
+                value: 5,
+                label: 'Out for Delivery',
+                description: 'Your order is on the way',
+                dateKey: 'delivered_at',
+            },
+            {
+                value: 6,
+                label: 'Delivered',
+                description: 'Your order has been delivered',
+                dateKey: 'delivered_at',
+            },
+        );
+    } else {
+        steps.push(
+            {
+                value: 3,
+                label: 'Preparing',
+                description: 'Your order is being prepared',
+            },
+            {
+                value: 4,
+                label: 'Ready',
+                description: 'Your order is ready for pickup',
+            },
+            {
+                value: 6,
+                label: 'Completed',
+                description: 'Order completed',
+                dateKey: 'completed_at',
+            },
+        );
+    }
+
+    return steps;
+});
+
+// Check if a step is completed
 const isStepCompleted = (stepValue: number) => {
-    return paidOrder.value?.status?.value > stepValue;
+    const statusOrder = orderSteps.value.map((s) => s.value);
+    const currentStatusIndex = statusOrder.indexOf(props.order.status?.value);
+    const stepIndex = statusOrder.indexOf(stepValue);
+    return stepIndex < currentStatusIndex;
 };
 
+// Check if a step is the current step
 const isCurrentStep = (stepValue: number) => {
-    return paidOrder.value?.status?.value === stepValue;
+    return props.order.status?.value === stepValue;
 };
 
-const getOrderTypeIcon = (typeLabel: string) => {
-    const label = typeLabel?.toLowerCase();
-    if (label === 'delivery') return MapPin;
-    if (label === 'takeaway') return HandPlatter;
-    return Utensils;
+// Get the date for a specific step
+const getStepDate = (stepValue: number) => {
+    const step = orderSteps.value.find((s) => s.value === stepValue);
+
+    if (step?.dateKey && props.order[step.dateKey]) {
+        return props.order[step.dateKey];
+    }
+
+    return null;
 };
 
-const formatPrice = (price: number) => {
-    return Number(price || 0).toFixed(2);
+const formatDate = (date: string) => {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
 };
 
-const formatDateTime = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
+const formatTime = (date: string) => {
+    if (!date) return '';
+    return new Date(date).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+};
+
+const formatDateTime = (date: string) => {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
     });
+};
+
+const icons = {
+    'Dine-in': Utensils,
+    Takeaway: ShoppingBag,
+    Delivery: Truck,
+} as const;
+
+const getOrderTypeIcon = (type: string) => {
+    return icons[type as keyof typeof icons] ?? ShoppingBag;
+};
+
+const classes = {
+    Pending: 'bg-yellow-100 text-yellow-800',
+    Confirmed: 'bg-blue-100 text-blue-800',
+    Preparing: 'bg-purple-100 text-purple-800',
+    Ready: 'bg-indigo-100 text-indigo-800',
+    Delivering: 'bg-orange-100 text-orange-800',
+    Completed: 'bg-green-100 text-green-800',
+    Cancelled: 'bg-red-100 text-red-800',
+} as const;
+
+const getStatusBadgeClass = (status: string) => {
+    return (
+        classes[status as keyof typeof classes] || 'bg-gray-100 text-gray-800'
+    );
 };
 
 const printOrder = () => {
@@ -109,80 +222,40 @@ const printOrder = () => {
     win.print();
     win.close();
 };
-
-const checkPayment = async () => {
-    if (isPaid.value) return;
-
-    const { data } = await axios.get(order.getOrder(props.orderToPay.id).url);
-
-    if (data.order.payment_status.label === 'Paid') {
-        paidOrder.value = data.order as OrderType;
-    } else {
-        setTimeout(checkPayment, 2000);
-    }
-};
-
-onMounted(() => {
-    checkPayment();
-});
 </script>
 
 <template>
-    <Head title="Payment Successful" />
-
+    <Head title="OrderDetails" />
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
-            <!-- Success Header -->
+            <!-- Order Header -->
             <div class="mb-8">
-                <h1
-                    v-if="!isPaid"
-                    class="text-3xl font-semibold uppercase md:text-4xl"
-                >
-                    ⏳ Waiting for payment confirmation...
-                </h1>
-                <h1
-                    v-else
-                    class="text-3xl font-semibold text-green-600 uppercase md:text-4xl"
-                >
-                    ✅ Payment successful!
-                </h1>
-                <p class="mt-2 text-gray-600">
-                    Thank you for your order. Your payment has been confirmed.
-                </p>
-                <p class="mt-1 text-sm text-gray-500">
-                    A confirmation email has been sent to your registered email
-                    address.
-                </p>
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h1
+                            class="text-3xl font-semibold uppercase md:text-4xl"
+                        >
+                            Order #{{ order.order_number }}
+                        </h1>
+                        <p class="mt-2 text-gray-600">
+                            Placed on {{ formatDate(order.created_at) }}
+                        </p>
+                    </div>
+                    <div
+                        :class="[
+                            'rounded-full px-4 py-2 text-sm font-semibold',
+                            getStatusBadgeClass(order.status.label),
+                        ]"
+                    >
+                        {{ order.status.label }}
+                    </div>
+                </div>
             </div>
 
             <div class="flex flex-col gap-6 lg:flex-row">
                 <!-- Order Details Section -->
                 <div class="flex-1">
                     <div class="space-y-6">
-                        <!-- Order Header Card -->
-                        <div class="rounded-lg border bg-white p-6">
-                            <div
-                                class="flex flex-wrap items-center justify-between gap-3"
-                            >
-                                <div>
-                                    <p class="text-sm text-gray-500">
-                                        Order Number
-                                    </p>
-                                    <p class="text-2xl font-bold text-gray-800">
-                                        #{{ paidOrder.order_number }}
-                                    </p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm text-gray-500">
-                                        Order at
-                                    </p>
-                                    <p class="font-medium text-gray-700">
-                                        {{ paidOrder.created_at }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Order Status Timeline -->
                         <div class="rounded-lg border bg-white p-6">
                             <h2
@@ -195,7 +268,6 @@ onMounted(() => {
                             <!-- Mobile: Vertical Timeline -->
                             <div class="md:hidden">
                                 <div class="relative">
-                                    <!-- Vertical connecting line -->
                                     <div
                                         class="absolute top-3 left-5 h-full w-0.5 bg-gray-200"
                                     ></div>
@@ -205,13 +277,12 @@ onMounted(() => {
                                         :key="step.value"
                                         class="relative mb-8 flex items-start gap-4 last:mb-0"
                                     >
-                                        <!-- Status Icon -->
                                         <div class="relative z-10">
                                             <div
                                                 :class="[
                                                     'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 shadow-sm transition-all',
                                                     isStepCompleted(step.value)
-                                                        ? 'border-green-500 bg-green-500 text-white shadow-green-200'
+                                                        ? 'border-green-300 bg-green-300 text-white shadow-green-200'
                                                         : isCurrentStep(
                                                                 step.value,
                                                             )
@@ -220,18 +291,19 @@ onMounted(() => {
                                                 ]"
                                             >
                                                 <Check
-                                                    v-if="isStepCompleted(step.value) || isCurrentStep(step.value)"
-                                                    class="h-5 w-5"
-                                                />
-                                                <component
-                                                    v-else
-                                                    :is="step.icon"
+                                                    v-if="
+                                                        isStepCompleted(
+                                                            step.value,
+                                                        ) ||
+                                                        isCurrentStep(
+                                                            step.value,
+                                                        )
+                                                    "
                                                     class="h-5 w-5"
                                                 />
                                             </div>
                                         </div>
 
-                                        <!-- Content -->
                                         <div class="flex-1">
                                             <div
                                                 class="rounded-lg bg-gray-50 p-3 transition-all"
@@ -260,7 +332,37 @@ onMounted(() => {
                                                     >
                                                         {{ step.label }}
                                                     </p>
+                                                    <p
+                                                        v-if="
+                                                            getStepDate(
+                                                                step.value,
+                                                            )
+                                                        "
+                                                        class="text-xs text-gray-400"
+                                                    >
+                                                        {{
+                                                            getStepDate(
+                                                                step.value,
+                                                            )
+                                                                ? formatTime(
+                                                                      getStepDate(
+                                                                          step.value,
+                                                                      )!,
+                                                                  )
+                                                                : ''
+                                                        }}
+                                                    </p>
                                                 </div>
+                                                <p
+                                                    v-if="
+                                                        isCurrentStep(
+                                                            step.value,
+                                                        ) && step.description
+                                                    "
+                                                    class="mt-1 text-xs text-gray-500"
+                                                >
+                                                    {{ step.description }}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -291,12 +393,14 @@ onMounted(() => {
                                                 ]"
                                             >
                                                 <Check
-                                                    v-if="isStepCompleted(step.value) || isCurrentStep(step.value)"
-                                                    class="h-5 w-5"
-                                                />
-                                                <component
-                                                    v-else
-                                                    :is="step.icon"
+                                                    v-if="
+                                                        isStepCompleted(
+                                                            step.value,
+                                                        ) ||
+                                                        isCurrentStep(
+                                                            step.value,
+                                                        )
+                                                    "
                                                     class="h-5 w-5"
                                                 />
                                             </div>
@@ -315,6 +419,22 @@ onMounted(() => {
                                                     ]"
                                                 >
                                                     {{ step.label }}
+                                                </p>
+                                                <p
+                                                    v-if="
+                                                        getStepDate(step.value)
+                                                    "
+                                                    class="mt-1 text-xs text-gray-400"
+                                                >
+                                                    {{
+                                                        getStepDate(step.value)
+                                                            ? formatTime(
+                                                                  getStepDate(
+                                                                      step.value,
+                                                                  )!,
+                                                              )
+                                                            : ''
+                                                    }}
                                                 </p>
                                             </div>
                                             <div
@@ -336,28 +456,6 @@ onMounted(() => {
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- What's next section -->
-                            <div
-                                class="mt-8 rounded-lg border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-4"
-                            >
-                                <div class="flex items-start gap-3">
-                                    <div class="rounded-full bg-blue-100 p-1">
-                                        <Info class="h-4 w-4 text-blue-600" />
-                                    </div>
-                                    <div class="text-sm text-blue-900">
-                                        <p class="font-semibold">
-                                            What's next?
-                                        </p>
-                                        <p class="mt-1 text-blue-700">
-                                            We're now processing your order.
-                                            You'll receive updates via email and
-                                            SMS. Track your order status from
-                                            your account dashboard.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Order Type & Details -->
@@ -366,7 +464,7 @@ onMounted(() => {
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
                                 <component
-                                    :is="getOrderTypeIcon(paidOrder.type.label)"
+                                    :is="getOrderTypeIcon(order.type.label)"
                                     class="h-5 w-5 text-red-500"
                                 />
                                 Order Details
@@ -380,7 +478,7 @@ onMounted(() => {
                                         <component
                                             :is="
                                                 getOrderTypeIcon(
-                                                    paidOrder.type.label,
+                                                    order.type.label,
                                                 )
                                             "
                                             class="h-5 w-5 text-red-500"
@@ -390,31 +488,31 @@ onMounted(() => {
                                         <p class="text-sm text-gray-500">
                                             Order Type
                                         </p>
-                                        <p
-                                            class="font-medium text-gray-800 capitalize"
-                                        >
-                                            {{ paidOrder.type.label }}
+                                        <p class="font-medium text-gray-800">
+                                            {{ order.type.label }}
                                         </p>
                                         <p
                                             v-if="
-                                                paidOrder.type.label ===
-                                                'Dine-in'
+                                                order.type.label ===
+                                                    'Dine-in' &&
+                                                order.table_number
                                             "
                                             class="mt-1 text-sm text-gray-600"
                                         >
-                                            Table: {{ paidOrder.table_number }}
+                                            Table: {{ order.table_number }}
                                         </p>
                                         <p
                                             v-if="
-                                                paidOrder.type.label ===
-                                                'Takeaway'
+                                                order.type.label ===
+                                                    'Takeaway' &&
+                                                order.pickup_time
                                             "
                                             class="mt-1 text-sm text-gray-600"
                                         >
                                             Pickup Time:
                                             {{
                                                 formatDateTime(
-                                                    paidOrder.pickup_time,
+                                                    order.pickup_time,
                                                 )
                                             }}
                                         </p>
@@ -423,7 +521,7 @@ onMounted(() => {
 
                                 <!-- Customer Info for Takeaway -->
                                 <div
-                                    v-if="paidOrder.type.label === 'Takeaway'"
+                                    v-if="order.type.label === 'Takeaway'"
                                     class="flex items-start gap-3"
                                 >
                                     <div
@@ -436,20 +534,23 @@ onMounted(() => {
                                             Pickup Information
                                         </p>
                                         <p class="font-medium text-gray-800">
-                                            {{ paidOrder.pickup_name || 'N/A' }}
+                                            {{ order.pickup_name || 'N/A' }}
                                         </p>
                                         <p
-                                            v-if="paidOrder.pickup_phone"
+                                            v-if="order.pickup_phone"
                                             class="text-sm text-gray-600"
                                         >
-                                            {{ paidOrder.pickup_phone }}
+                                            {{ order.pickup_phone }}
                                         </p>
                                     </div>
                                 </div>
 
                                 <!-- Delivery Address -->
                                 <div
-                                    v-if="paidOrder.type.label === 'Delivery'"
+                                    v-if="
+                                        order.type.label === 'Delivery' &&
+                                        order.delivery_address
+                                    "
                                     class="flex items-start gap-3"
                                 >
                                     <div
@@ -463,39 +564,82 @@ onMounted(() => {
                                         </p>
                                         <p class="font-medium text-gray-800">
                                             {{
-                                                paidOrder.delivery_address
-                                                    ?.first_name
+                                                order.delivery_address
+                                                    .first_name
                                             }}
                                             {{
-                                                paidOrder.delivery_address
-                                                    ?.last_name
-                                            }}
-                                        </p>
-                                        <p class="text-sm text-gray-600">
-                                            {{
-                                                paidOrder.delivery_address
-                                                    ?.phone
+                                                order.delivery_address.last_name
                                             }}
                                         </p>
                                         <p class="text-sm text-gray-600">
-                                            {{
-                                                paidOrder.delivery_address
-                                                    ?.street
-                                            }}
+                                            {{ order.delivery_address.phone }}
+                                        </p>
+                                        <p class="text-sm text-gray-600">
+                                            {{ order.delivery_address.street }}
                                         </p>
                                         <p class="text-sm text-gray-600">
                                             {{
-                                                paidOrder.delivery_address
-                                                    ?.postal_code
+                                                order.delivery_address
+                                                    .postal_code
                                             }}
+                                            {{ order.delivery_address.city }},
+                                            {{ order.delivery_address.country }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Info -->
+                                <div class="flex items-start gap-3">
+                                    <div
+                                        class="flex-shrink-0 rounded-lg bg-red-50 p-2"
+                                    >
+                                        <Coins
+                                            v-if="order.payment_method?.label === 'Cash'"
+                                            class="h-5 w-5 text-red-500"
+                                        />
+                                        <CreditCard
+                                            v-else
+                                            class="h-5 w-5 text-red-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">
+                                            Payment Method
+                                        </p>
+                                        <p class="font-medium text-gray-800">
                                             {{
-                                                paidOrder.delivery_address
-                                                    ?.city
-                                            }},
-                                            {{
-                                                paidOrder.delivery_address
-                                                    ?.country
+                                                order.payment_method?.label ||
+                                                'N/A'
                                             }}
+                                        </p>
+                                        <p
+                                            v-if="order.paid_at"
+                                            class="text-sm text-green-600"
+                                        >
+                                            Paid on
+                                            {{ formatDateTime(order.paid_at) }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Notes -->
+                                <div
+                                    v-if="order.notes"
+                                    class="flex items-start gap-3"
+                                >
+                                    <div
+                                        class="flex-shrink-0 rounded-lg bg-red-50 p-2"
+                                    >
+                                        <FileText
+                                            class="h-5 w-5 text-red-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">
+                                            Order Notes
+                                        </p>
+                                        <p class="text-sm text-gray-700">
+                                            {{ order.notes }}
                                         </p>
                                     </div>
                                 </div>
@@ -513,7 +657,7 @@ onMounted(() => {
 
                             <div class="space-y-3">
                                 <div
-                                    v-for="item in paidOrder.items"
+                                    v-for="item in order.items"
                                     :key="item.id"
                                     class="border-b border-gray-100 pb-3 last:border-0"
                                 >
@@ -558,6 +702,12 @@ onMounted(() => {
                                                         .join(', ')
                                                 }}
                                             </div>
+                                            <div
+                                                v-if="item.notes"
+                                                class="mt-1 text-xs text-gray-400"
+                                            >
+                                                Note: {{ item.notes }}
+                                            </div>
                                         </div>
                                         <div
                                             class="ml-4 font-medium whitespace-nowrap"
@@ -566,19 +716,6 @@ onMounted(() => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Notes -->
-                            <div
-                                v-if="paidOrder.notes"
-                                class="mt-4 rounded-md bg-yellow-50 p-3"
-                            >
-                                <p class="text-xs font-medium text-yellow-700">
-                                    Special Instructions
-                                </p>
-                                <p class="text-sm text-yellow-800">
-                                    {{ paidOrder.notes }}
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -600,60 +737,56 @@ onMounted(() => {
                                 class="space-y-2 border-b border-gray-100 pb-4"
                             >
                                 <div
-                                    v-if="paidOrder.final_food_inc_vat"
+                                    v-if="order.final_food_inc_vat"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
-                                    <span>Food</span>
+                                    <span>Food (inc. VAT)</span>
                                     <span
                                         >€{{
                                             formatPrice(
-                                                paidOrder.final_food_inc_vat,
+                                                order.final_food_inc_vat,
                                             )
                                         }}</span
                                     >
                                 </div>
                                 <div
-                                    v-if="paidOrder.final_drinks_inc_vat"
+                                    v-if="order.final_drinks_inc_vat"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
-                                    <span>Drinks</span>
+                                    <span>Drinks (inc. VAT)</span>
                                     <span
                                         >€{{
                                             formatPrice(
-                                                paidOrder.final_drinks_inc_vat,
+                                                order.final_drinks_inc_vat,
                                             )
                                         }}</span
                                     >
                                 </div>
                                 <div
-                                    v-if="paidOrder.vat_food_amount"
+                                    v-if="order.vat_food_amount"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
                                     <span
-                                        >VAT ({{ paidOrder.vat_food_rate }}% -
+                                        >VAT ({{ order.vat_food_rate }}% -
                                         Food)</span
                                     >
                                     <span
                                         >€{{
-                                            formatPrice(
-                                                paidOrder.vat_food_amount,
-                                            )
+                                            formatPrice(order.vat_food_amount)
                                         }}</span
                                     >
                                 </div>
                                 <div
-                                    v-if="paidOrder.vat_drinks_amount"
+                                    v-if="order.vat_drinks_amount"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
                                     <span
-                                        >VAT ({{ paidOrder.vat_drinks_rate }}% -
+                                        >VAT ({{ order.vat_drinks_rate }}% -
                                         Drinks)</span
                                     >
                                     <span
                                         >€{{
-                                            formatPrice(
-                                                paidOrder.vat_drinks_amount,
-                                            )
+                                            formatPrice(order.vat_drinks_amount)
                                         }}</span
                                     >
                                 </div>
@@ -663,7 +796,7 @@ onMounted(() => {
                                     <span>Total VAT</span>
                                     <span
                                         >€{{
-                                            formatPrice(paidOrder.vat_total)
+                                            formatPrice(order.vat_total)
                                         }}</span
                                     >
                                 </div>
@@ -673,31 +806,36 @@ onMounted(() => {
                                     <span>Subtotal</span>
                                     <span
                                         >€{{
-                                            formatPrice(paidOrder.subtotal)
+                                            formatPrice(order.subtotal)
                                         }}</span
                                     >
                                 </div>
                                 <div
-                                    v-if="paidOrder.type.label === 'Delivery'"
+                                    v-if="
+                                        order.type.label === 'Delivery' &&
+                                        order.delivery_fee
+                                    "
                                     class="flex justify-between text-sm text-red-600"
                                 >
                                     <span>Delivery Fee</span>
                                     <span
                                         >+€{{
-                                            formatPrice(paidOrder.delivery_fee)
+                                            formatPrice(order.delivery_fee)
                                         }}</span
                                     >
                                 </div>
                                 <div
-                                    v-if="paidOrder.discount_total"
+                                    v-if="order.discount_total"
                                     class="flex justify-between text-sm text-green-600"
                                 >
-                                    <span>Discount</span>
+                                    <span
+                                        >Discount ({{
+                                            order.discount_rate
+                                        }}%)</span
+                                    >
                                     <span
                                         >-€{{
-                                            formatPrice(
-                                                paidOrder.discount_total,
-                                            )
+                                            formatPrice(order.discount_total)
                                         }}</span
                                     >
                                 </div>
@@ -707,17 +845,45 @@ onMounted(() => {
                             >
                                 <span>Total Paid</span>
                                 <span class="text-green-600"
-                                    >€{{ formatPrice(paidOrder.total) }}</span
+                                    >€{{ formatPrice(order.total) }}</span
                                 >
                             </div>
 
-                            <div class="mt-4 rounded-md bg-green-50 p-3">
+                            <div
+                                v-if="order.payment_status"
+                                class="mt-4 rounded-md p-3"
+                                :class="
+                                    order.payment_status.value === 2
+                                        ? 'bg-green-50'
+                                        : 'bg-yellow-50'
+                                "
+                            >
                                 <div class="flex items-center gap-2">
-                                    <CreditCard
+                                    <CheckCircle
+                                        v-if="order.payment_status.value === 2"
                                         class="h-4 w-4 text-green-600"
                                     />
-                                    <p class="text-sm text-green-700">
-                                        Payment successful via Stripe
+                                    <CheckCircle
+                                        v-else
+                                        class="h-4 w-4 text-yellow-600"
+                                    />
+                                    <p
+                                        :class="
+                                            order.payment_status.value === 2
+                                                ? 'text-green-700'
+                                                : 'text-yellow-700'
+                                        "
+                                        class="text-sm"
+                                    >
+                                        Payment
+                                        {{
+                                            order.payment_status.label.toLowerCase()
+                                        }}
+                                        <span
+                                            v-if="order.payment_method?.label"
+                                        >
+                                            via {{ order.payment_method.label }}
+                                        </span>
                                     </p>
                                 </div>
                             </div>
@@ -742,14 +908,7 @@ onMounted(() => {
                                 </button>
 
                                 <a
-                                    :href="order.orderDetails(paidOrder.id).url"
-                                    class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
-                                >
-                                    <NotebookText class="h-4 w-4" />
-                                    See Order Details
-                                </a>
-                                <a
-                                    :href="menu.dish().url"
+                                    href="#"
                                     class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
                                 >
                                     <ShoppingBag class="h-4 w-4" />
@@ -797,40 +956,29 @@ onMounted(() => {
 
             <!-- Order Info -->
             <div class="text-xs">
-                <p>Order: #{{ paidOrder.order_number }}</p>
-                <p>Date: {{ formatDateTime(paidOrder.created_at) }}</p>
-                <p>Type: {{ paidOrder.type.label }}</p>
-                <p v-if="paidOrder.table_number">
-                    Table: {{ paidOrder.table_number }}
-                </p>
+                <p>Order: #{{ order.order_number }}</p>
+                <p>Date: {{ formatDateTime(order.created_at) }}</p>
+                <p>Type: {{ order.type.label }}</p>
+                <p v-if="order.table_number">Table: {{ order.table_number }}</p>
             </div>
 
             <div class="divider"></div>
 
             <!-- Items -->
             <div class="text-xs">
-                <div
-                    v-for="item in paidOrder.items"
-                    :key="item.id"
-                    class="mb-1"
-                >
+                <div v-for="item in order.items" :key="item.id" class="mb-1">
                     <div class="flex justify-between">
                         <span>{{ item.quantity }} x {{ item.item?.name }}</span>
-                        <span
-                            >€{{
-                                formatPrice(item.total)
-                            }}</span
-                        >
+                        <span>€{{ formatPrice(item.total) }}</span>
                     </div>
 
                     <div v-if="item.meat">
-                        &nbsp;+ {{ item.meat.name }} (€{{ formatPrice(item.meat.extra_price) }})
+                        &nbsp;+ {{ item.meat.name }} (€{{
+                            formatPrice(item.meat.extra_price)
+                        }})
                     </div>
 
-                    <div
-                        v-for="ing in item.removed_ingredients"
-                        :key="ing.id"
-                    >
+                    <div v-for="ing in item.removed_ingredients" :key="ing.id">
                         &nbsp;- {{ ing.name }}
                     </div>
                 </div>
@@ -840,46 +988,47 @@ onMounted(() => {
 
             <!-- Totals -->
             <div class="text-xs">
-                <div v-if="paidOrder.final_food_inc_vat" class="flex justify-between">
+                <div
+                    v-if="order.final_food_inc_vat"
+                    class="flex justify-between"
+                >
                     <span>Food</span>
-                    <span
-                        >€{{ formatPrice(paidOrder.final_food_inc_vat) }}</span
-                    >
+                    <span>€{{ formatPrice(order.final_food_inc_vat) }}</span>
                 </div>
-                <div v-if="paidOrder.final_drinks_inc_vat" class="flex justify-between">
+                <div
+                    v-if="order.final_drinks_inc_vat"
+                    class="flex justify-between"
+                >
                     <span>Drinks</span>
-                    <span
-                        >€{{
-                            formatPrice(paidOrder.final_drinks_inc_vat)
-                        }}</span
-                    >
+                    <span>€{{ formatPrice(order.final_drinks_inc_vat) }}</span>
                 </div>
-                <div v-if="paidOrder.vat_food_amount" class="flex justify-between">
+
+                <div v-if="order.vat_food_amount" class="flex justify-between">
                     <span>VAT 6%</span>
-                    <span>€{{ formatPrice(paidOrder.vat_food_amount) }}</span>
+                    <span>€{{ formatPrice(order.vat_food_amount) }}</span>
                 </div>
-                <div v-if="paidOrder.vat_drinks_amount" class="flex justify-between">
+                <div
+                    v-if="order.vat_drinks_amount"
+                    class="flex justify-between"
+                >
                     <span>VAT 21%</span>
-                    <span>€{{ formatPrice(paidOrder.vat_drinks_amount) }}</span>
+                    <span>€{{ formatPrice(order.vat_drinks_amount) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Total VAT</span>
-                    <span>€{{ formatPrice(paidOrder.vat_total) }}</span>
+                    <span>€{{ formatPrice(order.vat_total) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Subtotal</span>
-                    <span>€{{ formatPrice(paidOrder.subtotal) }}</span>
+                    <span>€{{ formatPrice(order.subtotal) }}</span>
                 </div>
-                <div v-if="paidOrder.delivery_fee" class="flex justify-between">
+                <div v-if="order.delivery_fee" class="flex justify-between">
                     <span>Delivery</span>
-                    <span>+€{{ formatPrice(paidOrder.delivery_fee) }}</span>
+                    <span>+€{{ formatPrice(order.delivery_fee) }}</span>
                 </div>
-                <div
-                    v-if="paidOrder.discount_total"
-                    class="flex justify-between"
-                >
+                <div v-if="order.discount_total" class="flex justify-between">
                     <span>Discount</span>
-                    <span>-€{{ formatPrice(paidOrder.discount_total) }}</span>
+                    <span>-€{{ formatPrice(order.discount_total) }}</span>
                 </div>
             </div>
 
@@ -888,7 +1037,7 @@ onMounted(() => {
             <!-- TOTAL -->
             <div class="flex justify-between font-bold">
                 <span>TOTAL</span>
-                <span>€{{ formatPrice(paidOrder.total) }}</span>
+                <span>€{{ formatPrice(order.total) }}</span>
             </div>
 
             <div class="divider"></div>
@@ -901,17 +1050,3 @@ onMounted(() => {
         </div>
     </ClientLayout>
 </template>
-
-<style scoped>
-@media print {
-    button,
-    .sticky,
-    .quick-actions {
-        display: none;
-    }
-
-    body {
-        print-color-adjust: exact;
-    }
-}
-</style>
