@@ -28,7 +28,7 @@ const openAddModal = () => {
                 class="relative z-10 mb-6 flex items-center gap-2 text-sm text-gray-500"
             >
                 <button
-                    @click="$inertia.visit('/menu')"
+                    @click="$inertia.visit('/menu/dishes')"
                     class="cursor-pointer transition-colors hover:text-red-500"
                 >
                     Menu

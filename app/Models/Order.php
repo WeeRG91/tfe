@@ -25,6 +25,9 @@ class Order extends Model
         'delivered_at' => 'datetime',
         'completed_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'prepare_at' => 'datetime',
+        'ready_at' => 'datetime',
+        'vat_breakdown' => 'array',
     ];
 
     public function items(): HasMany

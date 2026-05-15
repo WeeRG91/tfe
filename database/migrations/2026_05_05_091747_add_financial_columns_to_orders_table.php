@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('subtotal', 8, 2)->after('total')->default(0);
+            $table->decimal('subtotal', 8, 2)->after('total_inc_vat')->default(0);
             $table->decimal('discount_rate', 5, 2)->after('subtotal')->default(0);
             $table->decimal('discount_total', 8, 2)->after('discount_rate')->default(0);
             $table->decimal('vat_food_rate', 5, 2)->after('discount_total')->default(12);
@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('vat_drinks_amount', 8, 2)->after('vat_drinks_rate')->default(0);
             $table->decimal('vat_total', 8, 2)->after('vat_drinks_amount')->default(0);
             $table->decimal('delivery_fee', 8, 2)->after('vat_total')->default(0);
+            $table->json('vat_breakdown')->after('delivery_fee')->nullable();
         });
     }
 

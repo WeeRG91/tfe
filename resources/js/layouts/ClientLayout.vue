@@ -12,11 +12,14 @@ import {
     Phone,
     Search,
     ShoppingCart,
+    User,
     Wine,
     X,
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
+import order from '@/routes/order';
+import { usePage } from '@inertiajs/vue3';
 
 const cartStore = useCartStore();
 const { cartItemCount } = storeToRefs(cartStore);
@@ -25,6 +28,10 @@ const openSearch = ref<boolean>(false);
 const mobileMenuOpen = ref<boolean>(false);
 const currentPath = ref<string>('');
 const isCartOpen = ref<boolean>(false);
+const isUserMenuOpen = ref<boolean>(false);
+
+const page = usePage();
+const user = page.props.auth.user;
 
 const openCart = async () => {
     isCartOpen.value = true;
@@ -50,6 +57,19 @@ const closeModal = () => {
     openSearch.value = false;
 };
 
+const toggleUserMenu = () => {
+    isUserMenuOpen.value = !isUserMenuOpen.value;
+};
+
+const closeUserMenu = () => {
+    isUserMenuOpen.value = false;
+};
+
+const handleLogout = () => {
+    // Implement logout logic
+    closeUserMenu();
+};
+
 const handleSearchShortcut = (e: KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -61,14 +81,23 @@ const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+const handleClickOutside = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.user-menu-container')) {
+        closeUserMenu();
+    }
+};
+
 onMounted(async () => {
     window.addEventListener('keydown', handleSearchShortcut);
+    document.addEventListener('click', handleClickOutside);
     currentPath.value = window.location.pathname;
     await cartStore.getCart();
 });
 
 onUnmounted(() => {
     window.removeEventListener('keydown', handleSearchShortcut);
+    document.removeEventListener('click', handleClickOutside);
 });
 
 watch(mobileMenuOpen, (isOpen) => {
@@ -134,12 +163,6 @@ watch(mobileMenuOpen, (isOpen) => {
                             href="#"
                             class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
                         >
-                            Orders
-                        </a>
-                        <a
-                            href="#"
-                            class="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
-                        >
                             About
                         </a>
                         <a
@@ -177,12 +200,86 @@ watch(mobileMenuOpen, (isOpen) => {
                             </kbd>
                         </button>
 
-                        <button
-                            class="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700 hover:shadow-md md:flex"
-                        >
-                            <LogIn class="h-4 w-4" />
-                            Sign in
-                        </button>
+                        <!-- Avatar User Menu -->
+                        <div class="user-menu-container relative">
+                            <button
+                                v-if="user"
+                                @click="toggleUserMenu"
+                                class="flex items-center gap-2 rounded-lg px-2 py-1 transition-all duration-200 hover:bg-gray-100"
+                            >
+                                <div
+                                    class="relative h-8 w-8 overflow-hidden rounded-full bg-gradient-to-r from-red-500 to-red-600"
+                                >
+                                    <img
+                                        v-if="user.avatar"
+                                        :src="user.avatar"
+                                        :alt="user.name"
+                                        class="h-full w-full object-cover"
+                                    />
+                                    <div
+                                        v-else
+                                        class="flex h-full w-full items-center justify-center text-white"
+                                    >
+                                        <User class="h-4 w-4" />
+                                    </div>
+                                </div>
+                                <span
+                                    class="hidden text-sm font-medium text-gray-700 lg:inline"
+                                >
+                                    {{ user.name.split(' ')[0] }}
+                                </span>
+                            </button>
+
+                            <button
+                                v-else
+                                class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700 hover:shadow-md"
+                            >
+                                <LogIn class="h-4 w-4" />
+                                Sign in
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <Transition name="dropdown">
+                                <div
+                                    v-if="isUserMenuOpen && user"
+                                    class="absolute right-0 mt-2 w-56 rounded-xl border border-gray-100 bg-white py-2 shadow-lg"
+                                >
+                                    <div
+                                        class="border-b border-gray-100 px-4 py-3"
+                                    >
+                                        <p
+                                            class="text-sm font-semibold text-gray-900"
+                                        >
+                                            {{ user.name }}
+                                        </p>
+                                        <p class="text-xs text-gray-500">
+                                            {{ user.email }}
+                                        </p>
+                                    </div>
+                                    <a
+                                        href="#"
+                                        class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
+                                    >
+                                        <User class="h-4 w-4" />
+                                        Profile
+                                    </a>
+                                    <a
+                                        :href="order.myOrders().url"
+                                        class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
+                                    >
+                                        <NotepadText class="h-4 w-4" />
+                                        My Orders
+                                    </a>
+                                    <button
+                                        @click="handleLogout"
+                                        class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                                    >
+                                        <LogIn class="h-4 w-4" />
+                                        Sign Out
+                                    </button>
+                                </div>
+                            </Transition>
+                        </div>
 
                         <button
                             @click="toggleMobileMenu"
@@ -195,6 +292,7 @@ watch(mobileMenuOpen, (isOpen) => {
             </div>
         </header>
 
+        <!-- Rest of your template remains the same -->
         <Transition name="fade">
             <div
                 v-if="mobileMenuOpen"
@@ -226,6 +324,7 @@ watch(mobileMenuOpen, (isOpen) => {
                     </div>
 
                     <nav class="flex-1 space-y-1 overflow-y-auto p-4">
+                        <!-- Mobile menu items remain the same -->
                         <a
                             @click="closeMobileMenu"
                             :href="menu.dish().url"
@@ -270,19 +369,6 @@ watch(mobileMenuOpen, (isOpen) => {
                                 <Wine class="h-5 w-5" />
                             </div>
                             <span class="font-medium">Drinks</span>
-                        </a>
-
-                        <a
-                            @click="closeMobileMenu"
-                            href="#"
-                            class="flex items-center gap-4 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
-                        >
-                            <div
-                                class="rounded-lg bg-gray-100 p-2 group-hover:bg-red-100"
-                            >
-                                <NotepadText class="h-5 w-5" />
-                            </div>
-                            <span class="font-medium">Orders</span>
                         </a>
 
                         <a
@@ -389,5 +475,16 @@ watch(mobileMenuOpen, (isOpen) => {
 .slide-enter-from,
 .slide-leave-to {
     transform: translateX(100%);
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+    transition: all 0.2s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
 }
 </style>

@@ -62,8 +62,8 @@ watch(selectedCategory, () => {
 <template>
     <Head title="Drink Page" />
     <ClientLayout>
-        <section class="mx-auto mt-4 max-w-6xl px-6 py-4">
-            <div class="mb-8">
+        <section class="mx-auto max-w-6xl px-6 py-4">
+            <div class="mb-4">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
                     [ Our Drinks ]
                 </p>

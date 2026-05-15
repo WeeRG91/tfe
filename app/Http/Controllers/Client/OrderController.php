@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Client;
 
 use App\Actions\Client\Order\Commands\PlaceOrder\PlaceOrder;
+use App\Enums\OrderStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Order\PlaceOrderRequest;
 use App\Http\Resources\Client\Order\OrderResource;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Throwable;
 
@@ -19,17 +21,41 @@ class OrderController extends Controller
         $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
 
         return Inertia::render('client/OrderDetails', [
-            'order' => new OrderResource($order),
+            'orderToShow' => new OrderResource($order),
         ]);
     }
 
+    public function myOrders()
+    {
+        return Inertia::render('client/MyOrders');
+    }
+
     /**
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getOrders(): JsonResponse
+    public function getOrders(Request $request): JsonResponse
     {
-        $orders = Order::query()->where('user_id', auth()->id())->get();
-        $orders->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
+        $query = Order::query()
+            ->where('user_id', auth()->id())
+            ->when($request->status != 0, function ($q) use ($request) {
+                if (in_array($request->status, [6, 7])) {
+                    $q->where('status', $request->status);
+                } else {
+                    $q->whereNotIn('status', [6, 7]);
+                }
+            });
+
+        $orders = $query
+            ->with([
+                'user',
+                'items.item',
+                'items.meat',
+                'items.removedIngredients',
+                'address'
+            ])
+            ->orderBy('created_at', 'DESC')
+            ->get();
 
         return response()->json(OrderResource::collection($orders)->collection);
     }

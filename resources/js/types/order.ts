@@ -16,23 +16,18 @@ export type OrderType = {
     payment_status: PaymentStatusType;
     confirmed_at: string;
     paid_at: string;
+    prepare_at: string;
+    ready_at: string;
     delivered_at: string;
     completed_at: string;
     cancelled_at: string;
     created_at: string;
     notes: string;
-    total: number;
     subtotal: number;
-    discount_rate: number;
+    total_inc_vat: number;
     discount_total: number;
-    vat_food_rate: number;
-    vat_food_amount: number;
-    final_food_inc_vat: number;
-    vat_drinks_rate: number;
-    vat_drinks_amount: number;
-    final_drinks_inc_vat: number;
     vat_total: number;
-    net_total: number;
+    vat_breakdown: {vat_rate: number, vat_total: number, total_inc_vat: number}[];
     delivery_fee: number;
     items: OrderItemType[];
 };
@@ -47,7 +42,7 @@ export type OrderItemType = {
     removed_ingredients: RemovedIngredientType[];
     quantity: number;
     unit_price: number;
-    total: number;
+    total_inc_vat: number;
     notes: string;
 };
 

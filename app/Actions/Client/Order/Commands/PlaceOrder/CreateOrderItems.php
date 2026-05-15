@@ -2,6 +2,7 @@
 
 namespace App\Actions\Client\Order\Commands\PlaceOrder;
 
+use App\Enums\DrinkCategoryEnum;
 use App\Models\Cart;
 use App\Models\Order;
 
@@ -10,22 +11,50 @@ class CreateOrderItems
     /**
      * @param Order $order
      * @param Cart $cart
-     * @return int[]
+     * @return array{0: float, 1: array}
      */
     public function execute(Order $order, Cart $cart): array
     {
-        $subtotal = 0;
-        $foodTotal = 0;
-        $drinksTotal = 0;
+        $itemsTotalIncVat = 0;
+        $vatBreakdown = [];
 
         foreach ($cart->items as $item) {
+            $vatRate = match ($item->item_type) {
+                'dish' => 12,
+
+                'drink' => match ($item->item->category) {
+                    DrinkCategoryEnum::BEER,
+                    DrinkCategoryEnum::WINE,
+                    DrinkCategoryEnum::COCKTAIL => 21,
+
+                    default => 12,
+                },
+
+                default => 21
+            };
+
+            $vatAmount = $item->total - ($item->total / (1 + $vatRate / 100));
+
+            if (!isset($vatBreakdown[$vatRate])) {
+                $vatBreakdown[$vatRate] = [
+                    'vat_rate' => $vatRate,
+                    'vat_total' => 0,
+                    'total_inc_vat' => 0,
+                ];
+            }
+
+            $vatBreakdown[$vatRate]['vat_total'] += $vatAmount;
+            $vatBreakdown[$vatRate]['total_inc_vat'] += $item->total;
+
             $orderItem = $order->items()->create([
                 'item_id' => $item->item_id,
                 'item_type' => $item->item_type,
                 'meat_id' => $item->meat_id,
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
-                'total' => $item->total,
+                'vat_rate' => $vatRate,
+                'vat_amount' => $vatAmount,
+                'total_inc_vat' => $item->total,
                 'notes' => $item->notes,
             ]);
 
@@ -35,15 +64,12 @@ class CreateOrderItems
                 );
             }
 
-            $subtotal += $item->total;
-
-            if ($item->item_type === 'dish') {
-                $foodTotal += $item->total;
-            } else {
-                $drinksTotal += $item->total;
-            }
+            $itemsTotalIncVat += $item->total;
         }
 
-        return [$subtotal, $foodTotal, $drinksTotal];
+        return [
+            $itemsTotalIncVat,
+            array_values($vatBreakdown),
+        ];
     }
 }

@@ -30,11 +30,13 @@ export const useOrderStore = defineStore('order', {
             }
         },
 
-        async getOrders() {
+        async getOrders(status: number) {
             this.isLoading = true;
 
             try {
-                const { data } = await axios.get('/orders');
+                const { data } = await axios.get('/orders', {
+                    params: { status: status },
+                });
 
                 this.orders = data as OrderType[];
             } catch (error) {
@@ -60,6 +62,6 @@ export const useOrderStore = defineStore('order', {
             } finally {
                 this.isLoading = false;
             }
-        }
+        },
     },
 });

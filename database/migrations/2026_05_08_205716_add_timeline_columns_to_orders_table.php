@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->renameColumn('total_price', 'total_inc_vat');
+            $table->timestamp('prepare_at')->nullable()->after('cancelled_at');
+            $table->timestamp('ready_at')->nullable()->after('prepare_at');
         });
     }
 
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->renameColumn('total_inc_vat', 'total_price');
+            $table->dropColumn('prepare_at');
+            $table->dropColumn('ready_at');
         });
     }
 };

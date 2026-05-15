@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->renameColumn('total_price', 'total_inc_vat');
+            $table->decimal('vat_rate', 5, 2)->default(0)->after('unit_price');
+            $table->decimal('vat_amount', 8, 2)->default(0)->after('vat_rate');
         });
     }
 
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->renameColumn('total_inc_vat', 'total_total');
+            $table->dropColumn('vat_amount');
+            $table->dropColumn('vat_rate');
         });
     }
 };

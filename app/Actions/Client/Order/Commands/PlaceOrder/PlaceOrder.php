@@ -23,6 +23,7 @@ readonly class PlaceOrder
     public function execute(array $data): array
     {
         $cart = Cart::query()->findOrFail($data['cart_id']);
+        $cart->load('items.item', 'items.meat', 'items.removedIngredients');
         $user = auth()->user();
 
         if (!$cart || $cart->items->isEmpty()) {
@@ -36,16 +37,15 @@ readonly class PlaceOrder
 
             $order = $this->createOrder->execute($data, $user);
 
-            [$subtotal, $foodTotal, $drinksTotal] = $this->createOrderItems->execute($order, $cart);
+            [$itemsTotalIncVat, $vatBreakdown] = $this->createOrderItems->execute($order, $cart);
 
             $isCash = $data['payment_method'] === PaymentMethodEnum::CASH->value;
             $usedPoints = $data['used_points'] ?? 0;
             $type = $data['type'];
 
             $amounts = $this->calculateOrderAmounts->execute(
-                subtotal: $subtotal,
-                foodTotal: $foodTotal,
-                drinksTotal: $drinksTotal,
+                itemsTotalIncVat: $itemsTotalIncVat,
+                vatBreakdown: $vatBreakdown,
                 usedPoints: $usedPoints,
                 type: $type,
             );
@@ -56,7 +56,7 @@ readonly class PlaceOrder
                 user: $user,
                 order: $order,
                 usedPoints: $usedPoints,
-                finalTotal: $amounts['total'],
+                finalTotal: $amounts['total_inc_vat'],
                 isCash: $isCash,
             );
 

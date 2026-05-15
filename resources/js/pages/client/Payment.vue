@@ -21,8 +21,6 @@ const props = defineProps<{
     order: OrderType;
 }>();
 
-console.log(props.order);
-
 const stripe = ref<any>(null);
 const elements = ref<any>(null);
 const isLoading = ref<boolean>(false);
@@ -81,7 +79,7 @@ onMounted(() => {
                 <p class="text-sm tracking-widest text-red-500 uppercase">
                     [ Secure Checkout ]
                 </p>
-                <h1 class="text-3xl font-semibold uppercase md:text-4xl">
+                <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     Complete Payment
                 </h1>
                 <p class="mt-1 text-sm text-gray-600">
@@ -323,7 +321,7 @@ onMounted(() => {
                                         <div
                                             class="ml-4 font-medium whitespace-nowrap"
                                         >
-                                            €{{ formatPrice(item.total) }}
+                                            €{{ formatPrice(item.total_inc_vat) }}
                                         </div>
                                     </div>
                                 </div>
@@ -361,60 +359,18 @@ onMounted(() => {
                                 class="space-y-2 border-b border-gray-100 pb-4"
                             >
                                 <div
-                                    v-if="props.order.final_food_inc_vat"
-                                    class="flex justify-between text-sm text-gray-600"
-                                >
-                                    <span>Food</span>
-                                    <span
-                                        >€{{
-                                            formatPrice(
-                                                props.order.final_food_inc_vat,
-                                            )
-                                        }}</span
-                                    >
-                                </div>
-                                <div
-                                    v-if="props.order.final_drinks_inc_vat"
-                                    class="flex justify-between text-sm text-gray-600"
-                                >
-                                    <span>Drinks</span>
-                                    <span
-                                        >€{{
-                                            formatPrice(
-                                                props.order
-                                                    .final_drinks_inc_vat,
-                                            )
-                                        }}</span
-                                    >
-                                </div>
-                                <div
-                                    v-if="props.order.vat_food_amount"
+                                    v-for="vat in props.order.vat_breakdown"
+                                    :key="vat.vat_rate"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
                                     <span
-                                        >VAT ({{ props.order.vat_food_rate }}% -
+                                        >VAT ({{ vat.vat_rate }}% -
                                         Food)</span
                                     >
                                     <span
                                         >€{{
                                             formatPrice(
-                                                props.order.vat_food_amount,
-                                            )
-                                        }}</span
-                                    >
-                                </div>
-                                <div
-                                    v-if="props.order.vat_drinks_amount"
-                                    class="flex justify-between text-sm text-gray-600"
-                                >
-                                    <span
-                                        >VAT ({{ props.order.vat_drinks_rate }}%
-                                        - Drinks)</span
-                                    >
-                                    <span
-                                        >€{{
-                                            formatPrice(
-                                                props.order.vat_drinks_amount,
+                                                vat.vat_total,
                                             )
                                         }}</span
                                     >
@@ -475,7 +431,7 @@ onMounted(() => {
                             >
                                 <span>Total Amount</span>
                                 <span class="text-red-500"
-                                    >€{{ formatPrice(props.order.total) }}</span
+                                    >€{{ formatPrice(props.order.total_inc_vat) }}</span
                                 >
                             </div>
                         </div>
@@ -506,7 +462,7 @@ onMounted(() => {
                                         class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                                     ></span>
                                     <CreditCard v-else class="h-4 w-4" />
-                                    Pay €{{ formatPrice(props.order.total) }}
+                                    Pay €{{ formatPrice(props.order.total_inc_vat) }}
                                 </span>
                                 <div
                                     class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-red-600 to-red-700 transition-transform duration-300 group-hover:translate-x-0"

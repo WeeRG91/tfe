@@ -90,7 +90,7 @@ const handleRemoveItem = async (cartItemId: number) => {
                 <p class="text-sm tracking-widest text-red-500 uppercase">
                     [ Checkout ]
                 </p>
-                <h1 class="text-3xl font-semibold uppercase md:text-4xl">
+                <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     Your Cart
                 </h1>
                 <p class="mt-1 text-sm text-gray-600">
