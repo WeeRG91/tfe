@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\Dish;
-use App\Models\Drink;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Events\OrderPlacedBroadcast;
+use App\Listeners\SendOrderConfirmedNotification;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,9 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Relation::morphMap([
-            'dish' => Dish::class,
-            'drink' => Drink::class,
-        ]);
+        Event::listen(OrderPlacedBroadcast::class, SendOrderConfirmedNotification::class);
     }
 }

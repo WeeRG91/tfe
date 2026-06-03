@@ -1,5 +1,6 @@
 import { AddressType } from '@/types/address';
 import { CategoryOptionType } from '@/types/category';
+import { PaymentMethodType, PaymentStatusType } from '@/types/payment';
 
 export type OrderType = {
     id: number;
@@ -27,7 +28,11 @@ export type OrderType = {
     total_inc_vat: number;
     discount_total: number;
     vat_total: number;
-    vat_breakdown: {vat_rate: number, vat_total: number, total_inc_vat: number}[];
+    vat_breakdown: {
+        vat_rate: number;
+        vat_total: number;
+        total_inc_vat: number;
+    }[];
     delivery_fee: number;
     items: OrderItemType[];
 };
@@ -36,7 +41,7 @@ export type OrderItemType = {
     id: number;
     cart_id: number;
     item_id: number;
-    item_type: string;
+    item_type: number;
     item: OrderDishType | OrderDrinkType;
     meat: MeatItemType;
     removed_ingredients: RemovedIngredientType[];
@@ -100,14 +105,18 @@ export type OrderStatusType = {
     color: string;
 };
 
-export type PaymentStatusType = {
-    value: number;
-    label: string;
-    color: string;
-};
+export enum OrderTypeEnum {
+    DINEIN = 1,
+    TAKEAWAY = 2,
+    DELIVERY = 3,
+}
 
-export type PaymentMethodType = {
-    value: number;
-    label: string;
-    color: string;
-};
+export enum OrderStatusEnum {
+    PENDING = 1,
+    CONFIRMED = 2,
+    PREPARING = 3,
+    READY = 4,
+    DELIVERING = 5,
+    COMPLETED = 6,
+    CANCELLED = 7,
+}

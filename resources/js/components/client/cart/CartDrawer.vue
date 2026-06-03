@@ -13,6 +13,7 @@ import {
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { ItemTypeEnum } from '@/types/cart';
 
 const props = defineProps<{
     open: boolean;
@@ -25,11 +26,11 @@ const { items } = storeToRefs(cartStore);
 const loadingRemoveItemId = ref<number | null>(null);
 
 const dishItems = computed(() =>
-    items.value.filter((item) => item.item_type === 'dish'),
+    items.value.filter((item) => item.item_type === ItemTypeEnum.DISH),
 );
 
 const drinkItems = computed(() =>
-    items.value.filter((item) => item.item_type === 'drink'),
+    items.value.filter((item) => item.item_type === ItemTypeEnum.DRINK),
 );
 
 const subtotalDishes = computed(() => {

@@ -3,6 +3,7 @@
 namespace App\Actions\Client\Cart\Commands;
 
 use App\Actions\Client\Cart\Queries\GetOrCreateCart;
+use App\Enums\ItemTypeEnum;
 use App\Models\CartItem;
 use Illuminate\Http\Request;
 
@@ -24,7 +25,7 @@ class AddDishToCart
 
         $itemToAdd = $cart->items()
             ->where('item_id', $data['item_id'])
-            ->where('item_type', $data['item_type'])
+            ->where('item_type', ItemTypeEnum::from($data['item_type'])->model())
             ->where('meat_id', $data['meat_id'])
             ->with('removedIngredients')
             ->get();
@@ -51,7 +52,7 @@ class AddDishToCart
         /** @var CartItem $item */
         $item = $cart->items()->create([
             'item_id' => $data['item_id'],
-            'item_type' => $data['item_type'],
+            'item_type' => ItemTypeEnum::from($data['item_type'])->model(),
             'meat_id' => $data['meat_id'],
             'quantity' => $data['quantity'],
             'notes' => $data['notes'],

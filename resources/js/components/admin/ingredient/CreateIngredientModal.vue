@@ -4,7 +4,6 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
-import ingredient from '@/routes/ingredient';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import {
@@ -19,6 +18,7 @@ import { toast } from 'vue-sonner';
 import { AllergenOptionType } from '@/types/allergen';
 import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
 import { Loader } from 'lucide-vue-next';
+import ingredient from '@/routes/admin/ingredient';
 
 const props = defineProps<{
     open: boolean;

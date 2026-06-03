@@ -11,7 +11,7 @@ export type CartItemType = {
     id: number;
     cart_id: number;
     item_id: number;
-    item_type: string;
+    item_type: number;
     item: CartDishType | CartDrinkType;
     meat: MeatItemType;
     removed_ingredients: RemovedIngredientType[];
@@ -52,7 +52,7 @@ export type RemovedIngredientType = {
 
 export type AddDishToCartType = {
     item_id: number;
-    item_type: ItemType;
+    item_type: ItemTypeEnum;
     meat_id: number;
     quantity: number;
     removed_ingredients?: number[];
@@ -61,9 +61,12 @@ export type AddDishToCartType = {
 
 export type AddDrinkToCartType = {
     item_id: number;
-    item_type: ItemType;
+    item_type: ItemTypeEnum;
     quantity: number;
     notes?: string;
 };
 
-export type ItemType = 'dish' | 'drink';
+export enum ItemTypeEnum {
+    DISH = 1,
+    DRINK = 2,
+}

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Client;
 
 use App\Actions\Client\Order\Commands\PlaceOrder\PlaceOrder;
-use App\Enums\OrderStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Order\PlaceOrderRequest;
 use App\Http\Resources\Client\Order\OrderResource;

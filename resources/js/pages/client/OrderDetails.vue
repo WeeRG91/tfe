@@ -8,35 +8,11 @@ import ClientLayout from '@/layouts/ClientLayout.vue';
 import { OrderType } from '@/types/order';
 import { Head } from '@inertiajs/vue3';
 import OrderReceipt from '@/components/client/orderDetails/OrderReceipt.vue';
+import { formatDate, getOrderStatusVariant } from '@/lib/utils';
 
 const props = defineProps<{
     orderToShow: OrderType;
 }>();
-
-const formatDate = (date: string) => {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
-};
-
-const classes = {
-    Pending: 'bg-yellow-100 text-yellow-800',
-    Confirmed: 'bg-blue-100 text-blue-800',
-    Preparing: 'bg-purple-100 text-purple-800',
-    Ready: 'bg-indigo-100 text-indigo-800',
-    Delivering: 'bg-orange-100 text-orange-800',
-    Completed: 'bg-green-100 text-green-800',
-    Cancelled: 'bg-red-100 text-red-800',
-} as const;
-
-const getStatusBadgeClass = (status: string) => {
-    return (
-        classes[status as keyof typeof classes] || 'bg-gray-100 text-gray-800'
-    );
-};
 
 const removeOrder = (orderId: number) => {
     console.log(orderId);
@@ -108,7 +84,7 @@ const printOrder = () => {
                     <div
                         :class="[
                             'rounded-full px-4 py-2 text-sm font-semibold',
-                            getStatusBadgeClass(orderToShow.status.label),
+                            getOrderStatusVariant(orderToShow.status.value),
                         ]"
                     >
                         {{ orderToShow.status.label }}

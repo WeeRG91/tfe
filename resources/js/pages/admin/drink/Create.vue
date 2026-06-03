@@ -6,7 +6,6 @@ import ImageUploader from '@/components/ImageUploader.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import drink from '@/routes/drink';
 import { BreadcrumbItem } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { DrinkErrorType } from '@/types/drink';
@@ -14,6 +13,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, Loader, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import drink from '@/routes/admin/drink';
 
 const props = defineProps<{
     categories: CategoryOptionType[];

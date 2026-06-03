@@ -16,7 +16,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import allergen from '@/routes/allergen';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { AllergenType } from '@/types/allergen';
 import { Head, router } from '@inertiajs/vue3';
@@ -34,6 +33,7 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import allergen, { getAllergens } from '@/routes/admin/allergen';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -138,7 +138,7 @@ const loadAllergens = async () => {
 
     try {
         const response = await axios.get<CursorPaginated<AllergenType>>(
-            '/allergens/get-allergens',
+            allergen.getAllergens().url,
             {
                 params: {
                     cursor: nextCursor.value,

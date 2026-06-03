@@ -5,6 +5,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { ClientDrinkType } from '@/types/drink';
 import { formatPrice } from '@/lib/utils';
+import { ItemTypeEnum } from '@/types/cart';
 
 const props = defineProps<{
     drink: ClientDrinkType;
@@ -30,7 +31,7 @@ const addToCart = async () => {
     try {
         const response = await cartStore.addDrink({
             item_id: props.drink.id,
-            item_type: 'drink',
+            item_type: ItemTypeEnum.DRINK,
             quantity: quantity.value,
             notes: notes.value,
         });

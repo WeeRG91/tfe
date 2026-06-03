@@ -37,7 +37,6 @@ const filteredOrders = computed(() => {
         const status = order.status?.label || order.status;
 
         if (selectedStatusValue.value === 1) {
-            // Active orders: Pending, Confirmed, Preparing, Ready, Delivering
             return status === 'Pending' ||
                 status === 'Confirmed' ||
                 status === 'Preparing' ||
@@ -128,7 +127,7 @@ watch(selectedStatusValue, async () => {
             <LoadingSkeleton v-if="isLoading" />
 
             <!-- No Orders State -->
-            <EmptyOrder v-else-if="!filteredOrders.length && !isLoading" />
+            <EmptyOrder v-else-if="!orders.length && !isLoading" />
 
             <!-- Orders List -->
             <div v-else class="space-y-8">
@@ -165,17 +164,6 @@ watch(selectedStatusValue, async () => {
                         :orders="groupedOrders.cancelled"
                     />
                 </template>
-
-                <!-- Message when no orders in selected filter -->
-                <div
-                    v-if="filteredOrders.length &&
-                          groupedOrders.active.length === 0 &&
-                          groupedOrders.completed.length === 0 &&
-                          groupedOrders.cancelled.length === 0"
-                    class="py-12 text-center text-gray-500"
-                >
-                    No orders found in this category.
-                </div>
 
                 <!-- Browse Menu CTA -->
                 <div class="pt-4 text-center">

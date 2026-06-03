@@ -9,7 +9,6 @@ import CreateIngredientModal from '@/components/admin/ingredient/CreateIngredien
 import CreateMeatModal from '@/components/admin/meat/CreateMeatModal.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import dish from '@/routes/dish';
 import type { BreadcrumbItem, ErrorType } from '@/types';
 import { AllergenOptionType } from '@/types/allergen';
 import { CategoryOptionType } from '@/types/category';
@@ -19,6 +18,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, Loader, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import dish from '@/routes/admin/dish';
 
 const props = defineProps<{
     ingredients: IngredientOptionType[];

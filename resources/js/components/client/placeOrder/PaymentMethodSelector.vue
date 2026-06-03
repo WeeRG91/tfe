@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { HandCoins } from 'lucide-vue-next';
-import type { PaymentMethodType } from '@/types/payment';
+import { PaymentMethodEnum, PaymentMethodType } from '@/types/payment';
 
 const props = defineProps<{
     modelValue: number | null;
@@ -11,22 +11,22 @@ const emit = defineEmits<{
     'update:modelValue': [value: number | null];
 }>();
 
-const getPaymentIcon = (method: PaymentMethodType) => {
-    switch (method.value) {
-        case 1:
+const getPaymentIcon = (method: PaymentMethodEnum) => {
+    switch (method) {
+        case PaymentMethodEnum.CASH:
             return '💵';
-        case 2:
+        case PaymentMethodEnum.CARD:
             return '💳';
         default:
             return '💰';
     }
 };
 
-const getPaymentDescription = (method: PaymentMethodType) => {
-    switch (method.value) {
-        case 1:
+const getPaymentDescription = (method: PaymentMethodEnum) => {
+    switch (method) {
+        case PaymentMethodEnum.CASH:
             return 'Pay after receiving your order or your meal';
-        case 2:
+        case PaymentMethodEnum.CARD:
             return 'Pay securely with card';
         default:
             return 'Select payment method';
@@ -60,14 +60,14 @@ const selectMethod = (value: number) => {
                 ]"
             >
                 <span class="text-2xl">
-                    {{ getPaymentIcon(method) }}
+                    {{ getPaymentIcon(method.value) }}
                 </span>
                 <div class="text-left">
                     <div class="font-medium">
                         {{ method.label }}
                     </div>
                     <div class="text-xs text-gray-500">
-                        {{ getPaymentDescription(method) }}
+                        {{ getPaymentDescription(method.value) }}
                     </div>
                 </div>
             </button>

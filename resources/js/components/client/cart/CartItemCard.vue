@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCartStore } from '@/stores/cart';
-import { CartItemType } from '@/types/cart';
+import { CartItemType, ItemTypeEnum } from '@/types/cart';
 import { SquarePen } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
@@ -12,7 +12,7 @@ const props = defineProps<{
     cartItem: CartItemType;
     updateNoteItemId: number | null;
     loadingRemoveItemId: number | null;
-    type?: 'dish' | 'drink';
+    type?: ItemTypeEnum;
 }>();
 
 const emit = defineEmits(['update-quantity', 'update-notes', 'remove']);
@@ -50,17 +50,19 @@ watch(isLoading, (newVal) => {
 });
 
 const cardBorderClass = computed(() => {
-    return props.type === 'drink'
+    return props.type === ItemTypeEnum.DRINK
         ? 'hover:border-blue-200'
         : 'hover:border-red-200';
 });
 
 const priceColorClass = computed(() => {
-    return props.type === 'drink' ? 'text-blue-600' : 'text-red-500';
+    return props.type === ItemTypeEnum.DRINK ? 'text-blue-600' : 'text-red-500';
 });
 
 const sectionHeaderClass = computed(() => {
-    return props.type === 'drink' ? 'text-blue-500' : 'text-gray-500';
+    return props.type === ItemTypeEnum.DRINK
+        ? 'text-blue-500'
+        : 'text-gray-500';
 });
 </script>
 
@@ -88,7 +90,7 @@ const sectionHeaderClass = computed(() => {
                     <span
                         :class="[
                             'text-xs tracking-widest uppercase',
-                            type === 'drink'
+                            type === ItemTypeEnum.DRINK
                                 ? 'text-blue-500'
                                 : 'text-gray-400',
                         ]"
@@ -108,7 +110,7 @@ const sectionHeaderClass = computed(() => {
             </div>
 
             <div class="mt-1 min-h-[40px]">
-                <template v-if="type === 'dish'">
+                <template v-if="type === ItemTypeEnum.DISH">
                     <div
                         v-if="cartItem.meat"
                         class="flex items-center gap-1.5 text-xs"

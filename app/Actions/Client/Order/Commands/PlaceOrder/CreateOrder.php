@@ -22,7 +22,6 @@ class CreateOrder
         return Order::query()->create([
             'user_id' => $user->id,
             'order_number' => 'ORD-' . now()->format('Ymd') . '-' . rand(1000, 9999),
-
             'type' => $data['type'],
             'table_number' => $data['table_number'] ?? null,
             'pickup_time' => $data['pickup_time'] ?? null,

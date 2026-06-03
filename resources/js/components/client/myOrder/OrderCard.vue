@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { formatPrice } from '@/lib/utils';
+import {
+    formatDate,
+    formatPrice,
+    getOrderStatusIcon,
+    getOrderStatusVariant,
+    getOrderTypeIcon,
+    getPaymentMethodIcon,
+    getPaymentStatusIcon,
+    getPaymentStatusVariant,
+} from '@/lib/utils';
 import order from '@/routes/order';
-import { OrderType } from '@/types/order';
+import { OrderStatusEnum, OrderType } from '@/types/order';
 import { router } from '@inertiajs/vue3';
 import {
-    AlertCircle,
-    CheckCircle,
     ChevronDown,
-    Clock,
-    CreditCard,
     MessageCircle,
     NotebookText,
-    PackageOpen,
     Phone,
     Repeat,
-    ShoppingBag,
-    Truck,
     User,
-    Utensils,
     XCircle,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -55,147 +56,19 @@ const removeOrder = async () => {
     // Implement remove logic
 };
 
-const getStatusInfo = (status: string | undefined) => {
-    const statusKey = status?.toLowerCase() || '';
-
-    if (statusKey === 'pending') {
-        return {
-            color: 'bg-amber-50 text-amber-700 border-amber-200',
-            icon: Clock,
-            label: 'Pending',
-            progress: 25,
-        };
-    }
-    if (statusKey === 'confirmed') {
-        return {
-            color: 'bg-blue-50 text-blue-700 border-blue-200',
-            icon: CheckCircle,
-            label: 'Confirmed',
-            progress: 40,
-        };
-    }
-    if (statusKey === 'preparing') {
-        return {
-            color: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-            icon: Clock,
-            label: 'Preparing',
-            progress: 60,
-        };
-    }
-    if (statusKey === 'ready') {
-        return {
-            color: 'bg-purple-50 text-purple-700 border-purple-200',
-            icon: PackageOpen,
-            label: 'Ready for Pickup',
-            progress: 80,
-        };
-    }
-    if (statusKey === 'delivering') {
-        return {
-            color: 'bg-orange-50 text-orange-700 border-orange-200',
-            icon: Truck,
-            label: 'Out for Delivery',
-            progress: 85,
-        };
-    }
-    if (statusKey === 'completed') {
-        return {
-            color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-            icon: CheckCircle,
-            label: 'Completed',
-            progress: 100,
-        };
-    }
-    if (statusKey === 'cancelled') {
-        return {
-            color: 'bg-red-50 text-red-700 border-red-200',
-            icon: XCircle,
-            label: 'Cancelled',
-            progress: 0,
-        };
+const getOrderStatusProgress = (status: OrderStatusEnum) => {
+    const progresses: Record<OrderStatusEnum, number> = {
+        [OrderStatusEnum.PENDING]: 25,
+        [OrderStatusEnum.CONFIRMED]: 40,
+        [OrderStatusEnum.PREPARING]: 60,
+        [OrderStatusEnum.READY]: 80,
+        [OrderStatusEnum.DELIVERING]: 85,
+        [OrderStatusEnum.COMPLETED]: 100,
+        [OrderStatusEnum.CANCELLED]: 0,
     }
 
-    return {
-        color: 'bg-gray-50 text-gray-700 border-gray-200',
-        icon: ShoppingBag,
-        label: status || 'Unknown',
-        progress: 0,
-    };
-};
-
-const getOrderTypeIcon = (type: string | undefined) => {
-    const typeKey = type?.toLowerCase() || '';
-    if (typeKey === 'dine-in') return Utensils;
-    if (typeKey === 'takeaway') return ShoppingBag;
-    if (typeKey === 'delivery') return Truck;
-    return ShoppingBag;
-};
-
-const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) {
-        return `Today at ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (diffDays === 1) {
-        return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (diffDays < 7) {
-        return date.toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-        });
-    }
-
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-const getOrderTypeLabel = (type: string | undefined) => {
-    const typeKey = type?.toLowerCase() || '';
-    if (typeKey === 'dine-in') return 'Dine In';
-    if (typeKey === 'takeaway') return 'Takeaway';
-    if (typeKey === 'delivery') return 'Delivery';
-    return type || 'Standard';
-};
-
-const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
-    const status = paymentStatus?.toLowerCase() || '';
-    if (status === 'pending') {
-        return {
-            color: 'text-amber-600 bg-amber-50',
-            label: 'Pending',
-            icon: AlertCircle,
-        };
-    }
-    if (status === 'paid') {
-        return {
-            color: 'text-emerald-600 bg-emerald-50',
-            label: 'Paid',
-            icon: CheckCircle,
-        };
-    }
-    if (status === 'failed') {
-        return {
-            color: 'text-red-600 bg-red-50',
-            label: 'Failed',
-            icon: XCircle,
-        };
-    }
-    return {
-        color: 'text-gray-600 bg-gray-50',
-        label: paymentStatus || 'Unknown',
-        icon: CreditCard,
-    };
-};
+    return progresses[status] || 0;
+}
 </script>
 
 <template>
@@ -214,7 +87,7 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
                             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100"
                         >
                             <component
-                                :is="getOrderTypeIcon(orderToShow.type.label)"
+                                :is="getOrderTypeIcon(orderToShow.type.value)"
                                 class="h-5 w-5 text-gray-600"
                             />
                         </div>
@@ -226,22 +99,20 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
                                 <span
                                     :class="[
                                         'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
-                                        getStatusInfo(orderToShow.status?.label)
-                                            .color,
+                                        getOrderStatusVariant(
+                                            orderToShow.status.value,
+                                        ),
                                     ]"
                                 >
                                     <component
                                         :is="
-                                            getStatusInfo(
-                                                orderToShow.status?.label,
-                                            ).icon
+                                            getOrderStatusIcon(
+                                                orderToShow.status.value,
+                                            )
                                         "
                                         class="h-3 w-3"
                                     />
-                                    {{
-                                        getStatusInfo(orderToShow.status?.label)
-                                            .label
-                                    }}
+                                    {{ orderToShow.status.label }}
                                 </span>
                             </div>
                             <p class="text-xs text-gray-500">
@@ -265,8 +136,9 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
                         <span>Order Progress</span>
                         <span
                             >{{
-                                getStatusInfo(orderToShow.status?.label)
-                                    .progress
+                                getOrderStatusProgress(
+                                    orderToShow.status?.value,
+                                )
                             }}%</span
                         >
                     </div>
@@ -274,7 +146,7 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
                         <div
                             class="h-full rounded-full bg-gradient-to-r from-amber-500 to-red-500 transition-all duration-500"
                             :style="{
-                                width: `${getStatusInfo(orderToShow.status?.label).progress}%`,
+                                width: `${getOrderStatusProgress(orderToShow.status?.value)}%`,
                             }"
                         ></div>
                     </div>
@@ -283,12 +155,10 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
                 <div class="flex items-center justify-between pt-1">
                     <div class="flex items-center gap-2 text-xs text-gray-500">
                         <component
-                            :is="getOrderTypeIcon(orderToShow.type.label)"
+                            :is="getOrderTypeIcon(orderToShow.type.value)"
                             class="h-3 w-3"
                         />
-                        <span>{{
-                            getOrderTypeLabel(orderToShow.type?.label)
-                        }}</span>
+                        <span>{{ orderToShow.type.label }}</span>
                     </div>
                     <ChevronDown
                         class="h-4 w-4 text-gray-400 transition-transform duration-200"
@@ -328,7 +198,12 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
                     </div>
 
                     <div class="flex items-start gap-2 rounded-lg bg-white p-3">
-                        <CreditCard
+                        <component
+                            :is="
+                                getPaymentMethodIcon(
+                                    orderToShow.payment_method.value,
+                                )
+                            "
                             class="mt-0.5 h-4 w-4 shrink-0 text-purple-500"
                         />
                         <div>
@@ -343,24 +218,20 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
                             <span
                                 :class="[
                                     'mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
-                                    getPaymentStatusInfo(
-                                        orderToShow.payment_status.label,
-                                    ).color,
+                                    getPaymentStatusVariant(
+                                        orderToShow.payment_status.value,
+                                    ),
                                 ]"
                             >
                                 <component
                                     :is="
-                                        getPaymentStatusInfo(
-                                            orderToShow.payment_status.label,
-                                        ).icon
+                                        getPaymentStatusIcon(
+                                            orderToShow.payment_status.value,
+                                        )
                                     "
                                     class="h-3 w-3"
                                 />
-                                {{
-                                    getPaymentStatusInfo(
-                                        orderToShow.payment_status.label,
-                                    ).label
-                                }}
+                                {{ orderToShow.payment_status.label }}
                             </span>
                         </div>
                     </div>
@@ -405,8 +276,8 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
 
                     <button
                         v-if="
-                            orderToShow.status?.label !== 'Cancelled' &&
-                            orderToShow.status?.label !== 'Completed'
+                            orderToShow.status?.value !== OrderStatusEnum.CANCELLED &&
+                            orderToShow.status?.value !== OrderStatusEnum.COMPLETED
                         "
                         @click="cancelOrder"
                         :disabled="cancelLoadingOrderId === orderToShow.id"
@@ -421,8 +292,8 @@ const getPaymentStatusInfo = (paymentStatus: string | undefined) => {
 
                     <button
                         v-if="
-                            orderToShow.status?.label === 'Completed' ||
-                            orderToShow.status?.label === 'Cancelled'
+                            orderToShow.status?.value === OrderStatusEnum.COMPLETED ||
+                            orderToShow.status?.value === OrderStatusEnum.CANCELLED
                         "
                         @click="removeOrder"
                         :disabled="cancelLoadingOrderId === orderToShow.id"

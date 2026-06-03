@@ -12,7 +12,7 @@ import paymentOrder from '@/routes/payment-order';
 import { useCartStore } from '@/stores/cart';
 import { useOrderStore } from '@/stores/order';
 import { AddressType } from '@/types/address';
-import { OrderTypeType } from '@/types/order';
+import { OrderTypeEnum, OrderTypeType } from '@/types/order';
 import { PaymentMethodType } from '@/types/payment';
 import { Head, router } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -37,7 +37,7 @@ const orderStore = useOrderStore();
 const { cart, items } = storeToRefs(cartStore);
 const { isLoading: isOrderLoading } = storeToRefs(orderStore);
 
-const selectedOrderTypeValue = ref<number | null>(null);
+const selectedOrderTypeValue = ref<OrderTypeEnum | null>(null);
 const selectedAddressId = ref<number | null>(null);
 const paymentMethod = ref<number | null>(null);
 const pickupTime = ref<string>('');
@@ -49,7 +49,7 @@ const showAddressModal = ref(false);
 const editingAddress = ref<AddressType | null>(null);
 const existingAddresses = ref<AddressType[]>(props.addresses ?? []);
 const deletedAddressId = ref<number | null>(null);
-const deliveryFee = ref<number>(2);
+const deliveryFee = computed(() => selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY ? 2 : 0);
 
 const loyaltyPoints = computed(() => cart.value?.user?.loyalty_points ?? 0);
 
@@ -68,7 +68,7 @@ const {
     canUseOption,
 } = useLoyaltyPoints(loyaltyPoints);
 
-const { vat12Total, vat21Total, totalVat, totalIncVat, subtotal } =
+const { vat12Total, vat21Total, totalVat, totalIncVat, subtotalBeforeDeliveryFee } =
     useVatCalculator({
         items,
         discountAmount,
@@ -165,9 +165,6 @@ const deleteAddress = async (addressId: number) => {
         existingAddresses.value = existingAddresses.value.filter(
             (a) => a.id !== addressId,
         );
-
-        console.log(data);
-        console.log(data.newDefaultAddressId);
 
         if (data.newDefaultAddressId) {
             existingAddresses.value = existingAddresses.value.map((a) => ({
@@ -333,7 +330,7 @@ onMounted(() => {
                         <!-- Order Items Summary -->
                         <OrderSummary
                             :items="items"
-                            :subtotal="subtotal"
+                            :subtotal="subtotalBeforeDeliveryFee"
                             :delivery-fee="
                                 selectedOrderType?.value === 3 ? 2 : 0
                             "

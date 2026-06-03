@@ -9,6 +9,7 @@ import { Coffee, CreditCard, Utensils } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { ItemTypeEnum } from '@/types/cart';
 
 const cartStore = useCartStore();
 const { items } = storeToRefs(cartStore);
@@ -17,25 +18,19 @@ const updateNoteItemId = ref<number | null>(null);
 const loadingRemoveItemId = ref<number | null>(null);
 
 const dishItems = computed(() =>
-    items.value.filter((item) => item.item_type === 'dish'),
+    items.value.filter((item) => item.item_type === ItemTypeEnum.DISH),
 );
 
 const drinkItems = computed(() =>
-    items.value.filter((item) => item.item_type === 'drink'),
+    items.value.filter((item) => item.item_type === ItemTypeEnum.DRINK),
 );
 
 const subtotalDishes = computed(() => {
-    return dishItems.value.reduce(
-        (sum, item) => sum + (item.total || 0),
-        0,
-    );
+    return dishItems.value.reduce((sum, item) => sum + (item.total || 0), 0);
 });
 
 const subtotalDrinks = computed(() => {
-    return drinkItems.value.reduce(
-        (sum, item) => sum + (item.total || 0),
-        0,
-    );
+    return drinkItems.value.reduce((sum, item) => sum + (item.total || 0), 0);
 });
 
 const subtotal = computed(() => {
@@ -132,7 +127,7 @@ const handleRemoveItem = async (cartItemId: number) => {
                                     v-for="item in dishItems"
                                     :key="item.id"
                                     :cart-item="item"
-                                    type="dish"
+                                    :type="ItemTypeEnum.DISH"
                                     :update-note-item-id="updateNoteItemId"
                                     :loading-remove-item-id="
                                         loadingRemoveItemId
@@ -169,7 +164,7 @@ const handleRemoveItem = async (cartItemId: number) => {
                                     v-for="item in drinkItems"
                                     :key="item.id"
                                     :cart-item="item"
-                                    type="drink"
+                                    :type="ItemTypeEnum.DRINK"
                                     :update-note-item-id="updateNoteItemId"
                                     :loading-remove-item-id="
                                         loadingRemoveItemId

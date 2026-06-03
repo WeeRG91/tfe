@@ -6,35 +6,12 @@ import {
     Coins,
     CreditCard,
     FileText,
-    Utensils,
-    ShoppingBag,
-    Truck,
 } from 'lucide-vue-next';
+import { formatAddress, formatDate, getOrderTypeIcon } from '@/lib/utils';
 
 defineProps<{
     orderToShow: OrderType;
 }>();
-
-const formatDateTime = (date: string) => {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-const icons = {
-    'Dine-in': Utensils,
-    Takeaway: ShoppingBag,
-    Delivery: Truck,
-} as const;
-
-const getOrderTypeIcon = (type: string) => {
-    return icons[type as keyof typeof icons] ?? ShoppingBag;
-};
 </script>
 
 <template>
@@ -43,7 +20,7 @@ const getOrderTypeIcon = (type: string) => {
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
             <component
-                :is="getOrderTypeIcon(orderToShow.type.label)"
+                :is="getOrderTypeIcon(orderToShow.type.value)"
                 class="h-5 w-5 text-red-500"
             />
             Order Details
@@ -53,7 +30,7 @@ const getOrderTypeIcon = (type: string) => {
             <div class="flex items-start gap-3">
                 <div class="flex-shrink-0 rounded-lg bg-red-50 p-2">
                     <component
-                        :is="getOrderTypeIcon(orderToShow.type.label)"
+                        :is="getOrderTypeIcon(orderToShow.type.value)"
                         class="h-5 w-5 text-red-500"
                     />
                 </div>
@@ -79,7 +56,7 @@ const getOrderTypeIcon = (type: string) => {
                         class="mt-1 text-sm text-gray-600"
                     >
                         Pickup Time:
-                        {{ formatDateTime(orderToShow.pickup_time) }}
+                        {{ formatDate(orderToShow.pickup_time) }}
                     </p>
                 </div>
             </div>
@@ -125,12 +102,7 @@ const getOrderTypeIcon = (type: string) => {
                         {{ orderToShow.delivery_address.phone }}
                     </p>
                     <p class="text-sm text-gray-600">
-                        {{ orderToShow.delivery_address.street }}
-                    </p>
-                    <p class="text-sm text-gray-600">
-                        {{ orderToShow.delivery_address.postal_code }}
-                        {{ orderToShow.delivery_address.city }},
-                        {{ orderToShow.delivery_address.country }}
+                        {{ formatAddress(orderToShow.delivery_address) }}
                     </p>
                 </div>
             </div>
@@ -152,7 +124,7 @@ const getOrderTypeIcon = (type: string) => {
                         v-if="orderToShow.paid_at"
                         class="text-sm text-green-600"
                     >
-                        Paid on {{ formatDateTime(orderToShow.paid_at) }}
+                        Paid on {{ formatDate(orderToShow.paid_at) }}
                     </p>
                 </div>
             </div>

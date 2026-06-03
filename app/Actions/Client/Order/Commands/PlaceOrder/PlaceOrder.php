@@ -3,6 +3,7 @@
 namespace App\Actions\Client\Order\Commands\PlaceOrder;
 
 use App\Enums\PaymentMethodEnum;
+use App\Events\OrderPlacedBroadcast;
 use App\Models\Cart;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -15,6 +16,7 @@ readonly class PlaceOrder
         private CalculateOrderAmounts $calculateOrderAmounts,
         private HandleLoyaltyPoints   $handleLoyaltyPoints,
     ) {}
+
     /**
      * @param array $data
      * @return array|string[]
@@ -62,9 +64,15 @@ readonly class PlaceOrder
 
             $cart->items()->delete();
 
+            $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
+
+            if ($order->confirmed_at !== null) {
+                event(new OrderPlacedBroadcast($order));
+            }
+
             return [
                 'message' => 'Order placed successfully',
-                'order' => $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address'),
+                'order' => $order,
             ];
         });
     }

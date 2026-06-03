@@ -2,17 +2,18 @@
 import { Utensils, Coffee, Soup } from 'lucide-vue-next';
 import { formatPrice } from '@/lib/utils';
 import { OrderType } from '@/types/order';
+import { ItemTypeEnum } from '@/types/cart';
 
 defineProps<{
     order: OrderType;
 }>();
 
-const getItemTypeIcon = (itemType: string) => {
-    return itemType === 'dish' ? Utensils : Coffee;
+const getItemTypeIcon = (itemType: number) => {
+    return itemType === ItemTypeEnum.DISH ? Utensils : Coffee;
 };
 
-const getItemTypeColor = (itemType: string) => {
-    return itemType === 'dish' ? 'text-red-500' : 'text-blue-500';
+const getItemTypeColor = (itemType: number) => {
+    return itemType === ItemTypeEnum.DISH ? 'text-red-500' : 'text-blue-500';
 };
 </script>
 
@@ -66,7 +67,7 @@ const getItemTypeColor = (itemType: string) => {
 
                         <!-- Customizations -->
                         <div
-                            v-if="item.item_type === 'dish'"
+                            v-if="item.item_type === ItemTypeEnum.DISH"
                             class="mt-1 space-y-0.5 text-xs"
                         >
                             <p

@@ -39,3 +39,7 @@ export type DrinkErrorType = {
     price?: string;
     category?: string;
 };
+
+export const ALCOHOL_CATEGORIES = ['Beer', 'Wine', 'Cocktail'] as const;
+
+export type AlcoholCategory = (typeof ALCOHOL_CATEGORIES)[number];

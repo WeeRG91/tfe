@@ -49,6 +49,6 @@ class RegisteredUserController extends Controller
 
         $request->session()->regenerate();
 
-        return to_route('dashboard');
+        return to_route('admin.dashboard');
     }
 }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { CalendarDays, User, Phone } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { formatDate } from '@/lib/utils';
 
-const props = defineProps<{
+defineProps<{
     pickupName: string;
     pickupPhone: string;
     pickupTime: string;
@@ -15,18 +15,6 @@ const emit = defineEmits<{
     'update:pickupPhone': [value: string];
     'update:pickupTime': [value: string];
 }>();
-
-const pickupTimeFormatted = computed(() => {
-    if (!props.pickupTime) return '';
-    const date = new Date(props.pickupTime);
-    return date.toLocaleString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-});
 </script>
 
 <template>
@@ -115,7 +103,7 @@ const pickupTimeFormatted = computed(() => {
                     v-if="pickupTime"
                     class="mt-2 rounded-md bg-blue-50 p-2 text-sm text-blue-700"
                 >
-                    📅 Your order will be ready at: {{ pickupTimeFormatted }}
+                    📅 Your order will be ready at: {{ formatDate(pickupTime) }}
                 </div>
             </div>
         </div>

@@ -4,6 +4,7 @@ namespace App\Actions\Client\Payment\Commands;
 
 use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Events\OrderPlaced;
 use App\Models\LoyaltyPointTransaction;
 use App\Models\Order;
 use App\Models\User;
@@ -65,7 +66,11 @@ class HandleStripeWebhook
             'paid_at' => now(),
         ]);
 
-        $earnedPoints = floor($order->total * 3);
+        if ($order->confirmed_at !== null) {
+            event(new OrderPlaced());
+        }
+
+        $earnedPoints = floor($order->total_inc_vat * 3);
 
         LoyaltyPointTransaction::query()->create([
             'user_id' => $user->id,

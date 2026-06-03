@@ -3,6 +3,7 @@
 namespace App\Actions\Client\Order\Commands\PlaceOrder;
 
 use App\Enums\DrinkCategoryEnum;
+use App\Enums\ItemTypeEnum;
 use App\Models\Cart;
 use App\Models\Order;
 
@@ -19,18 +20,16 @@ class CreateOrderItems
         $vatBreakdown = [];
 
         foreach ($cart->items as $item) {
-            $vatRate = match ($item->item_type) {
-                'dish' => 12,
+            $vatRate = match (ItemTypeEnum::fromModel($item->item_type)) {
+                ItemTypeEnum::DISH => 12,
 
-                'drink' => match ($item->item->category) {
+                ItemTypeEnum::DRINK => match ($item->item?->category) {
                     DrinkCategoryEnum::BEER,
                     DrinkCategoryEnum::WINE,
                     DrinkCategoryEnum::COCKTAIL => 21,
 
                     default => 12,
                 },
-
-                default => 21
             };
 
             $vatAmount = $item->total - ($item->total / (1 + $vatRate / 100));
@@ -59,9 +58,7 @@ class CreateOrderItems
             ]);
 
             if ($item->removedIngredients()->exists()) {
-                $orderItem->removedIngredients()->attach(
-                    $item->removedIngredients->pluck('id')
-                );
+                $orderItem->removedIngredients()->attach($item->removedIngredients->pluck('id'));
             }
 
             $itemsTotalIncVat += $item->total;

@@ -16,7 +16,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { AllergenOptionType } from '@/types/allergen';
 import { IngredientType } from '@/types/ingredient';
@@ -36,6 +35,7 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import ingredient from '@/routes/admin/ingredient';
 
 const props = defineProps<{
     allergens: AllergenOptionType[];
@@ -145,7 +145,7 @@ const loadIngredients = async () => {
 
     try {
         const response = await axios.get<CursorPaginated<IngredientType>>(
-            '/ingredients/get-ingredients',
+            ingredient.getIngredients().url,
             {
                 params: {
                     cursor: nextCursor.value,

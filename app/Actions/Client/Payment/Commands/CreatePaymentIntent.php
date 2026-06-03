@@ -37,7 +37,7 @@ class CreatePaymentIntent
 
         try {
             $paymentIntent = PaymentIntent::create([
-                'amount' => (int) ($order->total * 100),
+                'amount' => (int) ($order->total_inc_vat * 100),
                 'currency' => 'eur',
                 'payment_method_types' => ['card', 'bancontact'],
                 'metadata' => [

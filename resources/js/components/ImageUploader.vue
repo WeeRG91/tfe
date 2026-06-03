@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import image from '@/routes/image';
+import image from '@/routes/admin/image';
 import axios from 'axios';
 import { ImagePlus, Star } from 'lucide-vue-next';
 import { ref, watch } from 'vue';

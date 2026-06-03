@@ -1,23 +1,26 @@
 <script setup lang="ts">
+import OrderDetailsCard from '@/components/client/orderDetails/OrderDetailsCard.vue';
+import OrderItemsCard from '@/components/client/orderDetails/OrderItemsCard.vue';
+import OrderReceipt from '@/components/client/orderDetails/OrderReceipt.vue';
+import OrderStatusTimeline from '@/components/client/orderDetails/OrderStatusTimeline.vue';
+import PaymentSummaryCard from '@/components/client/orderDetails/PaymentSummaryCard.vue';
+import QuickActionsCard from '@/components/client/orderDetails/QuickActionsCard.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import order from '@/routes/order';
 import { OrderType } from '@/types/order';
+import { PaymentStatusEnum } from '@/types/payment';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
-import OrderStatusTimeline from '@/components/client/orderDetails/OrderStatusTimeline.vue';
-import OrderDetailsCard from '@/components/client/orderDetails/OrderDetailsCard.vue';
-import OrderItemsCard from '@/components/client/orderDetails/OrderItemsCard.vue';
-import PaymentSummaryCard from '@/components/client/orderDetails/PaymentSummaryCard.vue';
-import QuickActionsCard from '@/components/client/orderDetails/QuickActionsCard.vue';
-import OrderReceipt from '@/components/client/orderDetails/OrderReceipt.vue';
 
 const props = defineProps<{
     orderToPay: OrderType;
 }>();
 
 const paidOrder = ref<OrderType>(props.orderToPay);
-const isPaid = computed(() => paidOrder.value?.payment_status.label === 'Paid');
+const isPaid = computed(
+    () => paidOrder.value?.payment_status.value === PaymentStatusEnum.PAID,
+);
 
 const printOrder = () => {
     const content = document.getElementById('receipt')?.innerHTML;
@@ -64,7 +67,7 @@ const checkPayment = async () => {
 
     const { data } = await axios.get(order.getOrder(props.orderToPay.id).url);
 
-    if (data.order.payment_status.label === 'Paid') {
+    if (data.order.payment_status.value === PaymentStatusEnum.PAID) {
         paidOrder.value = data.order as OrderType;
     } else {
         setTimeout(checkPayment, 2000);
@@ -90,18 +93,25 @@ onMounted(() => {
                     v-if="!isPaid"
                     class="text-4xl font-semibold uppercase md:text-5xl"
                 >
-                    ⏳ Waiting for payment confirmation...
+                    Waiting for payment confirmation...
                 </h1>
+                <p v-if="!isPaid" class="mt-2 text-gray-600">
+                    Thank you for your order.
+                </p>
+                <p v-if="!isPaid" class="mt-1 text-sm text-gray-500">
+                    A confirmation email will be sent to your registered email
+                    address, when the payment has been confirmed.
+                </p>
                 <h1
-                    v-else
+                    v-if="isPaid"
                     class="text-4xl font-semibold text-green-600 uppercase md:text-5xl"
                 >
-                    ✅ Payment successful!
+                    Payment successful!
                 </h1>
-                <p class="mt-2 text-gray-600">
+                <p v-if="isPaid" class="mt-2 text-gray-600">
                     Thank you for your order. Your payment has been confirmed.
                 </p>
-                <p class="mt-1 text-sm text-gray-500">
+                <p v-if="isPaid" class="mt-1 text-sm text-gray-500">
                     A confirmation email has been sent to your registered email
                     address.
                 </p>

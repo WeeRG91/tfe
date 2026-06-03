@@ -31,7 +31,7 @@ export const useCartStore = defineStore('cart', {
                     localStorage.setItem('guest_token', data.guest_token);
                 }
             } catch (error) {
-                console.error('Failed to fetch cart:', error);
+                console.error('Failed to fetch cart: ', error);
                 throw error;
             } finally {
                 this.isLoading = false;

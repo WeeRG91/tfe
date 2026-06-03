@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { OrderType } from '@/types/order';
+import { OrderType, OrderTypeEnum } from '@/types/order';
 import { formatPrice } from '@/lib/utils';
 import { CreditCard, CheckCircle } from 'lucide-vue-next';
 
 defineProps<{
     orderToShow: OrderType;
 }>();
-
 </script>
 
 <template>
@@ -37,7 +36,7 @@ defineProps<{
             </div>
             <div
                 v-if="
-                    orderToShow.type.label === 'Delivery' &&
+                    orderToShow.type.value === OrderTypeEnum.DELIVERY &&
                     orderToShow.delivery_fee
                 "
                 class="flex justify-between text-sm text-red-600"

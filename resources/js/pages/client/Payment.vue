@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ClientLayout from '@/layouts/ClientLayout.vue';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, getOrderStatusVariant, getOrderTypeIcon } from '@/lib/utils';
 import paymentOrder from '@/routes/payment-order';
 import { OrderType } from '@/types/order';
 import { Head } from '@inertiajs/vue3';
@@ -8,11 +8,9 @@ import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import {
     CreditCard,
-    HandPlatter,
     Soup,
     MapPin,
     User,
-    Utensils,
     HandCoins,
 } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
@@ -24,13 +22,6 @@ const props = defineProps<{
 const stripe = ref<any>(null);
 const elements = ref<any>(null);
 const isLoading = ref<boolean>(false);
-
-const getOrderTypeIcon = (typeLabel: string) => {
-    const label = typeLabel?.toLowerCase();
-    if (label === 'delivery') return MapPin;
-    if (label === 'takeaway') return HandPlatter;
-    return Utensils;
-};
 
 const initPayment = async () => {
     const { data } = await axios.get(
@@ -109,7 +100,7 @@ onMounted(() => {
                                 <div class="text-right">
                                     <p class="text-sm text-gray-500">Status</p>
                                     <span
-                                        :class="props.order.status.color"
+                                        :class="getOrderStatusVariant(props.order.status.value)"
                                         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                                     >
                                         {{ props.order.status.label }}
@@ -125,7 +116,7 @@ onMounted(() => {
                             >
                                 <component
                                     :is="
-                                        getOrderTypeIcon(props.order.type.label)
+                                        getOrderTypeIcon(props.order.type.value)
                                     "
                                     class="h-5 w-5 text-red-500"
                                 />
@@ -140,7 +131,7 @@ onMounted(() => {
                                         <component
                                             :is="
                                                 getOrderTypeIcon(
-                                                    props.order.type.label,
+                                                    props.order.type.value,
                                                 )
                                             "
                                             class="h-5 w-5 text-red-500"
@@ -292,7 +283,7 @@ onMounted(() => {
                                                         item.meat.extra_price >
                                                         0
                                                     "
-                                                    class="text-gray-400"
+                                                    class="text-gray-500"
                                                 >
                                                     (+€{{
                                                         formatPrice(
@@ -308,7 +299,7 @@ onMounted(() => {
                                                     item.removed_ingredients
                                                         .length > 0
                                                 "
-                                                class="mt-1 text-xs text-gray-400"
+                                                class="mt-1 text-xs text-gray-500"
                                             >
                                                 Without:
                                                 {{
@@ -317,11 +308,19 @@ onMounted(() => {
                                                         .join(', ')
                                                 }}
                                             </div>
+                                            <div
+                                                v-if="item.notes"
+                                                class="mt-1 text-xs text-gray-500"
+                                            >
+                                                Notes: {{ item.notes }}
+                                            </div>
                                         </div>
                                         <div
                                             class="ml-4 font-medium whitespace-nowrap"
                                         >
-                                            €{{ formatPrice(item.total_inc_vat) }}
+                                            €{{
+                                                formatPrice(item.total_inc_vat)
+                                            }}
                                         </div>
                                     </div>
                                 </div>
@@ -364,15 +363,10 @@ onMounted(() => {
                                     class="flex justify-between text-sm text-gray-600"
                                 >
                                     <span
-                                        >VAT ({{ vat.vat_rate }}% -
-                                        Food)</span
+                                        >VAT ({{ vat.vat_rate }}% - Food)</span
                                     >
                                     <span
-                                        >€{{
-                                            formatPrice(
-                                                vat.vat_total,
-                                            )
-                                        }}</span
+                                        >€{{ formatPrice(vat.vat_total) }}</span
                                     >
                                 </div>
                                 <div
@@ -431,7 +425,9 @@ onMounted(() => {
                             >
                                 <span>Total Amount</span>
                                 <span class="text-red-500"
-                                    >€{{ formatPrice(props.order.total_inc_vat) }}</span
+                                    >€{{
+                                        formatPrice(props.order.total_inc_vat)
+                                    }}</span
                                 >
                             </div>
                         </div>
@@ -462,7 +458,9 @@ onMounted(() => {
                                         class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                                     ></span>
                                     <CreditCard v-else class="h-4 w-4" />
-                                    Pay €{{ formatPrice(props.order.total_inc_vat) }}
+                                    Pay €{{
+                                        formatPrice(props.order.total_inc_vat)
+                                    }}
                                 </span>
                                 <div
                                     class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-red-600 to-red-700 transition-transform duration-300 group-hover:translate-x-0"

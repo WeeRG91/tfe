@@ -12,12 +12,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import meat from '@/routes/meat';
 import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 import { Loader } from 'lucide-vue-next';
+import meat from '@/routes/admin/meat';
 
 const props = defineProps<{
     open: boolean;

@@ -7,11 +7,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import allergen from '@/routes/allergen';
-import dish from '@/routes/dish';
-import drink from '@/routes/drink';
-import ingredient from '@/routes/ingredient';
-import meat from '@/routes/meat';
 import { GlobalSearchType, SearchResultType, SearchType } from '@/types';
 import { router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
@@ -26,6 +21,11 @@ import {
     ref,
     watch,
 } from 'vue';
+import dish from '@/routes/admin/dish';
+import drink from '@/routes/admin/drink';
+import ingredient from '@/routes/admin/ingredient';
+import meat from '@/routes/admin/meat';
+import allergen from '@/routes/admin/allergen';
 
 const props = defineProps<{
     open: boolean;

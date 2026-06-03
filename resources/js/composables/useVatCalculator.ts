@@ -1,5 +1,7 @@
-import { CartItemType } from '@/types/cart';
+import { CartItemType, ItemTypeEnum } from '@/types/cart';
 import { computed, Ref } from 'vue';
+import { ALCOHOL_CATEGORIES, AlcoholCategory } from '@/types/drink';
+import { OrderTypeEnum } from '@/types/order';
 
 export function useVatCalculator(params: {
     items: Ref<CartItemType[]>;
@@ -13,20 +15,20 @@ export function useVatCalculator(params: {
         params;
 
     const dishItems = computed(() =>
-        items.value.filter((i) => i.item_type === 'dish'),
+        items.value.filter((i) => i.item_type === ItemTypeEnum.DISH),
     );
     const alcoholicItems = computed(() =>
         items.value.filter(
             (i) =>
-                i.item_type === 'drink' &&
-                ['Beer', 'Wine', 'Cocktail'].includes(i.item.category.label),
+                i.item_type === ItemTypeEnum.DRINK &&
+                ALCOHOL_CATEGORIES.includes(i.item.category.label as AlcoholCategory),
         ),
     );
     const nonAlcoholicItems = computed(() =>
         items.value.filter(
             (i) =>
-                i.item_type === 'drink' &&
-                !['Beer', 'Wine', 'Cocktail'].includes(i.item.category.label),
+                i.item_type === ItemTypeEnum.DRINK &&
+                !ALCOHOL_CATEGORIES.includes(i.item.category.label as AlcoholCategory),
         ),
     );
 
@@ -48,10 +50,12 @@ export function useVatCalculator(params: {
             0,
         );
         const delivery =
-            selectedOrderTypeValue.value === 3 ? deliveryFee.value : 0;
+            selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY ? deliveryFee.value : 0;
 
         return alcoholic + delivery;
     });
+
+    const subtotalBeforeDeliveryFee = computed(() => total12.value + total21.value - deliveryFee.value);
     const subtotal = computed(() => total12.value + total21.value);
 
     const totalAfterDiscount = computed(() => {
@@ -85,7 +89,7 @@ export function useVatCalculator(params: {
         vat12Total,
         vat21Total,
         totalVat,
-        subtotal,
+        subtotalBeforeDeliveryFee,
         totalIncVat,
     };
 }

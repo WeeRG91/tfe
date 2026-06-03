@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { formatPrice } from '@/lib/utils';
+import { ItemTypeEnum } from '@/types/cart';
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -52,7 +53,7 @@ const addToCart = async () => {
     try {
         const response = await cartStore.addDish({
             item_id: props.dish.id,
-            item_type: 'dish',
+            item_type: ItemTypeEnum.DISH,
             meat_id: selectedMeat.value,
             quantity: quantity.value,
             removed_ingredients: removedIngredients.value,

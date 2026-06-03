@@ -7,14 +7,35 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { urlIsActive } from '@/lib/utils';
+import { useOrderStore } from '@/stores/order';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted } from 'vue';
 
 defineProps<{
     items: NavItem[];
 }>();
 
 const page = usePage();
+
+const ordersStore = useOrderStore();
+const { confirmedOrders } = storeToRefs(ordersStore);
+
+const ordersConfirmed = computed(() =>
+    (confirmedOrders.value ?? []).filter(
+        (order) =>
+            order.confirmed_at &&
+            !order.prepare_at &&
+            !order.ready_at &&
+            !order.delivered_at &&
+            !order.completed_at,
+    ),
+);
+
+onMounted(async () => {
+    await ordersStore.getConfirmedOrders();
+});
 </script>
 
 <template>
@@ -27,9 +48,26 @@ const page = usePage();
                     :is-active="urlIsActive(item.href, page.url)"
                     :tooltip="item.title"
                 >
-                    <Link :href="item.href">
-                        <component :is="item.icon" />
-                        <span>{{ item.title }}</span>
+                    <Link
+                        :href="item.href"
+                        class="items-center"
+                        :class="
+                            item.title === 'Orders'
+                                ? 'flex justify-between'
+                                : 'flex'
+                        "
+                    >
+                        <div class="flex items-center gap-2">
+                            <component :is="item.icon" :size="16" />
+                            <span>{{ item.title }}</span>
+                        </div>
+
+                        <span
+                            v-if="item.title === 'Orders'"
+                            class="rounded-full bg-red-600 px-1.5 py-0.5 text-xs text-white"
+                        >
+                            {{ ordersConfirmed.length }}
+                        </span>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>

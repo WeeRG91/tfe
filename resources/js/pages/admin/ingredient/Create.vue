@@ -5,7 +5,6 @@ import ImageUploader from '@/components/ImageUploader.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import ingredient from '@/routes/ingredient';
 import type { BreadcrumbItem } from '@/types';
 import { AllergenOptionType } from '@/types/allergen';
 import { IngredientErrorType } from '@/types/ingredient';
@@ -13,6 +12,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { CirclePlus, Loader, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import ingredient from '@/routes/admin/ingredient';
 
 const props = defineProps<{
     allergens: AllergenOptionType[];

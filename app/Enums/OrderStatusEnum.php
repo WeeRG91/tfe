@@ -14,6 +14,11 @@ enum OrderStatusEnum: int
     case COMPLETED = 6;
     case CANCELLED = 7;
 
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
     public function label(): string
     {
         return match ($this) {

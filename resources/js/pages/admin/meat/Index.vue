@@ -16,7 +16,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import meat from '@/routes/meat';
 import { BreadcrumbItem, CursorPaginated, type FilterType } from '@/types';
 import { MeatType } from '@/types/meat';
 import { Head, router } from '@inertiajs/vue3';
@@ -34,6 +33,7 @@ import {
 } from 'lucide-vue-next';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import meat from '@/routes/admin/meat';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -138,7 +138,7 @@ const loadMeats = async () => {
 
     try {
         const response = await axios.get<CursorPaginated<MeatType>>(
-            '/meats/get-meats',
+            meat.getMeats().url,
             {
                 params: {
                     cursor: nextCursor.value,

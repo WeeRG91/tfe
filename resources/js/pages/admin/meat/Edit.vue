@@ -5,13 +5,13 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import meat from '@/routes/meat';
 import { BreadcrumbItem } from '@/types';
 import { EditMeatType, MeatErrorType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import meat from '@/routes/admin/meat';
 
 const props = defineProps<{
     meatToEdit: EditMeatType;

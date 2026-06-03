@@ -1,21 +1,10 @@
 <script setup lang="ts">
 import { OrderType } from '@/types/order';
-import { formatPrice } from '@/lib/utils';
+import { formatDate, formatPrice } from '@/lib/utils';
 
 defineProps<{
     orderToShow: OrderType;
 }>();
-
-const formatDateTime = (date: string) => {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
 </script>
 
 <template>
@@ -32,7 +21,7 @@ const formatDateTime = (date: string) => {
 
         <div class="text-xs">
             <p>Order: #{{ orderToShow.order_number }}</p>
-            <p>Date: {{ formatDateTime(orderToShow.created_at) }}</p>
+            <p>Date: {{ formatDate(orderToShow.created_at) }}</p>
             <p>Type: {{ orderToShow.type.label }}</p>
             <p v-if="orderToShow.table_number">
                 Table: {{ orderToShow.table_number }}

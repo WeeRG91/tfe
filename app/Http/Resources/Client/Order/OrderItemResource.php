@@ -4,6 +4,7 @@ namespace App\Http\Resources\Client\Order;
 
 use App\Enums\DishCategoryEnum;
 use App\Enums\DrinkCategoryEnum;
+use App\Enums\ItemTypeEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -21,7 +22,7 @@ class OrderItemResource extends JsonResource
             'id' => $this->id,
             'order_id' => $this->order_id,
             'item_id' => $this->item_id,
-            'item_type' => $this->item_type,
+            'item_type' => ItemTypeEnum::fromModel($this->item_type),
             'item' => [
                 'id' => $this->item->id,
                 'name' => $this->item->name,
@@ -29,7 +30,7 @@ class OrderItemResource extends JsonResource
                 'main_image' => $this->item->main_image
                     ? Storage::disk('public')->url($this->item->main_image)
                     : Storage::disk('public')->url('/images/picture.png'),
-                'category' => $this->item_type === 'dish'
+                'category' => ItemTypeEnum::fromModel($this->item_type) === ItemTypeEnum::DISH
                     ? DishCategoryEnum::getCategory($this->item->category)
                     : DrinkCategoryEnum::getCategory($this->item->category),
             ],

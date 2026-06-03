@@ -11,12 +11,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
-import allergen from '@/routes/allergen';
-import dish from '@/routes/dish';
-import ingredient from '@/routes/ingredient';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
     BeanOff,
     BookOpen,
@@ -26,10 +22,19 @@ import {
     Folder,
     LayoutGrid,
     Salad,
+    SquareMenu,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-import drink from '@/routes/drink';
-import meat from '@/routes/meat';
+import { dashboard } from '@/routes/admin';
+import dish from '@/routes/admin/dish';
+import drink from '@/routes/admin/drink';
+import ingredient from '@/routes/admin/ingredient';
+import meat from '@/routes/admin/meat';
+import allergen from '@/routes/admin/allergen';
+import confirmedOrder from '@/routes/admin/confirmed-order';
+
+const page = usePage();
+const user = page.props.auth?.user;
 
 const mainNavItems: NavItem[] = [
     {
@@ -62,12 +67,17 @@ const mainNavItems: NavItem[] = [
         href: allergen.index(),
         icon: BeanOff,
     },
+    {
+        title: 'Orders',
+        href: confirmedOrder.index(),
+        icon: SquareMenu,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
     {
         title: 'My restaurant',
-        href: 'http://tfe.test',
+        href: 'http://127.0.0.1:8000',
         icon: BookOpen,
     },
     {
@@ -98,7 +108,7 @@ const footerNavItems: NavItem[] = [
 
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
-            <NavUser />
+            <NavUser v-if="user" />
         </SidebarFooter>
     </Sidebar>
     <slot />

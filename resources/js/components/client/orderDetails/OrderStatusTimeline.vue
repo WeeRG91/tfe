@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { OrderType } from '@/types/order';
 import { Check, Clock } from 'lucide-vue-next';
+import { formatTime } from '@/lib/utils';
 
 const props = defineProps<{
     orderToShow: OrderType;
@@ -62,9 +63,9 @@ const orderSteps = computed<Step[]>(() => {
             },
             {
                 value: 6,
-                label: 'Delivered',
+                label: 'Completed',
                 description: 'Your order has been delivered',
-                dateKey: 'delivered_at',
+                dateKey: 'completed_at',
             },
         );
     } else {
@@ -112,14 +113,6 @@ const getStepDate = (stepValue: number) => {
         return props.orderToShow[step.dateKey];
     }
     return null;
-};
-
-const formatTime = (date: string) => {
-    if (!date) return '';
-    return new Date(date).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-    });
 };
 </script>
 

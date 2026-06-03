@@ -31,7 +31,7 @@ const isCartOpen = ref<boolean>(false);
 const isUserMenuOpen = ref<boolean>(false);
 
 const page = usePage();
-const user = page.props.auth.user;
+const user = page.props.auth?.user;
 
 const openCart = async () => {
     isCartOpen.value = true;
@@ -232,7 +232,7 @@ watch(mobileMenuOpen, (isOpen) => {
 
                             <button
                                 v-else
-                                class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700 hover:shadow-md"
+                                class="hidden sm:flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700 hover:shadow-md"
                             >
                                 <LogIn class="h-4 w-4" />
                                 Sign in

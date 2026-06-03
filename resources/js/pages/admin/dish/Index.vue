@@ -17,7 +17,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import dish from '@/routes/dish';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { DishType } from '@/types/dish';
@@ -39,6 +38,7 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import dish from '@/routes/admin/dish';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -173,7 +173,7 @@ const loadDishes = async () => {
 
     try {
         const response = await axios.get<CursorPaginated<DishType>>(
-            '/dishes/get-dishes',
+            dish.getDishes().url,
             {
                 params: {
                     cursor: nextCursor.value,

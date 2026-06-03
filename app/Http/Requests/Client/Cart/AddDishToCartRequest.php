@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Client\Cart;
 
+use App\Enums\ItemTypeEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class AddDishToCartRequest extends FormRequest
 {
@@ -23,12 +25,16 @@ class AddDishToCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'item_id' => 'required',
-            'item_type' => 'required|in:dish,drink',
-            'meat_id' => 'required|exists:meats,id',
-            'quantity' => 'required|integer|min:1',
-            'removed_ingredients' => 'nullable|array',
-            'notes' => 'nullable|string|max:1000',
+            'item_id' => ['required'],
+            'item_type' => ['required', new Enum(ItemTypeEnum::class)],
+            'meat_id' => [
+                'nullable',
+                'required_if:item_type,' . ItemTypeEnum::DISH->value,
+                'exists:meats,id'
+            ],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'removed_ingredients' => ['nullable', 'array'],
+            'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

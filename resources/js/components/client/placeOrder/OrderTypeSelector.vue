@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { OrderTypeType } from '@/types/order';
+import { OrderTypeEnum, OrderTypeType } from '@/types/order';
 import { ShoppingBag, Store, Table, Truck } from 'lucide-vue-next';
 
 const props = defineProps<{
@@ -11,13 +11,13 @@ const emit = defineEmits<{
     'update:modelValue': [value: number];
 }>();
 
-const getOrderTypeIcon = (orderType: OrderTypeType) => {
-    switch (orderType.value) {
-        case 1:
+const getOrderTypeIcon = (orderTypeValue: OrderTypeEnum) => {
+    switch (orderTypeValue) {
+        case OrderTypeEnum.DINEIN:
             return Table;
-        case 2:
+        case OrderTypeEnum.TAKEAWAY:
             return ShoppingBag;
-        case 3:
+        case OrderTypeEnum.DELIVERY:
             return Truck;
         default:
             return Store;
@@ -51,7 +51,7 @@ const selectType = (value: number) => {
                 ]"
             >
                 <component
-                    :is="getOrderTypeIcon(orderType)"
+                    :is="getOrderTypeIcon(orderType.value)"
                     class="h-5 w-5"
                     :class="
                         props.modelValue === orderType.value
