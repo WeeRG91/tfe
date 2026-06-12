@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ $title ?? 'Order Update' }} - #{{ $order->order_number }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            padding: 24px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header-confirmed { background-color: #4caf50; }
+        .header-ready { background-color: #2196f3; }
+        .header-delivering { background-color: #ff9800; }
+        .header-completed { background-color: #9c27b0; }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 20px 30px;
+        }
+
+        .section {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        .section-title-confirmed { color: #4caf50; border-left: 3px solid #4caf50; }
+        .section-title-ready { color: #2196f3; border-left: 3px solid #2196f3; }
+        .section-title-delivering { color: #ff9800; border-left: 3px solid #ff9800; }
+        .section-title-completed { color: #9c27b0; border-left: 3px solid #9c27b0; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .badge-confirmed { background-color: #4CAF50; color: white; }
+        .badge-ready { background-color: #2196f3; color: white; }
+        .badge-delivering { background-color: #ff9800; color: white; }
+        .badge-completed { background-color: #9c27b0; color: white; }
+
+        .status-card {
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .status-icon {
+            font-size: 36px;
+            margin-bottom: 4px;
+        }
+
+        .status-message {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .info-grid  {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 12px;
+        }
+
+        .info-item {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .progress-tracker {
+            margin: 16px 0 12px;
+        }
+
+        .progress-steps {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            position: relative;
+            gap: 8px;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 16px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .progress-line-active {
+            background: currentColor;
+            height: 100%;
+            width: var(--progress-width, 0%);
+            transition: width 0.3s ease;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background: white;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 50%;
+            margin: 0 auto 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .step.completed .step-circle {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+
+        .step.active .step-circle {
+            border-color: #FF9800;
+            border-width: 2px;
+            color: #FF9800;
+            font-weight: bold;
+        }
+
+        .step-label {
+            font-size: 10px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .step.completed .step-label,
+        .step.active .step-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items-table th {
+            text-align: left;
+            padding: 6px 6px;
+            background-color: #fafafa;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #999;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .items-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .item-name {
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .item-details {
+            font-size: 11px;
+            color: #999;
+            margin-top: 3px;
+        }
+
+        .item-details p {
+            margin: 2px 0;
+        }
+
+        .item-details strong {
+            color: #666;
+        }
+
+        .meat-info {
+            color: #ff9800;
+        }
+
+        .removed-ingredient {
+            color: #f44336;
+            text-decoration: line-through;
+        }
+
+        .totals {
+            margin-top: 8px;
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 3px;
+            font-size: 12px;
+        }
+
+        .totals-label {
+            font-weight: 500;
+            margin-right: 16px;
+            min-width: 100px;
+            text-align: left;
+            color: #666;
+        }
+
+        .totals-value {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .grand-total {
+            font-size: 15px;
+            font-weight: 800;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .grand-total .totals-label, .grand-total .totals-value {
+            color: #4caf50;
+            font-weight: 800;
+        }
+
+        .action-button {
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .notes-box {
+            background-color: #fafafa;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .footer {
+            background-color: #f9f9f9;
+            padding: 16px 20px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .footer p {
+            margin: 4px 0;
+        }
+
+        .footer strong {
+            color: #4caf50;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                margin: 0;
+            }
+            .content {
+                padding: 16px 20px;
+            }
+            .header {
+                padding: 20px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+            .totals-row {
+                justify-content: space-between;
+            }
+            .totals-label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header {{ $headerClass }}">
+            <h1>{{ $headerTitle }}</h1>
+            <p>{{ $headerSubtitle }}</p>
+        </div>
+
+        <div class="content">
+            <div class="section" style="border-bottom: none; padding-bottom: 0;">
+                <div class="badge {{ $badgeClass }}">
+                    Order #{{ $order->order_number }} • {{ $order->status->label() }}
+                </div>
+            </div>
+
+            @yield('status-content')
+
+            <div class="section">
+                <div class="section-title {{ $sectionTitleClass }}">Your Order</div>
+
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th style="text-align: center; width: 50px;">Qty</th>
+                            <th style="text-align: right; width: 80px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($order->items as $item)
+                            <tr>
+                                <td>
+                                    <div class="item-name">{{ $item->item->name }}</div>
+                                    <div class="item-details">
+                                        <p><strong>Category:</strong> {{ $item->item->category->label() }}</p>
+                                        @if($item->meat)
+                                            <p class="meat-info">✓ {{ $item->meat->name }} @if($item->meat->extra_price > 0)(+€{{ number_format($item->meat->extra_price, 2) }})@endif</p>
+                                        @endif
+                                        @if($item->removed_ingredients)
+                                            <p><strong>Removed:</strong> @foreach($item->removed_ingredients as $ingredient)<span class="removed-ingredient">{{ $ingredient->name }}</span>@if(!$loop->last), @endif @endforeach</p>
+                                        @endif
+                                        @if($item->notes)
+                                            <p><strong>Note:</strong> {{ $item->notes }}</p>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td style="text-align: center; vertical-align: middle;">{{ $item->quantity }}</td>
+                                <td style="text-align: right; vertical-align: middle;">€{{ number_format($item->total_inc_vat, 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <div class="section-title {{ $sectionTitleClass }}">Payment Summary</div>
+                <div class="totals">
+                    @foreach($order->vat_breakdown as $vat)
+                        <div class="totals-row"><div class="totals-label">VAT {{ $vat['vat_rate'] }}%:</div><div class="totals-value">€{{ number_format($vat['vat_total'], 2) }}</div></div>
+                    @endforeach
+                    <div class="totals-row"><div class="totals-label">Subtotal:</div><div class="totals-value">€{{ number_format($order->subtotal, 2) }}</div></div>
+                    @if($order->discount_total > 0)
+                        <div class="totals-row"><div class="totals-label">Discount:</div><div class="totals-value">-€{{ number_format($order->discount_total, 2) }}</div></div>
+                    @endif
+                    @if($order->delivery_fee > 0)
+                        <div class="totals-row"><div class="totals-label">Delivery fee:</div><div class="totals-value">€{{ number_format($order->delivery_fee, 2) }}</div></div>
+                    @endif
+                    <div class="totals-row grand-total"><div class="totals-label">Total:</div><div class="totals-value">€{{ number_format($order->total_inc_vat, 2) }}</div></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title {{ $sectionTitleClass }}">Payment Method</div>
+                <div class="info-grid">
+                    <div class="info-item"><div class="info-label">Method</div><div class="info-value">{{ $order->payment_method->label() }}</div></div>
+                    <div class="info-item"><div class="info-label">Status</div><div class="info-value">{{ $order->payment_status->label() }}</div></div>
+                    @if($order->paid_at)<div class="info-item"><div class="info-label">Paid At</div><div class="info-value">{{ $order->paid_at }}</div></div>@endif
+                </div>
+            </div>
+
+            @if($order->notes)
+                <div class="section">
+                    <div class="section-title {{ $sectionTitleClass }}">Special Instructions</div>
+                    <div class="notes-box">{{ $order->notes }}</div>
+                </div>
+            @endif
+        </div>
+
+        <div class="footer">
+            @yield('footer-message')
+            <p style="margin-top: 8px; font-size: 10px;">© {{ date('Y') }} Your Restaurant • <a href="mailto:hello@yourrestaurant.com" style="color: #999;">Contact Us</a></p>
+        </div>
+    </div>
+</body>
+</html>

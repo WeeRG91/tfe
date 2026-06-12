@@ -51,4 +51,9 @@ class Dish extends Model
     {
         return $this->morphMany(OrderItem::class, 'item');
     }
+
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
 }

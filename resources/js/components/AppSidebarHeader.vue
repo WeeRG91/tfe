@@ -54,7 +54,7 @@ onUnmounted(() => {
         <div>
             <button
                 @click="openModal"
-                class="flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:bg-muted"
+                class="flex items-center h-11 w-44 gap-2 rounded-md border px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:bg-muted"
             >
                 <Search class="h-4 w-4" />
                 <span>Search</span>

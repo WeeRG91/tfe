@@ -29,8 +29,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'close'): void;
-    (e: 'update-status', orderId: number, newStatus: OrderStatusEnum): void;
+    close: [];
+    'update-status': [orderId: number, newStatus: OrderStatusEnum];
 }>();
 
 const orderStatusActionId = ref<string>('');
@@ -63,7 +63,7 @@ const closeOnBackdrop = (e: MouseEvent) => {
 onMounted(() => {
     if (props.isOpen) {
         document.body.style.overflow = 'hidden';
-        orderStatusActionId.value = ''
+        orderStatusActionId.value = '';
     }
 });
 
@@ -90,7 +90,7 @@ watch(
         @click="closeOnBackdrop"
     >
         <div
-            class="relative my-8 w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-900"
+            class="relative mx-2 w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-900"
         >
             <!-- Header -->
             <div

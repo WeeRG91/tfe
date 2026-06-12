@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Gift, Sparkles } from 'lucide-vue-next';
 import { PointsOptions } from '@/composables/useLoyaltyPoints';
+import { Gift, Sparkles } from 'lucide-vue-next';
 
 const props = defineProps<{
     loyaltyPoints: number;
@@ -12,8 +12,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'apply', points: number): void;
-    (e: 'remove'): void;
+    apply: [points: number];
+    remove: [];
 }>();
 </script>
 
@@ -74,20 +74,23 @@ const emit = defineEmits<{
                                 v-if="!canUseOption(option.points)"
                                 class="ml-1 text-xs"
                             >
-                                (Need {{ option.points - props.loyaltyPoints }} more)
+                                (Need
+                                {{ option.points - props.loyaltyPoints }} more)
                             </span>
                         </button>
                     </div>
 
                     <!-- Show message when user has points but not enough for any option -->
                     <div
-                        v-if="props.loyaltyPoints > 0 && props.loyaltyPoints < 300"
+                        v-if="
+                            props.loyaltyPoints > 0 && props.loyaltyPoints < 300
+                        "
                         class="mt-2 rounded-md bg-amber-100/50 p-2"
                     >
                         <p class="text-xs text-amber-700">
-                            💡 You need {{ 300 - props.loyaltyPoints }} more points to
-                            unlock your first discount! Complete this order to
-                            earn {{ props.earnedPoints }} points.
+                            💡 You need {{ 300 - props.loyaltyPoints }} more
+                            points to unlock your first discount! Complete this
+                            order to earn {{ props.earnedPoints }} points.
                         </p>
                     </div>
 

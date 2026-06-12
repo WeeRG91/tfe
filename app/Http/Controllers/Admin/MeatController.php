@@ -64,7 +64,7 @@ class MeatController extends Controller
             );
 
             return redirect()
-                ->route('meat.index');
+                ->route('admin.meat.index');
         } catch (Throwable $e) {
             report($e);
 
@@ -135,7 +135,7 @@ class MeatController extends Controller
             );
 
             return redirect()
-                ->route('meat.index');
+                ->route('admin.meat.index');
         } catch (Throwable $e) {
             report($e);
 

@@ -9,7 +9,7 @@ defineProps<{
     isLoading: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
     placeOrder: [];
 }>();
 </script>
@@ -46,7 +46,7 @@ defineEmits<{
                 </div>
 
                 <button
-                    @click="$emit('placeOrder')"
+                    @click="emit('placeOrder')"
                     :disabled="!isFormValid || isLoading"
                     class="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 py-3 text-sm text-white transition-all hover:shadow-md hover:shadow-red-200 disabled:cursor-not-allowed disabled:opacity-50"
                 >

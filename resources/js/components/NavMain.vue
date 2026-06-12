@@ -11,7 +11,7 @@ import { useOrderStore } from '@/stores/order';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 defineProps<{
     items: NavItem[];
@@ -19,8 +19,8 @@ defineProps<{
 
 const page = usePage();
 
-const ordersStore = useOrderStore();
-const { confirmedOrders } = storeToRefs(ordersStore);
+const orderStore = useOrderStore();
+const { confirmedOrders } = storeToRefs(orderStore);
 
 const ordersConfirmed = computed(() =>
     (confirmedOrders.value ?? []).filter(
@@ -33,8 +33,27 @@ const ordersConfirmed = computed(() =>
     ),
 );
 
+type EchoChannel = {
+    listen: (event: string, callback: () => void) => EchoChannel;
+};
+
+const channel = ref<EchoChannel | null>(null);
+
 onMounted(async () => {
-    await ordersStore.getConfirmedOrders();
+    await orderStore.getConfirmedOrders();
+
+    channel.value = window.Echo.channel('orders').listen(
+        '.order.placed',
+        async () => {
+            await orderStore.getConfirmedOrders();
+        },
+    );
+});
+
+onUnmounted(() => {
+    if (channel.value) {
+        window.Echo.leave('orders');
+    }
 });
 </script>
 

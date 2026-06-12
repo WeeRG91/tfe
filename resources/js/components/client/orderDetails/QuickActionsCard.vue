@@ -7,7 +7,7 @@ defineProps<{
     orderToShow: OrderType;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
     print: [];
     remove: [orderId: number];
 }>();
@@ -25,7 +25,7 @@ defineEmits<{
         <div class="space-y-3">
             <button
                 v-if="orderToShow.status.value !== OrderStatusEnum.CANCELLED"
-                @click="$emit('print')"
+                @click="emit('print')"
                 class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
             >
                 <Printer class="h-4 w-4" />
@@ -33,7 +33,7 @@ defineEmits<{
             </button>
             <button
                 v-if="orderToShow.status.value === OrderStatusEnum.CANCELLED"
-                @click="$emit('remove', orderToShow.id)"
+                @click="emit('remove', orderToShow.id)"
                 class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
             >
                 <Trash class="h-4 w-4" />

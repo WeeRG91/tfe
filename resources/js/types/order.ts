@@ -96,13 +96,11 @@ export type PlaceOrderPayloadType = {
 export type OrderTypeType = {
     value: number;
     label: string;
-    color: string;
 };
 
 export type OrderStatusType = {
     value: number;
     label: string;
-    color: string;
 };
 
 export enum OrderTypeEnum {
@@ -120,3 +118,17 @@ export enum OrderStatusEnum {
     COMPLETED = 6,
     CANCELLED = 7,
 }
+
+export enum FilterOrderEnum {
+    ACTIVE = 'active',
+    COMPLETED = 'completed',
+    CANCELLED = 'cancelled',
+}
+
+export const ActiveStatuses = [
+    OrderStatusEnum.PENDING,
+    OrderStatusEnum.CONFIRMED,
+    OrderStatusEnum.PREPARING,
+    OrderStatusEnum.READY,
+    OrderStatusEnum.DELIVERING,
+];

@@ -43,3 +43,9 @@ export type DrinkErrorType = {
 export const ALCOHOL_CATEGORIES = ['Beer', 'Wine', 'Cocktail'] as const;
 
 export type AlcoholCategory = (typeof ALCOHOL_CATEGORIES)[number];
+
+export enum DrinkAvailabilityEnum {
+    AVAILABLE = 'Available',
+    UNAVAILABLE = 'Unavailable',
+}
+

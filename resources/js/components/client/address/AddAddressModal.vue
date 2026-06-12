@@ -12,8 +12,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'close'): void;
-    (e: 'save', address: AddressType): void;
+    close: [];
+    save: [address: AddressType];
 }>();
 
 const first_name = ref<string>('');

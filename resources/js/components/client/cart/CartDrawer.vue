@@ -148,12 +148,6 @@ watch(
                     <p class="text-center text-gray-400">
                         Looks like you haven't added any items yet
                     </p>
-                    <button
-                        @click="onClose"
-                        class="mt-6 rounded-lg bg-red-500 px-6 py-2 text-white transition-all hover:bg-red-600"
-                    >
-                        Start Shopping
-                    </button>
                 </div>
 
                 <div v-else class="space-y-6">

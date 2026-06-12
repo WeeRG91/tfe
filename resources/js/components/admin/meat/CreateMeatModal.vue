@@ -26,7 +26,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'create', meat: MeatOptionType): void;
+    create: [meat: MeatOptionType];
 }>();
 
 const page = usePage();

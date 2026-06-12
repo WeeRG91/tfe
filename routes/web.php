@@ -4,6 +4,7 @@ use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\ClientGlobalSearchController;
 use App\Http\Controllers\Client\MenuController;
+use App\Http\Controllers\Client\NotificationController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\PaymentController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/my-orders', 'myOrders')->name('my-orders');
         Route::get('/{orderId}', 'getOrder')->name('get-order');
         Route::get('/{orderId}/details', 'orderDetails')->name('order-details');
+        Route::get('/reorder', 'reorder')->name('reorder');
         Route::post('/place-order', 'placeOrder')->name('place-order');
     });
 
@@ -59,6 +61,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{order}/payment', 'payment')->name('payment');
         Route::get('/{order}/create-payment-intent', 'createPaymentIntent')->name('create-payment-intent');
         Route::get('/{order}/payment-success', 'paymentSuccess')->name('payment-success');
+    });
+
+    Route::controller(NotificationController::class)->prefix('notifications')->name('notification.')->group(function () {
+        Route::get('/my-notifications', 'myNotifications')->name('my-notifications');
+        Route::get('/get-notifications', 'getNotifications')->name('get-notifications');
+        Route::patch('/{notification}/read', 'markAsRead')->name('mark-as-read');
+        Route::patch('/', 'markAllAsRead')->name('mark-all-as-read');
+        Route::delete('/{notification}', 'delete')->name('delete');
+        Route::delete('/', 'deleteAll')->name('delete-all');
     });
 });
 

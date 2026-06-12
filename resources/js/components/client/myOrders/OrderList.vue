@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import OrderCard from './OrderCard.vue';
+import { OrderType } from '@/types/order';
 
 defineProps<{
     title: string;
     icon: any;
     iconColor: string;
-    orders: any[];
+    orders: OrderType[];
 }>();
 </script>
 

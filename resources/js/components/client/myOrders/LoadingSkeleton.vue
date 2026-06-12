@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { Clock, ShoppingBag } from 'lucide-vue-next';
 </script>
 
 <template>
     <div class="space-y-8">
         <div class="space-y-3">
             <div
-                class="flex items-center gap-2 border-l-4 border-amber-500 pl-3"
+                class="flex items-center gap-2 pl-3"
             >
-                <Clock class="h-5 w-5 text-amber-500" />
                 <div class="h-6 w-32 animate-pulse rounded bg-gray-200"></div>
                 <div class="h-4 w-6 animate-pulse rounded bg-gray-200"></div>
             </div>
@@ -25,9 +23,6 @@ import { Clock, ShoppingBag } from 'lucide-vue-next';
                                 <div
                                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100"
                                 >
-                                    <ShoppingBag
-                                        class="h-5 w-5 text-gray-400"
-                                    />
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <div
@@ -67,11 +62,7 @@ import { Clock, ShoppingBag } from 'lucide-vue-next';
                             </div>
                             <div
                                 class="h-1.5 overflow-hidden rounded-full bg-gray-100"
-                            >
-                                <div
-                                    class="h-full w-1/3 rounded-full bg-gradient-to-r from-amber-500 to-red-500"
-                                ></div>
-                            </div>
+                            ></div>
                         </div>
 
                         <div class="flex items-center justify-between pt-1">

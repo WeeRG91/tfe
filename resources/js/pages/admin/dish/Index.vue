@@ -19,7 +19,7 @@ import {
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { CategoryOptionType } from '@/types/category';
-import { DishType } from '@/types/dish';
+import { DishAvailabilityEnum, DishType } from '@/types/dish';
 import { Head, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
@@ -627,7 +627,7 @@ onBeforeUnmount(() => {
                                         <DropdownMenuItem
                                             v-if="
                                                 dishData.is_available ===
-                                                'Available'
+                                                DishAvailabilityEnum.AVAILABLE
                                             "
                                             @click="
                                                 openConfirmModal(

@@ -70,7 +70,7 @@ class DrinkController extends Controller
             );
 
             return redirect()
-                ->route('drink.index');
+                ->route('admin.drink.index');
         } catch (Throwable $e) {
             report($e);
 
@@ -114,7 +114,7 @@ class DrinkController extends Controller
             );
 
             return redirect()
-                ->route('drink.index');
+                ->route('admin.drink.index');
         } catch (Throwable $e) {
             report($e);
 

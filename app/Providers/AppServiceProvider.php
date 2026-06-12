@@ -22,6 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen(OrderPlacedBroadcast::class, SendOrderConfirmedNotification::class);
+       //
     }
 }

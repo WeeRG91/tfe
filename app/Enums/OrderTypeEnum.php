@@ -10,6 +10,11 @@ enum OrderTypeEnum: int
     case TAKEAWAY = 2;
     case DELIVERY = 3;
 
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -19,26 +24,11 @@ enum OrderTypeEnum: int
         };
     }
 
-    public static function values(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
-
-    public static function getColor(self $case): string
-    {
-        return match ($case) {
-            self::DINE_IN => 'bg-blue-500/75',
-            self::TAKEAWAY => 'bg-yellow-500/75',
-            self::DELIVERY => 'bg-green-500/75',
-        };
-    }
-
     public static function getTypes(): array
     {
         return array_map(fn($case) => [
             'value' => $case->value,
             'label' => $case->label(),
-            'color' => self::getColor($case),
         ], self::cases());
     }
 

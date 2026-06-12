@@ -1,10 +1,10 @@
 import { AllergenErrorType } from '@/types/allergen';
+import { CategoryOptionType } from '@/types/category';
 import { DishErrorType } from '@/types/dish';
 import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
 import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
-import { CategoryOptionType } from '@/types/category';
 
 export interface Auth {
     user: User;

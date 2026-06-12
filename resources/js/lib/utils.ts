@@ -12,10 +12,20 @@ import {
     ShoppingBag,
     Truck,
     Utensils,
+    CookingPot,
+    BookOpenCheck,
+    CircleX,
+    Salad,
+    Wine,
+    Gift,
+    Bell,
 } from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
 import { FunctionalComponent } from 'vue';
 import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/payment';
+import { NotifiableTypeEnum, NotificationTypeEnum } from '@/types/notification';
+import order from '@/routes/order';
+import menu from '@/routes/menu';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -58,6 +68,26 @@ export const formatTime = (date: string | null) => {
         hour: '2-digit',
         minute: '2-digit',
     });
+};
+
+export const formatDateForHumans = (date: string | null) => {
+    if (!date) return 'Not set';
+
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return 'Invalid date';
+
+    const diff = Date.now() - d.getTime();
+
+    const mins = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins} min ago`;
+    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+
+    return d.toLocaleDateString();
 };
 
 export const formatAddress = (address: any) => {
@@ -124,4 +154,58 @@ export const getPaymentStatusIcon = (status: PaymentStatusEnum) => {
         [PaymentStatusEnum.FAILED]: AlertCircle,
     };
     return variants[status] || 'bg-gray-100 text-gray-800';
+};
+
+export const getNotificationIcon = (type: NotificationTypeEnum) => {
+    const icons: Record<
+        NotificationTypeEnum,
+        FunctionalComponent<LucideProps>
+    > = {
+        [NotificationTypeEnum.ORDER_CONFIRMED]: CheckCircle,
+        [NotificationTypeEnum.ORDER_READY]: CookingPot,
+        [NotificationTypeEnum.ORDER_DELIVERING]: Truck,
+        [NotificationTypeEnum.ORDER_COMPLETED]: BookOpenCheck,
+        [NotificationTypeEnum.ORDER_CANCELLED]: CircleX,
+        [NotificationTypeEnum.DISH_CREATED]: Salad,
+        [NotificationTypeEnum.DRINK_CREATED]: Wine,
+        [NotificationTypeEnum.PROMOTION_CREATED]: Gift,
+        [NotificationTypeEnum.SYSTEM_ANNOUNCEMENT]: AlertCircle,
+    };
+    return icons[type] || Bell;
+};
+
+export const getNotificationIconBgColor = (type: NotificationTypeEnum) => {
+    const colors: Record<NotificationTypeEnum, string> = {
+        [NotificationTypeEnum.ORDER_CONFIRMED]: 'bg-green-100',
+        [NotificationTypeEnum.ORDER_READY]: 'bg-blue-100',
+        [NotificationTypeEnum.ORDER_DELIVERING]: 'bg-yellow-100',
+        [NotificationTypeEnum.ORDER_COMPLETED]: 'bg-purple-100',
+        [NotificationTypeEnum.ORDER_CANCELLED]: 'bg-red-100',
+        [NotificationTypeEnum.DISH_CREATED]: 'bg-blue-100',
+        [NotificationTypeEnum.DRINK_CREATED]: 'bg-blue-100',
+        [NotificationTypeEnum.PROMOTION_CREATED]: 'bg-pink-100',
+        [NotificationTypeEnum.SYSTEM_ANNOUNCEMENT]: 'bg-red-100',
+    };
+    return colors[type] || 'bg-gray-100';
+};
+
+export const getNotificationIconColor = (type: NotificationTypeEnum) => {
+    const colors: Record<NotificationTypeEnum, string> = {
+        [NotificationTypeEnum.ORDER_CONFIRMED]: 'text-green-600',
+        [NotificationTypeEnum.ORDER_READY]: 'text-blue-600',
+        [NotificationTypeEnum.ORDER_DELIVERING]: 'text-yellow-600',
+        [NotificationTypeEnum.ORDER_COMPLETED]: 'text-purple-600',
+        [NotificationTypeEnum.ORDER_CANCELLED]: 'text-red-600',
+        [NotificationTypeEnum.DISH_CREATED]: 'text-blue-600',
+        [NotificationTypeEnum.DRINK_CREATED]: 'text-blue-600',
+        [NotificationTypeEnum.PROMOTION_CREATED]: 'text-pink-600',
+        [NotificationTypeEnum.SYSTEM_ANNOUNCEMENT]: 'text-red-600',
+    };
+    return colors[type] || 'text-gray-600';
+};
+
+export const notificationRoutes: Record<NotifiableTypeEnum, (id: number) => string> = {
+    [NotifiableTypeEnum.ORDER]: (id) => order.orderDetails(id).url,
+    [NotifiableTypeEnum.DISH]: (id) => menu.showDish(id).url,
+    [NotifiableTypeEnum.DRINK]: () => menu.drink().url,
 };

@@ -20,7 +20,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { DishType } from '@/types/dish';
-import { DrinkType } from '@/types/drink';
+import { DrinkAvailabilityEnum, DrinkType } from '@/types/drink';
 import { Head, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
@@ -632,7 +632,7 @@ onBeforeUnmount(() => {
                                         <DropdownMenuItem
                                             v-if="
                                                 drinkData.is_available ===
-                                                'Available'
+                                                DrinkAvailabilityEnum.AVAILABLE
                                             "
                                             @click="
                                                 openConfirmModal(

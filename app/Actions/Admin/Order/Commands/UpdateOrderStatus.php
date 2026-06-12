@@ -2,10 +2,14 @@
 
 namespace App\Actions\Admin\Order\Commands;
 
+use App\Enums\NotificationTypeEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Events\StatusOrderUpdated;
+use App\Events\StatusOrderUpdatedBroadcast;
 use App\Models\Order;
+use Illuminate\Support\Facades\DB;
 
 class UpdateOrderStatus
 {
@@ -31,6 +35,17 @@ class UpdateOrderStatus
         }
 
         $order->update($data);
+
+        $order->refresh();
+
+        $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
+
+        if ($isBackward) {
+            $this->removeNotification($order, $currentStatus);
+            event(new StatusOrderUpdated($order));
+        } else {
+            event(new StatusOrderUpdated($order));
+        }
     }
 
     /**
@@ -117,5 +132,25 @@ class UpdateOrderStatus
         }
 
         return $data;
+    }
+
+    private function removeNotification(Order $order, int $previousStatus): void
+    {
+        $type = match ($previousStatus) {
+            OrderStatusEnum::READY->value => NotificationTypeEnum::ORDER_READY->value,
+            OrderStatusEnum::DELIVERING->value => NotificationTypeEnum::ORDER_DELIVERING->value,
+            OrderStatusEnum::COMPLETED->value => NotificationTypeEnum::ORDER_COMPLETED->value,
+            default => null,
+        };
+
+        if (!$type) return;
+
+        DB::table('notifications')
+            ->where('user_id', $order->user_id)
+            ->where('notifiable_id', $order->id)
+            ->where('type', $type)
+            ->delete();
+
+        event(new StatusOrderUpdatedBroadcast($order));
     }
 }

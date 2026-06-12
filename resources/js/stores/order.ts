@@ -6,6 +6,7 @@ import {
 } from '@/types/order';
 import axios from 'axios';
 import { defineStore } from 'pinia';
+import order from '@/routes/order';
 
 export const useOrderStore = defineStore('order', {
     state: () => ({
@@ -36,7 +37,7 @@ export const useOrderStore = defineStore('order', {
             }
         },
 
-        async getOrders(status: number) {
+        async getOrders(status: string) {
             this.isLoading = true;
 
             try {
@@ -57,7 +58,7 @@ export const useOrderStore = defineStore('order', {
             this.isLoading = true;
 
             try {
-                const { data } = await axios.get(`/orders/${orderId}`);
+                const { data } = await axios.get(order.getOrder(orderId).url);
 
                 this.currentOrder = data.order as OrderType;
 

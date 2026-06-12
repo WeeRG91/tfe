@@ -64,9 +64,11 @@ const submit = () => {
             toast.success('Drink successfully edited.');
         },
         onError: (error) => {
-            if (error.message) toast.error(error.meessage);
-
-            toast.error('Something went wrong. Please check the form.');
+            if (error.message) {
+                toast.error(error.meessage);
+            } else {
+                toast.error('Something went wrong. Please check the form.');
+            }
         },
         onFinish: () => {
             isLoading.value = false;

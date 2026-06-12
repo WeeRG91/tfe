@@ -69,7 +69,7 @@ class AllergenController extends Controller
             );
 
             return redirect()
-                ->route('allergen.index');
+                ->route('admin.allergen.index');
         } catch (Throwable $e) {
             report($e);
 
@@ -116,7 +116,7 @@ class AllergenController extends Controller
             );
 
             return redirect()
-                ->route('allergen.index');
+                ->route('admin.allergen.index');
         } catch (Throwable $e) {
             report($e);
 

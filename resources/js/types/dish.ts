@@ -51,3 +51,8 @@ export type ClientDishType = {
         main_image: string;
     }[];
 };
+
+export enum DishAvailabilityEnum {
+    AVAILABLE = 'Available',
+    UNAVAILABLE = 'Unavailable',
+}

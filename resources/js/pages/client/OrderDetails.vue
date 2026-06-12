@@ -6,13 +6,22 @@ import PaymentSummaryCard from '@/components/client/orderDetails/PaymentSummaryC
 import QuickActionsCard from '@/components/client/orderDetails/QuickActionsCard.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { OrderType } from '@/types/order';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import OrderReceipt from '@/components/client/orderDetails/OrderReceipt.vue';
 import { formatDate, getOrderStatusVariant } from '@/lib/utils';
+import { useOrderStore } from '@/stores/order';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
     orderToShow: OrderType;
 }>();
+
+const page = usePage();
+const user = page.props.auth?.user;
+
+const orderStore = useOrderStore();
+
+const currentOrder = ref<OrderType | null>(props.orderToShow ?? null);
 
 const removeOrder = (orderId: number) => {
     console.log(orderId);
@@ -57,12 +66,38 @@ const printOrder = () => {
     win.print();
     win.close();
 };
+
+type EchoChannel = {
+    listen: (event: string, callback: (e: any) => void) => EchoChannel;
+};
+
+const channel = ref<EchoChannel | null>(null);
+
+onMounted(async () => {
+    if (user?.id) {
+        channel.value = window.Echo.private(`user.${user?.id}`).listen(
+            '.order.updated',
+            async (e: any) => {
+                if (currentOrder.value?.id === e.order.id) {
+                    const response = await orderStore.getOrder(e.order.id);
+                    currentOrder.value = response.order;
+                }
+            },
+        );
+    }
+});
+
+onUnmounted(() => {
+    if (channel.value) {
+        window.Echo.leave(`private-user.${user?.id}`);
+    }
+});
 </script>
 
 <template>
     <Head title="OrderDetails" />
     <ClientLayout>
-        <section class="mx-auto max-w-6xl px-6 py-4">
+        <section v-if="currentOrder" class="mx-auto max-w-6xl px-6 py-4">
             <!-- Order Header -->
             <div class="mb-8">
                 <div class="flex flex-wrap items-center justify-between gap-4">
@@ -75,19 +110,19 @@ const printOrder = () => {
                         <h1
                             class="text-4xl font-semibold uppercase md:text-5xl"
                         >
-                            Order #{{ orderToShow.order_number }}
+                            Order #{{ currentOrder.order_number }}
                         </h1>
                         <p class="mt-2 text-gray-600">
-                            Placed on {{ formatDate(orderToShow.created_at) }}
+                            Placed on {{ formatDate(currentOrder.created_at) }}
                         </p>
                     </div>
                     <div
                         :class="[
                             'rounded-full px-4 py-2 text-sm font-semibold',
-                            getOrderStatusVariant(orderToShow.status.value),
+                            getOrderStatusVariant(currentOrder.status.value),
                         ]"
                     >
-                        {{ orderToShow.status.label }}
+                        {{ currentOrder.status.label }}
                     </div>
                 </div>
             </div>
@@ -97,15 +132,13 @@ const printOrder = () => {
                 <div class="flex-1">
                     <div class="space-y-6">
                         <!-- Order Status Timeline -->
-                        <OrderStatusTimeline
-                            :order-to-show="props.orderToShow"
-                        />
+                        <OrderStatusTimeline :order-to-show="currentOrder" />
 
                         <!-- Order Type & Details -->
-                        <OrderDetailsCard :order-to-show="props.orderToShow" />
+                        <OrderDetailsCard :order-to-show="currentOrder" />
 
                         <!-- Order Items Summary -->
-                        <OrderItemsCard :order-to-show="props.orderToShow" />
+                        <OrderItemsCard :order-to-show="currentOrder" />
                     </div>
                 </div>
 
@@ -113,13 +146,11 @@ const printOrder = () => {
                 <div class="lg:w-96">
                     <div class="sticky top-6 space-y-6">
                         <!-- Payment Summary Card -->
-                        <PaymentSummaryCard
-                            :order-to-show="props.orderToShow"
-                        />
+                        <PaymentSummaryCard :order-to-show="currentOrder" />
 
                         <!-- Quick Action Buttons -->
                         <QuickActionsCard
-                            :order-to-show="props.orderToShow"
+                            :order-to-show="currentOrder"
                             @print="printOrder"
                             @remove="removeOrder"
                         />
@@ -130,7 +161,7 @@ const printOrder = () => {
 
         <!-- Print receipt -->
         <div id="receipt" class="hidden">
-            <OrderReceipt :order-to-show="props.orderToShow" />
+            <OrderReceipt v-if="currentOrder" :order-to-show="currentOrder" />
         </div>
     </ClientLayout>
 </template>

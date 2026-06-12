@@ -12,7 +12,9 @@ const props = defineProps<{
     open: boolean;
 }>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits<{
+    close: [];
+}>();
 
 const cartStore = useCartStore();
 const { isLoading } = storeToRefs(cartStore);
@@ -424,7 +426,7 @@ watch(
 
                     <div class="flex gap-2">
                         <button
-                            @click="$emit('close')"
+                            @click="emit('close')"
                             class="flex-1 rounded-lg border border-gray-300 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
                         >
                             Cancel

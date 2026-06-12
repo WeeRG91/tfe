@@ -1,55 +1,34 @@
 <script setup lang="ts">
+import EmptyOrder from '@/components/client/myOrders/EmptyOrder.vue';
+import LoadingSkeleton from '@/components/client/myOrders/LoadingSkeleton.vue';
+import OrderList from '@/components/client/myOrders/OrderList.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { useOrderStore } from '@/stores/order';
-import { OrderType } from '@/types/order';
-import { Head, router } from '@inertiajs/vue3';
 import {
-    BookOpen,
-    Clock,
-    Star,
-    TrendingUp,
-    XCircle,
-} from 'lucide-vue-next';
+    ActiveStatuses,
+    FilterOrderEnum,
+    OrderStatusEnum,
+    OrderType,
+} from '@/types/order';
+import { Head, usePage } from '@inertiajs/vue3';
+import { Clock, Star, XCircle } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref, watch } from 'vue';
-import EmptyOrder from '@/components/client/myOrder/EmptyOrder.vue';
-import LoadingSkeleton from '@/components/client/myOrder/LoadingSkeleton.vue';
-import OrderList from '@/components/client/myOrder/OrderList.vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+
+const page = usePage();
+const user = page.props.auth?.user;
 
 const orderStore = useOrderStore();
-const { orders, isLoading } = storeToRefs(orderStore);
+const { orders } = storeToRefs(orderStore);
 
-const selectedStatusValue = ref<number>(0)
+const selectedStatusValue = ref<FilterOrderEnum>(FilterOrderEnum.ACTIVE);
+const isLoading = ref<boolean>(false);
 
-const filterOptions = [
-    { label: 'All', value: 0 },
-    { label: 'Active Orders', value: 1 },
-    { label: 'Completed Orders', value: 6 },
-    { label: 'Cancelled Orders', value: 7 }
+const filterOptions: { label: string; value: FilterOrderEnum }[] = [
+    { label: 'Active Orders', value: FilterOrderEnum.ACTIVE },
+    { label: 'Completed Orders', value: FilterOrderEnum.COMPLETED },
+    { label: 'Cancelled Orders', value: FilterOrderEnum.CANCELLED },
 ];
-
-const filteredOrders = computed(() => {
-    if (selectedStatusValue.value === 0) {
-        return orders.value;
-    }
-
-    return orders.value.filter(order => {
-        const status = order.status?.label || order.status;
-
-        if (selectedStatusValue.value === 1) {
-            return status === 'Pending' ||
-                status === 'Confirmed' ||
-                status === 'Preparing' ||
-                status === 'Ready' ||
-                status === 'Delivering';
-        } else if (selectedStatusValue.value === 6) {
-            return status === 'Completed';
-        } else if (selectedStatusValue.value === 7) {
-            return status === 'Cancelled';
-        }
-        return true;
-    });
-});
 
 const groupedOrders = computed(() => {
     const groups = {
@@ -58,19 +37,13 @@ const groupedOrders = computed(() => {
         cancelled: [] as OrderType[],
     };
 
-    filteredOrders.value.forEach((order) => {
-        const status = order.status?.label || order.status;
-        if (
-            status === 'Pending' ||
-            status === 'Confirmed' ||
-            status === 'Preparing' ||
-            status === 'Ready' ||
-            status === 'Delivering'
-        ) {
+    orders.value.forEach((order) => {
+        const status = order.status?.value;
+        if (ActiveStatuses.includes(status)) {
             groups.active.push(order);
-        } else if (status === 'Completed') {
+        } else if (status === OrderStatusEnum.COMPLETED) {
             groups.completed.push(order);
-        } else if (status === 'Cancelled') {
+        } else if (status === OrderStatusEnum.CANCELLED) {
             groups.cancelled.push(order);
         } else {
             groups.active.push(order);
@@ -80,8 +53,37 @@ const groupedOrders = computed(() => {
     return groups;
 });
 
+type EchoChannel = {
+    listen: (event: string, callback: () => void) => EchoChannel;
+};
+
+const channel = ref<EchoChannel | null>(null);
+
 onMounted(async () => {
-    await orderStore.getOrders(selectedStatusValue.value);
+    isLoading.value = true;
+
+    try {
+        await orderStore.getOrders(selectedStatusValue.value);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        isLoading.value = false;
+    }
+
+    if (user?.id) {
+        channel.value = window.Echo.private(`user.${user?.id}`).listen(
+            '.order.updated',
+            async () => {
+                await orderStore.getOrders(selectedStatusValue.value);
+            },
+        );
+    }
+});
+
+onUnmounted(() => {
+    if (channel.value) {
+        window.Echo.leave(`private-user.${user?.id}`);
+    }
 });
 
 watch(selectedStatusValue, async () => {
@@ -123,17 +125,16 @@ watch(selectedStatusValue, async () => {
                 </button>
             </div>
 
-            <!-- Loading State -->
             <LoadingSkeleton v-if="isLoading" />
 
-            <!-- No Orders State -->
             <EmptyOrder v-else-if="!orders.length && !isLoading" />
 
-            <!-- Orders List -->
             <div v-else class="space-y-8">
-                <!-- Show sections based on selected filter -->
-                <template v-if="selectedStatusValue === 0 || selectedStatusValue === 1">
-                    <!-- Active Orders Section -->
+                <template
+                    v-if="
+                        selectedStatusValue === FilterOrderEnum.ACTIVE
+                    "
+                >
                     <OrderList
                         v-if="groupedOrders.active.length"
                         title="Active Orders"
@@ -143,8 +144,11 @@ watch(selectedStatusValue, async () => {
                     />
                 </template>
 
-                <template v-if="selectedStatusValue === 0 || selectedStatusValue === 6">
-                    <!-- Completed Orders Section -->
+                <template
+                    v-if="
+                        selectedStatusValue === FilterOrderEnum.COMPLETED
+                    "
+                >
                     <OrderList
                         v-if="groupedOrders.completed.length"
                         title="Completed Orders"
@@ -154,8 +158,11 @@ watch(selectedStatusValue, async () => {
                     />
                 </template>
 
-                <template v-if="selectedStatusValue === 0 || selectedStatusValue === 7">
-                    <!-- Cancelled Orders Section -->
+                <template
+                    v-if="
+                        selectedStatusValue === FilterOrderEnum.CANCELLED
+                    "
+                >
                     <OrderList
                         v-if="groupedOrders.cancelled.length"
                         title="Cancelled Orders"
@@ -164,18 +171,6 @@ watch(selectedStatusValue, async () => {
                         :orders="groupedOrders.cancelled"
                     />
                 </template>
-
-                <!-- Browse Menu CTA -->
-                <div class="pt-4 text-center">
-                    <button
-                        @click="router.visit('/menu/dishes')"
-                        class="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-white px-6 py-2.5 text-sm font-medium text-red-500 transition-all hover:bg-red-50 hover:shadow-sm"
-                    >
-                        <BookOpen class="h-4 w-4" />
-                        Browse our menu to place a new order
-                        <TrendingUp class="h-4 w-4" />
-                    </button>
-                </div>
             </div>
         </section>
     </ClientLayout>

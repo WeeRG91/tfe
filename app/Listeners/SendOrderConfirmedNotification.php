@@ -3,9 +3,10 @@
 namespace App\Listeners;
 
 use App\Enums\NotificationTypeEnum;
-use App\Events\OrderConfirmedBroadcast;
+use App\Enums\OrderStatusEnum;
+use App\Events\StatusOrderUpdatedBroadcast;
 use App\Events\OrderPlacedBroadcast;
-use App\Mail\OrderConfirmedMail;
+use App\Mail\OrderUpdatedMail;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -15,8 +16,7 @@ class SendOrderConfirmedNotification
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {}
+    public function __construct() {}
 
     /**
      * Handle the event.
@@ -31,7 +31,7 @@ class SendOrderConfirmedNotification
             'notifiable_type' => Order::class,
             'type' => NotificationTypeEnum::ORDER_CONFIRMED,
             'title' => 'Order Confirmed',
-            'message' => "Your order #{$order->order_number} has been confirmed.",
+            'message' => "Your order #$order->order_number has been confirmed.",
             'data' => json_encode([
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
@@ -40,8 +40,8 @@ class SendOrderConfirmedNotification
             'updated_at' => now(),
         ]);
 
-        event(new OrderConfirmedBroadcast($order));
+        Mail::to($order->user->email)->queue(new OrderUpdatedMail($order, OrderStatusEnum::CONFIRMED->label()));
 
-        Mail::to($order->user->email)->queue(new OrderConfirmedMail($order));
+        event(new StatusOrderUpdatedBroadcast($order));
     }
 }

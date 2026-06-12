@@ -9,7 +9,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class OrderConfirmedBroadcast implements ShouldBroadcast
+class StatusOrderUpdatedBroadcast implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -30,6 +30,6 @@ class OrderConfirmedBroadcast implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'order.confirmed';
+        return 'order.updated';
     }
 }

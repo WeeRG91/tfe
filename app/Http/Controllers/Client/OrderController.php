@@ -3,13 +3,19 @@
 namespace App\Http\Controllers\Client;
 
 use App\Actions\Client\Order\Commands\PlaceOrder\PlaceOrder;
+use App\Enums\OrderStatusEnum;
+use App\Enums\OrderTypeEnum;
+use App\Enums\PaymentMethodEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Order\PlaceOrderRequest;
+use App\Http\Resources\Client\Address\AddressResource;
 use App\Http\Resources\Client\Order\OrderResource;
+use App\Models\Address;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 use Throwable;
 
 class OrderController extends Controller
@@ -35,14 +41,17 @@ class OrderController extends Controller
      */
     public function getOrders(Request $request): JsonResponse
     {
+        $status = $request->status;
+
         $query = Order::query()
             ->where('user_id', auth()->id())
-            ->when($request->status != 0, function ($q) use ($request) {
-                if (in_array($request->status, [6, 7])) {
-                    $q->where('status', $request->status);
-                } else {
-                    $q->whereNotIn('status', [6, 7]);
-                }
+            ->when($status, function ($q) use ($status) {
+                match ($status) {
+                    'active' => $q->whereIn('status', OrderStatusEnum::activeStatuses()),
+                    'completed' => $q->where('status', OrderStatusEnum::COMPLETED->value),
+                    'cancelled' => $q->where('status', OrderStatusEnum::CANCELLED->value),
+                    default => null,
+                };
             });
 
         $orders = $query
@@ -86,6 +95,27 @@ class OrderController extends Controller
         return response()->json([
             'message' => $result['message'],
             'order' => new OrderResource($result['order']),
+        ]);
+    }
+
+    /**
+     * @param int $orderId
+     * @return InertiaResponse
+     */
+    public function reorder(int $orderId): InertiaResponse
+    {
+        $order = Order::query()->findOrFail($orderId);
+
+        $addresses = Address::query()
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('is_default', 'desc')
+            ->get();
+
+        return Inertia::render('client/Reorder', [
+            'orderToReorder' => new OrderResource($order),
+            'orderTypes' => OrderTypeEnum::getTypes(),
+            'paymentMethods' => PaymentMethodEnum::getPaymentMethods(),
+            'addresses' => AddressResource::collection($addresses)->collection,
         ]);
     }
 }

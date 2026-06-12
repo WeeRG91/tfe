@@ -15,10 +15,14 @@ const props = defineProps<{
     type?: ItemTypeEnum;
 }>();
 
-const emit = defineEmits(['update-quantity', 'update-notes', 'remove']);
+const emit = defineEmits<{
+    'update-quantity': [cartItemId: number, action: 'increase' | 'decrease'];
+    'update-notes': [cartItemId: number, notes: string];
+    remove: [cartItemId: number];
+}>();
 
-const isEditingNotes = ref(false);
-const editedNotes = ref(props.cartItem.notes || '');
+const isEditingNotes = ref<boolean>(false);
+const editedNotes = ref<string>(props.cartItem.notes || '');
 
 const formatPrice = (price: number) => {
     return (price || 0).toFixed(2);
@@ -250,7 +254,7 @@ const sectionHeaderClass = computed(() => {
                             €{{ formatPrice(cartItem.unit_price) }}/each
                         </span>
                         <button
-                            @click.prevent="$emit('remove', cartItem.id)"
+                            @click.prevent="emit('remove', cartItem.id)"
                             class="flex cursor-pointer items-center gap-0.5 text-xs text-red-500 transition hover:text-red-600"
                         >
                             <span>Remove</span>

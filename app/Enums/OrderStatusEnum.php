@@ -32,17 +32,17 @@ enum OrderStatusEnum: int
         };
     }
 
-    public static function getColor(self $case): string
+    public static function finalStatuses(): array
     {
-        return match ($case) {
-            self::PENDING => 'bg-yellow-100 text-yellow-800',
-            self::CONFIRMED => 'bg-blue-100 text-blue-800',
-            self::PREPARING => 'bg-purple-100 text-purple-800',
-            self::READY => 'bg-green-100 text-green-800',
-            self::DELIVERING => 'bg-orange-100 text-orange-800',
-            self::COMPLETED => 'bg-emerald-100 text-emerald-800',
-            self::CANCELLED => 'bg-red-100 text-red-800',
-        };
+        return [
+            self::COMPLETED->value,
+            self::CANCELLED->value,
+        ];
+    }
+
+    public static function activeStatuses(): array
+    {
+        return array_diff(self::values(), self::finalStatuses());
     }
 
     public static function getStatuses(): array
@@ -50,7 +50,6 @@ enum OrderStatusEnum: int
         return array_map(fn($case) => [
             'value' => $case->value,
             'label' => $case->label(),
-            'color' => self::getColor($case),
         ], self::cases());
     }
 

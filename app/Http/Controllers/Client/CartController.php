@@ -50,7 +50,10 @@ class CartController extends Controller
      */
     public function placeOrder(): InertiaResponse
     {
-        $addresses = Address::query()->where('user_id', auth()->user()->id)->orderBy('is_default', 'desc')->get();
+        $addresses = Address::query()
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('is_default', 'desc')
+            ->get();
 
         return Inertia::render('client/PlaceOrder', [
             'orderTypes' => OrderTypeEnum::getTypes(),

@@ -72,7 +72,7 @@ class DishController extends Controller
             );
 
             return redirect()
-                ->route('dish.index');
+                ->route('admin.dish.index');
         } catch (Throwable $e) {
             report($e);
 
@@ -113,7 +113,7 @@ class DishController extends Controller
             );
 
             return redirect()
-                ->route('dish.index');
+                ->route('admin.dish.index');
         } catch (Throwable $e) {
             report($e);
 

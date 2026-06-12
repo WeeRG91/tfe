@@ -65,10 +65,10 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
         [OrderStatusEnum.DELIVERING]: 85,
         [OrderStatusEnum.COMPLETED]: 100,
         [OrderStatusEnum.CANCELLED]: 0,
-    }
+    };
 
     return progresses[status] || 0;
-}
+};
 </script>
 
 <template>
@@ -276,8 +276,10 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
 
                     <button
                         v-if="
-                            orderToShow.status?.value !== OrderStatusEnum.CANCELLED &&
-                            orderToShow.status?.value !== OrderStatusEnum.COMPLETED
+                            orderToShow.status?.value !==
+                                OrderStatusEnum.CANCELLED &&
+                            orderToShow.status?.value !==
+                                OrderStatusEnum.COMPLETED
                         "
                         @click="cancelOrder"
                         :disabled="cancelLoadingOrderId === orderToShow.id"
@@ -292,8 +294,10 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
 
                     <button
                         v-if="
-                            orderToShow.status?.value === OrderStatusEnum.COMPLETED ||
-                            orderToShow.status?.value === OrderStatusEnum.CANCELLED
+                            orderToShow.status?.value ===
+                                OrderStatusEnum.COMPLETED ||
+                            orderToShow.status?.value ===
+                                OrderStatusEnum.CANCELLED
                         "
                         @click="removeOrder"
                         :disabled="cancelLoadingOrderId === orderToShow.id"

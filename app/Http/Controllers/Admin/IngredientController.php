@@ -77,7 +77,7 @@ class IngredientController extends Controller
             );
 
             return redirect()
-                ->route('ingredient.index');
+                ->route('admin.ingredient.index');
         } catch (Throwable $e) {
             report($e);
 
@@ -154,7 +154,7 @@ class IngredientController extends Controller
             );
 
             return redirect()
-                ->route('ingredient.index');
+                ->route('admin.ingredient.index');
         } catch (Throwable $e) {
             report($e);
 

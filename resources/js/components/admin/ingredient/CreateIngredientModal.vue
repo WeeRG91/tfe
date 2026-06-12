@@ -28,7 +28,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'create', ingredient: { value: number; label: string }): void;
+    create: [ingredient: { value: number; label: string }];
 }>();
 
 const page = usePage();
@@ -71,7 +71,7 @@ const submit = () => {
         },
         onFinish: () => {
             isLoading.value = false;
-        }
+        },
     });
 };
 </script>
@@ -113,7 +113,11 @@ const submit = () => {
             </div>
 
             <DialogFooter>
-                <Button variant="secondary" @click="props.onClose()" class="sm:w-24">
+                <Button
+                    variant="secondary"
+                    @click="props.onClose()"
+                    class="sm:w-24"
+                >
                     Cancel
                 </Button>
 
