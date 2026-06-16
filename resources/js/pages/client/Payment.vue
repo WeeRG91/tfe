@@ -79,10 +79,8 @@ onMounted(() => {
             </div>
 
             <div class="flex flex-col gap-6 lg:flex-row">
-                <!-- Order Summary Section -->
                 <div class="flex-1">
                     <div class="space-y-6">
-                        <!-- Order Header Card -->
                         <div class="rounded-lg border bg-white p-6">
                             <div
                                 class="flex flex-wrap items-center justify-between gap-3"
@@ -109,7 +107,6 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <!-- Order Type & Details -->
                         <div class="rounded-lg border bg-white p-6">
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
@@ -169,7 +166,6 @@ onMounted(() => {
                                     </div>
                                 </div>
 
-                                <!-- Customer Info for Takeaway -->
                                 <div
                                     v-if="props.order.type.label === 'Takeaway'"
                                     class="flex items-start gap-3"
@@ -197,7 +193,6 @@ onMounted(() => {
                                     </div>
                                 </div>
 
-                                <!-- Delivery Address -->
                                 <div
                                     v-if="props.order.type.label === 'Delivery'"
                                     class="flex items-start gap-3"
@@ -252,7 +247,6 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <!-- Order Items Summary -->
                         <div class="rounded-lg border bg-white p-6">
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
@@ -326,7 +320,6 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <!-- Notes -->
                             <div
                                 v-if="props.order.notes"
                                 class="mt-4 rounded-md bg-yellow-50 p-3"
@@ -342,10 +335,8 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <!-- Payment Sidebar -->
                 <div class="lg:w-96">
-                    <div class="sticky top-6 space-y-6">
-                        <!-- Price Breakdown Card -->
+                    <div class="sticky sm:top-20 space-y-6">
                         <div class="rounded-lg border bg-white p-6">
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
@@ -432,7 +423,6 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <!-- Payment Card -->
                         <div class="rounded-lg border bg-white p-6">
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"

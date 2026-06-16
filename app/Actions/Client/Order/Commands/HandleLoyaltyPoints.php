@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Actions\Client\Order\Commands\PlaceOrder;
+namespace App\Actions\Client\Order\Commands;
 
+use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Models\LoyaltyPointTransaction;
 use App\Models\Order;
 use App\Models\User;
@@ -29,7 +30,7 @@ class HandleLoyaltyPoints
                 'user_id' => $user->id,
                 'order_id' => $order->id,
                 'points' => -$usedPoints,
-                'type' => 'redeemed',
+                'type' => LoyaltyPointTransactionTypeEnum::REDEEMED->value,
                 'description' => 'Used points for order #' . $order->order_number,
             ]);
 
@@ -45,7 +46,7 @@ class HandleLoyaltyPoints
                 'user_id' => $user->id,
                 'order_id' => $order->id,
                 'points' => $earnedPoints,
-                'type' => 'earned',
+                'type' => LoyaltyPointTransactionTypeEnum::EARNED->value,
                 'description' => 'Points earned from order #' . $order->order_number,
             ]);
 

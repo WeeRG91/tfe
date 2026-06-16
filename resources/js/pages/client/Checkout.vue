@@ -26,11 +26,11 @@ const drinkItems = computed(() =>
 );
 
 const subtotalDishes = computed(() => {
-    return dishItems.value.reduce((sum, item) => sum + (item.total || 0), 0);
+    return dishItems.value.reduce((sum, item) => sum + (item.total_inc_vat || 0), 0);
 });
 
 const subtotalDrinks = computed(() => {
-    return drinkItems.value.reduce((sum, item) => sum + (item.total || 0), 0);
+    return drinkItems.value.reduce((sum, item) => sum + (item.total_inc_vat || 0), 0);
 });
 
 const subtotal = computed(() => {
@@ -179,7 +179,7 @@ const handleRemoveItem = async (cartItemId: number) => {
                 </div>
 
                 <div v-if="items.length" class="lg:w-80">
-                    <div class="sticky top-6 rounded-lg border bg-white p-4">
+                    <div class="sticky sm:top-20 rounded-lg border bg-white p-4">
                         <h2 class="mb-3 text-lg font-semibold uppercase">
                             Order Summary
                         </h2>

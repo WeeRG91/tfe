@@ -35,14 +35,14 @@ const drinkItems = computed(() =>
 
 const subtotalDishes = computed(() => {
     return dishItems.value.reduce(
-        (sum, item) => sum + (item.total || 0),
+        (sum, item) => sum + (item.total_inc_vat || 0),
         0,
     );
 });
 
 const subtotalDrinks = computed(() => {
     return drinkItems.value.reduce(
-        (sum, item) => sum + (item.total || 0),
+        (sum, item) => sum + (item.total_inc_vat || 0),
         0,
     );
 });
@@ -369,7 +369,7 @@ watch(
                                                     class="text-sm font-semibold text-gray-800"
                                                     >€{{
                                                         formatPrice(
-                                                            item.total,
+                                                            item.total_inc_vat,
                                                         )
                                                     }}</span
                                                 >
@@ -506,7 +506,7 @@ watch(
                                                 <span
                                                     class="text-sm font-semibold text-gray-800"
                                                     >€{{
-                                                        item.total
+                                                        item.total_inc_vat
                                                     }}</span
                                                 >
                                             </div>

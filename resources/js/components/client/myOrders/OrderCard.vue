@@ -20,17 +20,24 @@ import {
     Repeat,
     User,
     XCircle,
+    CreditCard,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import OrderItemsList from './OrderItemsList.vue';
+import paymentOrder from '@/routes/payment-order';
 
 const props = defineProps<{
     orderToShow: OrderType;
+    cancelLoadingOrderId: number | null;
+    removeLoadingOrderId: number | null;
 }>();
 
+const emit = defineEmits<{
+    cancel: [orderId: number];
+    remove: [orderId: number];
+}>()
+
 const expandedOrderId = ref<number | null>(null);
-const cancelLoadingOrderId = ref<number | null>(null);
-const reorderLoadingOrderId = ref<number | null>(null);
 
 const isExpanded = computed(
     () => expandedOrderId.value === props.orderToShow.id,
@@ -44,16 +51,12 @@ const toggleDetails = () => {
     }
 };
 
-const cancelOrder = async () => {
-    // Implement cancel logic
-};
-
-const reorder = async () => {
-    // Implement reorder logic
+const cancelOrder = () => {
+    emit('cancel', props.orderToShow.id);
 };
 
 const removeOrder = async () => {
-    // Implement remove logic
+    emit('remove', props.orderToShow.id);
 };
 
 const getOrderStatusProgress = (status: OrderStatusEnum) => {
@@ -168,10 +171,8 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
             </div>
         </div>
 
-        <!-- Order Details -->
         <div v-show="isExpanded" class="border-t border-gray-100">
             <div class="space-y-4 bg-gray-50 p-4">
-                <!-- Order Info Grid -->
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div class="flex items-start gap-2 rounded-lg bg-white p-3">
                         <User class="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
@@ -257,10 +258,8 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                     </div>
                 </div>
 
-                <!-- Order Items -->
                 <OrderItemsList :order="orderToShow" />
 
-                <!-- Action Buttons -->
                 <div
                     class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
                 >
@@ -276,10 +275,8 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
 
                     <button
                         v-if="
-                            orderToShow.status?.value !==
-                                OrderStatusEnum.CANCELLED &&
-                            orderToShow.status?.value !==
-                                OrderStatusEnum.COMPLETED
+                            orderToShow.status?.value ===
+                            OrderStatusEnum.PENDING
                         "
                         @click="cancelOrder"
                         :disabled="cancelLoadingOrderId === orderToShow.id"
@@ -295,12 +292,24 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                     <button
                         v-if="
                             orderToShow.status?.value ===
+                            OrderStatusEnum.PENDING
+                        "
+                        @click="router.visit(paymentOrder.payment(orderToShow.id).url)"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
+                    >
+                        <CreditCard class="h-4 w-4" />
+                        <span>Complete</span>
+                    </button>
+
+                    <button
+                        v-if="
+                            orderToShow.status?.value ===
                                 OrderStatusEnum.COMPLETED ||
                             orderToShow.status?.value ===
                                 OrderStatusEnum.CANCELLED
                         "
                         @click="removeOrder"
-                        :disabled="cancelLoadingOrderId === orderToShow.id"
+                        :disabled="removeLoadingOrderId === orderToShow.id"
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
                     >
                         <XCircle class="h-4 w-4" />
@@ -311,15 +320,15 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                     </button>
 
                     <button
-                        @click="reorder"
-                        :disabled="reorderLoadingOrderId === orderToShow.id"
+                        v-if="
+                            orderToShow.status?.value ===
+                            OrderStatusEnum.COMPLETED
+                        "
+                        @click.stop="router.visit(order.reorder(props.orderToShow.id).url)"
                         class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-500 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-red-600 disabled:opacity-50 sm:w-40"
                     >
                         <Repeat class="h-4 w-4" />
-                        <span v-if="reorderLoadingOrderId === orderToShow.id"
-                            >Adding to Cart...</span
-                        >
-                        <span v-else>Reorder Now</span>
+                        <span>Reorder Now</span>
                     </button>
                 </div>
             </div>

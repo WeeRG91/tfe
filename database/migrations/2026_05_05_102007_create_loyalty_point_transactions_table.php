@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('loyalty_point_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('order_id')->constrained('orders')->nullOnDelete();
+            $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete();
             $table->unsignedInteger('points')->default(0);
             $table->unsignedInteger('type')->default(LoyaltyPointTransactionTypeEnum::EARNED->value);
             $table->text('description')->nullable();

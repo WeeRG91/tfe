@@ -65,7 +65,6 @@ watch(mobileMenuOpen, (isOpen) => {
     >
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
-                <!-- Logo -->
                 <div class="flex items-center">
                     <a
                         href="/"
@@ -76,10 +75,8 @@ watch(mobileMenuOpen, (isOpen) => {
                     </a>
                 </div>
 
-                <!-- Desktop Navigation -->
                 <DesktopNav :current-path="currentPath" />
 
-                <!-- Actions -->
                 <div class="flex items-center gap-3">
                     <HeaderActions
                         :user="user"
@@ -92,7 +89,6 @@ watch(mobileMenuOpen, (isOpen) => {
 
                     <UserMenu :user="user" />
 
-                    <!-- Mobile Menu Button -->
                     <button
                         @click="toggleMobileMenu"
                         class="flex items-center justify-center rounded-lg p-2 text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600 md:hidden"
@@ -104,7 +100,6 @@ watch(mobileMenuOpen, (isOpen) => {
         </div>
     </header>
 
-    <!-- Mobile Menu -->
     <MobileMenu
         :open="mobileMenuOpen"
         :user="user"
@@ -112,7 +107,5 @@ watch(mobileMenuOpen, (isOpen) => {
         :cart-item-count="cartItemCount"
         :unread-notifications-count="unreadNotificationsCount"
         @close="closeMobileMenu"
-        @open-cart="emit('open-cart')"
-        @open-notifications="emit('open-notifications')"
     />
 </template>

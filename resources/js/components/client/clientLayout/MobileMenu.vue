@@ -13,6 +13,8 @@ import {
     Wine,
     X,
 } from 'lucide-vue-next';
+import cart from '@/routes/cart';
+import notification from '@/routes/notification';
 
 defineProps<{
     open: boolean;
@@ -24,8 +26,6 @@ defineProps<{
 
 const emit = defineEmits<{
     'close': [];
-    'open-cart': [];
-    'open-notifications': [];
 }>();
 
 const handleLogout = () => {
@@ -36,7 +36,6 @@ const handleLogout = () => {
 
 <template>
     <Teleport to="body">
-        <!-- Overlay -->
         <Transition name="fade">
             <div
                 v-if="open"
@@ -45,7 +44,6 @@ const handleLogout = () => {
             ></div>
         </Transition>
 
-        <!-- Drawer -->
         <Transition name="slide">
             <div
                 v-if="open"
@@ -68,7 +66,6 @@ const handleLogout = () => {
                         </button>
                     </div>
 
-                    <!-- User Section -->
                     <div v-if="user" class="border-b border-gray-100 p-4">
                         <div class="flex items-center gap-3">
                             <div
@@ -98,9 +95,7 @@ const handleLogout = () => {
                         </div>
                     </div>
 
-                    <!-- Navigation Links -->
                     <nav class="flex-1 space-y-1 overflow-y-auto p-4">
-                        <!-- Profile Links -->
                         <div v-if="user" class="mt-4 space-y-1">
                             <a
                                 @click="emit('close')"
@@ -199,12 +194,8 @@ const handleLogout = () => {
                             <span class="font-medium">Contact</span>
                         </a>
 
-                        <!-- Cart Link -->
                         <a
-                            @click="
-                                emit('open-cart');
-                                emit('close');
-                            "
+                            :href="cart.checkout().url"
                             class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
                         >
                             <div class="relative rounded-lg bg-gray-100 p-2">
@@ -224,10 +215,7 @@ const handleLogout = () => {
                         <!-- Notifications Link -->
                         <a
                             v-if="user"
-                            @click="
-                                emit('open-notifications');
-                                emit('close');
-                            "
+                            :href="notification.myNotifications().url"
                             class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
                         >
                             <div class="relative rounded-lg bg-gray-100 p-2">

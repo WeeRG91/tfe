@@ -2,16 +2,17 @@
 import { Soup } from 'lucide-vue-next';
 import { formatPrice } from '@/lib/utils';
 import { CartItemType } from '@/types/cart';
+import { OrderItemType } from '@/types/order';
 
 defineProps<{
-    items: CartItemType[];
+    items: CartItemType[] | OrderItemType[];
     subtotal: number;
     deliveryFee: number;
     discountAmount: number;
     vat12Total: number;
     vat21Total: number;
     totalVat: number;
-    cartTotal: number;
+    totalIncVat: number;
     earnedPoints: number;
 }>();
 </script>
@@ -67,7 +68,7 @@ defineProps<{
                         </div>
                     </div>
                     <div class="ml-4 font-medium whitespace-nowrap">
-                        €{{ formatPrice(item.total) }}
+                        €{{ formatPrice(item.total_inc_vat) }}
                     </div>
                 </div>
             </div>
@@ -113,7 +114,7 @@ defineProps<{
                 <div class="flex justify-between pt-2 text-base font-semibold">
                     <span>Total</span>
                     <span class="text-red-500"
-                        >€{{ formatPrice(cartTotal) }}</span
+                        >€{{ formatPrice(totalIncVat) }}</span
                     >
                 </div>
                 <div

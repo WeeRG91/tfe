@@ -4,7 +4,7 @@ import { formatPrice } from '@/lib/utils';
 
 defineProps<{
     itemsCount: number;
-    cartTotal: number;
+    totalIncVat: number;
     isFormValid: boolean;
     isLoading: boolean;
 }>();
@@ -16,7 +16,7 @@ const emit = defineEmits<{
 
 <template>
     <div class="lg:w-80">
-        <div class="sticky top-6 rounded-lg border bg-white p-6">
+        <div class="sticky sm:top-20 rounded-lg border bg-white p-6">
             <h2 class="mb-4 text-lg font-semibold uppercase">
                 Ready to Order?
             </h2>
@@ -32,7 +32,7 @@ const emit = defineEmits<{
                     >
                         <span>Total:</span>
                         <span class="text-red-500"
-                            >€{{ formatPrice(cartTotal) }}</span
+                            >€{{ formatPrice(totalIncVat) }}</span
                         >
                     </div>
                 </div>

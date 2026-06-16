@@ -98,7 +98,6 @@ onUnmounted(() => {
     <Head title="OrderDetails" />
     <ClientLayout>
         <section v-if="currentOrder" class="mx-auto max-w-6xl px-6 py-4">
-            <!-- Order Header -->
             <div class="mb-8">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
@@ -128,27 +127,20 @@ onUnmounted(() => {
             </div>
 
             <div class="flex flex-col gap-6 lg:flex-row">
-                <!-- Order Details Section -->
                 <div class="flex-1">
                     <div class="space-y-6">
-                        <!-- Order Status Timeline -->
                         <OrderStatusTimeline :order-to-show="currentOrder" />
 
-                        <!-- Order Type & Details -->
                         <OrderDetailsCard :order-to-show="currentOrder" />
 
-                        <!-- Order Items Summary -->
                         <OrderItemsCard :order-to-show="currentOrder" />
                     </div>
                 </div>
 
-                <!-- Summary Sidebar -->
                 <div class="lg:w-96">
-                    <div class="sticky top-6 space-y-6">
-                        <!-- Payment Summary Card -->
+                    <div class="sticky sm:top-20 space-y-6">
                         <PaymentSummaryCard :order-to-show="currentOrder" />
 
-                        <!-- Quick Action Buttons -->
                         <QuickActionsCard
                             :order-to-show="currentOrder"
                             @print="printOrder"

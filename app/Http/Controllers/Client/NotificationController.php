@@ -27,10 +27,10 @@ class NotificationController extends Controller
 
         $notifications = Notification::query()
             ->where('user_id', auth()->id())
-            ->when($filter !== 'all', function ($q) use ($filter) {
+            ->when($filter !== 'all', function ($query) use ($filter) {
                 match ($filter) {
-                    'read' => $q->whereNotNull('read_at'),
-                    'unread' => $q->whereNull('read_at'),
+                    'read' => $query->whereNotNull('read_at'),
+                    'unread' => $query->whereNull('read_at'),
                 };
             })
             ->orderBy('created_at', 'desc')

@@ -5,7 +5,7 @@ import { PaymentMethodType, PaymentStatusType } from '@/types/payment';
 export type OrderType = {
     id: number;
     order_number: string;
-    user: { id: number; name: string; email: string };
+    user: { id: number; name: string; email: string; loyalty_points: number };
     type: OrderTypeType;
     table_number: string;
     pickup_time: string;
@@ -82,6 +82,20 @@ export type RemovedIngredientType = {
 
 export type PlaceOrderPayloadType = {
     cart_id: number;
+    type: number;
+    table_number?: string | null;
+    pickup_time?: string | null;
+    pickup_name?: string | null;
+    pickup_phone?: string | null;
+    address_id?: number | null;
+    payment_method: number;
+    notes?: string | null;
+    used_points: number;
+};
+
+
+export type ReorderPayloadType = {
+    order_id: number;
     type: number;
     table_number?: string | null;
     pickup_time?: string | null;

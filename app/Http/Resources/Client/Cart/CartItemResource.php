@@ -54,7 +54,7 @@ class CartItemResource extends JsonResource
                 ]) : [],
             'quantity' => $this->quantity,
             'unit_price' => $this->unit_price,
-            'total' => $this->total,
+            'total_inc_vat' => $this->total,
             'notes' => $this->notes,
         ];
     }

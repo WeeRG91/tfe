@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Client\Order\Commands\PlaceOrder;
+namespace App\Actions\Client\Order\Commands;
 
 class CalculateOrderAmounts
 {

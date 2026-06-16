@@ -1,12 +1,13 @@
 import confirmedOrder from '@/routes/admin/confirmed-order';
+import order from '@/routes/order';
 import {
     OrderStatusEnum,
     OrderType,
     PlaceOrderPayloadType,
+    ReorderPayloadType,
 } from '@/types/order';
 import axios from 'axios';
 import { defineStore } from 'pinia';
-import order from '@/routes/order';
 
 export const useOrderStore = defineStore('order', {
     state: () => ({
@@ -22,7 +23,7 @@ export const useOrderStore = defineStore('order', {
 
             try {
                 const { data } = await axios.post(
-                    '/orders/place-order',
+                    order.placeOrder().url,
                     payload,
                 );
 
@@ -37,11 +38,31 @@ export const useOrderStore = defineStore('order', {
             }
         },
 
+        async confirmReorder(payload: ReorderPayloadType) {
+            this.isLoading = true;
+
+            try {
+                const { data } = await axios.post(
+                    order.confirmReorder().url,
+                    payload,
+                );
+
+                this.currentOrder = data.order as OrderType;
+
+                return data;
+            } catch (error) {
+                console.error('Failed to reorder: ', error);
+                throw error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
         async getOrders(status: string) {
             this.isLoading = true;
 
             try {
-                const { data } = await axios.get('/orders', {
+                const { data } = await axios.get(order.getOrders().url, {
                     params: { status: status },
                 });
 
@@ -65,6 +86,32 @@ export const useOrderStore = defineStore('order', {
                 return data;
             } catch (error) {
                 console.error('Failed to fetch order: ', error);
+                throw error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async cancel(orderId: number) {
+            this.isLoading = true;
+
+            try {
+                await axios.patch(order.cancel(orderId).url);
+            } catch (error) {
+                console.error('Failed to cancel order: ', error);
+                throw error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async remove(orderId: number) {
+            this.isLoading = true;
+
+            try {
+                await axios.delete(order.destroy(orderId).url);
+            } catch (error) {
+                console.error('Failed to delete order: ', error);
                 throw error;
             } finally {
                 this.isLoading = false;

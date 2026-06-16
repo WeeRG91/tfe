@@ -17,7 +17,7 @@ export type CartItemType = {
     removed_ingredients: RemovedIngredientType[];
     quantity: number;
     unit_price: number;
-    total: number;
+    total_inc_vat: number;
     notes: string;
 };
 

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Client\Payment\Commands;
 
+use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Events\OrderPlacedBroadcast;
@@ -80,7 +81,7 @@ class HandleStripeWebhook
             'user_id' => $user->id,
             'order_id' => $order->id,
             'points' => $earnedPoints,
-            'type' => 'earned',
+            'type' => LoyaltyPointTransactionTypeEnum::EARNED->value,
             'description' => 'Points earned from order #' . $order->order_number,
         ]);
 

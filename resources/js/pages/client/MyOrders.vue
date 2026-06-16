@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import EmptyOrder from '@/components/client/myOrders/EmptyOrder.vue';
-import LoadingSkeleton from '@/components/client/myOrders/LoadingSkeleton.vue';
 import OrderList from '@/components/client/myOrders/OrderList.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { useOrderStore } from '@/stores/order';
@@ -11,7 +10,7 @@ import {
     OrderType,
 } from '@/types/order';
 import { Head, usePage } from '@inertiajs/vue3';
-import { Clock, Star, XCircle } from 'lucide-vue-next';
+import { Clock, Loader, Star, XCircle } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
@@ -53,13 +52,7 @@ const groupedOrders = computed(() => {
     return groups;
 });
 
-type EchoChannel = {
-    listen: (event: string, callback: () => void) => EchoChannel;
-};
-
-const channel = ref<EchoChannel | null>(null);
-
-onMounted(async () => {
+const loadOrders = async () => {
     isLoading.value = true;
 
     try {
@@ -69,12 +62,22 @@ onMounted(async () => {
     } finally {
         isLoading.value = false;
     }
+};
+
+type EchoChannel = {
+    listen: (event: string, callback: () => void) => EchoChannel;
+};
+
+const channel = ref<EchoChannel | null>(null);
+
+onMounted(async () => {
+    await loadOrders();
 
     if (user?.id) {
         channel.value = window.Echo.private(`user.${user?.id}`).listen(
             '.order.updated',
             async () => {
-                await orderStore.getOrders(selectedStatusValue.value);
+                await loadOrders();
             },
         );
     }
@@ -87,7 +90,7 @@ onUnmounted(() => {
 });
 
 watch(selectedStatusValue, async () => {
-    await orderStore.getOrders(selectedStatusValue.value);
+    await loadOrders();
 });
 </script>
 
@@ -95,7 +98,6 @@ watch(selectedStatusValue, async () => {
     <Head title="My Orders" />
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
-            <!-- Header -->
             <div class="mb-6">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
                     [ My Account ]
@@ -108,7 +110,6 @@ watch(selectedStatusValue, async () => {
                 </p>
             </div>
 
-            <!-- Status Filters -->
             <div class="mb-6 flex flex-wrap items-center gap-4">
                 <button
                     v-for="filter in filterOptions"
@@ -125,16 +126,17 @@ watch(selectedStatusValue, async () => {
                 </button>
             </div>
 
-            <LoadingSkeleton v-if="isLoading" />
+            <div
+                v-if="isLoading"
+                class="flex h-24 items-center justify-center sm:h-32"
+            >
+                <Loader class="mx-auto animate-spin text-muted-foreground" />
+            </div>
 
             <EmptyOrder v-else-if="!orders.length && !isLoading" />
 
             <div v-else class="space-y-8">
-                <template
-                    v-if="
-                        selectedStatusValue === FilterOrderEnum.ACTIVE
-                    "
-                >
+                <template v-if="selectedStatusValue === FilterOrderEnum.ACTIVE">
                     <OrderList
                         v-if="groupedOrders.active.length"
                         title="Active Orders"
@@ -145,9 +147,7 @@ watch(selectedStatusValue, async () => {
                 </template>
 
                 <template
-                    v-if="
-                        selectedStatusValue === FilterOrderEnum.COMPLETED
-                    "
+                    v-if="selectedStatusValue === FilterOrderEnum.COMPLETED"
                 >
                     <OrderList
                         v-if="groupedOrders.completed.length"
@@ -159,9 +159,7 @@ watch(selectedStatusValue, async () => {
                 </template>
 
                 <template
-                    v-if="
-                        selectedStatusValue === FilterOrderEnum.CANCELLED
-                    "
+                    v-if="selectedStatusValue === FilterOrderEnum.CANCELLED"
                 >
                     <OrderList
                         v-if="groupedOrders.cancelled.length"

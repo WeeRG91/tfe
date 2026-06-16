@@ -109,7 +109,7 @@ const sectionHeaderClass = computed(() => {
                         'ml-3 shrink-0 text-sm',
                     ]"
                 >
-                    €{{ formatPrice(cartItem.total) }}
+                    €{{ formatPrice(cartItem.total_inc_vat) }}
                 </span>
             </div>
 

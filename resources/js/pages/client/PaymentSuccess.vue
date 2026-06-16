@@ -84,7 +84,6 @@ onMounted(() => {
 
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
-            <!-- Success Header -->
             <div class="mb-8">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
                     [ Payment Details ]
@@ -118,10 +117,8 @@ onMounted(() => {
             </div>
 
             <div class="flex flex-col gap-6 lg:flex-row">
-                <!-- Order Details Section -->
                 <div class="flex-1">
                     <div class="space-y-6">
-                        <!-- Order Header Card -->
                         <div class="rounded-lg border bg-white p-6">
                             <div
                                 class="flex flex-wrap items-center justify-between gap-3"
@@ -145,24 +142,18 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <!-- Order Status Timeline -->
                         <OrderStatusTimeline :order-to-show="paidOrder" />
 
-                        <!-- Order Type & Details -->
                         <OrderDetailsCard :order-to-show="paidOrder" />
 
-                        <!-- Order Items Summary -->
                         <OrderItemsCard :order-to-show="paidOrder" />
                     </div>
                 </div>
 
-                <!-- Summary Sidebar -->
                 <div class="lg:w-96">
-                    <div class="sticky top-6 space-y-6">
-                        <!-- Payment Summary Card -->
+                    <div class="sticky sm:top-20 space-y-6">
                         <PaymentSummaryCard :order-to-show="paidOrder" />
 
-                        <!-- Quick Action Buttons -->
                         <QuickActionsCard
                             :order-to-show="paidOrder"
                             @print="printOrder"
@@ -172,7 +163,6 @@ onMounted(() => {
             </div>
         </section>
 
-        <!-- Print receipt -->
         <div id="receipt" class="hidden">
             <OrderReceipt :order-to-show="paidOrder" />
         </div>

@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import AddAddressModal from '@/components/client/address/AddAddressModal.vue';
+import DeliveryForm from '@/components/client/placeOrder/DeliveryForm.vue';
 import DineInForm from '@/components/client/placeOrder/DineInForm.vue';
+import LoyaltyPointsSection from '@/components/client/placeOrder/LoyaltyPointsSection.vue';
+import OrderNotes from '@/components/client/placeOrder/OrderNotes.vue';
+import OrderSidebar from '@/components/client/placeOrder/OrderSidebar.vue';
+import OrderSummary from '@/components/client/placeOrder/OrderSummary.vue';
 import OrderTypeSelector from '@/components/client/placeOrder/OrderTypeSelector.vue';
+import PaymentMethodSelector from '@/components/client/placeOrder/PaymentMethodSelector.vue';
 import TakeawayForm from '@/components/client/placeOrder/TakeawayForm.vue';
 import { useLoyaltyPoints } from '@/composables/useLoyaltyPoints';
 import { useVatCalculator } from '@/composables/useVatCalculator';
@@ -19,12 +25,6 @@ import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import DeliveryForm from '@/components/client/placeOrder/DeliveryForm.vue';
-import PaymentMethodSelector from '@/components/client/placeOrder/PaymentMethodSelector.vue';
-import OrderNotes from '@/components/client/placeOrder/OrderNotes.vue';
-import LoyaltyPointsSection from '@/components/client/placeOrder/LoyaltyPointsSection.vue';
-import OrderSummary from '@/components/client/placeOrder/OrderSummary.vue';
-import OrderSidebar from '@/components/client/placeOrder/OrderSidebar.vue';
 
 const props = defineProps<{
     orderTypes: OrderTypeType[];
@@ -49,7 +49,10 @@ const showAddressModal = ref(false);
 const editingAddress = ref<AddressType | null>(null);
 const existingAddresses = ref<AddressType[]>(props.addresses ?? []);
 const deletedAddressId = ref<number | null>(null);
-const deliveryFee = computed(() => selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY ? 2 : 0);
+
+const deliveryFee = computed(() =>
+    selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY ? 2 : 0,
+);
 
 const loyaltyPoints = computed(() => cart.value?.user?.loyalty_points ?? 0);
 
@@ -68,17 +71,20 @@ const {
     canUseOption,
 } = useLoyaltyPoints(loyaltyPoints);
 
-const { vat12Total, vat21Total, totalVat, totalIncVat, subtotalBeforeDeliveryFee } =
-    useVatCalculator({
-        items,
-        discountAmount,
-        deliveryFee,
-        selectedOrderTypeValue,
-    });
-
-const earnedPoints = computed(() => {
-    return Math.floor(totalIncVat.value * 3);
+const {
+    vat12Total,
+    vat21Total,
+    totalVat,
+    totalIncVat,
+    subtotalBeforeDeliveryFee,
+} = useVatCalculator({
+    items,
+    discountAmount,
+    deliveryFee,
+    selectedOrderTypeValue,
 });
+
+const earnedPoints = computed(() => Math.floor(totalIncVat.value * 3));
 
 // Minimum pickup time (current time + 30 minutes)
 const minPickupTime = computed(() => {
@@ -100,11 +106,11 @@ const isFormValid = computed(() => {
     if (!selectedOrderType.value) return false;
     if (!paymentMethod.value) return false;
 
-    if (selectedOrderType.value.value === 1) {
+    if (selectedOrderType.value.value === OrderTypeEnum.DINEIN) {
         return tableNumber.value.trim().length > 0;
     }
 
-    if (selectedOrderType.value.value === 2) {
+    if (selectedOrderType.value.value === OrderTypeEnum.TAKEAWAY) {
         return (
             !!pickupTime.value &&
             pickupTime.value >= minPickupTime.value &&
@@ -113,7 +119,7 @@ const isFormValid = computed(() => {
         );
     }
 
-    if (selectedOrderType.value.value === 3) {
+    if (selectedOrderType.value.value === OrderTypeEnum.DELIVERY) {
         return selectedAddressId.value !== null;
     }
 
@@ -150,11 +156,9 @@ const onAddressSaved = async (savedAddress: AddressType) => {
 };
 
 const selectDefaultAddress = () => {
-    const defaultAddress = existingAddresses.value.find(
-        (a) => a.is_default,
-    );
+    const defaultAddress = existingAddresses.value.find((a) => a.is_default);
     selectedAddressId.value = defaultAddress ? defaultAddress.id : null;
-}
+};
 
 const deleteAddress = async (addressId: number) => {
     deletedAddressId.value = addressId;
@@ -176,7 +180,7 @@ const deleteAddress = async (addressId: number) => {
         selectDefaultAddress();
     } catch (error) {
         console.log(error);
-        toast.error('Failed to place order');
+        toast.error('Failed to delete address');
     } finally {
         deletedAddressId.value = null;
     }
@@ -217,20 +221,20 @@ const placeOrder = async () => {
     }
 };
 
-const onOrderTypeChange = async (typeValue: number) => {
-    selectedOrderTypeValue.value = typeValue;
+const onOrderTypeChange = async (type: OrderTypeEnum) => {
+    selectedOrderTypeValue.value = type;
     paymentMethod.value = null;
 
-    if (typeValue === 1) {
+    if (type === OrderTypeEnum.DINEIN) {
         pickupName.value = '';
         pickupPhone.value = '';
         pickupTime.value = '';
         selectedAddressId.value = null;
-    } else if (typeValue === 2) {
+    } else if (type === OrderTypeEnum.TAKEAWAY) {
         pickupTime.value = minPickupTime.value;
         tableNumber.value = '';
         selectedAddressId.value = null;
-    } else if (typeValue === 3) {
+    } else if (type === OrderTypeEnum.DELIVERY) {
         tableNumber.value = '';
         pickupName.value = '';
         pickupPhone.value = '';
@@ -264,25 +268,26 @@ onMounted(() => {
             </div>
 
             <div class="flex flex-col gap-6 lg:flex-row">
-                <!-- Order Form Section -->
                 <div class="flex-1">
                     <div class="space-y-6">
-                        <!-- Order Type Selection -->
                         <OrderTypeSelector
                             v-model="selectedOrderTypeValue"
                             :order-types="props.orderTypes"
                             @update:model-value="onOrderTypeChange"
                         />
 
-                        <!-- Dine In Details -->
                         <DineInForm
-                            v-if="selectedOrderTypeValue === 1"
+                            v-if="
+                                selectedOrderTypeValue === OrderTypeEnum.DINEIN
+                            "
                             v-model="tableNumber"
                         />
 
-                        <!-- Takeaway Details -->
                         <TakeawayForm
-                            v-if="selectedOrderTypeValue === 2"
+                            v-if="
+                                selectedOrderTypeValue ===
+                                OrderTypeEnum.TAKEAWAY
+                            "
                             v-model:pickup-name="pickupName"
                             v-model:pickup-phone="pickupPhone"
                             v-model:pickup-time="pickupTime"
@@ -290,9 +295,11 @@ onMounted(() => {
                             :max-pickup-time="maxPickupTime"
                         />
 
-                        <!-- Delivery Details -->
                         <DeliveryForm
-                            v-if="selectedOrderType?.value === 3"
+                            v-if="
+                                selectedOrderType?.value ===
+                                OrderTypeEnum.DELIVERY
+                            "
                             v-model:selected-address-id="selectedAddressId"
                             :addresses="existingAddresses"
                             :deleting-address-id="deletedAddressId"
@@ -301,21 +308,18 @@ onMounted(() => {
                             @delete-address="deleteAddress"
                         />
 
-                        <!-- Payment Method Selection -->
                         <PaymentMethodSelector
                             v-if="selectedOrderTypeValue"
                             v-model="paymentMethod"
                             :payment-methods="paymentMethods"
                         />
 
-                        <!-- Order Notes -->
                         <OrderNotes
                             v-model="notes"
                             :max-length="500"
                             placeholder="Any special requests or dietary requirements?"
                         />
 
-                        <!-- Loyalty Points Section -->
                         <LoyaltyPointsSection
                             :loyalty-points="loyaltyPoints"
                             :earned-points="earnedPoints"
@@ -327,27 +331,25 @@ onMounted(() => {
                             @remove="removePoints"
                         />
 
-                        <!-- Order Items Summary -->
                         <OrderSummary
                             :items="items"
                             :subtotal="subtotalBeforeDeliveryFee"
                             :delivery-fee="
-                                selectedOrderType?.value === 3 ? 2 : 0
+                                selectedOrderType?.value === OrderTypeEnum.DELIVERY ? 2 : 0
                             "
                             :discount-amount="discountAmount"
                             :vat12-total="vat12Total"
                             :vat21-total="vat21Total"
                             :total-vat="totalVat"
-                            :cart-total="totalIncVat"
+                            :total-inc-vat="totalIncVat"
                             :earned-points="Math.floor(totalIncVat * 3)"
                         />
                     </div>
                 </div>
 
-                <!-- Sidebar -->
                 <OrderSidebar
                     :items-count="items.length"
-                    :cart-total="totalIncVat"
+                    :total-inc-vat="totalIncVat"
                     :is-form-valid="isFormValid"
                     :is-loading="isOrderLoading"
                     @place-order="placeOrder"

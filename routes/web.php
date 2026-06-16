@@ -3,6 +3,7 @@
 use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\ClientGlobalSearchController;
+use App\Http\Controllers\Client\LoyaltyPointTransactionController;
 use App\Http\Controllers\Client\MenuController;
 use App\Http\Controllers\Client\NotificationController;
 use App\Http\Controllers\Client\OrderController;
@@ -45,10 +46,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(OrderController::class)->prefix('orders')->name('order.')->group(function () {
         Route::get('/', 'getOrders')->name('get-orders');
         Route::get('/my-orders', 'myOrders')->name('my-orders');
-        Route::get('/{orderId}', 'getOrder')->name('get-order');
-        Route::get('/{orderId}/details', 'orderDetails')->name('order-details');
-        Route::get('/reorder', 'reorder')->name('reorder');
+        Route::get('/{order}', 'getOrder')->name('get-order');
+        Route::get('/{order}/details', 'orderDetails')->name('order-details');
+        Route::get('/{order}/reorder', 'reorder')->name('reorder');
         Route::post('/place-order', 'placeOrder')->name('place-order');
+        Route::post('/reorder', 'confirmReorder')->name('confirm-reorder');
+        Route::patch('/{order}/cancel', 'cancel')->name('cancel');
+        Route::delete('/{order}', 'destroy')->name('destroy');
     });
 
     Route::controller(AddressController::class)->prefix('addresses')->name('address.')->group(function () {
@@ -70,6 +74,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/', 'markAllAsRead')->name('mark-all-as-read');
         Route::delete('/{notification}', 'delete')->name('delete');
         Route::delete('/', 'deleteAll')->name('delete-all');
+    });
+
+    Route::controller(LoyaltyPointTransactionController::class)->prefix('loyalty-point-transactions')->name('loyalty-point-transaction.')->group(function () {
+        Route::get('/my-points', 'myPoints')->name('my-points');
+        Route::get('/get-loyalty-point-transactions', 'getLoyaltyPointTransactions')->name('get-loyalty-point-transactions');
     });
 });
 

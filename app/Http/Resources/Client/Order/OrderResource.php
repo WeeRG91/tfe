@@ -28,6 +28,7 @@ class OrderResource extends JsonResource
                 'id' => $this->user->id,
                 'name' => $this->user->name,
                 'email' => $this->user->email,
+                'loyalty_points' => $this->user->loyalty_points,
             ]),
             'type' => OrderTypeEnum::getType($this->type),
             'table_number' => $this->table_number,

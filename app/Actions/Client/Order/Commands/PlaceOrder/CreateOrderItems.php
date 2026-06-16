@@ -45,7 +45,7 @@ class CreateOrderItems
             $vatBreakdown[$vatRate]['vat_total'] += $vatAmount;
             $vatBreakdown[$vatRate]['total_inc_vat'] += $item->total;
 
-            $orderItem = $order->items()->create([
+            $orderItems = $order->items()->create([
                 'item_id' => $item->item_id,
                 'item_type' => $item->item_type,
                 'meat_id' => $item->meat_id,
@@ -58,7 +58,7 @@ class CreateOrderItems
             ]);
 
             if ($item->removedIngredients()->exists()) {
-                $orderItem->removedIngredients()->attach($item->removedIngredients->pluck('id'));
+                $orderItems->removedIngredients()->attach($item->removedIngredients->pluck('id'));
             }
 
             $itemsTotalIncVat += $item->total;

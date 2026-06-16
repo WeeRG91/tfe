@@ -13,7 +13,7 @@ const emit = defineEmits<{
 
 <template>
     <div
-        class="group flex h-full cursor-pointer overflow-hidden rounded-md border bg-white transition-all duration-300"
+        class="group flex h-full overflow-hidden rounded-md border bg-white transition-all duration-300"
         :class="{
             'opacity-60 grayscale hover:opacity-70':
                 props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
@@ -138,7 +138,7 @@ const emit = defineEmits<{
                     <button
                         v-if="props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE"
                         @click.stop="emit('add', props.drink)"
-                        class="text-sm text-red-500 transition-all duration-300 hover:translate-x-1 hover:text-red-600"
+                        class="text-sm text-red-500 transition-all cursor-pointer duration-300 hover:translate-x-1 hover:text-red-600"
                     >
                         Add
                         <span

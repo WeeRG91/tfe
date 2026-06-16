@@ -58,37 +58,6 @@ const openAddModal = () => {
                         >
                             {{ props.dish.category.label }}
                         </span>
-
-                        <span
-                            class="rounded-full border px-4 py-1.5 text-sm font-semibold shadow-sm"
-                            :class="
-                                props.dish.is_available === 'Available'
-                                    ? 'border-green-500 bg-green-50 text-green-700'
-                                    : 'border-gray-300 bg-gray-50 text-gray-500'
-                            "
-                        >
-                            <span class="inline-flex items-center gap-1.5">
-                                <span class="relative flex h-2 w-2">
-                                    <span
-                                        v-if="
-                                            props.dish.is_available ===
-                                            'Available'
-                                        "
-                                        class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"
-                                    ></span>
-                                    <span
-                                        class="relative inline-flex h-2 w-2 rounded-full"
-                                        :class="
-                                            props.dish.is_available ===
-                                            'Available'
-                                                ? 'bg-green-500'
-                                                : 'bg-gray-400'
-                                        "
-                                    ></span>
-                                </span>
-                                {{ props.dish.is_available }}
-                            </span>
-                        </span>
                     </div>
 
                     <h1

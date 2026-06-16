@@ -3,6 +3,7 @@ import { useClickOutside } from '@/composables/useClickOutside';
 import order from '@/routes/order';
 import { LogIn, NotepadText, User } from 'lucide-vue-next';
 import { ref } from 'vue';
+import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 
 defineProps<{
     user: any | null;
@@ -95,6 +96,13 @@ useClickOutside(menuContainerRef, () => {
                 >
                     <NotepadText class="h-4 w-4" />
                     My Orders
+                </a>
+                <a
+                    :href="loyaltyPointTransaction.myPoints().url"
+                    class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
+                >
+                    <NotepadText class="h-4 w-4" />
+                    My Points
                 </a>
                 <button
                     @click="handleLogout"

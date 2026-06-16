@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Actions\Client\Order\Commands\PlaceOrder;
+namespace App\Actions\Client\Order\Commands\Reorder;
 
 use App\Actions\Client\Order\Commands\CalculateOrderAmounts;
 use App\Actions\Client\Order\Commands\CreateOrder;
 use App\Actions\Client\Order\Commands\HandleLoyaltyPoints;
 use App\Enums\PaymentMethodEnum;
 use App\Events\OrderPlacedBroadcast;
-use App\Models\Cart;
+use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-readonly class PlaceOrder
+readonly class Reorder
 {
     public function __construct(
-        private CreateOrder           $createOrder,
-        private CreateOrderItems      $createOrderItems,
+        private CreateOrder $createOrder,
+        private CreateOrderItems $createOrderItems,
         private CalculateOrderAmounts $calculateOrderAmounts,
-        private HandleLoyaltyPoints   $handleLoyaltyPoints,
+        private HandleLoyaltyPoints $handleLoyaltyPoints,
     ) {}
 
     /**
@@ -27,21 +27,21 @@ readonly class PlaceOrder
      */
     public function execute(array $data): array
     {
-        $cart = Cart::query()->findOrFail($data['cart_id']);
-        $cart->load('items.item', 'items.meat', 'items.removedIngredients');
-        $user = auth()->user();
+        $order = Order::query()->findOrFail($data['order_id']);
+        $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients');
+        $user  = auth()->user();
 
-        if (!$cart || $cart->items->isEmpty()) {
+        if (!$order || $order->items->isEmpty()) {
             return [
-                'message' => 'Cart is empty',
+                'message' => 'Order is empty',
                 'order' => null,
             ];
         }
 
-        return DB::transaction(function () use ($cart, $data, $user) {
-            $order = $this->createOrder->execute($data, $user);
+        return DB::transaction(function () use ($order, $data, $user) {
+            $newOrder = $this->createOrder->execute($data, $user);
 
-            [$itemsTotalIncVat, $vatBreakdown] = $this->createOrderItems->execute($order, $cart);
+            [$itemsTotalIncVat, $vatBreakdown] = $this->createOrderItems->execute($order, $newOrder);
 
             $isCash = $data['payment_method'] === PaymentMethodEnum::CASH->value;
             $usedPoints = $data['used_points'] ?? 0;
@@ -54,27 +54,25 @@ readonly class PlaceOrder
                 type: $type,
             );
 
-            $order->update($amounts);
+            $newOrder->update($amounts);
 
             $this->handleLoyaltyPoints->execute(
                 user: $user,
-                order: $order,
+                order: $newOrder,
                 usedPoints: $usedPoints,
                 finalTotal: $amounts['total_inc_vat'],
                 isCash: $isCash,
             );
 
-            $cart->items()->delete();
-
-            $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
+            $newOrder->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
 
             if ($order->confirmed_at !== null) {
-                event(new OrderPlacedBroadcast($order));
+                event(new OrderPlacedBroadcast($newOrder));
             }
 
             return [
                 'message' => 'Order placed successfully',
-                'order' => $order,
+                'order' => $newOrder,
             ];
         });
     }

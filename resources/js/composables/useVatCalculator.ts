@@ -1,10 +1,10 @@
 import { CartItemType, ItemTypeEnum } from '@/types/cart';
 import { computed, Ref } from 'vue';
 import { ALCOHOL_CATEGORIES, AlcoholCategory } from '@/types/drink';
-import { OrderTypeEnum } from '@/types/order';
+import { OrderItemType, OrderTypeEnum } from '@/types/order';
 
 export function useVatCalculator(params: {
-    items: Ref<CartItemType[]>;
+    items: Ref<CartItemType[] | OrderItemType[]>;
     discountAmount: Ref<number>;
     deliveryFee: Ref<number>;
     selectedOrderTypeValue: Ref<number | null>;
@@ -34,11 +34,11 @@ export function useVatCalculator(params: {
 
     const total12 = computed(() => {
         const food = dishItems.value.reduce(
-            (sum, i) => sum + (i.total || 0),
+            (sum, i) => sum + (i.total_inc_vat || 0),
             0,
         );
         const nonAlcoholic = nonAlcoholicItems.value.reduce(
-            (sum, i) => sum + (i.total || 0),
+            (sum, i) => sum + (i.total_inc_vat || 0),
             0,
         );
 
@@ -46,7 +46,7 @@ export function useVatCalculator(params: {
     });
     const total21 = computed(() => {
         const alcoholic = alcoholicItems.value.reduce(
-            (sum, i) => sum + (i.total || 0),
+            (sum, i) => sum + (i.total_inc_vat || 0),
             0,
         );
         const delivery =

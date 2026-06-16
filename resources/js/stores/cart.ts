@@ -177,7 +177,7 @@ export const useCartStore = defineStore('cart', {
                     item.quantity -= 1;
                 }
 
-                item.total = Number(item.unit_price) * item.quantity;
+                item.total_inc_vat = Number(item.unit_price) * item.quantity;
             } catch (error) {
                 console.log('Failed to update quantity: ', error);
                 throw error;

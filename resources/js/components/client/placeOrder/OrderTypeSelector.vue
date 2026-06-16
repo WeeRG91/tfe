@@ -3,12 +3,12 @@ import { OrderTypeEnum, OrderTypeType } from '@/types/order';
 import { ShoppingBag, Store, Table, Truck } from 'lucide-vue-next';
 
 const props = defineProps<{
-    modelValue: number | null;
+    modelValue: OrderTypeEnum | null;
     orderTypes: OrderTypeType[];
 }>();
 
 const emit = defineEmits<{
-    'update:modelValue': [value: number];
+    'update:modelValue': [value: OrderTypeEnum];
 }>();
 
 const getOrderTypeIcon = (orderTypeValue: OrderTypeEnum) => {
@@ -24,7 +24,7 @@ const getOrderTypeIcon = (orderTypeValue: OrderTypeEnum) => {
     }
 };
 
-const selectType = (value: number) => {
+const selectType = (value: OrderTypeEnum) => {
     emit('update:modelValue', value);
 };
 </script>
