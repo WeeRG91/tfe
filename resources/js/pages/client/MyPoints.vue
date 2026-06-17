@@ -179,7 +179,7 @@ watch(filterPoint, resetAndReload);
                             <p
                                 class="text-xs font-medium opacity-90 md:text-sm"
                             >
-                                Last Updated
+                                Last Update
                             </p>
                             <p
                                 class="text-xl font-bold tracking-tight md:text-2xl"

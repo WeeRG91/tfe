@@ -10,38 +10,57 @@ import {
     getPaymentStatusVariant,
 } from '@/lib/utils';
 import order from '@/routes/order';
+import paymentOrder from '@/routes/payment-order';
 import { OrderStatusEnum, OrderType } from '@/types/order';
 import { router } from '@inertiajs/vue3';
 import {
     ChevronDown,
+    CreditCard,
     MessageCircle,
     NotebookText,
     Phone,
     Repeat,
     User,
     XCircle,
-    CreditCard,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import OrderItemsList from './OrderItemsList.vue';
-import paymentOrder from '@/routes/payment-order';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const props = defineProps<{
     orderToShow: OrderType;
-    cancelLoadingOrderId: number | null;
-    removeLoadingOrderId: number | null;
+    isConfirmLoading: boolean;
 }>();
 
 const emit = defineEmits<{
     cancel: [orderId: number];
     remove: [orderId: number];
-}>()
+}>();
 
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
 const expandedOrderId = ref<number | null>(null);
 
 const isExpanded = computed(
     () => expandedOrderId.value === props.orderToShow.id,
 );
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
+};
 
 const toggleDetails = () => {
     if (isExpanded.value) {
@@ -278,15 +297,17 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                             orderToShow.status?.value ===
                             OrderStatusEnum.PENDING
                         "
-                        @click="cancelOrder"
-                        :disabled="cancelLoadingOrderId === orderToShow.id"
+                        @click="
+                            openConfirmModal(
+                                'Are you sure you want to cancel this order?',
+                                'destructive',
+                                () => cancelOrder(),
+                            )
+                        "
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
                     >
                         <XCircle class="h-4 w-4" />
-                        <span v-if="cancelLoadingOrderId === orderToShow.id"
-                            >Cancelling...</span
-                        >
-                        <span v-else>Cancel Order</span>
+                        <span>Cancel Order</span>
                     </button>
 
                     <button
@@ -294,7 +315,11 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                             orderToShow.status?.value ===
                             OrderStatusEnum.PENDING
                         "
-                        @click="router.visit(paymentOrder.payment(orderToShow.id).url)"
+                        @click="
+                            router.visit(
+                                paymentOrder.payment(orderToShow.id).url,
+                            )
+                        "
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
                     >
                         <CreditCard class="h-4 w-4" />
@@ -308,23 +333,31 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                             orderToShow.status?.value ===
                                 OrderStatusEnum.CANCELLED
                         "
-                        @click="removeOrder"
-                        :disabled="removeLoadingOrderId === orderToShow.id"
+                        @click="
+                            openConfirmModal(
+                                'Are you sure you want to remove this order?',
+                                'destructive',
+                                () => removeOrder(),
+                            )
+                        "
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
                     >
                         <XCircle class="h-4 w-4" />
-                        <span v-if="cancelLoadingOrderId === orderToShow.id"
-                            >Removing...</span
-                        >
-                        <span v-else>Remove Order</span>
+                        <span>Remove Order</span>
                     </button>
 
                     <button
                         v-if="
                             orderToShow.status?.value ===
-                            OrderStatusEnum.COMPLETED
+                                OrderStatusEnum.COMPLETED ||
+                            orderToShow.status?.value ===
+                                OrderStatusEnum.CANCELLED
                         "
-                        @click.stop="router.visit(order.reorder(props.orderToShow.id).url)"
+                        @click.stop="
+                            router.visit(
+                                order.reorder(props.orderToShow.id).url,
+                            )
+                        "
                         class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-500 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-red-600 disabled:opacity-50 sm:w-40"
                     >
                         <Repeat class="h-4 w-4" />
@@ -334,6 +367,15 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
             </div>
         </div>
     </div>
+
+    <ConfirmModal
+        :open="confirmModalOpen"
+        :onClose="closeConfirmModal"
+        :message="confirmModalMessage"
+        :type="confirmModalType"
+        :isLoading="isConfirmLoading"
+        @confirm="confirmModalAction"
+    />
 </template>
 
 <style scoped></style>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Actions\Client\Order\Commands\PlaceOrder\PlaceOrder;
 use App\Actions\Client\Order\Commands\Reorder\Reorder;
+use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
@@ -13,7 +14,9 @@ use App\Http\Requests\Client\Order\ReorderRequest;
 use App\Http\Resources\Client\Address\AddressResource;
 use App\Http\Resources\Client\Order\OrderResource;
 use App\Models\Address;
+use App\Models\LoyaltyPointTransaction;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
@@ -149,10 +152,32 @@ class OrderController extends Controller
      */
     public function cancel(Order $order): HttpResponse
     {
+        $user = auth()->user();
+
         $order->update([
             'status' => OrderStatusEnum::CANCELLED->value,
             'cancelled_at' => now(),
         ]);
+
+        $loyaltyPointTransaction = LoyaltyPointTransaction::query()
+            ->where('user_id', $user->id)
+            ->where('order_id', $order->id)
+            ->where('type', LoyaltyPointTransactionTypeEnum::REDEEMED->value)
+            ->first();
+
+        if ($loyaltyPointTransaction) {
+            LoyaltyPointTransaction::query()->create([
+                'user_id' => $user->id,
+                'order_id' => $order->id,
+                'points' => $loyaltyPointTransaction->points,
+                'type' => LoyaltyPointTransactionTypeEnum::REFUNDED->value,
+                'description' => 'Points refunded for order #' . $order->order_number,
+            ]);
+
+            User::query()->update([
+                'loyalty_points' => $user->loyalty_points + $loyaltyPointTransaction->points,
+            ]);
+        }
 
         return response()->noContent();
     }

@@ -21,7 +21,7 @@ const getPointColor = (type: PointTypeEnum) => {
     const color: Record<PointTypeEnum, string> = {
         [PointTypeEnum.EARNED]: 'text-green-600',
         [PointTypeEnum.REDEEMED]: 'text-red-600',
-        [PointTypeEnum.REFUNDED]: 'text-gray-600',
+        [PointTypeEnum.REFUNDED]: 'text-yellow-600',
     };
     return color[type] || 'text-gray-600';
 };
@@ -30,7 +30,7 @@ const getPointBgColor = (type: PointTypeEnum) => {
     const bgColor: Record<PointTypeEnum, string> = {
         [PointTypeEnum.EARNED]: 'bg-green-100',
         [PointTypeEnum.REDEEMED]: 'bg-red-100',
-        [PointTypeEnum.REFUNDED]: 'bg-gray-100',
+        [PointTypeEnum.REFUNDED]: 'bg-yellow-100',
     };
     return bgColor[type] || 'bg-gray-100';
 };
@@ -38,7 +38,7 @@ const getPointBgColor = (type: PointTypeEnum) => {
 const getPointPrefix = (type: PointTypeEnum) => {
     const prefix: Record<PointTypeEnum, string> = {
         [PointTypeEnum.EARNED]: '+',
-        [PointTypeEnum.REDEEMED]: '',
+        [PointTypeEnum.REDEEMED]: '-',
         [PointTypeEnum.REFUNDED]: '+',
     };
     return prefix[type] || '';

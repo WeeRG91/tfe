@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import { useClickOutside } from '@/composables/useClickOutside';
 import {
     formatDateForHumans,
@@ -25,6 +26,7 @@ const props = defineProps<{
     open: boolean;
     onClose: () => void;
     notificationsToShow: NotificationType[];
+    isConfirmLoading: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -34,12 +36,31 @@ const emit = defineEmits<{
     'delete-all': [];
 }>();
 
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
 const showDropdown = ref<boolean>(false);
 const dropdownRef = ref<HTMLDivElement | null>(null);
 
 const unreadCount = computed(() => {
     return props.notificationsToShow.filter((n) => !n.read_at).length;
 });
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
+};
 
 const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
@@ -55,10 +76,12 @@ const markAllAsRead = () => {
 
 const deleteNotification = (notificationId: number) => {
     emit('delete', notificationId);
+    closeConfirmModal();
 };
 
 const deleteAllNotifications = () => {
     emit('delete-all');
+    closeConfirmModal();
 };
 
 const goToNotifications = () => {
@@ -171,7 +194,13 @@ watch(
                                         <span>Mark all as read</span>
                                     </button>
                                     <button
-                                        @click.stop="deleteAllNotifications"
+                                        @click.stop="
+                                            openConfirmModal(
+                                                `Are you sure you want to delete all notifications?`,
+                                                'destructive',
+                                                () => deleteAllNotifications(),
+                                            )
+                                        "
                                         class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                                     >
                                         <Trash2 class="h-4 w-4" />
@@ -191,7 +220,6 @@ watch(
                     </div>
                 </div>
 
-                <!-- Notifications List -->
                 <div class="flex-1 overflow-y-auto">
                     <div
                         v-if="notificationsToShow.length === 0"
@@ -285,7 +313,6 @@ watch(
                                             <div
                                                 class="ml-auto flex gap-1 opacity-0 transition-all duration-300 group-hover:opacity-100"
                                             >
-                                                <!-- Mark as read button -->
                                                 <button
                                                     v-if="!notification.read_at"
                                                     @click.stop="
@@ -304,11 +331,15 @@ watch(
                                                     >
                                                 </button>
 
-                                                <!-- Delete button -->
                                                 <button
                                                     @click.stop="
-                                                        deleteNotification(
-                                                            notification.id,
+                                                        openConfirmModal(
+                                                            'Are you sure you want to delete notification?',
+                                                            'destructive',
+                                                            () =>
+                                                                deleteNotification(
+                                                                    notification.id,
+                                                                ),
                                                         )
                                                     "
                                                     class="rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
@@ -339,6 +370,15 @@ watch(
                     </button>
                 </div>
             </div>
+
+            <ConfirmModal
+                :open="confirmModalOpen"
+                :onClose="closeConfirmModal"
+                :message="confirmModalMessage"
+                :type="confirmModalType"
+                :isLoading="isConfirmLoading"
+                @confirm="confirmModalAction"
+            />
         </div>
     </Transition>
 

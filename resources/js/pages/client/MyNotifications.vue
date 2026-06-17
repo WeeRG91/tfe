@@ -11,6 +11,8 @@ import axios from 'axios';
 import { CheckCheck, Loader, MoreHorizontal, Trash2 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useNotificationStore } from '@/stores/notification';
+import ConfirmModal from '@/components/ConfirmModal.vue';
+import { toast } from 'vue-sonner';
 
 const notificationStore = useNotificationStore();
 
@@ -20,7 +22,12 @@ const filterOptions: { label: string; value: FilterNotificationEnum }[] = [
     { label: 'Unread', value: FilterNotificationEnum.UNREAD },
 ];
 
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
 const isLoading = ref<boolean>(false);
+const isConfirmLoading = ref<boolean>(false);
 const activeFilter = ref<FilterNotificationEnum>(FilterNotificationEnum.ALL);
 const showDropdown = ref<boolean>(false);
 const dropdownRef = ref<HTMLDivElement | null>(null);
@@ -28,6 +35,21 @@ const notifications = ref<NotificationType[]>([]);
 const nextCursor = ref<string>('');
 const sentinel = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
+};
 
 const groupedNotifications = computed(() => {
     const groups: Record<string, NotificationType[]> = {};
@@ -96,22 +118,36 @@ const markAllAsRead = async () => {
 };
 
 const deleteNotification = async (id: number) => {
+    isConfirmLoading.value = true;
+
     try {
         await notificationStore.delete(id);
 
         notifications.value = notifications.value.filter((n) => n.id !== id);
+
+        toast.success('Notification deleted successfully.');
     } catch (error) {
         console.log(error);
+        toast.error('Failed to delete notification.');
+    } finally {
+        isConfirmLoading.value = false;
     }
 };
 
 const deleteAll = async () => {
+    isConfirmLoading.value = true;
+
     try {
         await notificationStore.deleteAll();
 
         notifications.value = [];
+
+        toast.success('All notifications deleted successfully.');
     } catch (error) {
         console.log(error);
+        toast.error('Failed to delete all notifications.');
+    } finally {
+        isConfirmLoading.value = false;
     }
 };
 
@@ -237,7 +273,13 @@ watch(activeFilter, () => {
                                 <span>Mark all as read</span>
                             </button>
                             <button
-                                @click.stop="deleteAll"
+                                @click.stop="
+                                    openConfirmModal(
+                                        'Are you sure you want to delete all notifications?',
+                                        'destructive',
+                                        () => deleteAll(),
+                                    )
+                                "
                                 class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                             >
                                 <Trash2 class="h-4 w-4" />
@@ -248,9 +290,7 @@ watch(activeFilter, () => {
                 </div>
             </div>
 
-            <EmptyNotification
-                v-if="!notifications.length && !isLoading"
-            />
+            <EmptyNotification v-if="!notifications.length && !isLoading" />
 
             <div v-else class="space-y-6">
                 <div
@@ -267,6 +307,7 @@ watch(activeFilter, () => {
                             v-for="notification in group"
                             :key="notification.id"
                             :notification="notification"
+                            :is-confirm-loading="isConfirmLoading"
                             @mark-read="markAsRead"
                             @delete="deleteNotification"
                         />
@@ -287,5 +328,14 @@ watch(activeFilter, () => {
                 <Loader class="mx-auto animate-spin text-muted-foreground" />
             </div>
         </section>
+
+        <ConfirmModal
+            :open="confirmModalOpen"
+            :onClose="closeConfirmModal"
+            :message="confirmModalMessage"
+            :type="confirmModalType"
+            :isLoading="isConfirmLoading"
+            @confirm="confirmModalAction"
+        />
     </ClientLayout>
 </template>

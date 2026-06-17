@@ -6,21 +6,39 @@ import {
     getNotificationIconColor,
     notificationRoutes,
 } from '@/lib/utils';
-import {
-    NotifiableTypeEnum,
-    NotificationType,
-} from '@/types/notification';
+import { NotifiableTypeEnum, NotificationType } from '@/types/notification';
 import { CheckCircle2, Trash2 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const props = defineProps<{
     notification: NotificationType;
+    isConfirmLoading: boolean;
 }>();
 
 const emit = defineEmits(['mark-read', 'delete']);
 
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
 const isRead = computed(() => !!props.notification.read_at);
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
+};
 
 const goToDetails = (
     notifiableType: NotifiableTypeEnum,
@@ -40,7 +58,10 @@ const handleNotificationClick = () => {
         emit('mark-read', props.notification.id);
     }
 
-    goToDetails(props.notification.notifiable_type, props.notification.notifiable_id);
+    goToDetails(
+        props.notification.notifiable_type,
+        props.notification.notifiable_id,
+    );
 };
 
 const markAsRead = () => {
@@ -107,7 +128,13 @@ const deleteNotification = () => {
 
                     <!-- Delete button -->
                     <button
-                        @click.stop="deleteNotification"
+                        @click.stop="
+                            openConfirmModal(
+                                'Are you sure you want to delete notification?',
+                                'destructive',
+                                () => deleteNotification(),
+                            )
+                        "
                         class="rounded-md p-1.5 text-red-600 transition-colors hover:bg-red-50"
                         title="Delete"
                     >
@@ -118,6 +145,15 @@ const deleteNotification = () => {
             </div>
         </div>
     </div>
+
+    <ConfirmModal
+        :open="confirmModalOpen"
+        :onClose="closeConfirmModal"
+        :message="confirmModalMessage"
+        :type="confirmModalType"
+        :isLoading="isConfirmLoading"
+        @confirm="confirmModalAction"
+    />
 </template>
 
 <style scoped>

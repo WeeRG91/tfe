@@ -15,42 +15,41 @@ const props = defineProps<{
 }>();
 
 const ordersToShow = ref<OrderType[]>(props.orders ?? []);
-const cancelLoadingOrderId = ref<number | null>(null);
-const removeLoadingOrderId = ref<number | null>(null);
+const isConfirmLoading = ref<boolean>(false);
 
 const cancelOrder = async (orderId: number) => {
-    cancelLoadingOrderId.value = orderId;
+    isConfirmLoading.value = true;
 
     try {
         await orderStore.cancel(orderId);
 
         ordersToShow.value = ordersToShow.value.filter(
-            (order) => order.id !== orderId
+            (order) => order.id !== orderId,
         );
     } catch (error) {
         console.error(error);
         toast.error('Failed to cancel the order.');
     } finally {
-        cancelLoadingOrderId.value = null;
+        isConfirmLoading.value = false;
     }
-}
+};
 
 const removeOrder = async (orderId: number) => {
-    removeLoadingOrderId.value = orderId;
+    isConfirmLoading.value = true;
 
     try {
         await orderStore.remove(orderId);
 
         ordersToShow.value = ordersToShow.value.filter(
-            (order) => order.id !== orderId
+            (order) => order.id !== orderId,
         );
     } catch (error) {
         console.error(error);
         toast.error('Failed to remove the order.');
     } finally {
-        removeLoadingOrderId.value = null;
+        isConfirmLoading.value = false;
     }
-}
+};
 </script>
 
 <template>
@@ -77,8 +76,7 @@ const removeOrder = async (orderId: number) => {
                 v-for="order in ordersToShow"
                 :key="order.id"
                 :order-to-show="order"
-                :cancel-loading-order-id="cancelLoadingOrderId"
-                :remove-loading-order-id="removeLoadingOrderId"
+                :is-confirm-loading="isConfirmLoading"
                 @cancel="cancelOrder"
                 @remove="removeOrder"
             />

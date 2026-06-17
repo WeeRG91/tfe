@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { CirclePlus, Loader } from 'lucide-vue-next';
+import { Loader } from 'lucide-vue-next';
 
 export type ModalType = 'destructive' | 'info';
 

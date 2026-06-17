@@ -9,6 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { FilterNotificationEnum } from '@/types/notification';
+import { toast } from 'vue-sonner';
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -21,6 +22,7 @@ const { cartItemCount } = storeToRefs(cartStore);
 const isCartOpen = ref<boolean>(false);
 const isSearchOpen = ref<boolean>(false);
 const isNotificationsOpen = ref<boolean>(false);
+const isConfirmLoading = ref<boolean>(false);
 
 const openCart = () => {
     isCartOpen.value = true;
@@ -49,15 +51,36 @@ const markAsRead = async (notificationId: number) => {
 
 const markAllAsRead = async () => {
     await notificationStore.markAllAsRead();
-}
+};
 
 const deleteNotification = async (id: number) => {
-    await notificationStore.delete(id);
-}
+    isConfirmLoading.value = true;
+    try {
+        await notificationStore.delete(id);
+
+        toast.success('Notification deleted successfully.');
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to delete the notification');
+    } finally {
+        isConfirmLoading.value = false;
+    }
+};
 
 const deleteAllNotifications = async () => {
-    await notificationStore.deleteAll();
-}
+    isConfirmLoading.value = true;
+
+    try {
+        await notificationStore.deleteAll();
+
+        toast.success('All notifications deleted successfully.');
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to delete the notification');
+    } finally {
+        isConfirmLoading.value = false;
+    }
+};
 
 type EchoChannel = {
     listen: (event: string, callback: () => void) => EchoChannel;
@@ -73,7 +96,9 @@ onMounted(async () => {
         channel.value = window.Echo.private(`user.${user?.id}`).listen(
             '.order.updated',
             async () => {
-                await notificationStore.getNotifications(FilterNotificationEnum.ALL);
+                await notificationStore.getNotifications(
+                    FilterNotificationEnum.ALL,
+                );
             },
         );
     }
@@ -87,9 +112,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div
-        class="flex min-h-screen flex-col bg-white text-gray-900"
-    >
+    <div class="flex min-h-screen flex-col bg-white text-gray-900">
         <LayoutHeader
             :user="user"
             :cart-item-count="cartItemCount"
@@ -122,6 +145,7 @@ onUnmounted(() => {
             :open="isNotificationsOpen"
             :onClose="closeNotifications"
             :notifications-to-show="notifications"
+            :is-confirm-loading="isConfirmLoading"
             @mark-read="markAsRead"
             @mark-all-read="markAllAsRead"
             @delete="deleteNotification"

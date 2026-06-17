@@ -29,7 +29,7 @@ class HandleLoyaltyPoints
             LoyaltyPointTransaction::query()->create([
                 'user_id' => $user->id,
                 'order_id' => $order->id,
-                'points' => -$usedPoints,
+                'points' => $usedPoints,
                 'type' => LoyaltyPointTransactionTypeEnum::REDEEMED->value,
                 'description' => 'Used points for order #' . $order->order_number,
             ]);
