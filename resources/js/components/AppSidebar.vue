@@ -23,6 +23,7 @@ import {
     LayoutGrid,
     Salad,
     SquareMenu,
+    MessageCircle,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { dashboard } from '@/routes/admin';
@@ -32,6 +33,7 @@ import ingredient from '@/routes/admin/ingredient';
 import meat from '@/routes/admin/meat';
 import allergen from '@/routes/admin/allergen';
 import confirmedOrder from '@/routes/admin/confirmed-order';
+import chat from '@/routes/admin/chat';
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -71,6 +73,11 @@ const mainNavItems: NavItem[] = [
         title: 'Orders',
         href: confirmedOrder.index(),
         icon: SquareMenu,
+    },
+    {
+        title: 'Messages',
+        href: chat.chats().url,
+        icon: MessageCircle,
     },
 ];
 

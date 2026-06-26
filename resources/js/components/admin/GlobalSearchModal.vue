@@ -7,7 +7,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { GlobalSearchType, SearchResultType, SearchType } from '@/types';
 import { router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
 import axios from 'axios';
@@ -26,6 +25,13 @@ import drink from '@/routes/admin/drink';
 import ingredient from '@/routes/admin/ingredient';
 import meat from '@/routes/admin/meat';
 import allergen from '@/routes/admin/allergen';
+import globalSearch from '@/routes/admin/global-search';
+import {
+    GlobalSearchType,
+    SearchResultType,
+    SearchType,
+} from '@/types';
+import { SearchResultEnum } from '@/types/search';
 
 const props = defineProps<{
     open: boolean;
@@ -33,11 +39,11 @@ const props = defineProps<{
 }>();
 
 const resultTypes: SearchResultType[] = [
-    { key: 'dish', label: 'Dishes' },
-    { key: 'drink', label: 'Drinks' },
-    { key: 'ingredient', label: 'Ingredients' },
-    { key: 'meat', label: 'Meats' },
-    { key: 'allergen', label: 'Allergens' },
+    { key: SearchResultEnum.DISH, label: 'Dishes' },
+    { key: SearchResultEnum.DRINK, label: 'Drinks' },
+    { key: SearchResultEnum.INGREDIENT, label: 'Ingredients' },
+    { key: SearchResultEnum.MEAT, label: 'Meats' },
+    { key: SearchResultEnum.ALLERGEN, label: 'Allergens' },
 ];
 
 const query = ref<string>('');
@@ -96,7 +102,7 @@ const search = useDebounceFn(async (value: string) => {
     isLoading.value = true;
 
     try {
-        const response = await axios.get('/global-search', {
+        const response = await axios.get(globalSearch.search().url, {
             params: { query: value },
         });
 
@@ -128,7 +134,7 @@ const handleKeydown = (e: KeyboardEvent) => {
             e.preventDefault();
             const item = flatResults.value[selectedIndex.value];
             if (item) {
-                goToEdit(item.type, item.id);
+                goToEdit(item.type as SearchResultEnum, item.id);
             }
             break;
 
@@ -139,21 +145,21 @@ const handleKeydown = (e: KeyboardEvent) => {
     }
 };
 
-const goToEdit = (type: string, id: number) => {
+const goToEdit = (type: SearchResultEnum, id: number) => {
     switch (type) {
-        case 'dish':
+        case SearchResultEnum.DISH:
             router.visit(dish.edit(id).url);
             break;
-        case 'drink':
+        case SearchResultEnum.DRINK:
             router.visit(drink.edit(id).url);
             break;
-        case 'ingredient':
+        case SearchResultEnum.INGREDIENT:
             router.visit(ingredient.edit(id).url);
             break;
-        case 'meat':
+        case SearchResultEnum.MEAT:
             router.visit(meat.edit(id).url);
             break;
-        case 'allergen':
+        case SearchResultEnum.ALLERGEN:
             router.visit(allergen.edit(id).url);
             break;
         default:
@@ -286,7 +292,7 @@ watch(flatResults, () => {
 
                 <div v-for="type in filteredResultTypes" :key="type.key">
                     <h3
-                        class="flex mb-2 border-b text-xs text-muted-foreground uppercase"
+                        class="mb-2 flex border-b text-xs text-muted-foreground uppercase"
                     >
                         <span>{{ type.label }}</span>
                         <span class="ml-auto text-xs text-gray-400">{{
@@ -306,7 +312,9 @@ watch(flatResults, () => {
                         "
                         v-for="item in results![type.key]"
                         :key="item.id"
-                        @click="goToEdit(item.type, item.id)"
+                        @click="
+                            goToEdit(item.type as SearchResultEnum, item.id)
+                        "
                         :class="[
                             'group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition',
                             isSelected(item) ? 'bg-muted' : 'hover:bg-muted',

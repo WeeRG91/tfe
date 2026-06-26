@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\ChatController;
 use App\Http\Controllers\Client\ClientGlobalSearchController;
 use App\Http\Controllers\Client\LoyaltyPointTransactionController;
 use App\Http\Controllers\Client\MenuController;
+use App\Http\Controllers\Client\MessageController;
 use App\Http\Controllers\Client\NotificationController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\PaymentController;
@@ -79,6 +81,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::controller(LoyaltyPointTransactionController::class)->prefix('loyalty-point-transactions')->name('loyalty-point-transaction.')->group(function () {
         Route::get('/my-points', 'myPoints')->name('my-points');
         Route::get('/get-loyalty-point-transactions', 'getLoyaltyPointTransactions')->name('get-loyalty-point-transactions');
+    });
+
+    Route::controller(ChatController::class)->prefix('chats')->name('chat.')->group(function () {
+        Route::get('/get-chat', 'getChat')->name('get-chat');
+        Route::patch('/{chatId}/read', 'markAsRead')->name('mark-as-read');
+        Route::post('/send', 'send')->name('send');
+    });
+
+    Route::controller(MessageController::class)->prefix('messages')->name('message.')->group(function () {
+        Route::patch('/{message}/update', 'update')->name('update');
+        Route::patch('/{message}/unsend', 'unsend')->name('unsend');
+        Route::delete('/{message}/delete', 'destroy')->name('destroy');
     });
 });
 

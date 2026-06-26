@@ -6,6 +6,7 @@ import {
     HandPlatter,
     Info,
     LogIn,
+    LogOut,
     NotepadText,
     Phone,
     ShoppingCart,
@@ -15,6 +16,8 @@ import {
 } from 'lucide-vue-next';
 import cart from '@/routes/cart';
 import notification from '@/routes/notification';
+import { router } from '@inertiajs/vue3';
+import { login, logout } from '@/routes';
 
 defineProps<{
     open: boolean;
@@ -28,9 +31,14 @@ const emit = defineEmits<{
     'close': [];
 }>();
 
+const handleLogin = () => {
+    emit('close');
+    router.visit(login())
+}
+
 const handleLogout = () => {
     emit('close');
-    // Add logout logic
+    router.visit(logout());
 };
 </script>
 
@@ -171,7 +179,6 @@ const handleLogout = () => {
                             <span class="font-medium">Drinks</span>
                         </a>
 
-                        <!-- Additional links... -->
                         <a
                             @click="emit('close')"
                             href="#"
@@ -212,7 +219,6 @@ const handleLogout = () => {
                             <span class="font-medium">Cart</span>
                         </a>
 
-                        <!-- Notifications Link -->
                         <a
                             v-if="user"
                             :href="notification.myNotifications().url"
@@ -235,11 +241,10 @@ const handleLogout = () => {
                         </a>
                     </nav>
 
-                    <!-- Auth Button -->
                     <div class="border-t border-gray-100 p-6">
                         <button
                             v-if="!user"
-                            @click="emit('close')"
+                            @click="handleLogin"
                             class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-red-600 px-4 py-3 font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700"
                         >
                             <LogIn class="h-5 w-5" />
@@ -250,7 +255,7 @@ const handleLogout = () => {
                             @click="handleLogout"
                             class="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-3 font-medium text-red-600 shadow-sm transition-all duration-200 hover:bg-red-50"
                         >
-                            <LogIn class="h-5 w-5" />
+                            <LogOut class="h-5 w-5" />
                             Sign Out
                         </button>
                     </div>

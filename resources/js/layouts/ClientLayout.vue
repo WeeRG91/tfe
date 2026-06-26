@@ -10,6 +10,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { FilterNotificationEnum } from '@/types/notification';
 import { toast } from 'vue-sonner';
+import ChatBubble from '@/components/client/clientLayout/ChatBubble.vue';
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -138,6 +139,8 @@ onUnmounted(() => {
                 <slot />
             </main>
         </div>
+
+        <ChatBubble v-if="user" />
 
         <CartDrawer :open="isCartOpen" :onClose="closeCart" />
         <ClientGlobalSearchModal :open="isSearchOpen" :onClose="closeSearch" />

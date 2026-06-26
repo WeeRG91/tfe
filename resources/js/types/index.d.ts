@@ -5,6 +5,7 @@ import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
 import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
+import { SearchResultEnum } from '@/types/search';
 
 export interface Auth {
     user: User;
@@ -117,6 +118,6 @@ export type SearchType = {
 };
 
 export type SearchResultType = {
-    key: 'dish' | 'drink' | 'ingredient' | 'meat' | 'allergen';
+    key: SearchResultEnum;
     label: string;
 };

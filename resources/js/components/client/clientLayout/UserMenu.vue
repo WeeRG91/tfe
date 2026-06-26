@@ -4,6 +4,8 @@ import order from '@/routes/order';
 import { LogIn, NotepadText, User } from 'lucide-vue-next';
 import { ref } from 'vue';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
+import { Link, router } from '@inertiajs/vue3';
+import { login, logout } from '@/routes';
 
 defineProps<{
     user: any | null;
@@ -21,8 +23,8 @@ const closeUserMenu = () => {
 };
 
 const handleLogout = () => {
-    // Implement logout logic
     closeUserMenu();
+    router.visit(logout());
 };
 
 useClickOutside(menuContainerRef, () => {
@@ -63,15 +65,15 @@ useClickOutside(menuContainerRef, () => {
             </span>
         </button>
 
-        <button
+        <Link
             v-else
+            :href="login()"
             class="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700 hover:shadow-md sm:flex"
         >
             <LogIn class="h-4 w-4" />
             Sign in
-        </button>
+        </Link>
 
-        <!-- Dropdown Menu -->
         <Transition name="dropdown">
             <div
                 v-if="isUserMenuOpen && user"

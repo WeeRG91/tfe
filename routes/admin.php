@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AllergenController;
+use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\ConfirmedOrderController;
 use App\Http\Controllers\Admin\DishController;
 use App\Http\Controllers\Admin\DrinkController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\MeatController;
+use App\Http\Controllers\Admin\MessageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -96,5 +98,19 @@ Route::middleware(['auth', 'verified'])
         Route::get('/', 'index')->name('index');
         Route::get('/get-confirmed-orders', 'getConfirmedOrders')->name('get-confirmed-orders');
         Route::post('/{orderId}/update-order-status', 'updateOrderStatus')->name('update-order-status');
+    });
+
+    Route::controller(ChatController::class)->prefix('chats')->name('chat.')->group(function () {
+        Route::get('/', 'chats')->name('chats');
+        Route::get('/get-chats', 'getChats')->name('get-chats');
+        Route::get('/{chat}/messages', 'getChatMessages')->name('get-chat-messages');
+        Route::patch('/{chatId}/read', 'markAsRead')->name('mark-as-read');
+        Route::post('/{chat}/send', 'send')->name('send');
+    });
+
+    Route::controller(MessageController::class)->prefix('messages')->name('message.')->group(function () {
+        Route::patch('/{message}/update', 'update')->name('update');
+        Route::patch('/{message}/unsend', 'unsend')->name('unsend');
+        Route::delete('/{message}/delete', 'destroy')->name('destroy');
     });
 });

@@ -7,6 +7,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { urlIsActive } from '@/lib/utils';
+import { useChatStore } from '@/stores/chat';
 import { useOrderStore } from '@/stores/order';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -21,6 +22,17 @@ const page = usePage();
 
 const orderStore = useOrderStore();
 const { confirmedOrders } = storeToRefs(orderStore);
+const chatStore = useChatStore();
+const { chats } = storeToRefs(chatStore);
+
+const unreadCount = computed(() => {
+    return chats.value.filter(
+        (c) =>
+            c.latest_message &&
+            !c.latest_message.is_from_restaurant &&
+            !c.latest_message.read_at,
+    ).length;
+});
 
 const ordersConfirmed = computed(() =>
     (confirmedOrders.value ?? []).filter(
@@ -38,6 +50,7 @@ type EchoChannel = {
 };
 
 const channel = ref<EchoChannel | null>(null);
+const channelAdminChat = ref<EchoChannel | null>(null);
 
 onMounted(async () => {
     await orderStore.getConfirmedOrders();
@@ -48,11 +61,22 @@ onMounted(async () => {
             await orderStore.getConfirmedOrders();
         },
     );
+
+    channelAdminChat.value = window.Echo.private('admin.chats').listen(
+        '.message-sent',
+        async () => {
+            await chatStore.fetchChats();
+        },
+    );
 });
 
 onUnmounted(() => {
     if (channel.value) {
         window.Echo.leave('orders');
+    }
+
+    if (channelAdminChat.value) {
+        window.Echo.leave('private-admin.chats');
     }
 });
 </script>
@@ -71,7 +95,7 @@ onUnmounted(() => {
                         :href="item.href"
                         class="items-center"
                         :class="
-                            item.title === 'Orders'
+                            item.title === 'Orders' || item.title === 'Messages'
                                 ? 'flex justify-between'
                                 : 'flex'
                         "
@@ -82,10 +106,20 @@ onUnmounted(() => {
                         </div>
 
                         <span
-                            v-if="item.title === 'Orders'"
-                            class="rounded-full bg-red-600 px-1.5 py-0.5 text-xs text-white"
+                            v-if="
+                                item.title === 'Orders' &&
+                                ordersConfirmed.length > 0
+                            "
+                            class="rounded-full bg-red-600 px-2 py-1 text-[10px] text-white"
                         >
                             {{ ordersConfirmed.length }}
+                        </span>
+
+                        <span
+                            v-if="item.title === 'Messages' && unreadCount > 0"
+                            class="rounded-full bg-red-600 px-2 py-1 text-[10px] text-white"
+                        >
+                            {{ unreadCount }}
                         </span>
                     </Link>
                 </SidebarMenuButton>
