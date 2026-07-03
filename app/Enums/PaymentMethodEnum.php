@@ -24,7 +24,7 @@ enum PaymentMethodEnum: int
 
     public static function getPaymentMethods(): array
     {
-        return array_map(fn($case) => [
+        return array_map(fn ($case) => [
             'value' => $case->value,
             'label' => $case->label(),
         ], self::cases());

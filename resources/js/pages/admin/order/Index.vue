@@ -161,12 +161,12 @@ onMounted(async () => {
                                     :class="`text-${column.color}-600 dark:text-${column.color}-400`"
                                 />
                                 <h3
-                                    :class="`font-semibold text-${column.color}-900 dark:text-${column.color}-100`"
+                                    :class="`font-semibold text-${column.color}-800 dark:text-${column.color}-800`"
                                 >
                                     {{ column.title }}
                                 </h3>
                                 <span
-                                    :class="`rounded-full text-xs font-medium text-${column.color}-800 dark:text-${column.color}-100`"
+                                    :class="`rounded-full text-xs font-medium text-${column.color}-800 dark:bg-${column.color}-800`"
                                 >
                                     {{ column.orders.length }}
                                 </span>
@@ -230,9 +230,7 @@ onMounted(async () => {
                                 :size="20"
                                 :class="`text-${column.color}-600 dark:text-${column.color}-400`"
                             />
-                            <h3
-                                :class="`font-semibold text-${column.color}-900 dark:text-${column.color}-100`"
-                            >
+                            <h3 :class="`font-semibold text-gray-900`">
                                 {{ column.title }}
                             </h3>
                             <span

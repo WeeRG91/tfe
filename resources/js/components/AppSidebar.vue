@@ -24,6 +24,8 @@ import {
     Salad,
     SquareMenu,
     MessageCircle,
+    UserRoundPen,
+    UserRoundPlus
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { dashboard } from '@/routes/admin';
@@ -34,15 +36,27 @@ import meat from '@/routes/admin/meat';
 import allergen from '@/routes/admin/allergen';
 import confirmedOrder from '@/routes/admin/confirmed-order';
 import chat from '@/routes/admin/chat';
+import role from '@/routes/admin/role';
+import user from '@/routes/admin/user';
 
 const page = usePage();
-const user = page.props.auth?.user;
+const currentUser = page.props.auth?.user;
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Users',
+        href: user.index().url,
+        icon: UserRoundPlus,
+    },
+    {
+        title: 'Roles & Permissions',
+        href: role.index().url,
+        icon: UserRoundPen,
     },
     {
         title: 'Dishes',
@@ -115,7 +129,7 @@ const footerNavItems: NavItem[] = [
 
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
-            <NavUser v-if="user" />
+            <NavUser v-if="currentUser" />
         </SidebarFooter>
     </Sidebar>
     <slot />

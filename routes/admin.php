@@ -10,10 +10,12 @@ use App\Http\Controllers\Admin\ImageController;
 use App\Http\Controllers\Admin\IngredientController;
 use App\Http\Controllers\Admin\MeatController;
 use App\Http\Controllers\Admin\MessageController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'permission:admin.access'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -112,5 +114,26 @@ Route::middleware(['auth', 'verified'])
         Route::patch('/{message}/update', 'update')->name('update');
         Route::patch('/{message}/unsend', 'unsend')->name('unsend');
         Route::delete('/{message}/delete', 'destroy')->name('destroy');
+    });
+
+    Route::controller(RoleController::class)->prefix('roles')->name('role.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/get-roles', 'getRoles')->name('get-roles');
+        Route::get('/create', 'create')->name('create');
+        Route::get('/{role}/edit', 'edit')->name('edit');
+        Route::post('/', 'store')->name('store');
+        Route::post('/{role}', 'update')->name('update');
+        Route::delete('/{role}', 'destroy')->name('destroy');
+    });
+
+    Route::controller(UserController::class)->prefix('users')->name('user.')->group(function () {
+       Route::get('/', 'index')->name('index');
+       Route::get('/get-users', 'getUsers')->name('get-users');
+       Route::get('/{user}/show', 'show')->name('show');
+       Route::get('/create', 'create')->name('create');
+       Route::get('/{user}/edit', 'edit')->name('edit');
+       Route::post('/', 'store')->name('store');
+       Route::post('/{user}', 'update')->name('update');
+       Route::delete('/{user}', 'destroy')->name('destroy');
     });
 });

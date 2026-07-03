@@ -39,7 +39,7 @@ enum DishCategoryEnum: int
 
     public static function getCategories(): array
     {
-        return array_map(fn($case) => [
+        return array_map(fn ($case) => [
             'value' => $case->value,
             'label' => $case->label(),
             'color' => self::getColor($case),

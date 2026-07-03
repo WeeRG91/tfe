@@ -17,6 +17,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import dish from '@/routes/admin/dish';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { DishAvailabilityEnum, DishType } from '@/types/dish';
@@ -29,16 +30,15 @@ import {
     CircleXIcon,
     EllipsisVerticalIcon,
     Loader,
+    Plus,
     RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
-    SquarePlusIcon,
     TrashIcon,
     XIcon,
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import dish from '@/routes/admin/dish';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -358,7 +358,7 @@ onBeforeUnmount(() => {
                                     v-model="search"
                                     type="text"
                                     placeholder="Search dishes..."
-                                    class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
+                                    class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
                                     @keyup.enter="applyFilters"
                                 />
                                 <button
@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
                                     <select
                                         v-model="category"
                                         @change="applyFilters"
-                                        class="h-8 w-full appearance-none rounded-md border border-gray-200 bg-white px-3 pr-8 text-sm text-gray-700 shadow-sm transition-all hover:border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-600"
+                                        class="h-8 w-full appearance-none rounded-md border border-gray-200 bg-white px-3 pr-8 text-sm text-gray-700 shadow-sm transition-all hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-600"
                                     >
                                         <option :value="null">
                                             All categories
@@ -410,7 +410,7 @@ onBeforeUnmount(() => {
                                             size="sm"
                                             class="group cursor-pointer shadow-sm transition-all duration-300 hover:bg-gray-100 hover:shadow-md sm:h-9 dark:hover:bg-gray-800"
                                         >
-                                            <SquarePlusIcon
+                                            <Plus
                                                 class="mr-2 h-5 w-5 transition-transform group-hover:scale-110"
                                             />
                                             Add
@@ -428,7 +428,7 @@ onBeforeUnmount(() => {
                                 size="sm"
                                 class="group cursor-pointer shadow-sm transition-all duration-300 hover:bg-gray-100 hover:shadow-md sm:h-9 dark:hover:bg-gray-800"
                             >
-                                <SquarePlusIcon
+                                <Plus
                                     class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                                 />
                                 Add
@@ -498,19 +498,23 @@ onBeforeUnmount(() => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead class="hidden md:table-cell"
+                            <TableHead class="text-nowrap">Name</TableHead>
+                            <TableHead class="text-nowrap">Category</TableHead>
+                            <TableHead class="hidden text-nowrap md:table-cell"
                                 >price</TableHead
                             >
                             <TableHead>Availability</TableHead>
-                            <TableHead class="hidden md:table-cell"
+                            <TableHead class="hidden text-nowrap md:table-cell"
                                 >Created at</TableHead
                             >
-                            <TableHead v-if="filter !== 'deleted'"
+                            <TableHead
+                                v-if="filter !== 'deleted'"
+                                class="text-nowrap"
                                 >Updated at</TableHead
                             >
-                            <TableHead v-else>Deleted at</TableHead>
+                            <TableHead v-else class="text-nowrap"
+                                >Deleted at</TableHead
+                            >
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>

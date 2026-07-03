@@ -16,6 +16,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import meat from '@/routes/admin/meat';
 import { BreadcrumbItem, CursorPaginated, type FilterType } from '@/types';
 import { MeatType } from '@/types/meat';
 import { Head, router } from '@inertiajs/vue3';
@@ -24,16 +25,15 @@ import axios from 'axios';
 import {
     EllipsisVerticalIcon,
     Loader,
+    Plus,
     RotateCcwIcon,
     SearchIcon,
     SquarePenIcon,
-    SquarePlusIcon,
     TrashIcon,
     XIcon,
 } from 'lucide-vue-next';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import meat from '@/routes/admin/meat';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -279,7 +279,7 @@ onMounted(() => {
                                     v-model="search"
                                     type="text"
                                     placeholder="Search dishes..."
-                                    class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
+                                    class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
                                     @keyup.enter="applyFilters"
                                 />
                                 <button
@@ -303,7 +303,7 @@ onMounted(() => {
                                 size="sm"
                                 class="group cursor-pointer shadow-sm transition-all duration-300 hover:bg-gray-100 hover:shadow-md sm:h-9 dark:hover:bg-gray-800"
                             >
-                                <SquarePlusIcon
+                                <Plus
                                     class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                                 />
                                 Add
@@ -358,13 +358,21 @@ onMounted(() => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Extra price</TableHead>
-                            <TableHead>Created at</TableHead>
-                            <TableHead v-if="filter !== 'deleted'"
+                            <TableHead class="text-nowrap">Name</TableHead>
+                            <TableHead class="text-nowrap"
+                                >Extra price</TableHead
+                            >
+                            <TableHead class="text-nowrap"
+                                >Created at</TableHead
+                            >
+                            <TableHead
+                                v-if="filter !== 'deleted'"
+                                class="text-nowrap"
                                 >Updated at</TableHead
                             >
-                            <TableHead v-else>Deleted at</TableHead>
+                            <TableHead v-else class="text-nowrap"
+                                >Deleted at</TableHead
+                            >
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
