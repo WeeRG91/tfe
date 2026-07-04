@@ -11,8 +11,10 @@ use App\Http\Resources\Admin\User\EditUserResource;
 use App\Http\Resources\Admin\User\UserDetailResource;
 use App\Http\Resources\Admin\User\UserResource;
 use App\Models\User;
+use App\Notifications\AccountActivationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -69,7 +71,6 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
             ]);
 
             if ($request->filled('role')) {
@@ -80,7 +81,15 @@ class UserController extends Controller
                 $user->syncPermissions($request->permissions);
             }
 
-            $user->sendEmailVerificationNotification();
+            $url = URL::temporarySignedRoute(
+                'activate.show',
+                now()->addDays(3),
+                [
+                    'user' => $user->id,
+                ]
+            );
+
+            $user->notify(new AccountActivationNotification($url));
 
             return redirect()->route('admin.user.index');
         } catch (Throwable $e) {

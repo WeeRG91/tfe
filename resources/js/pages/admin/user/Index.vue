@@ -17,6 +17,7 @@ import {
     SquarePen,
     Trash2,
     X,
+    CircleCheck,
 } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
@@ -264,6 +265,7 @@ onMounted(() => {
                                     <span class="truncate">
                                         <Mail class="mr-1 inline h-3 w-3" />
                                         {{ u.email }}
+                                        <CircleCheck v-if="u.email_verified_at" class="ml-1 inline h-3.5 w-3.5 text-green-500" />
                                     </span>
                                 </div>
                             </div>

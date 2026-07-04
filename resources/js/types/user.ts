@@ -6,6 +6,7 @@ export type UserType = {
     id: number;
     name: string;
     email: string;
+    email_verified_at: string;
     roles: RoleType[];
     created_at: string;
     updated_at: string;
@@ -23,6 +24,7 @@ export type UserDetailType = {
     id: number;
     name: string;
     email: string;
+    email_verified_at: string;
     roles: RoleType[];
     permissions: PermissionType[];
     loyalty_points: LoyaltyPointTransactionType[];

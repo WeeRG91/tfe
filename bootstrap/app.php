@@ -7,6 +7,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Inertia\Inertia;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
@@ -47,6 +48,13 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if ($response->getStatusCode() === 419) {
                 return back()->with('message', 'The page expired, please refresh the page and try again.');
+            }
+
+            if (
+                $exception instanceof InvalidSignatureException &&
+                $request->routeIs('activate.show', 'activate.store')
+            ) {
+                return redirect()->route('activate.expired');
             }
 
             if (!in_array($response->getStatusCode(), [403, 404, 429, 500, 503], true)) {

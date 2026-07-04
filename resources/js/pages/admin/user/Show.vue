@@ -14,6 +14,7 @@ import {
     Award,
     Calendar,
     CheckCircle,
+    CircleCheck,
     Clock,
     Key,
     Mail,
@@ -259,6 +260,10 @@ const closeConfirmModal = () => {
                             <span>
                                 <Mail class="mr-1 inline h-3 w-3" />
                                 {{ currentUser.email }}
+                                <CircleCheck
+                                    v-if="currentUser.email_verified_at"
+                                    class="ml-1 inline h-3.5 w-3.5 text-green-500"
+                                />
                             </span>
                             <span>•</span>
                             <span>

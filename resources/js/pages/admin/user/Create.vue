@@ -31,8 +31,6 @@ const selectedPermissions = ref<number[]>([]);
 const userForm = useForm({
     name: '',
     email: '',
-    password: '',
-    password_confirmation: '',
     role: null as number | null,
     permissions: [] as number[],
 });
@@ -154,11 +152,11 @@ const submit = () => {
             userForm.reset();
             toast.success('User successfully created!');
         },
-        onError: (error) => {
-            console.log(error);
-            if (error.error) {
-                toast.error(error.error);
-            } else if (error.name || error.email || error.password) {
+        onError: (errors) => {
+            console.log(errors);
+            if (errors.error) {
+                toast.error(errors.error);
+            } else if (errors.name || errors.email) {
                 toast.error('Invalid input.');
             } else {
                 toast.error('Something went wrong. Please check the form.');
@@ -228,46 +226,6 @@ const submit = () => {
                             >
                                 {{ userForm.errors.email }}
                             </p>
-                        </div>
-
-                        <div>
-                            <label
-                                for="user-password"
-                                class="mb-2 block text-sm font-medium text-foreground"
-                            >
-                                Password
-                            </label>
-                            <input
-                                id="user-password"
-                                v-model="userForm.password"
-                                type="password"
-                                class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
-                                placeholder="Enter password"
-                                required
-                            />
-                            <p
-                                v-if="userForm.errors.password"
-                                class="mt-2 text-sm text-red-600 dark:text-red-400"
-                            >
-                                {{ userForm.errors.password }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                for="user-password-confirmation"
-                                class="mb-2 block text-sm font-medium text-foreground"
-                            >
-                                Confirm Password
-                            </label>
-                            <input
-                                id="user-password-confirmation"
-                                v-model="userForm.password_confirmation"
-                                type="password"
-                                class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
-                                placeholder="Confirm password"
-                                required
-                            />
                         </div>
                     </div>
                 </div>
