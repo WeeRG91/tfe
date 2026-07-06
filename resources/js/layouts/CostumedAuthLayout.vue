@@ -11,7 +11,7 @@ defineProps<{
         class="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 p-6"
     >
         <div
-            class="w-full max-w-md rounded-2xl border border-red-50/50 bg-white p-8 shadow-xl transition-all duration-300 sm:p-12"
+            class="w-full max-w-lg rounded-2xl border border-red-50/50 bg-white p-8 shadow-xl transition-all duration-300 sm:p-12"
         >
             <div class="mb-8 text-center">
                 <p
@@ -20,7 +20,7 @@ defineProps<{
                     [ {{ badge }} ]
                 </p>
                 <h1
-                    class="mt-2 text-3xl font-semibold tracking-tight text-gray-900 uppercase sm:text-4xl"
+                    class="mt-2 text-2xl font-semibold tracking-tight text-gray-900 uppercase sm:text-3xl"
                 >
                     {{ title }}
                 </h1>

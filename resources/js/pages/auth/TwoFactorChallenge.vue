@@ -7,10 +7,10 @@ import {
     PinInputGroup,
     PinInputSlot,
 } from '@/components/ui/pin-input';
-import AuthLayout from '@/layouts/AuthLayout.vue';
 import { store } from '@/routes/two-factor/login';
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
 
 interface AuthConfigContent {
     title: string;
@@ -38,9 +38,8 @@ const authConfigContent = computed<AuthConfigContent>(() => {
 
 const showRecoveryInput = ref<boolean>(false);
 
-const toggleRecoveryMode = (clearErrors: () => void): void => {
+const toggleRecoveryMode = (): void => {
     showRecoveryInput.value = !showRecoveryInput.value;
-    clearErrors();
     code.value = [];
 };
 
@@ -49,12 +48,13 @@ const codeValue = computed<string>(() => code.value.join(''));
 </script>
 
 <template>
-    <AuthLayout
-        :title="authConfigContent.title"
-        :description="authConfigContent.description"
-    >
-        <Head title="Two-Factor Authentication" />
+    <Head title="Two-Factor Authentication" />
 
+    <CostumedAuthLayout
+        :title="authConfigContent.title"
+        :subtitle="authConfigContent.description"
+        badge="Code"
+    >
         <div class="space-y-6">
             <template v-if="!showRecoveryInput">
                 <Form
@@ -62,7 +62,7 @@ const codeValue = computed<string>(() => code.value.join(''));
                     class="space-y-4"
                     reset-on-error
                     @error="code = []"
-                    #default="{ errors, processing, clearErrors }"
+                    #default="{ errors, processing }"
                 >
                     <input type="hidden" name="code" :value="codeValue" />
                     <div
@@ -92,16 +92,6 @@ const codeValue = computed<string>(() => code.value.join(''));
                     <Button type="submit" class="w-full" :disabled="processing"
                         >Continue</Button
                     >
-                    <div class="text-center text-sm text-muted-foreground">
-                        <span>or you can </span>
-                        <button
-                            type="button"
-                            class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                            @click="() => toggleRecoveryMode(clearErrors)"
-                        >
-                            {{ authConfigContent.toggleText }}
-                        </button>
-                    </div>
                 </Form>
             </template>
 
@@ -110,7 +100,7 @@ const codeValue = computed<string>(() => code.value.join(''));
                     v-bind="store.form()"
                     class="space-y-4"
                     reset-on-error
-                    #default="{ errors, processing, clearErrors }"
+                    #default="{ errors, processing }"
                 >
                     <Input
                         name="recovery_code"
@@ -123,19 +113,20 @@ const codeValue = computed<string>(() => code.value.join(''));
                     <Button type="submit" class="w-full" :disabled="processing"
                         >Continue</Button
                     >
-
-                    <div class="text-center text-sm text-muted-foreground">
-                        <span>or you can </span>
-                        <button
-                            type="button"
-                            class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                            @click="() => toggleRecoveryMode(clearErrors)"
-                        >
-                            {{ authConfigContent.toggleText }}
-                        </button>
-                    </div>
                 </Form>
             </template>
         </div>
-    </AuthLayout>
+        <template #footer>
+            <div class="text-center text-sm text-muted-foreground">
+                <span>or you can </span>
+                <button
+                    type="button"
+                    class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                    @click="() => toggleRecoveryMode()"
+                >
+                    {{ authConfigContent.toggleText }}
+                </button>
+            </div>
+        </template>
+    </CostumedAuthLayout>
 </template>

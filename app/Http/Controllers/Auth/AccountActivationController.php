@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ActivateAccountRequest;
 use App\Models\User;
+use App\Notifications\AccountActivationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +21,7 @@ class AccountActivationController extends Controller
             return redirect()->route('login');
         }
 
-        return Inertia::render('auth/Activate', [
+        return Inertia::render('auth/account-activation/Activate', [
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -52,13 +53,13 @@ class AccountActivationController extends Controller
 
     public function expired()
     {
-        return Inertia::render('auth/ActivationExpired');
+        return Inertia::render('auth/account-activation/Expired');
     }
 
     public function resend(Request $request)
     {
         $validated = $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email', 'exists:users,email'],
         ]);
 
         try {
@@ -67,22 +68,26 @@ class AccountActivationController extends Controller
                 ->first();
 
             if (!$user) {
-                return back()->with('message', 'User not found. The account may be already activated or not be created. Please try to login or sign up again.');
+                return back()->withErrors(['error' => 'User not found. Please try to sign up to create an account.']);
+            }
+
+            if ($user->hasVerifiedEmail()) {
+                return back()->withErrors(['error' => 'User already activated. Please try to login your account.']);
             }
 
             $url = URL::temporarySignedRoute(
                 'activate.show',
-                now()->addDays(3),
+                now()->addDay(),
                 [
                     'user' => $user->id,
                 ]
             );
 
-            $user->sendEmailVerificationNotification();
+            $user->notify(new AccountActivationNotification($url));
 
             return back()->with(
                 'message',
-                'If this email belongs to an inactive account, a new activation link has been sent.'
+                'A new activation link has been sent.'
             );
         } catch (Throwable $e) {
             report($e);

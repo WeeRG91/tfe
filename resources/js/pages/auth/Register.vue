@@ -1,111 +1,322 @@
 <script setup lang="ts">
-import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
-import InputError from '@/components/InputError.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import AuthBase from '@/layouts/AuthLayout.vue';
-import { login } from '@/routes';
-import { Form, Head } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
+import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
+import { login, register } from '@/routes';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Eye, EyeOff, MoveLeft, MoveRight } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+import { toast } from 'vue-sonner';
+
+const registerForm = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+});
+
+const showPassword = ref(false);
+const showPasswordConfirmation = ref(false);
+
+const submit = () => {
+    registerForm.post(register().url, {
+        onSuccess: () => {
+            toast.success('Account created successfully!');
+        },
+        onError: (errors) => {
+            console.log(errors);
+            if (errors.error) {
+                toast.error(errors.error);
+            } else if (
+                errors.name ||
+                errors.email ||
+                errors.password ||
+                errors.password_confirmation
+            ) {
+                toast.error('Invalid input. Please check the form.');
+            } else {
+                toast.error('Something went wrong. Please check the form.');
+            }
+        },
+    });
+};
+
+const passwordChecks = computed(() => ({
+    length: registerForm.password.length >= 8,
+    uppercase: /[A-Z]/.test(registerForm.password),
+    lowercase: /[a-z]/.test(registerForm.password),
+    number: /[0-9]/.test(registerForm.password),
+    symbol: /[!@#$%^&*(),.?":{}|<>]/.test(registerForm.password),
+}));
+
+const passwordStrength = computed(() => {
+    return Object.values(passwordChecks.value).filter(Boolean).length;
+});
+
+const getStrengthColor = (index: number) => {
+    if (index < passwordStrength.value) {
+        if (passwordStrength.value <= 2) return 'bg-red-400';
+        if (passwordStrength.value === 3) return 'bg-amber-400';
+        return 'bg-emerald-400';
+    }
+    return 'bg-gray-100';
+};
 </script>
 
 <template>
-    <AuthBase
+    <Head title="Register" />
+
+    <CostumedAuthLayout
         title="Create an account"
-        description="Enter your details below to create your account"
+        subtitle="Enter your details below to create your account"
+        badge="Welcome"
     >
-        <Head title="Register" />
+        <form @submit.prevent="submit" class="space-y-6">
+            <div>
+                <label
+                    for="name"
+                    class="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                    Name
+                </label>
+                <input
+                    id="name"
+                    v-model="registerForm.name"
+                    type="text"
+                    placeholder="Full name"
+                    class="w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-2.5 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                    :class="{
+                        'border-red-300 focus:border-red-400':
+                            registerForm.errors.name,
+                    }"
+                    required
+                    autofocus
+                />
+                <p
+                    v-if="registerForm.errors.name"
+                    class="mt-1.5 text-sm text-red-500"
+                >
+                    {{ registerForm.errors.name }}
+                </p>
+            </div>
 
-        <Form
-            v-bind="RegisteredUserController.store.form()"
-            :reset-on-success="['password', 'password_confirmation']"
-            v-slot="{ errors, processing }"
-            class="flex flex-col gap-6"
-        >
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="name">Name</Label>
-                    <Input
-                        id="name"
-                        type="text"
-                        required
-                        autofocus
-                        :tabindex="1"
-                        autocomplete="name"
-                        name="name"
-                        placeholder="Full name"
-                    />
-                    <InputError :message="errors.name" />
-                </div>
+            <div>
+                <label
+                    for="email"
+                    class="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                    Email address
+                </label>
+                <input
+                    id="email"
+                    v-model="registerForm.email"
+                    type="email"
+                    placeholder="email@example.com"
+                    class="w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-2.5 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                    :class="{
+                        'border-red-300 focus:border-red-400':
+                            registerForm.errors.email,
+                    }"
+                    required
+                />
+                <p
+                    v-if="registerForm.errors.email"
+                    class="mt-1.5 text-sm text-red-500"
+                >
+                    {{ registerForm.errors.email }}
+                </p>
+            </div>
 
-                <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        required
-                        :tabindex="2"
-                        autocomplete="email"
-                        name="email"
-                        placeholder="email@example.com"
-                    />
-                    <InputError :message="errors.email" />
-                </div>
-
-                <div class="grid gap-2">
-                    <Label for="password">Password</Label>
-                    <Input
+            <div>
+                <label
+                    for="password"
+                    class="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                    Password
+                </label>
+                <div class="group relative">
+                    <input
                         id="password"
-                        type="password"
+                        v-model="registerForm.password"
+                        :type="showPassword ? 'text' : 'password'"
+                        placeholder="Create a strong password"
+                        class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                        :class="{
+                            'border-red-300 focus:border-red-400':
+                                registerForm.errors.password,
+                        }"
                         required
-                        :tabindex="3"
-                        autocomplete="new-password"
-                        name="password"
-                        placeholder="Password"
                     />
-                    <InputError :message="errors.password" />
+                    <button
+                        type="button"
+                        @click="showPassword = !showPassword"
+                        class="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-gray-400 transition-colors hover:text-gray-600"
+                        aria-label="Toggle password visibility"
+                    >
+                        <Eye v-if="showPassword" class="h-5 w-5" />
+                        <EyeOff v-else class="h-5 w-5" />
+                    </button>
                 </div>
+                <p
+                    v-if="registerForm.errors.password"
+                    class="mt-1.5 text-sm text-red-500"
+                >
+                    {{ registerForm.errors.password }}
+                </p>
 
-                <div class="grid gap-2">
-                    <Label for="password_confirmation">Confirm password</Label>
-                    <Input
+                <div
+                    v-if="registerForm.password.length > 0"
+                    class="mt-4 space-y-3"
+                >
+                    <div class="flex gap-1">
+                        <div
+                            v-for="i in 5"
+                            :key="i"
+                            class="h-1 flex-1 rounded-full transition-all duration-300"
+                            :class="getStrengthColor(i)"
+                        />
+                    </div>
+                    <div
+                        class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-400"
+                    >
+                        <span
+                            :class="{
+                                'text-emerald-500': passwordChecks.length,
+                            }"
+                            class="transition-colors duration-200"
+                        >
+                            {{ passwordChecks.length ? '✓' : '○' }} 8+
+                            characters
+                        </span>
+                        <span
+                            :class="{
+                                'text-emerald-500': passwordChecks.uppercase,
+                            }"
+                            class="transition-colors duration-200"
+                        >
+                            {{ passwordChecks.uppercase ? '✓' : '○' }} Uppercase
+                        </span>
+                        <span
+                            :class="{
+                                'text-emerald-500': passwordChecks.lowercase,
+                            }"
+                            class="transition-colors duration-200"
+                        >
+                            {{ passwordChecks.lowercase ? '✓' : '○' }} Lowercase
+                        </span>
+                        <span
+                            :class="{
+                                'text-emerald-500': passwordChecks.number,
+                            }"
+                            class="transition-colors duration-200"
+                        >
+                            {{ passwordChecks.number ? '✓' : '○' }} Number
+                        </span>
+                        <span
+                            :class="{
+                                'text-emerald-500': passwordChecks.symbol,
+                            }"
+                            class="transition-colors duration-200"
+                        >
+                            {{ passwordChecks.symbol ? '✓' : '○' }} Symbol
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label
+                    for="password_confirmation"
+                    class="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                    Confirm Password
+                </label>
+                <div class="group relative">
+                    <input
                         id="password_confirmation"
-                        type="password"
+                        v-model="registerForm.password_confirmation"
+                        :type="showPasswordConfirmation ? 'text' : 'password'"
+                        placeholder="Confirm your password"
+                        class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                        :class="{
+                            'border-red-300 focus:border-red-400':
+                                registerForm.errors.password_confirmation,
+                        }"
                         required
-                        :tabindex="4"
-                        autocomplete="new-password"
-                        name="password_confirmation"
-                        placeholder="Confirm password"
                     />
-                    <InputError :message="errors.password_confirmation" />
+                    <button
+                        type="button"
+                        @click="
+                            showPasswordConfirmation = !showPasswordConfirmation
+                        "
+                        class="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-gray-400 transition-colors hover:text-gray-600"
+                        aria-label="Toggle password confirmation visibility"
+                    >
+                        <Eye v-if="showPasswordConfirmation" class="h-5 w-5" />
+                        <EyeOff v-else class="h-5 w-5" />
+                    </button>
+                </div>
+                <p
+                    v-if="registerForm.errors.password_confirmation"
+                    class="mt-1.5 text-sm text-red-500"
+                >
+                    {{ registerForm.errors.password_confirmation }}
+                </p>
+            </div>
+
+            <button
+                type="submit"
+                :disabled="registerForm.processing"
+                class="group w-full rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
+            >
+                <span class="flex items-center justify-center gap-2">
+                    <span
+                        v-if="registerForm.processing"
+                        class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                    ></span>
+                    <span v-else>Create account</span>
+                </span>
+            </button>
+        </form>
+
+        <template #footer>
+            <div class="space-y-6">
+                <div
+                    class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
+                >
+                    <p class="text-center text-sm text-gray-500">
+                        Need help?
+                        <Link
+                            href="/contact"
+                            class="font-medium text-gray-900 transition-colors hover:text-gray-600"
+                        >
+                            Contact support
+                        </Link>
+                    </p>
                 </div>
 
-                <Button
-                    type="submit"
-                    class="mt-2 w-full"
-                    tabindex="5"
-                    :disabled="processing"
-                    data-test="register-user-button"
-                >
-                    <LoaderCircle
-                        v-if="processing"
-                        class="h-4 w-4 animate-spin"
-                    />
-                    Create account
-                </Button>
-            </div>
+                <div class="flex items-center justify-center gap-8">
+                    <Link
+                        :href="login()"
+                        class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
+                    >
+                        <MoveLeft
+                            class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+                        />
+                        Back to Sign In
+                    </Link>
 
-            <div class="text-center text-sm text-muted-foreground">
-                Already have an account?
-                <TextLink
-                    :href="login()"
-                    class="underline underline-offset-4"
-                    :tabindex="6"
-                    >Log in</TextLink
-                >
+                    <div class="h-4 w-px bg-gray-200"></div>
+
+                    <Link
+                        href="/"
+                        class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
+                    >
+                        Go to Home
+                        <MoveRight
+                            class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                        />
+                    </Link>
+                </div>
             </div>
-        </Form>
-    </AuthBase>
+        </template>
+    </CostumedAuthLayout>
 </template>

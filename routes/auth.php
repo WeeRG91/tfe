@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AccountActivationController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\ChangedEmailVerificationController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -49,6 +50,17 @@ Route::middleware('guest')->group(function () {
     Route::post('activate/{user}', [AccountActivationController::class, 'store'])
         ->middleware(['signed'])
         ->name('activate.store');
+
+    Route::get('verify-changed-email/expired', [ChangedEmailVerificationController::class, 'expired'])
+        ->name('verify-changed-email.expired');
+
+    Route::post('verify-changed-email/resend', [ChangedEmailVerificationController::class, 'resend'])
+        ->middleware(['throttle:3,1'])
+        ->name('verify-changed-email.resend');
+
+    Route::get('verify-changed-email/{user}', [ChangedEmailVerificationController::class, 'store'])
+        ->middleware(['signed'])
+        ->name('verify-changed-email.store');
 });
 
 Route::middleware('auth')->group(function () {
@@ -62,6 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+
+    Route::get('gateway', [AuthenticatedSessionController::class, 'gateway'])
+        ->name('admin.gateway');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');

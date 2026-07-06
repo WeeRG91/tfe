@@ -38,3 +38,9 @@ export type UserDetailType = {
     created_at: string;
     updated_at: string;
 };
+
+export type ActivateUserType = {
+    id: number;
+    name: string;
+    email: string;
+};

@@ -12,6 +12,7 @@ use App\Http\Resources\Admin\User\UserDetailResource;
 use App\Http\Resources\Admin\User\UserResource;
 use App\Models\User;
 use App\Notifications\AccountActivationNotification;
+use App\Notifications\ChangedEmailVerificationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
@@ -34,8 +35,8 @@ class UserController extends Controller
             ->where('name', '!=', 'Super Admin')
             ->when($request->search, function ($query, $search) {
                 $query->where(fn ($q) =>
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('email', 'like', "%$search%")
                 );
             })
             ->orderBy('name')
@@ -83,7 +84,7 @@ class UserController extends Controller
 
             $url = URL::temporarySignedRoute(
                 'activate.show',
-                now()->addDays(3),
+                now()->addDay(),
                 [
                     'user' => $user->id,
                 ]
@@ -141,7 +142,15 @@ class UserController extends Controller
             }
 
             if ($emailChanged) {
-                $user->sendEmailVerificationNotification();
+                $url = URL::temporarySignedRoute(
+                    'verify-changed-email.store',
+                    now()->addMinutes(2),
+                    [
+                        'user' => $user->id,
+                    ]
+                );
+
+                $user->notify(new ChangedEmailVerificationNotification($url));
             }
 
             return redirect()->route('admin.user.index');

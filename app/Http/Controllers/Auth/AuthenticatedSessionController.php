@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\Permissions\AdminPermissionEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
@@ -45,7 +46,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.dashboard', absolute: false));
+        return $user->can(AdminPermissionEnum::ADMIN_ACCESS->value)
+            ? redirect()->intended(route('admin.gateway', absolute: false))
+            : redirect()->intended(route('home'));
+    }
+
+    public function gateway(): Response
+    {
+        return Inertia::render('auth/AdminGateway');
     }
 
     /**

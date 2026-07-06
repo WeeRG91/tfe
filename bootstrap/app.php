@@ -57,6 +57,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 return redirect()->route('activate.expired');
             }
 
+            if (
+                $exception instanceof InvalidSignatureException &&
+                $request->routeIs('verify-changed-email.store')
+            ) {
+                return redirect()->route('verify-changed-email.expired');
+            }
+
             if (!in_array($response->getStatusCode(), [403, 404, 429, 500, 503], true)) {
                 return $response;
             }
