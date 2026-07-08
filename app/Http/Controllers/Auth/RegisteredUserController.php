@@ -29,7 +29,7 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|Response
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -49,6 +49,8 @@ class RegisteredUserController extends Controller
 
         $request->session()->regenerate();
 
-        return to_route('admin.dashboard');
+        return $request->user()->hasVerifiedEmail()
+            ? redirect()->intended(route('home', absolute: false))
+            : Inertia::render('auth/VerifyEmail', ['status' => $request->session()->get('status')]);
     }
 }

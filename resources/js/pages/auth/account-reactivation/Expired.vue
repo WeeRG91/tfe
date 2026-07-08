@@ -10,13 +10,15 @@ const resendForm = useForm({
 });
 
 const submit = () => {
-    resendForm.post('/verify-changed-email/resend', {
+    resendForm.post('/activate/resend/reactivation', {
         onSuccess: (response) => {
             console.log(response);
 
             toast.success(
-                'Verification link sent successfully! Please check your email.',
+                'Reactivation link sent successfully! Please check your email.',
             );
+
+            resendForm.reset();
         },
         onError: (errors) => {
             console.log(errors);
@@ -33,19 +35,19 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Activation Link Expired" />
-    <CostumedAuthLayout title="Verification link expired" badge="Link Expired">
+    <Head title="Reactivation Link Expired" />
+    <CostumedAuthLayout title="Reactivation link expired" badge="Link Expired">
         <div class="space-y-6">
             <div class="text-center">
                 <p class="text-sm text-gray-500">
-                    The verification link is no longer valid. This usually happens
+                    The reactivation link is no longer valid. This usually happens
                     when:
                 </p>
                 <ul class="mt-2 space-y-1 text-sm text-gray-500">
                     <li>
                         • The link has expired (links are valid for 24 hours)
                     </li>
-                    <li>• You've already verified your new email address.</li>
+                    <li>• You've already reactivated your account</li>
                     <li>• The link was modified or corrupted</li>
                 </ul>
             </div>
@@ -56,7 +58,7 @@ const submit = () => {
                 </div>
                 <div class="relative flex justify-center text-sm">
                     <span class="bg-white px-4 text-gray-500"
-                        >Request new link</span
+                    >Request new link</span
                     >
                 </div>
             </div>
@@ -105,7 +107,7 @@ const submit = () => {
                             v-if="resendForm.processing"
                             class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                         ></span>
-                        <span v-else>Resend Verification Link</span>
+                        <span v-else>Resend Reactivation Link</span>
                     </span>
                 </button>
             </form>

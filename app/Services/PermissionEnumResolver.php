@@ -12,6 +12,8 @@ use App\Enums\Permissions\IngredientPermissionEnum;
 use App\Enums\Permissions\MeatPermissionEnum;
 use App\Enums\Permissions\MessagePermissionEnum;
 use App\Enums\Permissions\OrderPermissionEnum;
+use App\Enums\Permissions\RolePermissionEnum;
+use App\Enums\Permissions\UserPermissionEnum;
 
 class PermissionEnumResolver
 {
@@ -65,6 +67,17 @@ class PermissionEnumResolver
 
             OrderPermissionEnum::ORDER_VIEW->value => OrderPermissionEnum::ORDER_VIEW->label(),
             OrderPermissionEnum::ORDER_UPDATE->value => OrderPermissionEnum::ORDER_UPDATE->label(),
+
+            RolePermissionEnum::ROLE_VIEW->value => RolePermissionEnum::ROLE_VIEW->label(),
+            RolePermissionEnum::ROLE_CREATE->value => RolePermissionEnum::ROLE_CREATE->label(),
+            RolePermissionEnum::ROLE_UPDATE->value => RolePermissionEnum::ROLE_UPDATE->label(),
+            RolePermissionEnum::ROLE_DELETE->value => RolePermissionEnum::ROLE_DELETE->label(),
+
+            UserPermissionEnum::USER_VIEW->value => UserPermissionEnum::USER_VIEW->label(),
+            UserPermissionEnum::USER_CREATE->value => UserPermissionEnum::USER_CREATE->label(),
+            UserPermissionEnum::USER_UPDATE->value => UserPermissionEnum::USER_UPDATE->label(),
+            UserPermissionEnum::USER_DELETE->value => UserPermissionEnum::USER_DELETE->label(),
+            UserPermissionEnum::USER_RESTORE->value => UserPermissionEnum::USER_RESTORE->label(),
         };
     }
 }

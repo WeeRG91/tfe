@@ -20,12 +20,4 @@ enum MeatPermissionEnum: string
             self::MEAT_RESTORE => 'Restore meats',
         };
     }
-
-    public static function getMeatPermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }

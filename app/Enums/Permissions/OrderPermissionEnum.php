@@ -14,12 +14,4 @@ enum OrderPermissionEnum: string
             self::ORDER_UPDATE => 'Update orders',
         };
     }
-
-    public static function getOrderPermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }

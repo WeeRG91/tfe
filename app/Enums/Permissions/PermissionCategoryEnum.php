@@ -14,7 +14,8 @@ enum PermissionCategoryEnum: int
     case MEAT = 8;
     case MESSAGE = 9;
     case ORDER = 10;
-    case USER = 11;
+    case ROLE = 11;
+    case USER = 12;
 
     public function label(): string
     {
@@ -29,15 +30,8 @@ enum PermissionCategoryEnum: int
             self::MEAT => 'Meat',
             self::MESSAGE => 'Message',
             self::ORDER => 'Order',
+            self::ROLE => 'Role',
             self::USER => 'User',
         };
-    }
-
-    public static function getPermissionCategories(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
     }
 }

@@ -1,6 +1,7 @@
 import { PermissionType } from '@/types/permission';
 import { LoyaltyPointTransactionType } from '@/types/point';
 import { RoleType } from '@/types/role';
+import { OrderStatusType } from '@/types/order';
 
 export type UserType = {
     id: number;
@@ -10,6 +11,7 @@ export type UserType = {
     roles: RoleType[];
     created_at: string;
     updated_at: string;
+    deleted_at: string;
 };
 
 export type EditUserType = {
@@ -31,12 +33,13 @@ export type UserDetailType = {
     orders: {
         id: number;
         order_number: string;
-        status: string;
+        status: OrderStatusType;
         created_at: string;
         updated_at: string;
     }[];
     created_at: string;
     updated_at: string;
+    deleted_at: string;
 };
 
 export type ActivateUserType = {
@@ -44,3 +47,8 @@ export type ActivateUserType = {
     name: string;
     email: string;
 };
+
+export enum UserFilterEnum {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}

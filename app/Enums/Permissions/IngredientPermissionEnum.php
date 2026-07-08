@@ -20,12 +20,4 @@ enum IngredientPermissionEnum: string
             self::INGREDIENT_RESTORE => 'Restore ingredients',
         };
     }
-
-    public static function getIngredientPermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }

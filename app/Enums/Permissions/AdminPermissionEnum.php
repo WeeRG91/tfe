@@ -16,12 +16,4 @@ enum AdminPermissionEnum: string
             self::DASHBOARD_VIEW => 'View the dashboard',
         };
     }
-
-    public static function getAdminPermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }

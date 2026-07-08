@@ -160,20 +160,26 @@ useClickOutside(dropdownRef, () => {
 const loadNotifications = async () => {
     isLoading.value = true;
 
-    const { data } = await axios.get<CursorPaginated<NotificationType>>(
-        notification.getNotifications().url,
-        {
-            params: {
-                cursor: nextCursor.value,
-                filter: activeFilter.value,
+    try {
+        const { data } = await axios.get<CursorPaginated<NotificationType>>(
+            notification.getNotifications().url,
+            {
+                params: {
+                    cursor: nextCursor.value,
+                    filter: activeFilter.value,
+                },
             },
-        },
-    );
+        );
 
-    if (data) {
-        const newNotifications = data.data as NotificationType[];
-        notifications.value.push(...newNotifications);
-        nextCursor.value = data.next_cursor ?? '';
+        if (data) {
+            const newNotifications = data.data as NotificationType[];
+            notifications.value.push(...newNotifications);
+            nextCursor.value = data.next_cursor ?? '';
+        }
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to load notifications.');
+    } finally {
         isLoading.value = false;
     }
 };

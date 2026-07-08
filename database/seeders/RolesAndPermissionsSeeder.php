@@ -13,6 +13,8 @@ use App\Enums\Permissions\MeatPermissionEnum;
 use App\Enums\Permissions\MessagePermissionEnum;
 use App\Enums\Permissions\OrderPermissionEnum;
 use App\Enums\Permissions\PermissionCategoryEnum;
+use App\Enums\Permissions\RolePermissionEnum;
+use App\Enums\Permissions\UserPermissionEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -39,6 +41,8 @@ class RolesAndPermissionsSeeder extends Seeder
             PermissionCategoryEnum::MEAT->value => MeatPermissionEnum::cases(),
             PermissionCategoryEnum::MESSAGE->value => MessagePermissionEnum::cases(),
             PermissionCategoryEnum::ORDER->value => OrderPermissionEnum::cases(),
+            PermissionCategoryEnum::ROLE->value => RolePermissionEnum::cases(),
+            PermissionCategoryEnum::USER->value => UserPermissionEnum::cases(),
         ];
 
         foreach ($permissionGroups as $category => $permissions) {

@@ -20,12 +20,4 @@ enum MessagePermissionEnum: string
             self::MESSAGE_DELETE => 'Delete messages',
         };
     }
-
-    public static function getMessagePermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }

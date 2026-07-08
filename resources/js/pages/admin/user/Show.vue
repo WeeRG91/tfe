@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import { formatDate } from '@/lib/utils';
+import {
+    formatDate,
+    getInitials,
+    getOrderStatusIcon,
+    getOrderStatusVariant,
+    getTotalPoints,
+    getUserAvatarColor,
+} from '@/lib/utils';
 import user from '@/routes/admin/user';
 import type { BreadcrumbItem } from '@/types';
 import { PermissionType } from '@/types/permission';
-import { LoyaltyPointTransactionType } from '@/types/point';
 import { UserDetailType } from '@/types/user';
 import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -13,23 +19,23 @@ import {
     ArrowLeft,
     Award,
     Calendar,
-    CheckCircle,
-    CircleCheck,
-    Clock,
+    CircleAlert,
     Key,
     Mail,
     PlusCircle,
     Shield,
+    ShieldCheck,
+    ShieldX,
     ShoppingBag,
     SquarePen,
     Star,
     Tag,
     Trash2,
     Users,
-    XCircle,
 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { PointTypeEnum } from '@/types/point';
 
 const props = defineProps<{
     currentUser: UserDetailType;
@@ -50,35 +56,7 @@ const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
-const isDeleting = ref<boolean>(false);
-
-const getInitials = (name: string) => {
-    return name
-        .split(' ')
-        .map((word) => word.charAt(0))
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-};
-
-const getUserAvatarColor = (userId: number) => {
-    const colors = [
-        'bg-blue-500',
-        'bg-green-500',
-        'bg-purple-500',
-        'bg-pink-500',
-        'bg-yellow-500',
-        'bg-indigo-500',
-        'bg-red-500',
-        'bg-teal-500',
-    ];
-    return colors[userId % colors.length];
-};
-
-const getTotalPoints = (transactions: LoyaltyPointTransactionType[]) => {
-    if (!transactions || transactions.length === 0) return 0;
-    return transactions.reduce((sum, t) => sum + t.points, 0);
-};
+const isPending = ref<boolean>(false);
 
 const getGroupedPermissions = (permissions: PermissionType[]) => {
     if (!permissions || permissions.length === 0) return {};
@@ -162,36 +140,44 @@ const getTotalPermissionCount = () => {
     const allPerms = new Set([...rolePerms, ...directPerms]);
     return allPerms.size;
 };
+const inactivateUser = async (userId: number) => {
+    isPending.value = true;
 
-const getStatusBadge = (status: string) => {
-    const statusMap: Record<string, { icon: any; class: string }> = {
-        pending: {
-            icon: Clock,
-            class: 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400',
-        },
-        processing: {
-            icon: Clock,
-            class: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400',
-        },
-        completed: {
-            icon: CheckCircle,
-            class: 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400',
-        },
-        cancelled: {
-            icon: XCircle,
-            class: 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400',
-        },
-    };
-    return (
-        statusMap[status.toLowerCase()] || {
-            icon: Clock,
-            class: 'bg-gray-500/10 text-gray-600 dark:bg-gray-500/20 dark:text-gray-400',
-        }
-    );
+    try {
+        const { data } = await axios.post(user.inactivate(userId).url);
+
+        closeConfirmModal();
+
+        toast.success(data.message);
+
+        router.visit(user.index().url);
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to inactivate user');
+    } finally {
+        isPending.value = false;
+    }
+};
+
+const reactivateUser = async (userId: number) => {
+    isPending.value = true;
+
+    try {
+        const { data } = await axios.post(user.reactivate(userId).url);
+
+        closeConfirmModal();
+
+        toast.success(data.message);
+    } catch (error) {
+        console.log(error);
+        toast.error('Failed to reactivate user');
+    } finally {
+        isPending.value = false;
+    }
 };
 
 const deleteUser = async (userId: number) => {
-    isDeleting.value = true;
+    isPending.value = true;
 
     try {
         const { data } = await axios.delete(user.destroy(userId).url);
@@ -205,7 +191,7 @@ const deleteUser = async (userId: number) => {
         console.log(error);
         toast.error('Failed to delete user');
     } finally {
-        isDeleting.value = false;
+        isPending.value = false;
     }
 };
 
@@ -260,9 +246,13 @@ const closeConfirmModal = () => {
                             <span>
                                 <Mail class="mr-1 inline h-3 w-3" />
                                 {{ currentUser.email }}
-                                <CircleCheck
+                                <ShieldCheck
                                     v-if="currentUser.email_verified_at"
                                     class="ml-1 inline h-3.5 w-3.5 text-green-500"
+                                />
+                                <CircleAlert
+                                    v-else
+                                    class="ml-1 inline h-3.5 w-3.5 text-yellow-500"
                                 />
                             </span>
                             <span>•</span>
@@ -275,14 +265,52 @@ const closeConfirmModal = () => {
                 </div>
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                     <Link
+                        v-if="!currentUser.deleted_at"
                         :href="user.edit(currentUser.id).url"
-                        class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-28"
+                        class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <SquarePen class="mr-2 h-4 w-4" />
                         Edit
                     </Link>
                     <button
-                        v-if="currentUser.roles[0]?.name !== 'Admin'"
+                        v-if="
+                            currentUser.roles[0]?.name !== 'Admin' &&
+                            !currentUser.deleted_at
+                        "
+                        @click="
+                            openConfirmModal(
+                                'Are you sure you want to inactivate this user?',
+                                'info',
+                                () => inactivateUser(currentUser.id),
+                            )
+                        "
+                        class="inline-flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-red-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
+                    >
+                        <ShieldX class="mr-2 h-4 w-4" />
+                        Inactivate
+                    </button>
+                    <button
+                        v-if="
+                            currentUser.roles[0]?.name !== 'Admin' &&
+                            currentUser.deleted_at
+                        "
+                        @click="
+                            openConfirmModal(
+                                'Are you sure you want to reactivate this user?',
+                                'info',
+                                () => reactivateUser(currentUser.id),
+                            )
+                        "
+                        class="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-blue-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
+                    >
+                        <ShieldCheck class="mr-2 h-4 w-4" />
+                        Reactivate
+                    </button>
+                    <button
+                        v-if="
+                            currentUser.roles[0]?.name !== 'Admin' &&
+                            currentUser.deleted_at
+                        "
                         @click="
                             openConfirmModal(
                                 'Are you sure you want to delete this user?',
@@ -290,7 +318,7 @@ const closeConfirmModal = () => {
                                 () => deleteUser(currentUser.id),
                             )
                         "
-                        class="inline-flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-red-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-28"
+                        class="inline-flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-red-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <Trash2 class="mr-2 h-4 w-4" />
                         Delete
@@ -567,18 +595,20 @@ const closeConfirmModal = () => {
                                         <span
                                             class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium"
                                             :class="
-                                                getStatusBadge(order.status)
-                                                    .class
+                                                getOrderStatusVariant(
+                                                    order.status.value,
+                                                )
                                             "
                                         >
                                             <component
                                                 :is="
-                                                    getStatusBadge(order.status)
-                                                        .icon
+                                                    getOrderStatusIcon(
+                                                        order.status.value,
+                                                    )
                                                 "
                                                 class="h-3 w-3"
                                             />
-                                            {{ order.status }}
+                                            {{ order.status.label }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">
@@ -606,17 +636,15 @@ const closeConfirmModal = () => {
                             currentUser.loyalty_points &&
                             currentUser.loyalty_points.length > 0
                         "
-                        class="space-y-3"
+                        class="space-y-1"
                     >
                         <div
                             v-for="transaction in currentUser.loyalty_points"
                             :key="transaction.id"
-                            class="flex items-center justify-between rounded-lg bg-accent/5 px-4 py-3"
+                            class="flex items-center justify-between rounded-lg bg-accent/5 px-4 py-2"
                         >
                             <div class="flex flex-col">
-                                <span class="font-medium">{{
-                                    transaction.description
-                                }}</span>
+                                <span>{{ transaction.description }}</span>
                                 <span class="text-xs text-muted-foreground">
                                     {{ formatDate(transaction.created_at) }}
                                 </span>
@@ -624,22 +652,21 @@ const closeConfirmModal = () => {
                             <span
                                 class="font-semibold"
                                 :class="
-                                    transaction.points > 0
+                                    transaction.type === PointTypeEnum.EARNED
                                         ? 'text-green-600 dark:text-green-400'
-                                        : 'text-red-600 dark:text-red-400'
+                                        : transaction.type ===
+                                            PointTypeEnum.REFUNDED
+                                          ? 'text-yellow-600 dark:text-yellow-400'
+                                          : 'text-red-600 dark:text-red-400'
                                 "
                             >
-                                {{ transaction.points > 0 ? '+' : ''
+                                {{
+                                    transaction.type === PointTypeEnum.EARNED ||
+                                    transaction.type === PointTypeEnum.REFUNDED
+                                        ? '+'
+                                        : '-'
                                 }}{{ transaction.points }}
                             </span>
-                        </div>
-                        <div
-                            class="flex items-center justify-between rounded-lg bg-primary/5 px-4 py-3 font-semibold"
-                        >
-                            <span>Total Points</span>
-                            <span>{{
-                                getTotalPoints(currentUser.loyalty_points)
-                            }}</span>
                         </div>
                     </div>
                     <p v-else class="text-sm text-muted-foreground">
@@ -671,7 +698,7 @@ const closeConfirmModal = () => {
             :onClose="closeConfirmModal"
             :message="confirmModalMessage"
             :type="confirmModalType"
-            :isLoading="isDeleting"
+            :isLoading="isPending"
             @confirm="confirmModalAction"
         />
     </AdminLayout>

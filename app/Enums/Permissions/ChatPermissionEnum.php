@@ -14,12 +14,4 @@ enum ChatPermissionEnum: string
             self::CHAT_DELETE => 'Delete chats',
         };
     }
-
-    public static function getChatPermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }

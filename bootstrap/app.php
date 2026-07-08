@@ -59,6 +59,13 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if (
                 $exception instanceof InvalidSignatureException &&
+                $request->routeIs('reactivate.reactivate')
+            ) {
+                return redirect()->route('reactivate.expired-account-reactivation');
+            }
+
+            if (
+                $exception instanceof InvalidSignatureException &&
                 $request->routeIs('verify-changed-email.store')
             ) {
                 return redirect()->route('verify-changed-email.expired');

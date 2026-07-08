@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
     PinInput,
     PinInputGroup,
     PinInputSlot,
 } from '@/components/ui/pin-input';
+import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
 import { store } from '@/routes/two-factor/login';
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
-import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
 
 interface AuthConfigContent {
     title: string;
@@ -89,9 +88,19 @@ const codeValue = computed<string>(() => code.value.join(''));
                         </div>
                         <InputError :message="errors.code" />
                     </div>
-                    <Button type="submit" class="w-full" :disabled="processing"
-                        >Continue</Button
+                    <button
+                        type="submit"
+                        :disabled="processing"
+                        class="group w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
                     >
+                        <span class="flex items-center justify-center gap-2">
+                            <span
+                                v-if="processing"
+                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                            ></span>
+                            <span v-else>Continue</span>
+                        </span>
+                    </button>
                 </Form>
             </template>
 
@@ -110,9 +119,19 @@ const codeValue = computed<string>(() => code.value.join(''));
                         required
                     />
                     <InputError :message="errors.recovery_code" />
-                    <Button type="submit" class="w-full" :disabled="processing"
-                        >Continue</Button
+                    <button
+                        type="submit"
+                        :disabled="processing"
+                        class="group w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
                     >
+                        <span class="flex items-center justify-center gap-2">
+                            <span
+                                v-if="processing"
+                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                            ></span>
+                            <span v-else>Continue</span>
+                        </span>
+                    </button>
                 </Form>
             </template>
         </div>

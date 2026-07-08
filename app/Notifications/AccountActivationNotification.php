@@ -38,7 +38,8 @@ class AccountActivationNotification extends Notification
             ->line('An account has been created for you.')
             ->line('Click below to activate your account.')
             ->action('Activate Account', $this->url)
-            ->line('This link expires in 1 days.');
+            ->line('This link expires in 1 days.')
+            ->line('Thank you for using our application!');
     }
 
     /**

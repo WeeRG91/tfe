@@ -33,6 +33,14 @@ class AuthenticatedSessionController extends Controller
     {
         $user = $request->validateCredentials();
 
+       /* if ($user->trashed()) {
+            // Generate signed URL
+
+            // Send ReactivateAccountNotification
+
+            return redirect()->route('reactivate.notice');
+        }*/
+
         if (Features::enabled(Features::twoFactorAuthentication()) && $user->hasEnabledTwoFactorAuthentication()) {
             $request->session()->put([
                 'login.id' => $user->getKey(),

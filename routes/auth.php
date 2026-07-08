@@ -36,10 +36,10 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.stores');
 
-    Route::get('activate/expired', [AccountActivationController::class, 'expired'])
+    Route::get('activate/expired', [AccountActivationController::class, 'expiredActivation'])
         ->name('activate.expired');
 
-    Route::post('activate/resend', [AccountActivationController::class, 'resend'])
+    Route::post('activate/resend', [AccountActivationController::class, 'resendActivation'])
         ->middleware(['throttle:3,1'])
         ->name('activate.resend');
 
@@ -50,6 +50,18 @@ Route::middleware('guest')->group(function () {
     Route::post('activate/{user}', [AccountActivationController::class, 'store'])
         ->middleware(['signed'])
         ->name('activate.store');
+
+    Route::get('activate/expired/account-reactivation', [AccountActivationController::class, 'expiredReactivation'])
+        ->name('reactivate.expired-account-reactivation');
+
+    Route::post('activate/resend/account-reactivation', [AccountActivationController::class, 'resendReactivation'])
+        ->middleware(['throttle:3,1'])
+        ->name('reactivate.resend-account-reactivation');
+
+    Route::get('activate/{user}/reactivate', [AccountActivationController::class, 'reactivate'])
+        ->middleware(['signed'])
+        ->withTrashed()
+        ->name('reactivate.reactivate');
 
     Route::get('verify-changed-email/expired', [ChangedEmailVerificationController::class, 'expired'])
         ->name('verify-changed-email.expired');

@@ -26,6 +26,8 @@ import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/payment';
 import { NotifiableTypeEnum, NotificationTypeEnum } from '@/types/notification';
 import order from '@/routes/order';
 import menu from '@/routes/menu';
+import { PermissionType } from '@/types/permission';
+import { LoyaltyPointTransactionType, PointTypeEnum } from '@/types/point';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -208,4 +210,42 @@ export const notificationRoutes: Record<NotifiableTypeEnum, (id: number) => stri
     [NotifiableTypeEnum.ORDER]: (id) => order.orderDetails(id).url,
     [NotifiableTypeEnum.DISH]: (id) => menu.showDish(id).url,
     [NotifiableTypeEnum.DRINK]: () => menu.drink().url,
+};
+
+export const getInitials = (name: string) => {
+    return name
+        .split(' ')
+        .map((word) => word.charAt(0))
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+};
+
+export const getUserAvatarColor = (userId: number) => {
+    const colors = [
+        'bg-blue-500',
+        'bg-green-500',
+        'bg-purple-500',
+        'bg-pink-500',
+        'bg-yellow-500',
+        'bg-indigo-500',
+        'bg-red-500',
+        'bg-teal-500',
+    ];
+    return colors[userId % colors.length];
+};
+
+export const getTotalPoints = (transactions: LoyaltyPointTransactionType[]) => {
+    if (!transactions.length) return 0;
+
+    return transactions.reduce((total, transaction) => {
+        switch (transaction.type as PointTypeEnum) {
+            case PointTypeEnum.EARNED:
+                return total + transaction.points;
+            case PointTypeEnum.REDEEMED:
+                return total - transaction.points;
+            case PointTypeEnum.REFUNDED:
+                return total + transaction.points;
+        }
+    }, 0);
 };

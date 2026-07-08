@@ -129,11 +129,13 @@ Route::middleware(['auth', 'verified', 'permission:admin.access'])
     Route::controller(UserController::class)->prefix('users')->name('user.')->group(function () {
        Route::get('/', 'index')->name('index');
        Route::get('/get-users', 'getUsers')->name('get-users');
-       Route::get('/{user}/show', 'show')->name('show');
+       Route::get('/{user}/show', 'show')->withTrashed()->name('show');
        Route::get('/create', 'create')->name('create');
        Route::get('/{user}/edit', 'edit')->name('edit');
        Route::post('/', 'store')->name('store');
        Route::post('/{user}', 'update')->name('update');
-       Route::delete('/{user}', 'destroy')->name('destroy');
+       Route::post('/{user}/inactivate', 'inactivate')->name('inactivate');
+       Route::post('/{user}/reactivate', 'reactivate')->withTrashed()->name('reactivate');
+       Route::delete('/{user}', 'destroy')->withTrashed()->name('destroy');
     });
 });

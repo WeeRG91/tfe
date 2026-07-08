@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ChangedEmailVerificationNotification extends Notification
+class ReactivateAccountNotification extends Notification
 {
     use Queueable;
 
@@ -35,11 +35,10 @@ class ChangedEmailVerificationNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Verify New Email Address')
+            ->subject('Reactivate Your Account')
             ->greeting("Hello {$notifiable->name}")
-            ->line('Your email address has been changed.')
-            ->line('Click below to verify your new email address.')
-            ->action('Verify Email', $this->url)
+            ->line('Click below to reactivate your account.')
+            ->action('Reactivate Account', $this->url)
             ->line('This link expires in 1 days.')
             ->line('Thank you for using our application!');
     }

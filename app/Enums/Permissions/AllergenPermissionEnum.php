@@ -20,12 +20,4 @@ enum AllergenPermissionEnum: string
              self::ALLERGEN_RESTORE => 'Restore allergens',
          };
      }
-
-     public static function getAllergenPermissions(): array
-     {
-         return array_map(fn ($case) => [
-             'value' => $case->value,
-             'label' => $case->label(),
-         ], self::cases());
-     }
 }

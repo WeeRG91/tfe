@@ -20,12 +20,4 @@ enum DrinkPermissionEnum: string
             self::DRINK_RESTORE => 'Restore drinks',
         };
     }
-
-    public static function getDrinkPermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }

@@ -56,7 +56,7 @@ const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
 const dishes = ref<DishType[]>([]);
-const nextCursor = ref<string | null>(null);
+const nextCursor = ref<string>('');
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
 const scrollContainer = ref<HTMLElement | null>(null);
@@ -172,7 +172,7 @@ const loadDishes = async () => {
     isLoading.value = true;
 
     try {
-        const response = await axios.get<CursorPaginated<DishType>>(
+        const { data } = await axios.get<CursorPaginated<DishType>>(
             dish.getDishes().url,
             {
                 params: {
@@ -183,9 +183,12 @@ const loadDishes = async () => {
                 },
             },
         );
-        const newDishes = response.data;
-        dishes.value.push(...newDishes.data);
-        nextCursor.value = newDishes.next_cursor;
+
+        if (data) {
+            const newDishes = data.data;
+            dishes.value.push(...newDishes);
+            nextCursor.value = data.next_cursor ?? '';
+        }
     } catch (error) {
         console.log(error);
         toast.error('Failed to load more dishes.');
@@ -196,7 +199,7 @@ const loadDishes = async () => {
 
 const applyFilters = () => {
     dishes.value = [];
-    nextCursor.value = null;
+    nextCursor.value = '';
 
     observer.value?.disconnect();
 

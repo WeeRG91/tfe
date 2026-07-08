@@ -27,9 +27,18 @@ class RoleController extends Controller
             ->when($request->search, fn ($query) =>
                 $query->where('name', 'LIKE', "%$request->search%")
             )
-            ->get();
+            ->orderBy('name')
+            ->cursorPaginate(8);
 
-        return response()->json(RoleResource::collection($roles));
+        return response()->json([
+            'data' => RoleResource::collection($roles)->collection,
+            'path' => $roles->path(),
+            'per_page' => $roles->perPage(),
+            'next_cursor' => $roles->nextCursor()?->encode(),
+            'next_page_url' => $roles->nextPageUrl(),
+            'prev_cursor' => $roles->previousCursor()?->encode(),
+            'prev_page_url' => $roles->previousPageUrl(),
+        ]);
     }
 
     public function create()

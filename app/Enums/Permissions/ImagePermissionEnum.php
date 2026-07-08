@@ -14,12 +14,4 @@ enum ImagePermissionEnum: string
             self::IMAGE_DELETE => 'Delete images',
         };
     }
-
-    public static function getImagePermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }

@@ -14,6 +14,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory()
+            ->count(10)
+            ->withoutTwoFactor()
+            ->create();
+
+        User::factory()
             ->withoutTwoFactor()
             ->create([
             'name' => 'Admin Restaurant',

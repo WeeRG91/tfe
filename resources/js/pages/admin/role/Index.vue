@@ -4,7 +4,7 @@ import { useClickOutside } from '@/composables/useClickOutside';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatDate } from '@/lib/utils';
 import role from '@/routes/admin/role';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, CursorPaginated } from '@/types';
 import { PermissionType } from '@/types/permission';
 import { RoleType } from '@/types/role';
 import { Head, Link } from '@inertiajs/vue3';
@@ -46,24 +46,37 @@ const dropdownStyle = ref<{ top: string; left: string }>({
 });
 const dropdownRef = ref<HTMLElement | null>(null);
 const searchInputRef = ref<HTMLInputElement | null>(null);
+const nextCursor = ref<string>('');
 
 const loadRoles = async () => {
     isLoading.value = true;
 
     try {
-        const { data } = await axios.get<RoleType[]>(role.getRoles().url, {
-            params: {
-                search: searchQuery.value,
+        const { data } = await axios.get<CursorPaginated<RoleType>>(
+            role.getRoles().url,
+            {
+                params: {
+                    cursor: nextCursor.value,
+                    search: searchQuery.value,
+                },
             },
-        });
+        );
 
-        roles.value.push(...data);
+        if (data) {
+            const newRoles = data.data as RoleType[];
+            roles.value.push(...newRoles);
+            nextCursor.value = data.next_cursor ?? '';
+        }
     } catch (error) {
         console.log(error);
         toast.error('Failed to load roles');
     } finally {
         isLoading.value = false;
     }
+};
+
+const loadMoreRoles = async () => {
+    await loadRoles();
 };
 
 const deleteRole = async (roleId: number) => {
@@ -122,6 +135,7 @@ const toggleDropdown = (event: MouseEvent, roleId: number) => {
 
 const applySearch = () => {
     roles.value = [];
+    nextCursor.value = '';
 
     loadRoles();
 };
@@ -210,13 +224,16 @@ onMounted(() => {
                 </div>
             </div>
 
+            <!-- Initial Loading State -->
             <div
-                v-if="isLoading"
-                class="flex h-24 items-center justify-center sm:h-32"
+                v-if="isLoading && roles.length === 0"
+                class="flex h-64 flex-col items-center justify-center gap-4"
             >
-                <Loader class="mx-auto animate-spin text-muted-foreground" />
+                <Loader class="h-8 w-8 animate-spin text-primary" />
+                <p class="text-sm text-muted-foreground">Loading roles...</p>
             </div>
 
+            <!-- Empty State -->
             <div
                 v-else-if="searchQuery && roles.length === 0"
                 class="py-8 text-center"
@@ -279,10 +296,10 @@ onMounted(() => {
                         </div>
 
                         <div
-                            class="overflow-hidden transition-all duration-300"
+                            class="grid transition-all duration-300"
                             :class="
                                 expandedRoleId === r.id
-                                    ? 'max-h-[1000px] opacity-100'
+                                    ? 'max-h-[1500px] opacity-100'
                                     : 'max-h-0 opacity-0'
                             "
                         >
@@ -326,6 +343,7 @@ onMounted(() => {
                                         </div>
                                     </div>
                                 </div>
+
                                 <span
                                     v-else
                                     class="text-sm text-muted-foreground"
@@ -372,6 +390,28 @@ onMounted(() => {
                             </button>
                         </div>
                     </Teleport>
+                </div>
+
+                <div
+                    class="mt-8 flex flex-col items-center justify-center gap-3"
+                >
+                    <div
+                        v-if="isLoading && roles.length > 0"
+                        class="flex items-center gap-3"
+                    >
+                        <Loader class="h-5 w-5 animate-spin text-primary" />
+                    </div>
+
+                    <button
+                        v-if="nextCursor && !isLoading"
+                        @click="loadMoreRoles"
+                        class="group flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all hover:text-foreground"
+                    >
+                        <span>Load more roles</span>
+                        <ChevronRight
+                            class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                        />
+                    </button>
                 </div>
             </div>
 

@@ -20,12 +20,4 @@ enum DishPermissionEnum: string
             self::DISH_RESTORE => 'Restore dishes',
         };
     }
-
-    public static function getDishPermissions(): array
-    {
-        return array_map(fn ($case) => [
-            'value' => $case->value,
-            'label' => $case->label(),
-        ], self::cases());
-    }
 }
