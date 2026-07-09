@@ -9,6 +9,8 @@ import { SearchResultEnum } from '@/types/search';
 
 export interface Auth {
     user: User;
+    roles: string[];
+    permissions: string[];
 }
 
 export interface BreadcrumbItem {
@@ -21,6 +23,7 @@ export interface NavItem {
     href: NonNullable<InertiaLinkProps['href']>;
     icon?: LucideIcon;
     isActive?: boolean;
+    permission?: string;
 }
 
 export type AppPageProps<

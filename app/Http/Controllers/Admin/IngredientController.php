@@ -29,6 +29,8 @@ class IngredientController extends Controller
      */
     public function index(): Response
     {
+        $this->authorize('viewAny', Ingredient::class);
+
         $allergens = Allergen::all()->map(fn ($allergen) => [
             'value' => $allergen->id,
             'label' => $allergen->name,
@@ -46,6 +48,8 @@ class IngredientController extends Controller
      */
     public function getIngredients(Request $request, GetPaginatedIngredients $query): JsonResponse
     {
+        $this->authorize('viewAny', Ingredient::class);
+
         $ingredients = $query->execute($request);
 
         return response()->json($ingredients);
@@ -57,6 +61,8 @@ class IngredientController extends Controller
      */
     public function create(GetIngredientFormData $query): Response
     {
+        $this->authorize('create', Ingredient::class);
+
         return Inertia::render('admin/ingredient/Create', $query->execute());
     }
 
@@ -70,6 +76,8 @@ class IngredientController extends Controller
         CreateIngredient $command
     ): RedirectResponse
     {
+        $this->authorize('create', Ingredient::class);
+
         try {
             $command->execute(
                 $request->validated(),
@@ -96,6 +104,8 @@ class IngredientController extends Controller
         CreateIngredient $command
     ): RedirectResponse
     {
+        $this->authorize('create', Ingredient::class);
+
         try {
             $ingredient = $command->execute(
                 $request->validated(),
@@ -128,6 +138,8 @@ class IngredientController extends Controller
         GetIngredientForEdit $query
     ): Response
     {
+        $this->authorize('update', $ingredient);
+
         return Inertia::render('admin/ingredient/Edit', [
             'ingredientToEdit' => $query->execute($ingredient),
             ...$formData->execute(),
@@ -146,6 +158,8 @@ class IngredientController extends Controller
         UpdateIngredient $command
     ): RedirectResponse
     {
+        $this->authorize('update', $ingredient);
+
         try {
             $command->execute(
                 $ingredient,
@@ -164,27 +178,15 @@ class IngredientController extends Controller
     }
 
     /**
-     * @param int $id
-     * @param DeleteIngredient $command
-     * @return JsonResponse
-     */
-    public function destroy(int $id, DeleteIngredient $command): JsonResponse
-    {
-        $command->execute($id);
-
-        return response()->json([
-            'message' => 'Ingredient successfully moved to bin',
-        ]);
-    }
-
-    /**
-     * @param int $id
+     * @param Ingredient $ingredient
      * @param RestoreIngredient $command
      * @return JsonResponse
      */
-    public function restore(int $id, RestoreIngredient $command): JsonResponse
+    public function restore(Ingredient $ingredient, RestoreIngredient $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('restore', $ingredient);
+
+        $command->execute($ingredient->id);
 
         return response()->json([
             'message' => 'Ingredient successfully restored',
@@ -192,13 +194,31 @@ class IngredientController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param Ingredient $ingredient
+     * @param DeleteIngredient $command
+     * @return JsonResponse
+     */
+    public function destroy(Ingredient $ingredient, DeleteIngredient $command): JsonResponse
+    {
+        $this->authorize('delete', $ingredient);
+
+        $command->execute($ingredient->id);
+
+        return response()->json([
+            'message' => 'Ingredient successfully moved to bin',
+        ]);
+    }
+
+    /**
+     * @param Ingredient $ingredient
      * @param ForceDeleteIngredient $command
      * @return JsonResponse
      */
-    public function forceDelete(int $id, ForceDeleteIngredient $command): JsonResponse
+    public function forceDelete(Ingredient $ingredient, ForceDeleteIngredient $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('delete', $ingredient);
+
+        $command->execute($ingredient->id);
 
         return response()->json([
             'message' => 'Ingredient successfully deleted',

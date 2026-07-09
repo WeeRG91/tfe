@@ -5,7 +5,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatDate } from '@/lib/utils';
 import role from '@/routes/admin/role';
 import type { BreadcrumbItem, CursorPaginated } from '@/types';
-import { PermissionType } from '@/types/permission';
+import { PermissionType, RolePermissionEnum } from '@/types/permission';
 import { RoleType } from '@/types/role';
 import { Head, Link } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
@@ -22,6 +22,7 @@ import {
 } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { usePermission } from '@/composables/usePermission';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -29,6 +30,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: role.index().url,
     },
 ];
+
+const { can } = usePermission();
 
 const roles = ref<RoleType[]>([]);
 const searchQuery = ref<string>('');
@@ -215,6 +218,7 @@ onMounted(() => {
                     </div>
 
                     <Link
+                        v-if="can(RolePermissionEnum.ROLE_CREATE)"
                         :href="role.create().url"
                         class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                     >
@@ -224,16 +228,13 @@ onMounted(() => {
                 </div>
             </div>
 
-            <!-- Initial Loading State -->
             <div
                 v-if="isLoading && roles.length === 0"
-                class="flex h-64 flex-col items-center justify-center gap-4"
+                class="flex h-32 flex-col items-center justify-center gap-4"
             >
-                <Loader class="h-8 w-8 animate-spin text-primary" />
-                <p class="text-sm text-muted-foreground">Loading roles...</p>
+                <Loader class="h-6 w-6 animate-spin text-primary" />
             </div>
 
-            <!-- Empty State -->
             <div
                 v-else-if="searchQuery && roles.length === 0"
                 class="py-8 text-center"
@@ -283,7 +284,7 @@ onMounted(() => {
                                 </div>
                             </div>
 
-                            <div class="relative">
+                            <div v-if="can(RolePermissionEnum.ROLE_UPDATE)" class="relative">
                                 <button
                                     class="rounded-md p-1.5 transition-colors hover:bg-accent"
                                     @click.stop="toggleDropdown($event, r.id)"
@@ -371,6 +372,7 @@ onMounted(() => {
                                 Edit
                             </Link>
                             <button
+                                v-if="RolePermissionEnum.ROLE_DELETE"
                                 @click="
                                     openConfirmModal(
                                         'Are you sure you want to delete this role?',

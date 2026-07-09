@@ -27,6 +27,8 @@ class MeatController extends Controller
      */
     public function index(): InertiaResponse
     {
+        $this->authorize('viewAny', Meat::class);
+
         return Inertia::render('admin/meat/Index');
     }
 
@@ -37,6 +39,8 @@ class MeatController extends Controller
      */
     public function getMeats(Request $request, GetPaginatedMeats $query)
     {
+        $this->authorize('viewAny', Meat::class);
+
         $meats = $query->execute($request);
 
         return response()->json($meats);
@@ -47,6 +51,8 @@ class MeatController extends Controller
      */
     public function create(): InertiaResponse
     {
+        $this->authorize('create', Meat::class);
+
         return Inertia::render('admin/meat/Create');
     }
 
@@ -57,6 +63,8 @@ class MeatController extends Controller
      */
     public function store(MeatCreateRequest $request, CreateMeat $command): RedirectResponse
     {
+        $this->authorize('create', Meat::class);
+
         try {
             $command->execute(
                 $request->validated(),
@@ -83,6 +91,8 @@ class MeatController extends Controller
         CreateMeat $command
     ): RedirectResponse
     {
+        $this->authorize('create', Meat::class);
+
         try {
             $meat = $command->execute(
                 $request->validated(),
@@ -110,6 +120,8 @@ class MeatController extends Controller
      */
     public function edit(Meat $meat, GetMeatForEdit $query): InertiaResponse
     {
+        $this->authorize('update', $meat);
+
         return Inertia::render('admin/meat/Edit', [
             'meatToEdit' => $query->execute($meat),
         ]);
@@ -127,6 +139,8 @@ class MeatController extends Controller
         UpdateMeat $command
     ): RedirectResponse
     {
+        $this->authorize('update', $meat);
+
         try {
             $command->execute(
                 $meat,
@@ -145,27 +159,15 @@ class MeatController extends Controller
     }
 
     /**
-     * @param int $id
-     * @param DeleteMeat $command
-     * @return JsonResponse
-     */
-    public function destroy(int $id, DeleteMeat $command): JsonResponse
-    {
-        $command->execute($id);
-
-        return response()->json([
-            'message' => 'Meat successfully moved to bin',
-        ]);
-    }
-
-    /**
-     * @param int $id
+     * @param Meat $meat
      * @param RestoreMeat $command
      * @return JsonResponse
      */
-    public function restore(int $id, RestoreMeat $command): JsonResponse
+    public function restore(Meat $meat, RestoreMeat $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('restore', $meat);
+
+        $command->execute($meat->id);
 
         return response()->json([
             'message' => 'Meat successfully restored',
@@ -173,13 +175,31 @@ class MeatController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param Meat $meat
+     * @param DeleteMeat $command
+     * @return JsonResponse
+     */
+    public function destroy(Meat $meat, DeleteMeat $command): JsonResponse
+    {
+        $this->authorize('delete', $meat);
+
+        $command->execute($meat->id);
+
+        return response()->json([
+            'message' => 'Meat successfully moved to bin',
+        ]);
+    }
+
+    /**
+     * @param Meat $meat
      * @param ForceDeleteMeat $command
      * @return JsonResponse
      */
-    public function forceDelete(int $id, ForceDeleteMeat $command): JsonResponse
+    public function forceDelete(Meat $meat, ForceDeleteMeat $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('delete', $meat);
+
+        $command->execute($meat->id);
 
         return response()->json([
             'message' => 'Meat successfully deleted',

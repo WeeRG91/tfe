@@ -16,6 +16,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/admin/drink';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
@@ -40,6 +41,7 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { DrinkPermissionEnum } from '@/types/permission';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -51,6 +53,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: drink.index().url,
     },
 ];
+
+const { can } = usePermission();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -164,7 +168,9 @@ const closeConfirmModal = () => {
 };
 
 const goToEdit = (id: number) => {
-    router.visit(drink.edit(id).url);
+    if (can(DrinkPermissionEnum.DRINK_UPDATE)) {
+        router.visit(drink.edit(id).url);
+    }
 };
 
 const loadDrinks = async () => {
@@ -401,7 +407,10 @@ onBeforeUnmount(() => {
                                     />
                                 </div>
 
-                                <div class="flex-none sm:ml-auto sm:hidden">
+                                <div
+                                    v-if="can(DrinkPermissionEnum.DRINK_CREATE)"
+                                    class="flex-none sm:ml-auto sm:hidden"
+                                >
                                     <a
                                         :href="drink.create().url"
                                         class="inline-block"
@@ -422,7 +431,7 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div class="hidden sm:ml-auto sm:flex">
+                    <div v-if="can(DrinkPermissionEnum.DRINK_CREATE)" class="hidden sm:ml-auto sm:flex">
                         <a :href="drink.create().url" class="inline-block">
                             <Button
                                 variant="outline"
@@ -575,13 +584,14 @@ onBeforeUnmount(() => {
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger>
+                                    <DropdownMenuTrigger v-if="can(DrinkPermissionEnum.DRINK_UPDATE)">
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
+                                            v-if="can(DrinkPermissionEnum.DRINK_RESTORE)"
                                             @click="
                                                 openConfirmModal(
                                                     `Are you sure you want to restore this drink?`,
@@ -596,6 +606,7 @@ onBeforeUnmount(() => {
                                             <RotateCcwIcon /> Restore
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="can(DrinkPermissionEnum.DRINK_DELETE)"
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to delete this drink?',
@@ -622,6 +633,7 @@ onBeforeUnmount(() => {
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="can(DrinkPermissionEnum.DRINK_DELETE)"
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to move this dish to bin?',

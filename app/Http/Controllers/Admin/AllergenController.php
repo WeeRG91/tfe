@@ -28,6 +28,8 @@ class AllergenController extends Controller
      */
     public function index(): InertiaResponse
     {
+        $this->authorize('viewAny', Allergen::class);
+
         return Inertia::render('admin/allergen/Index');
     }
 
@@ -38,6 +40,8 @@ class AllergenController extends Controller
      */
     public function getAllergens(Request $request, GetPaginatedAllergens $query): JsonResponse
     {
+        $this->authorize('viewAny', Allergen::class);
+
         $allergens = $query->execute($request);
 
         return response()->json($allergens);
@@ -49,6 +53,8 @@ class AllergenController extends Controller
      */
     public function create(GetAllergenFormData $query): InertiaResponse
     {
+        $this->authorize('create', Allergen::class);
+
         return Inertia::render('admin/allergen/Create', $query->execute());
     }
 
@@ -62,6 +68,8 @@ class AllergenController extends Controller
         CreateAllergen $command
     ): RedirectResponse
     {
+        $this->authorize('create', Allergen::class);
+
         try {
             $command->execute(
                 $request->validated(),
@@ -90,6 +98,8 @@ class AllergenController extends Controller
         GetAllergenFormData $formData
     ): InertiaResponse
     {
+        $this->authorize('update', $allergen);
+
         return Inertia::render('admin/allergen/Edit', [
             'allergenToEdit' => $query->execute($allergen),
             ...$formData->execute(),
@@ -108,6 +118,8 @@ class AllergenController extends Controller
         UpdateAllergen $command
     ): RedirectResponse
     {
+        $this->authorize('update', $allergen);
+
         try {
             $command->execute(
                 $allergen,
@@ -126,27 +138,15 @@ class AllergenController extends Controller
     }
 
     /**
-     * @param int $id
-     * @param DeleteAllergen $command
-     * @return JsonResponse
-     */
-    public function destroy(int $id, DeleteAllergen $command): JsonResponse
-    {
-        $command->execute($id);
-
-        return response()->json([
-            'message' => 'Allergen successfully moved to bin',
-        ]);
-    }
-
-    /**
-     * @param int $id
+     * @param Allergen $allergen
      * @param RestoreAllergen $command
      * @return JsonResponse
      */
-    public function restore(int $id, RestoreAllergen $command): JsonResponse
+    public function restore(Allergen $allergen, RestoreAllergen $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('restore', $allergen);
+
+        $command->execute($allergen->id);
 
         return response()->json([
             'message' => 'Allergen successfully restored.',
@@ -154,13 +154,31 @@ class AllergenController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param Allergen $allergen
+     * @param DeleteAllergen $command
+     * @return JsonResponse
+     */
+    public function destroy(Allergen $allergen, DeleteAllergen $command): JsonResponse
+    {
+        $this->authorize('delete', $allergen);
+
+        $command->execute($allergen->id);
+
+        return response()->json([
+            'message' => 'Allergen successfully moved to bin',
+        ]);
+    }
+
+    /**
+     * @param Allergen $allergen
      * @param ForceDeleteAllergen $command
      * @return JsonResponse
      */
-    public function forceDelete(int $id, ForceDeleteAllergen $command): JsonResponse
+    public function forceDelete(Allergen $allergen, ForceDeleteAllergen $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('delete', $allergen);
+
+        $command->execute($allergen->id);
 
         return response()->json([
             'message' => 'Allergen successfully deleted.',

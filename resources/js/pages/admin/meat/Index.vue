@@ -15,6 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import meat from '@/routes/admin/meat';
 import { BreadcrumbItem, CursorPaginated, type FilterType } from '@/types';
@@ -34,6 +35,7 @@ import {
 } from 'lucide-vue-next';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { MeatPermissionEnum } from '@/types/permission';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -41,6 +43,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: meat.index().url,
     },
 ];
+
+const { can } = usePermission();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -128,7 +132,9 @@ const closeConfirmModal = () => {
 };
 
 const goToEdit = (id: number) => {
-    router.visit(meat.edit(id).url);
+    if (can(MeatPermissionEnum.MEAT_UPDATE)) {
+        router.visit(meat.edit(id).url);
+    }
 };
 
 const loadMeats = async () => {
@@ -296,7 +302,7 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <div class="ml-auto flex">
+                    <div v-if="can(MeatPermissionEnum.MEAT_CREATE)" class="ml-auto flex">
                         <a :href="meat.create().url" class="inline-block">
                             <Button
                                 variant="outline"
@@ -415,13 +421,14 @@ onMounted(() => {
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger>
+                                    <DropdownMenuTrigger v-if="can(MeatPermissionEnum.MEAT_UPDATE)">
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
+                                            v-if="can(MeatPermissionEnum.MEAT_RESTORE)"
                                             @click="
                                                 openConfirmModal(
                                                     `Are you sure you want to restore this meat?`,
@@ -436,6 +443,7 @@ onMounted(() => {
                                             <RotateCcwIcon /> Restore
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="can(MeatPermissionEnum.MEAT_DELETE)"
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to delete this meat?',
@@ -460,6 +468,7 @@ onMounted(() => {
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="can(MeatPermissionEnum.MEAT_DELETE)"
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to move this meat to bin?',

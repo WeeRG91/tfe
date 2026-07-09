@@ -30,6 +30,8 @@ class DishController extends Controller
      */
     public function index(): InertiaResponse
     {
+        $this->authorize('viewAny', Dish::class);
+
         return Inertia::render('admin/dish/Index', [
             'categories' => DishCategoryEnum::getCategories(),
         ]);
@@ -42,6 +44,8 @@ class DishController extends Controller
      */
     public function getDishes(Request $request, GetPaginatedDishes $query): JsonResponse
     {
+        $this->authorize('viewAny', Dish::class);
+
         $dishes = $query->execute($request);
 
         return response()->json($dishes);
@@ -53,6 +57,8 @@ class DishController extends Controller
      */
     public function create(GetDishFormData $query): InertiaResponse
     {
+        $this->authorize('create', Dish::class);
+
         return Inertia::render('admin/dish/Create', $query->execute());
     }
 
@@ -63,6 +69,8 @@ class DishController extends Controller
      */
     public function store(DishCreateRequest $request, CreateDish $command): RedirectResponse
     {
+        $this->authorize('create', Dish::class);
+
         try {
             $command->execute(
                 $request->validated(),
@@ -89,6 +97,8 @@ class DishController extends Controller
      */
     public function edit(Dish $dish, GetDishForEdit $query, GetDishFormData $formData): InertiaResponse
     {
+        $this->authorize('update', $dish);
+
         return Inertia::render('admin/dish/Edit', [
             'dishToEdit' => $query->execute($dish),
             ...$formData->execute(),
@@ -103,6 +113,8 @@ class DishController extends Controller
      */
     public function update(DishUpdateRequest $request, Dish $dish, UpdateDish $command): RedirectResponse
     {
+        $this->authorize('update', $dish);
+
         try {
             $command->execute(
                 $dish,
@@ -123,27 +135,15 @@ class DishController extends Controller
     }
 
     /**
-     * @param int $id
-     * @param DeleteDish $command
-     * @return JsonResponse
-     */
-    public function destroy(int $id, DeleteDish $command): JsonResponse
-    {
-        $command->execute($id);
-
-        return response()->json([
-            'message' => 'Dish successfully moved to bin',
-        ]);
-    }
-
-    /**
-     * @param int $id
+     * @param Dish $dish
      * @param ToggleDishAvailability $command
      * @return JsonResponse
      */
-    public function available(int $id, ToggleDishAvailability $command): JsonResponse
+    public function available(Dish $dish, ToggleDishAvailability $command): JsonResponse
     {
-        $dish = $command->execute($id);
+        $this->authorize('update', $dish);
+
+        $dish = $command->execute($dish->id);
 
         return response()->json([
             'message' => 'Dish availability successfully updated',
@@ -152,13 +152,15 @@ class DishController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param Dish $dish
      * @param RestoreDish $command
      * @return JsonResponse
      */
-    public function restore(int $id, RestoreDish $command): JsonResponse
+    public function restore(Dish $dish, RestoreDish $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('update', $dish);
+
+        $command->execute($dish->id);
 
         return response()->json([
             'message' => 'Dish successfully restored',
@@ -166,13 +168,31 @@ class DishController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param Dish $dish
+     * @param DeleteDish $command
+     * @return JsonResponse
+     */
+    public function destroy(Dish $dish, DeleteDish $command): JsonResponse
+    {
+        $this->authorize('delete', $dish);
+
+        $command->execute($dish->id);
+
+        return response()->json([
+            'message' => 'Dish successfully moved to bin',
+        ]);
+    }
+
+    /**
+     * @param Dish $dish
      * @param ForceDeleteDish $command
      * @return JsonResponse
      */
-    public function forceDelete(int $id, ForceDeleteDish $command): JsonResponse
+    public function forceDelete(Dish $dish, ForceDeleteDish $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('delete', $dish);
+
+        $command->execute($dish->id);
 
         return response()->json([
             'message' => 'Dish successfully deleted',

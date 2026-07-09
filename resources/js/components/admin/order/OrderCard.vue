@@ -12,11 +12,15 @@ import { OrderStatusEnum, OrderType, OrderTypeEnum } from '@/types/order';
 import { ChevronDown, ChevronUp, Coffee, MapPin, User } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { usePermission } from '@/composables/usePermission';
+import { OrderPermissionEnum } from '@/types/permission';
 
 const props = defineProps<{
     order: OrderType;
     updateStatusOrderId: number | null;
 }>();
+
+const {can} = usePermission();
 
 const emit = defineEmits<{
     'update-status': [orderId: number, newStatus: OrderStatusEnum];
@@ -205,7 +209,7 @@ watch(
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap items-center gap-2">
-                <div class="flex min-w-[120px] flex-1 gap-2">
+                <div v-if="can(OrderPermissionEnum.ORDER_UPDATE)" class="flex min-w-[120px] flex-1 gap-2">
                     <button
                         v-for="(btn, index) in orderStatusActions"
                         :key="index"
@@ -246,6 +250,7 @@ watch(
                 </div>
 
                 <button
+                    v-if="can(OrderPermissionEnum.ORDER_VIEW)"
                     @click="openOrderDetails(order)"
                     class="rounded-md border border-sidebar-border/70 px-2 py-1.5 text-xs font-medium whitespace-nowrap transition-colors hover:bg-sidebar-accent md:px-3"
                 >
@@ -332,7 +337,7 @@ watch(
 
             <!-- Action Buttons -->
             <div class="flex flex-col gap-2">
-                <div class="flex gap-2">
+                <div v-if="can(OrderPermissionEnum.ORDER_UPDATE)" class="flex gap-2">
                     <button
                         v-for="(btn, index) in orderStatusActions"
                         :key="index"
@@ -373,6 +378,7 @@ watch(
                 </div>
 
                 <button
+                    v-if="can(OrderPermissionEnum.ORDER_VIEW)"
                     @click="openOrderDetails(order)"
                     class="w-full rounded-md border border-sidebar-border/70 px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent"
                 >

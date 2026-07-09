@@ -26,11 +26,15 @@ class UserController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', User::class);
+
         return Inertia::render('admin/user/Index');
     }
 
     public function getUsers(Request $request)
     {
+        $this->authorize('viewAny', User::class);
+
         $users = User::withTrashed()
             ->with('roles')
             ->where('name', '!=', 'Super Admin')
@@ -63,6 +67,8 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+        $this->authorize('view', $user);
+
         $user->load(['roles', 'roles.permissions', 'permissions', 'loyaltyPointTransactions', 'orders']);
 
         return Inertia::render('admin/user/Show', [
@@ -72,6 +78,8 @@ class UserController extends Controller
 
     public function create()
     {
+        $this->authorize('create', User::class);
+
         $roles = Role::with('permissions')
             ->whereNot('name', 'Super Admin')
             ->get();
@@ -84,6 +92,8 @@ class UserController extends Controller
 
     public function store(CreateUserRequest $request)
     {
+        $this->authorize('create', User::class);
+
         try {
             $user = User::create([
                 'name' => $request->name,
@@ -118,6 +128,8 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
+
         $user->load(['roles', 'roles.permissions', 'permissions',]);
 
         $roles = Role::with('permissions')
@@ -133,6 +145,8 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
+
         try {
             $emailChanged = $user->email !== $request->email;
 
@@ -179,6 +193,8 @@ class UserController extends Controller
 
     public function inactivate(User $user)
     {
+        $this->authorize('update', $user);
+
         try {
             if ($user->hasRole('Super Admin') || $user->name === 'Super Admin') {
                 return response()->json([
@@ -210,6 +226,8 @@ class UserController extends Controller
 
     public function reactivate(User $user)
     {
+        $this->authorize('update', $user);
+
         try {
             if (!$user->trashed()) {
                 return response()->json([
@@ -239,6 +257,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+
         try {
             if ($user->hasRole('Super Admin') || $user->name === 'Super Admin') {
                 return response()->json([

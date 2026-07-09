@@ -16,6 +16,8 @@ class ImageController extends Controller
      */
     public function setMainImage(Image $image, ImageService $imageService): JsonResponse
     {
+        $this->authorize('update', $image);
+
         $imageService->setMainImage($image);
 
         return response()->json([
@@ -30,6 +32,8 @@ class ImageController extends Controller
      */
     public function destroy(Image $image, ImageService $imageService): JsonResponse
     {
+        $this->authorize('delete', $image);
+
         $imageService->delete($image);
 
         return response()->json([

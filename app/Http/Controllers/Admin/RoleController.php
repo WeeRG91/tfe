@@ -17,11 +17,15 @@ class RoleController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Role::class);
+
         return Inertia::render('admin/role/Index');
     }
 
     public function getRoles(Request $request)
     {
+        $this->authorize('viewAny', Role::class);
+
         $roles = Role::with('permissions')
             ->whereNot('name', 'Super Admin')
             ->when($request->search, fn ($query) =>
@@ -43,6 +47,8 @@ class RoleController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Role::class);
+
         return Inertia::render('admin/role/Create', [
             'permissions' => PermissionResource::collection(Permission::all())->collection,
         ]);
@@ -50,6 +56,8 @@ class RoleController extends Controller
 
     public function store(CreateRoleRequest $request)
     {
+        $this->authorize('create', Role::class);
+
         try {
             $role = Role::create([
                 'name' => $request->name,
@@ -68,6 +76,8 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
+        $this->authorize('update', $role);
+
         $role->load('permissions');
 
         return Inertia::render('admin/role/Edit', [
@@ -78,6 +88,8 @@ class RoleController extends Controller
 
     public function update(UpdateRoleRequest $request, Role $role)
     {
+       $this->authorize('update', $role);
+
        try {
            $role->update([
                'name' => $request->name,
@@ -95,6 +107,8 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
+       $this->authorize('delete', $role);
+
        try {
            if ($role->name == 'Admin') {
                return response()->json([

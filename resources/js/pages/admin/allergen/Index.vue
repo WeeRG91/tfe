@@ -15,7 +15,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import allergen from '@/routes/admin/allergen';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { AllergenType } from '@/types/allergen';
 import { Head, router } from '@inertiajs/vue3';
@@ -33,7 +35,7 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import allergen, { getAllergens } from '@/routes/admin/allergen';
+import { AllergenPermissionEnum } from '@/types/permission';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -41,6 +43,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: allergen.index().url,
     },
 ];
+
+const { can } = usePermission();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -128,7 +132,9 @@ const closeConfirmModal = () => {
 };
 
 const goToEdit = (id: number) => {
-    router.visit(allergen.edit(id).url);
+    if (can(AllergenPermissionEnum.ALLERGEN_UPDATE)) {
+        router.visit(allergen.edit(id).url);
+    }
 };
 
 const loadAllergens = async () => {
@@ -301,7 +307,7 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div class="ml-auto flex">
+                    <div v-if="can(AllergenPermissionEnum.ALLERGEN_CREATE)" class="ml-auto flex">
                         <a :href="allergen.create().url" class="inline-block">
                             <Button
                                 variant="outline"
@@ -405,13 +411,14 @@ onBeforeUnmount(() => {
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger>
+                                    <DropdownMenuTrigger v-if="can(AllergenPermissionEnum.ALLERGEN_UPDATE)">
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
+                                            v-if="can(AllergenPermissionEnum.ALLERGEN_RESTORE)"
                                             @click="
                                                 openConfirmModal(
                                                     `Are you sure you want to restore this allergen?`,
@@ -426,6 +433,7 @@ onBeforeUnmount(() => {
                                             <RotateCcwIcon /> Restore
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="can(AllergenPermissionEnum.ALLERGEN_DELETE)"
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to delete this allergen?',
@@ -454,6 +462,7 @@ onBeforeUnmount(() => {
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="can(AllergenPermissionEnum.ALLERGEN_DELETE)"
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to move this allergen to bin?',

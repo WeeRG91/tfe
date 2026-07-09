@@ -1,31 +1,33 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
+import { Button } from '@/components/ui/button';
 import { useClickOutside } from '@/composables/useClickOutside';
+import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatDate, getInitials, getUserAvatarColor } from '@/lib/utils';
 import user from '@/routes/admin/user';
 import type { BreadcrumbItem, CursorPaginated } from '@/types';
 import { UserFilterEnum, UserType } from '@/types/user';
-import { Head, router, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
 import {
+    ChevronRight,
+    CircleAlert,
     EllipsisVertical,
     Loader,
     Mail,
     Plus,
     Search,
+    ShieldCheck,
+    ShieldX,
     SquarePen,
     Trash2,
     X,
-    ShieldCheck,
-    ShieldX,
-    CircleAlert,
-    ChevronRight,
 } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import { Button } from '@/components/ui/button';
+import { UserPermissionEnum } from '@/types/permission';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -33,6 +35,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: user.index().url,
     },
 ];
+
+const { can } = usePermission();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -191,6 +195,12 @@ const clearSearch = () => {
     searchInputRef.value?.focus();
 };
 
+const showUser = (userId: number) => {
+    if (can(UserPermissionEnum.USER_VIEW)) {
+        router.visit(user.show(userId).url);
+    }
+};
+
 watchDebounced(
     searchQuery,
     () => {
@@ -286,6 +296,7 @@ onMounted(() => {
                     </div>
 
                     <Link
+                        v-if="can(UserPermissionEnum.USER_CREATE)"
                         :href="user.create().url"
                         class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                     >
@@ -293,6 +304,13 @@ onMounted(() => {
                         Add
                     </Link>
                 </div>
+            </div>
+
+            <div
+                v-if="isLoading && users.length === 0"
+                class="flex h-32 flex-col items-center justify-center gap-4"
+            >
+                <Loader class="h-6 w-6 animate-spin text-primary" />
             </div>
 
             <div
@@ -321,7 +339,7 @@ onMounted(() => {
                     class="mb-2 overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-200 hover:border-primary/50 dark:border-sidebar-border"
                 >
                     <div
-                        @click="router.visit(user.show(u.id).url)"
+                        @click="showUser(u.id)"
                         class="flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-accent/5"
                     >
                         <div class="flex flex-1 items-center gap-4">
@@ -363,7 +381,7 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="relative ml-2 flex-shrink-0">
+                        <div v-if="can(UserPermissionEnum.USER_UPDATE)" class="relative ml-2 flex-shrink-0">
                             <button
                                 class="rounded-md p-1.5 transition-colors hover:bg-accent"
                                 @click.stop="toggleDropdown($event, u.id)"
@@ -453,7 +471,7 @@ onMounted(() => {
                         Reactivate
                     </button>
                     <button
-                        v-if="currentUser?.deleted_at"
+                        v-if="currentUser?.deleted_at && can(UserPermissionEnum.USER_DELETE)"
                         @click="
                             openConfirmModal(
                                 'Are you sure you want to delete this user?',

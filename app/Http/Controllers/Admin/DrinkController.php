@@ -30,6 +30,8 @@ class DrinkController extends Controller
      */
     public function index(): InertiaResponse
     {
+        $this->authorize('viewAny', Drink::class);
+
         return Inertia::render('admin/drink/Index', [
             'categories' => DrinkCategoryEnum::getCategories(),
         ]);
@@ -42,6 +44,8 @@ class DrinkController extends Controller
      */
     public function getDrinks(Request $request, GetPaginatedDrinks $query): JsonResponse
     {
+        $this->authorize('viewAny', Drink::class);
+
         $drinks = $query->execute($request);
 
         return response()->json($drinks);
@@ -53,6 +57,8 @@ class DrinkController extends Controller
      */
     public function create(GetDrinkFormData $query): InertiaResponse
     {
+        $this->authorize('create', Drink::class);
+
         return Inertia::render('admin/drink/Create', $query->execute());
     }
 
@@ -63,6 +69,8 @@ class DrinkController extends Controller
      */
     public function store(DrinkCreateRequest $request, CreateDrink $command): RedirectResponse
     {
+        $this->authorize('create', Drink::class);
+
         try {
             $command->execute(
                 $request->validated(),
@@ -92,6 +100,8 @@ class DrinkController extends Controller
         GetDrinkFormData $formData
     ): InertiaResponse
     {
+        $this->authorize('update', $drink);
+
         return Inertia::render('admin/drink/Edit', [
             'drinkToEdit' => $query->execute($drink),
             ...$formData->execute(),
@@ -106,6 +116,8 @@ class DrinkController extends Controller
      */
     public function update(DrinkUpdateRequest $request, Drink $drink, UpdateDrink $command): RedirectResponse
     {
+        $this->authorize('update', $drink);
+
         try {
             $command->execute(
                 $drink,
@@ -124,27 +136,15 @@ class DrinkController extends Controller
     }
 
     /**
-     * @param int $id
-     * @param DeleteDrink $command
-     * @return JsonResponse
-     */
-    public function destroy(int $id, DeleteDrink $command): JsonResponse
-    {
-        $command->execute($id);
-
-        return response()->json([
-            'message' => 'Drink successfully moved to bin',
-        ]);
-    }
-
-    /**
-     * @param int $id
+     * @param Drink $drink
      * @param ToggleDrinkAvailability $command
      * @return JsonResponse
      */
-    public function available(int $id, ToggleDrinkAvailability $command): JsonResponse
+    public function available(Drink $drink, ToggleDrinkAvailability $command): JsonResponse
     {
-        $drink = $command->execute($id);
+        $this->authorize('update', $drink);
+
+        $drink = $command->execute($drink->id);
 
         return response()->json([
             'message' => 'Drink availability successfully updated',
@@ -153,13 +153,15 @@ class DrinkController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param Drink $drink
      * @param RestoreDrink $command
      * @return JsonResponse
      */
-    public function restore(int $id, RestoreDrink $command): JsonResponse
+    public function restore(Drink $drink, RestoreDrink $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('restore', $drink);
+
+        $command->execute($drink->id);
 
         return response()->json([
             'message' => 'Drink successfully restored',
@@ -167,13 +169,31 @@ class DrinkController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param Drink $drink
+     * @param DeleteDrink $command
+     * @return JsonResponse
+     */
+    public function destroy(Drink $drink, DeleteDrink $command): JsonResponse
+    {
+        $this->authorize('delete', $drink);
+
+        $command->execute($drink->id);
+
+        return response()->json([
+            'message' => 'Drink successfully moved to bin',
+        ]);
+    }
+
+    /**
+     * @param Drink $drink
      * @param ForceDeleteDrink $command
      * @return JsonResponse
      */
-    public function forceDelete(int $id, ForceDeleteDrink $command): JsonResponse
+    public function forceDelete(Drink $drink, ForceDeleteDrink $command): JsonResponse
     {
-        $command->execute($id);
+        $this->authorize('delete', $drink);
+
+        $command->execute($drink->id);
 
         return response()->json([
             'message' => 'Drink successfully deleted',

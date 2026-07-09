@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import user from '@/routes/admin/user';
 import { type BreadcrumbItem } from '@/types';
-import { PermissionType } from '@/types/permission';
+import { PermissionType, RolePermissionEnum } from '@/types/permission';
 import { RoleType } from '@/types/role';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ChevronDown, ChevronUp } from 'lucide-vue-next';
@@ -24,6 +25,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: user.create().url,
     },
 ];
+
+const { can } = usePermission();
 
 const rolePermissions = ref<number[]>([]);
 const selectedPermissions = ref<number[]>([]);
@@ -231,6 +234,7 @@ const submit = () => {
                 </div>
 
                 <div
+                    v-if="can(RolePermissionEnum.ROLE_UPDATE)"
                     class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
                 >
                     <div class="mb-4">
@@ -275,6 +279,7 @@ const submit = () => {
                 </div>
 
                 <div
+                    v-if="can(RolePermissionEnum.ROLE_UPDATE)"
                     class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
                 >
                     <div class="mb-6 flex items-center justify-between">
@@ -308,7 +313,9 @@ const submit = () => {
                                         <input
                                             type="checkbox"
                                             :checked="isAllSelected(category)"
-                                            :disabled="isCategoryLocked(category)"
+                                            :disabled="
+                                                isCategoryLocked(category)
+                                            "
                                             @click.stop
                                             @change="
                                                 toggleAllPermissions(category)
@@ -390,14 +397,14 @@ const submit = () => {
                 <div class="flex justify-end gap-4">
                     <Link
                         :href="user.index().url"
-                        class="rounded-lg flex justify-center items-center sm:w-32 border border-sidebar-border/70 px-6 py-2.5 text-foreground transition-all duration-200 hover:border-sidebar-border hover:bg-muted/50 dark:border-sidebar-border"
+                        class="flex items-center justify-center rounded-lg border border-sidebar-border/70 px-6 py-2.5 text-foreground transition-all duration-200 hover:border-sidebar-border hover:bg-muted/50 sm:w-32 dark:border-sidebar-border"
                     >
                         Cancel
                     </Link>
                     <button
                         type="submit"
                         :disabled="userForm.processing"
-                        class="flex items-center justify-center sm:w-32 gap-2 rounded-lg bg-primary px-6 py-2.5 text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+                        class="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 sm:w-32"
                     >
                         <span
                             v-if="userForm.processing"

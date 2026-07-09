@@ -11,7 +11,7 @@ import {
 } from '@/lib/utils';
 import user from '@/routes/admin/user';
 import type { BreadcrumbItem } from '@/types';
-import { PermissionType } from '@/types/permission';
+import { PermissionType, UserPermissionEnum } from '@/types/permission';
 import { UserDetailType } from '@/types/user';
 import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -36,6 +36,7 @@ import {
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 import { PointTypeEnum } from '@/types/point';
+import { usePermission } from '@/composables/usePermission';
 
 const props = defineProps<{
     currentUser: UserDetailType;
@@ -51,6 +52,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: user.show(props.currentUser.id).url,
     },
 ];
+
+const { can } = usePermission();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -265,7 +268,10 @@ const closeConfirmModal = () => {
                 </div>
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                     <Link
-                        v-if="!currentUser.deleted_at"
+                        v-if="
+                            !currentUser.deleted_at &&
+                            can(UserPermissionEnum.USER_UPDATE)
+                        "
                         :href="user.edit(currentUser.id).url"
                         class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
@@ -275,7 +281,8 @@ const closeConfirmModal = () => {
                     <button
                         v-if="
                             currentUser.roles[0]?.name !== 'Admin' &&
-                            !currentUser.deleted_at
+                            !currentUser.deleted_at &&
+                            can(UserPermissionEnum.USER_UPDATE)
                         "
                         @click="
                             openConfirmModal(
@@ -292,7 +299,8 @@ const closeConfirmModal = () => {
                     <button
                         v-if="
                             currentUser.roles[0]?.name !== 'Admin' &&
-                            currentUser.deleted_at
+                            currentUser.deleted_at &&
+                            can(UserPermissionEnum.USER_UPDATE)
                         "
                         @click="
                             openConfirmModal(
@@ -309,7 +317,8 @@ const closeConfirmModal = () => {
                     <button
                         v-if="
                             currentUser.roles[0]?.name !== 'Admin' &&
-                            currentUser.deleted_at
+                            currentUser.deleted_at &&
+                            can(UserPermissionEnum.USER_DELETE)
                         "
                         @click="
                             openConfirmModal(

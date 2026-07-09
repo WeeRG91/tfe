@@ -15,6 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import ingredient from '@/routes/admin/ingredient';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
@@ -36,6 +37,7 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { IngredientPermissionEnum } from '@/types/permission';
 
 const props = defineProps<{
     allergens: AllergenOptionType[];
@@ -47,6 +49,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: ingredient.index().url,
     },
 ];
+
+const { can } = usePermission();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -135,7 +139,9 @@ const closeConfirmModal = () => {
 };
 
 const goToEdit = (id: number) => {
-    router.visit(ingredient.edit(id).url);
+    if (can(IngredientPermissionEnum.INGREDIENT_UPDATE)) {
+        router.visit(ingredient.edit(id).url);
+    }
 };
 
 const loadIngredients = async () => {
@@ -337,7 +343,7 @@ onBeforeUnmount(() => {
                                 />
                             </div>
 
-                            <div class="flex-none sm:ml-auto sm:hidden">
+                            <div v-if="can(IngredientPermissionEnum.INGREDIENT_CREATE)" class="flex-none sm:ml-auto sm:hidden">
                                 <a
                                     :href="ingredient.create().url"
                                     class="inline-block"
@@ -357,7 +363,7 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div class="hidden sm:ml-auto sm:flex">
+                    <div v-if="can(IngredientPermissionEnum.INGREDIENT_CREATE)" class="hidden sm:ml-auto sm:flex">
                         <a :href="ingredient.create().url" class="inline-block">
                             <Button
                                 variant="outline"
@@ -498,13 +504,14 @@ onBeforeUnmount(() => {
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger>
+                                    <DropdownMenuTrigger v-if="can(IngredientPermissionEnum.INGREDIENT_UPDATE)">
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
+                                            v-if="can(IngredientPermissionEnum.INGREDIENT_RESTORE)"
                                             @click="
                                                 openConfirmModal(
                                                     `Are you sure you want to restore this ingredient?`,
@@ -519,6 +526,7 @@ onBeforeUnmount(() => {
                                             <RotateCcwIcon /> Restore
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="can(IngredientPermissionEnum.INGREDIENT_DELETE)"
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to delete this drink?',
@@ -547,6 +555,7 @@ onBeforeUnmount(() => {
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="can(IngredientPermissionEnum.INGREDIENT_DELETE)"
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to move this ingredient to bin?',

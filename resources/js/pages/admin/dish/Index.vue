@@ -16,6 +16,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import dish from '@/routes/admin/dish';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
@@ -39,6 +40,7 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { DishPermissionEnum } from '@/types/permission';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -50,6 +52,8 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dish.index().url,
     },
 ];
+
+const { can } = usePermission();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -163,7 +167,9 @@ const closeConfirmModal = () => {
 };
 
 const goToEdit = (id: number) => {
-    router.visit(dish.edit(id).url);
+    if (can(DishPermissionEnum.DISH_UPDATE)) {
+        router.visit(dish.edit(id).url);
+    }
 };
 
 const loadDishes = async () => {
@@ -403,7 +409,10 @@ onBeforeUnmount(() => {
                                     />
                                 </div>
 
-                                <div class="flex-none sm:ml-auto sm:hidden">
+                                <div
+                                    v-if="can(DishPermissionEnum.DISH_CREATE)"
+                                    class="flex-none sm:ml-auto sm:hidden"
+                                >
                                     <a
                                         :href="dish.create().url"
                                         class="inline-block"
@@ -424,7 +433,10 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div class="hidden sm:ml-auto sm:flex">
+                    <div
+                        v-if="can(DishPermissionEnum.DISH_CREATE)"
+                        class="hidden sm:ml-auto sm:flex"
+                    >
                         <a :href="dish.create().url" class="inline-block">
                             <Button
                                 variant="outline"
@@ -575,13 +587,16 @@ onBeforeUnmount(() => {
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger>
+                                    <DropdownMenuTrigger
+                                        v-if="can(DishPermissionEnum.DISH_UPDATE)"
+                                    >
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
+                                            v-if="can(DishPermissionEnum.DISH_RESTORE)"
                                             @click="
                                                 openConfirmModal(
                                                     `Are you sure you want to restore this dish?`,
@@ -596,6 +611,9 @@ onBeforeUnmount(() => {
                                             <RotateCcwIcon /> Restore
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="
+                                                can(DishPermissionEnum.DISH_DELETE)
+                                            "
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to delete this dish?',
@@ -620,6 +638,9 @@ onBeforeUnmount(() => {
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
+                                            v-if="
+                                                can(DishPermissionEnum.DISH_DELETE)
+                                            "
                                             @click="
                                                 openConfirmModal(
                                                     'Are you sure you want to move this dish to bin?',

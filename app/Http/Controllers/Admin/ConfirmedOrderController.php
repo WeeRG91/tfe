@@ -16,6 +16,8 @@ class ConfirmedOrderController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Order::class);
+
         return Inertia::render('admin/order/Index');
     }
 
@@ -24,6 +26,8 @@ class ConfirmedOrderController extends Controller
      */
     public function getConfirmedOrders(): JsonResponse
     {
+        $this->authorize('viewAny', Order::class);
+
         $confirmedOrders = Order::query()
             ->with([
                 'user',
@@ -40,17 +44,17 @@ class ConfirmedOrderController extends Controller
 
     /**
      * @param Request $request
-     * @param int $orderId
+     * @param Order $order
      * @param UpdateOrderStatus $updateOrderStatus
      * @return JsonResponse
      */
-    public function updateOrderStatus(Request $request, int $orderId, UpdateOrderStatus $updateOrderStatus): JsonResponse
+    public function updateOrderStatus(Request $request, Order $order, UpdateOrderStatus $updateOrderStatus): JsonResponse
     {
+        $this->authorize('update', $order);
+
         $validated = $request->validate([
             'newStatus' => ['required', Rule::in(OrderStatusEnum::values())],
         ]);
-
-        $order = Order::query()->findOrFail($orderId);
 
         $updateOrderStatus->execute($order, $validated['newStatus']);
 

@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Policies;
+
+use App\Enums\Permissions\DishPermissionEnum;
+use App\Models\Dish;
+use App\Models\User;
+
+class DishPolicy
+{
+    /**
+     * Determine whether the user can view any models.
+     */
+    public function viewAny(User $user): bool
+    {
+        return $user->can(DishPermissionEnum::DISH_VIEW->value);
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     */
+    public function view(User $user, Dish $dish): bool
+    {
+        return $user->can(DishPermissionEnum::DISH_VIEW->value);
+    }
+
+    /**
+     * Determine whether the user can create models.
+     */
+    public function create(User $user): bool
+    {
+        return $user->can(DishPermissionEnum::DISH_CREATE->value);
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     */
+    public function update(User $user, Dish $dish): bool
+    {
+        return $user->can(DishPermissionEnum::DISH_UPDATE->value);
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     */
+    public function delete(User $user, Dish $dish): bool
+    {
+        return $user->can(DishPermissionEnum::DISH_DELETE->value);
+    }
+
+    /**
+     * Determine whether the user can restore the model.
+     */
+    public function restore(User $user, Dish $dish): bool
+    {
+        return $user->can(DishPermissionEnum::DISH_RESTORE->value);
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     */
+    public function forceDelete(User $user, Dish $dish): bool
+    {
+        return $user->can(DishPermissionEnum::DISH_DELETE->value);
+    }
+}
