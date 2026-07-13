@@ -84,10 +84,6 @@ class HandleStripeWebhook
             'type' => LoyaltyPointTransactionTypeEnum::EARNED->value,
             'description' => 'Points earned from order #' . $order->order_number,
         ]);
-
-        User::query()->update([
-            'loyalty_points' => $user->loyalty_points + $earnedPoints,
-        ]);
     }
 
     /**

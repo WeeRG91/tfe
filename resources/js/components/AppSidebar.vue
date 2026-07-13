@@ -31,7 +31,6 @@ import {
     DrinkPermissionEnum,
     IngredientPermissionEnum,
     MeatPermissionEnum,
-    MessagePermissionEnum,
     OrderPermissionEnum,
     RolePermissionEnum,
     UserPermissionEnum,

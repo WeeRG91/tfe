@@ -25,11 +25,14 @@ import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { LoyaltyPointTransactionType } from '@/types/point';
+import { getTotalPoints } from '@/lib/utils';
 
 const props = defineProps<{
     orderTypes: OrderTypeType[];
     paymentMethods: PaymentMethodType[];
     addresses: AddressType[];
+    loyaltyPointTransactions: LoyaltyPointTransactionType[];
 }>();
 
 const cartStore = useCartStore();
@@ -54,7 +57,7 @@ const deliveryFee = computed(() =>
     selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY ? 2 : 0,
 );
 
-const loyaltyPoints = computed(() => cart.value?.user?.loyalty_points ?? 0);
+const loyaltyPoints = computed(() => getTotalPoints(props.loyaltyPointTransactions) ?? 0);
 
 const selectedOrderType = computed(() => {
     return props.orderTypes.find(

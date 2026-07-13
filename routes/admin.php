@@ -106,13 +106,14 @@ Route::middleware(['auth', 'verified', 'permission:admin.access'])
         Route::get('/', 'chats')->name('chats');
         Route::get('/get-chats', 'getChats')->name('get-chats');
         Route::get('/{chat}/messages', 'getChatMessages')->name('get-chat-messages');
-        Route::patch('/{chatId}/read', 'markAsRead')->name('mark-as-read');
-        Route::post('/{chat}/send', 'send')->name('send');
+        Route::post('/{user}/create', 'create')->name('create');
     });
 
     Route::controller(MessageController::class)->prefix('messages')->name('message.')->group(function () {
-        Route::patch('/{message}/update', 'update')->name('update');
+        Route::post('/{chat}/send', 'send')->name('send');
         Route::patch('/{message}/unsend', 'unsend')->name('unsend');
+        Route::patch('/{chat}/read', 'markAsRead')->name('mark-as-read');
+        Route::patch('/{message}/update', 'update')->name('update');
         Route::delete('/{message}/delete', 'destroy')->name('destroy');
     });
 

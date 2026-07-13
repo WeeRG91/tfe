@@ -15,7 +15,9 @@ use App\Http\Requests\Client\Cart\AddDishToCartRequest;
 use App\Http\Requests\Client\Cart\AddDrinkToCartRequest;
 use App\Http\Resources\Client\Address\AddressResource;
 use App\Http\Resources\Client\Cart\CartResource;
+use App\Http\Resources\Client\LoyaltyPointTransaction\LoyaltyPointTransactionResource;
 use App\Models\Address;
+use App\Models\LoyaltyPointTransaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
@@ -55,10 +57,16 @@ class CartController extends Controller
             ->orderBy('is_default', 'desc')
             ->get();
 
+        $loyaltyPointTransactions = loyaltyPointTransaction::query()
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return Inertia::render('client/PlaceOrder', [
             'orderTypes' => OrderTypeEnum::getTypes(),
             'paymentMethods' => PaymentMethodEnum::getPaymentMethods(),
             'addresses' => AddressResource::collection($addresses)->collection,
+            'loyaltyPointTransactions' => LoyaltyPointTransactionResource::collection($loyaltyPointTransactions)->collection,
         ]);
     }
 

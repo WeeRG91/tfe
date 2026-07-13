@@ -85,13 +85,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::controller(ChatController::class)->prefix('chats')->name('chat.')->group(function () {
         Route::get('/get-chat', 'getChat')->name('get-chat');
-        Route::patch('/{chatId}/read', 'markAsRead')->name('mark-as-read');
-        Route::post('/send', 'send')->name('send');
     });
 
     Route::controller(MessageController::class)->prefix('messages')->name('message.')->group(function () {
-        Route::patch('/{message}/update', 'update')->name('update');
+        Route::post('/send', 'send')->name('send');
         Route::patch('/{message}/unsend', 'unsend')->name('unsend');
+        Route::patch('/{chat}/read', 'markAsRead')->name('mark-as-read');
+        Route::patch('/{message}/update', 'update')->name('update');
         Route::delete('/{message}/delete', 'destroy')->name('destroy');
     });
 });

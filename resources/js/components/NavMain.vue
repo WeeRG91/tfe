@@ -12,7 +12,7 @@ import { useOrderStore } from '@/stores/order';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed } from 'vue';
 
 defineProps<{
     items: NavItem[];
@@ -44,41 +44,6 @@ const ordersConfirmed = computed(() =>
             !order.completed_at,
     ),
 );
-
-type EchoChannel = {
-    listen: (event: string, callback: () => void) => EchoChannel;
-};
-
-const channel = ref<EchoChannel | null>(null);
-const channelAdminChat = ref<EchoChannel | null>(null);
-
-onMounted(async () => {
-    await orderStore.getConfirmedOrders();
-
-    channel.value = window.Echo.channel('orders').listen(
-        '.order.placed',
-        async () => {
-            await orderStore.getConfirmedOrders();
-        },
-    );
-
-    channelAdminChat.value = window.Echo.private('admin.chats').listen(
-        '.message-sent',
-        async () => {
-            await chatStore.fetchChats();
-        },
-    );
-});
-
-onUnmounted(() => {
-    if (channel.value) {
-        window.Echo.leave('orders');
-    }
-
-    if (channelAdminChat.value) {
-        window.Echo.leave('private-admin.chats');
-    }
-});
 </script>
 
 <template>

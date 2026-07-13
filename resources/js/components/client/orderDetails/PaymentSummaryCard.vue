@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { OrderType, OrderTypeEnum } from '@/types/order';
 import { formatPrice } from '@/lib/utils';
-import { CreditCard, CheckCircle } from 'lucide-vue-next';
+import { CreditCard, CheckCircle, Clock } from 'lucide-vue-next';
+import { PaymentStatusEnum } from '@/types/payment';
 
 defineProps<{
     orderToShow: OrderType;
@@ -63,20 +64,20 @@ defineProps<{
             v-if="orderToShow.payment_status"
             class="mt-4 rounded-md p-3"
             :class="
-                orderToShow.payment_status.value === 2
+                orderToShow.payment_status.value === PaymentStatusEnum.PAID
                     ? 'bg-green-50'
                     : 'bg-yellow-50'
             "
         >
             <div class="flex items-center gap-2">
                 <CheckCircle
-                    v-if="orderToShow.payment_status.value === 2"
+                    v-if="orderToShow.payment_status.value === PaymentStatusEnum.PAID"
                     class="h-4 w-4 text-green-600"
                 />
-                <CheckCircle v-else class="h-4 w-4 text-yellow-600" />
+                <Clock v-else class="h-4 w-4 text-yellow-600" />
                 <p
                     :class="
-                        orderToShow.payment_status.value === 2
+                        orderToShow.payment_status.value === PaymentStatusEnum.PAID
                             ? 'text-green-700'
                             : 'text-yellow-700'
                     "

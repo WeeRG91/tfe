@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Permissions\ChatPermissionEnum;
 use App\Models\Chat;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -16,9 +17,9 @@ Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
 
     if (!$chat) return false;
 
-    return (int) $user->id === (int) $chat->user_id || $user->id === 1;
+    return (int) $user->id === (int) $chat->user_id || $user->can(ChatPermissionEnum::CHAT_VIEW->value);
 });
 
 Broadcast::channel('admin.chats', function ($user) {
-    return $user->id === 1;
+    return $user->can(ChatPermissionEnum::CHAT_VIEW->value);
 });

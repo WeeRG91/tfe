@@ -205,7 +205,7 @@ const markAsRead = async (chatId: number) => {
     }
 
     try {
-        await axios.patch(chat.markAsRead(chatId).url);
+        await axios.patch(message.markAsRead(chatId).url);
     } catch (error) {
         console.log(error);
     }
@@ -217,7 +217,7 @@ const sendMessage = async () => {
     isSending.value = true;
 
     try {
-        const response = await axios.post<MessageType>(chat.send().url, {
+        const response = await axios.post<MessageType>(message.send().url, {
             content: messageInput.value,
         });
 

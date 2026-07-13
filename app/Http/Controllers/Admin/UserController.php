@@ -82,11 +82,17 @@ class UserController extends Controller
 
         $roles = Role::with('permissions')
             ->whereNot('name', 'Super Admin')
+            ->orderBy('name')
+            ->get();
+
+        $permissions = Permission::query()
+            ->orderBy('category')
+            ->orderBy('name')
             ->get();
 
         return Inertia::render('admin/user/Create', [
             'roles' => RoleResource::collection($roles)->collection,
-            'permissions' => PermissionResource::collection(Permission::all())->collection,
+            'permissions' => PermissionResource::collection($permissions)->collection,
         ]);
     }
 
@@ -134,12 +140,18 @@ class UserController extends Controller
 
         $roles = Role::with('permissions')
             ->whereNot('name', 'Super Admin')
+            ->orderBy('name')
+            ->get();
+
+        $permissions = Permission::query()
+            ->orderBy('category')
+            ->orderBy('name')
             ->get();
 
         return Inertia::render('admin/user/Edit', [
             'userToEdit' => new EditUserResource($user),
             'roles' => RoleResource::collection($roles)->collection,
-            'permissions' => PermissionResource::collection(Permission::all())->collection,
+            'permissions' => PermissionResource::collection($permissions)->collection,
         ]);
     }
 

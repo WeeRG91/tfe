@@ -2,10 +2,8 @@
 
 namespace App\Http\Resources\Admin\User;
 
-use App\Enums\OrderStatusEnum;
 use App\Http\Resources\Admin\Permission\PermissionResource;
 use App\Http\Resources\Admin\Role\RoleResource;
-use App\Http\Resources\Client\LoyaltyPointTransaction\LoyaltyPointTransactionResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

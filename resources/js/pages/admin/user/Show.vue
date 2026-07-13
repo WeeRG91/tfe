@@ -29,7 +29,6 @@ import {
     ShoppingBag,
     SquarePen,
     Star,
-    Tag,
     Trash2,
     Users,
 } from 'lucide-vue-next';
@@ -559,76 +558,42 @@ const closeConfirmModal = () => {
                         v-if="
                             currentUser.orders && currentUser.orders.length > 0
                         "
-                        class="overflow-x-auto"
                     >
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="border-b border-sidebar-border/50">
-                                    <th
-                                        class="px-4 py-2 text-left font-medium text-muted-foreground"
-                                    >
-                                        Order #
-                                    </th>
-                                    <th
-                                        class="px-4 py-2 text-left font-medium text-muted-foreground"
-                                    >
-                                        Status
-                                    </th>
-                                    <th
-                                        class="px-4 py-2 text-left font-medium text-muted-foreground"
-                                    >
-                                        Created
-                                    </th>
-                                    <th
-                                        class="px-4 py-2 text-left font-medium text-muted-foreground"
-                                    >
-                                        Updated
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="order in currentUser.orders"
-                                    :key="order.id"
-                                    class="border-b border-sidebar-border/30 transition-colors hover:bg-accent/5"
-                                >
-                                    <td class="px-4 py-3 font-medium">
-                                        <div class="flex items-center gap-2">
-                                            <Tag
-                                                class="h-3.5 w-3.5 text-muted-foreground"
-                                            />
-                                            {{ order.order_number }}
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium"
-                                            :class="
-                                                getOrderStatusVariant(
-                                                    order.status.value,
-                                                )
-                                            "
-                                        >
-                                            <component
-                                                :is="
-                                                    getOrderStatusIcon(
-                                                        order.status.value,
-                                                    )
-                                                "
-                                                class="h-3 w-3"
-                                            />
-                                            {{ order.status.label }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3 text-muted-foreground">
+                        <div class="order-scroll-container flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-1">
+                            <div
+                                v-for="order in currentUser.orders"
+                                :key="order.id"
+                                class="flex flex-col gap-2 rounded-lg border border-sidebar-border/30 bg-card p-4 transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
+                            >
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-sm">{{ order.order_number }}</span>
+                                    </div>
+                                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                        <Calendar class="h-3 w-3" />
                                         {{ formatDate(order.created_at) }}
-                                    </td>
-                                    <td class="px-4 py-3 text-muted-foreground">
-                                        {{ formatDate(order.updated_at) }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    </span>
+                                </div>
+                                <span
+                                    class="inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold sm:mt-0"
+                                    :class="
+                                        getOrderStatusVariant(
+                                            order.status.value,
+                                        )
+                                    "
+                                >
+                                    <component
+                                        :is="
+                                            getOrderStatusIcon(
+                                                order.status.value,
+                                            )
+                                        "
+                                        class="mr-1.5 h-3 w-3"
+                                    />
+                                    {{ order.status.label }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <p v-else class="text-sm text-muted-foreground">
                         No orders found for this user
@@ -645,37 +610,39 @@ const closeConfirmModal = () => {
                             currentUser.loyalty_points &&
                             currentUser.loyalty_points.length > 0
                         "
-                        class="space-y-1"
                     >
-                        <div
-                            v-for="transaction in currentUser.loyalty_points"
-                            :key="transaction.id"
-                            class="flex items-center justify-between rounded-lg bg-accent/5 px-4 py-2"
-                        >
-                            <div class="flex flex-col">
-                                <span>{{ transaction.description }}</span>
-                                <span class="text-xs text-muted-foreground">
-                                    {{ formatDate(transaction.created_at) }}
+                        <div class="points-scroll-container flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-1">
+                            <div
+                                v-for="transaction in currentUser.loyalty_points"
+                                :key="transaction.id"
+                                class="flex flex-col gap-2 rounded-lg border border-sidebar-border/30 bg-card p-4 transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
+                            >
+                                <div class="flex flex-col gap-1">
+                                    <span class="font-medium text-sm">{{ transaction.description }}</span>
+                                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                        <Calendar class="h-3 w-3" />
+                                        {{ formatDate(transaction.created_at) }}
+                                    </span>
+                                </div>
+                                <span
+                                    class="inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold sm:mt-0"
+                                    :class="
+                                        transaction.type === PointTypeEnum.EARNED
+                                            ? 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400'
+                                            : transaction.type ===
+                                                PointTypeEnum.REFUNDED
+                                              ? 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400'
+                                              : 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400'
+                                    "
+                                >
+                                    {{
+                                        transaction.type === PointTypeEnum.EARNED ||
+                                        transaction.type === PointTypeEnum.REFUNDED
+                                            ? '+'
+                                            : '-'
+                                    }}{{ transaction.points }}
                                 </span>
                             </div>
-                            <span
-                                class="font-semibold"
-                                :class="
-                                    transaction.type === PointTypeEnum.EARNED
-                                        ? 'text-green-600 dark:text-green-400'
-                                        : transaction.type ===
-                                            PointTypeEnum.REFUNDED
-                                          ? 'text-yellow-600 dark:text-yellow-400'
-                                          : 'text-red-600 dark:text-red-400'
-                                "
-                            >
-                                {{
-                                    transaction.type === PointTypeEnum.EARNED ||
-                                    transaction.type === PointTypeEnum.REFUNDED
-                                        ? '+'
-                                        : '-'
-                                }}{{ transaction.points }}
-                            </span>
                         </div>
                     </div>
                     <p v-else class="text-sm text-muted-foreground">
@@ -689,14 +656,14 @@ const closeConfirmModal = () => {
                     <div>
                         <span class="text-muted-foreground">Created at:</span>
                         <span class="ml-2 font-medium">{{
-                            formatDate(currentUser.created_at)
-                        }}</span>
+                                formatDate(currentUser.created_at)
+                            }}</span>
                     </div>
                     <div>
                         <span class="text-muted-foreground">Last updated:</span>
                         <span class="ml-2 font-medium">{{
-                            formatDate(currentUser.updated_at)
-                        }}</span>
+                                formatDate(currentUser.updated_at)
+                            }}</span>
                     </div>
                 </div>
             </div>
@@ -712,3 +679,69 @@ const closeConfirmModal = () => {
         />
     </AdminLayout>
 </template>
+
+<style scoped>
+.order-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+}
+
+.order-scroll-container:hover {
+    scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.order-scroll-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.order-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.order-scroll-container::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.order-scroll-container:hover::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+}
+
+.order-scroll-container::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground));
+}
+
+.points-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+}
+
+.points-scroll-container:hover {
+    scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.points-scroll-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.points-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.points-scroll-container::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.points-scroll-container:hover::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+}
+
+.points-scroll-container::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground));
+}
+</style>

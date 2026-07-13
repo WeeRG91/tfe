@@ -23,7 +23,6 @@ class CartResource extends JsonResource
                 'id' => $this->user->id,
                 'name' => $this->user->name,
                 'email' => $this->user->email,
-                'loyalty_points' => $this->user->loyalty_points,
             ]),
             'items' => $this->whenLoaded('items')->map(fn ($item) => new CartItemResource($item)),
         ];

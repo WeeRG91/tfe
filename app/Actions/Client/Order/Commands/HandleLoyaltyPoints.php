@@ -33,10 +33,6 @@ class HandleLoyaltyPoints
                 'type' => LoyaltyPointTransactionTypeEnum::REDEEMED->value,
                 'description' => 'Used points for order #' . $order->order_number,
             ]);
-
-            User::query()->update([
-                'loyalty_points' => $user->loyalty_points - $usedPoints,
-            ]);
         }
 
         if ($isCash) {
@@ -48,10 +44,6 @@ class HandleLoyaltyPoints
                 'points' => $earnedPoints,
                 'type' => LoyaltyPointTransactionTypeEnum::EARNED->value,
                 'description' => 'Points earned from order #' . $order->order_number,
-            ]);
-
-            User::query()->update([
-                'loyalty_points' => $user->loyalty_points + $earnedPoints,
             ]);
         }
     }

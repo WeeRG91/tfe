@@ -17,13 +17,13 @@ import {
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import confirmedOrder from '@/routes/admin/confirmed-order';
 
 const orderStore = useOrderStore();
 const { confirmedOrders } = storeToRefs(orderStore);
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: '#' },
-    { title: 'Confirmed Orders', href: '#' },
+    { title: 'Confirmed Orders', href: confirmedOrder.index().url },
 ];
 
 const updatedStatusOrderId = ref<number | null>(null);
@@ -120,7 +120,6 @@ onMounted(async () => {
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-3 md:gap-6 md:p-4"
         >
-            <!-- Header with title and refresh button -->
             <div
                 class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             >
@@ -141,14 +140,12 @@ onMounted(async () => {
                 </button>
             </div>
 
-            <!-- Mobile View (Accordion) -->
             <div class="block space-y-3 md:hidden">
                 <div
                     v-for="column in columns"
                     :key="column.key"
                     class="overflow-hidden rounded-lg border border-sidebar-border/70 bg-card"
                 >
-                    <!-- Accordion Header -->
                     <button
                         @click="toggleColumn(column.key)"
                         class="w-full p-3 transition-colors hover:bg-sidebar-accent/50"
@@ -183,7 +180,6 @@ onMounted(async () => {
                         </div>
                     </button>
 
-                    <!-- Accordion Content -->
                     <div
                         v-show="isColumnExpanded(column.key)"
                         class="border-t border-sidebar-border/50 p-3"
@@ -210,7 +206,6 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <!-- Desktop View (Kanban Board) -->
             <div
                 class="hidden grid-cols-1 gap-4 overflow-x-auto md:grid md:grid-cols-4 lg:gap-6"
                 style="min-width: 800px"
@@ -220,7 +215,6 @@ onMounted(async () => {
                     :key="column.key"
                     class="flex flex-col gap-3"
                 >
-                    <!-- Header -->
                     <div
                         :class="`flex items-center justify-between rounded-lg p-3 bg-${column.color}-100 dark:bg-${column.color}-950/30`"
                     >
@@ -241,7 +235,6 @@ onMounted(async () => {
                         </div>
                     </div>
 
-                    <!-- Orders -->
                     <div class="flex flex-col gap-3">
                         <OrderCard
                             v-for="order in column.orders"

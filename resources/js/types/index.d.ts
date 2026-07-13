@@ -42,7 +42,6 @@ export interface User {
     email: string;
     avatar?: string;
     email_verified_at: string | null;
-    loyalty_points: number;
     created_at: string;
     updated_at: string;
 }

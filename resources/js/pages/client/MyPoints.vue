@@ -3,17 +3,18 @@ import ClientLayout from '@/layouts/ClientLayout.vue';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 import { CursorPaginated } from '@/types';
 import { FilterPointEnum, LoyaltyPointTransactionType } from '@/types/point';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import { formatDate } from '@/lib/utils';
+import { formatDate, getTotalPoints } from '@/lib/utils';
 import EmptyPoint from '@/components/client/myPoints/EmptyPoint.vue';
 import PointItem from '@/components/client/myPoints/PointItem.vue';
 import { Loader, Award, ClockArrowUp } from 'lucide-vue-next';
 
-const page = usePage();
-const user = page.props.auth?.user;
+const props = defineProps<{
+    availablePoints: LoyaltyPointTransactionType[];
+}>()
 
 const filterOptions: { label: string; value: FilterPointEnum }[] = [
     { label: 'All', value: FilterPointEnum.ALL },
@@ -28,6 +29,11 @@ const filterPoint = ref<FilterPointEnum>(FilterPointEnum.ALL);
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
+
+
+const latestPointTransaction = computed(() =>
+    props.availablePoints.at(0) ?? null
+);
 
 const loadLoyaltyPointTransactions = async () => {
     if (isLoading.value) return;
@@ -90,7 +96,6 @@ const groupedTransactions = computed(() => {
     return groups;
 });
 
-// Reset and reload when filter changes
 const resetAndReload = () => {
     loyaltyPointTransactions.value = [];
     nextCursor.value = '';
@@ -162,9 +167,7 @@ watch(filterPoint, resetAndReload);
                             <p
                                 class="text-2xl font-bold tracking-tight md:text-3xl"
                             >
-                                {{
-                                    user?.loyalty_points?.toLocaleString() || 0
-                                }}
+                                {{ getTotalPoints(availablePoints) }}
                             </p>
                         </div>
                     </div>
@@ -182,9 +185,16 @@ watch(filterPoint, resetAndReload);
                                 Last Update
                             </p>
                             <p
+                                v-if="latestPointTransaction"
                                 class="text-xl font-bold tracking-tight md:text-2xl"
                             >
-                                {{ formatDate(user.created_at) }}
+                                {{ formatDate(latestPointTransaction.created_at) }}
+                            </p>
+                            <p
+                                v-else
+                                class="text-xl font-bold tracking-tight md:text-2xl"
+                            >
+                                Not updated yet
                             </p>
                         </div>
                     </div>

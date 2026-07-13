@@ -18,7 +18,14 @@ class LoyaltyPointTransactionController extends Controller
      */
     public function myPoints(): InertiaResponse
     {
-        return Inertia::render('client/MyPoints');
+        $availablePoints = LoyaltyPointTransaction::query()
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('client/MyPoints', [
+            'availablePoints' => LoyaltyPointTransactionResource::collection($availablePoints)->collection,
+        ]);
     }
 
     /**

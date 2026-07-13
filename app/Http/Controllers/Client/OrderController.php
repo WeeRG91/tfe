@@ -173,10 +173,6 @@ class OrderController extends Controller
                 'type' => LoyaltyPointTransactionTypeEnum::REFUNDED->value,
                 'description' => 'Points refunded for order #' . $order->order_number,
             ]);
-
-            User::query()->update([
-                'loyalty_points' => $user->loyalty_points + $loyaltyPointTransaction->points,
-            ]);
         }
 
         return response()->noContent();
