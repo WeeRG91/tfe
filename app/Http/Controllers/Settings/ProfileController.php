@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Services\ImageService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,23 +28,43 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(
+        ProfileUpdateRequest $request,
+        ImageService $imageService
+    ): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
-        return to_route('profile.edit');
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+
+            if ($user->avatar) {
+                $imageService->delete($user->avatar);
+            }
+
+            $imageService->upload($user, [$file]);
+        }
+
+        return back()->with([
+            'success' => 'Profile updated successfully',
+        ]);
     }
 
     /**
      * Delete the user's profile.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, ImageService $imageService): RedirectResponse
     {
         $request->validate([
             'password' => ['required', 'current_password'],
@@ -53,7 +74,11 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        $user->delete();
+        if ($user->avatar) {
+            $imageService->delete($user->avatar);
+        }
+
+        $user->forceDelete();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

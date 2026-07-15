@@ -9,6 +9,7 @@ use App\Http\Resources\Client\LoyaltyPointTransaction\LoyaltyPointTransactionRes
 use App\Http\Resources\Client\Order\OrderResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class UserDetailResource extends JsonResource
 {
@@ -24,6 +25,9 @@ class UserDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'avatar' => $this->avatar
+                ? Storage::disk('public')->url($this->avatar->path)
+                : null,
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
             'roles' => $this->whenLoaded('roles', function () {

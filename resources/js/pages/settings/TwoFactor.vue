@@ -112,8 +112,8 @@ onUnmounted(() => {
 
                 <TwoFactorSetupModal
                     v-model:isOpen="showSetupModal"
-                    :requiresConfirmation="requiresConfirmation"
-                    :twoFactorEnabled="twoFactorEnabled"
+                    :requiresConfirmation="requiresConfirmation!"
+                    :twoFactorEnabled="twoFactorEnabled!"
                 />
             </div>
         </SettingsLayout>

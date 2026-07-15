@@ -10,6 +10,7 @@ use App\Http\Controllers\Client\MessageController;
 use App\Http\Controllers\Client\NotificationController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\PaymentController;
+use App\Http\Controllers\Client\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -93,6 +94,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/{chat}/read', 'markAsRead')->name('mark-as-read');
         Route::patch('/{message}/update', 'update')->name('update');
         Route::delete('/{message}/delete', 'destroy')->name('destroy');
+    });
+
+    Route::controller(ProfileController::class)->prefix('client-profile')->name('client-profile.')->group(function () {
+        Route::get('/edit', 'edit')->name('edit');
     });
 });
 

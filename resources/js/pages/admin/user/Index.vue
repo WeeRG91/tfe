@@ -7,6 +7,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatDate, getInitials, getUserAvatarColor } from '@/lib/utils';
 import user from '@/routes/admin/user';
 import type { BreadcrumbItem, CursorPaginated } from '@/types';
+import { UserPermissionEnum } from '@/types/permission';
 import { UserFilterEnum, UserType } from '@/types/user';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
@@ -27,7 +28,6 @@ import {
 } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { UserPermissionEnum } from '@/types/permission';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -343,7 +343,15 @@ onMounted(() => {
                         class="flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-accent/5"
                     >
                         <div class="flex flex-1 items-center gap-4">
+                            <img
+                                v-if="u.avatar"
+                                :src="u.avatar"
+                                :alt="u.name"
+                                class="h-10 w-10 rounded-full object-cover"
+                            />
+
                             <div
+                                v-else
                                 class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
                                 :class="getUserAvatarColor(u.id)"
                             >
@@ -381,7 +389,10 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div v-if="can(UserPermissionEnum.USER_UPDATE)" class="relative ml-2 flex-shrink-0">
+                        <div
+                            v-if="can(UserPermissionEnum.USER_UPDATE)"
+                            class="relative ml-2 flex-shrink-0"
+                        >
                             <button
                                 class="rounded-md p-1.5 transition-colors hover:bg-accent"
                                 @click.stop="toggleDropdown($event, u.id)"
@@ -471,7 +482,10 @@ onMounted(() => {
                         Reactivate
                     </button>
                     <button
-                        v-if="currentUser?.deleted_at && can(UserPermissionEnum.USER_DELETE)"
+                        v-if="
+                            currentUser?.deleted_at &&
+                            can(UserPermissionEnum.USER_DELETE)
+                        "
                         @click="
                             openConfirmModal(
                                 'Are you sure you want to delete this user?',

@@ -107,7 +107,14 @@ watch(
 </script>
 
 <template>
-    <Teleport to="body">
+    <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
+    >
         <div
             v-if="open"
             @click="$emit('close')"
@@ -479,7 +486,7 @@ watch(
                 </div>
             </div>
         </div>
-    </Teleport>
+    </Transition>
 </template>
 
 <style scoped>
@@ -514,47 +521,8 @@ button:hover .animate-arrow {
     background: #d1d5db;
 }
 
-@keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes zoom-in-95 {
-    from {
-        transform: scale(0.95);
-    }
-    to {
-        transform: scale(1);
-    }
-}
-
-@keyframes slide-in-from-top-4 {
-    from {
-        transform: translateY(-1rem);
-    }
-    to {
-        transform: translateY(0);
-    }
-}
-
-.animate-in {
-    animation-duration: 0.2s;
-    animation-fill-mode: both;
-}
-
-.fade-in {
-    animation-name: fade-in;
-}
-
-.zoom-in-95 {
-    animation-name: zoom-in-95;
-}
-
-.slide-in-from-top-4 {
-    animation-name: slide-in-from-top-4;
+.fixed {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 </style>

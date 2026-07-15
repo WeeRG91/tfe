@@ -13,6 +13,9 @@ import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem } from '@/types';
+import { getInitials, getUserAvatarColor } from '@/lib/utils';
+import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -30,6 +33,41 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const page = usePage();
 const user = page.props.auth.user;
+
+const photoPreview = ref<string | null>(user.avatar || null);
+
+const handlePhotoSelect = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+
+        if (file.size > 2 * 1024 * 1024) {
+            toast.error('Photo size must be less than 2MB');
+            input.value = '';
+            return;
+        }
+
+        const validTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+        ];
+        if (!validTypes.includes(file.type)) {
+            toast.error(
+                'Please upload a valid image (JPG, JPEG, PNG, GIF, or WEBP)',
+            );
+            input.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            photoPreview.value = e.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+    }
+};
 </script>
 
 <template>
@@ -49,6 +87,72 @@ const user = page.props.auth.user;
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div class="grid gap-2">
+                        <Label>Avatar</Label>
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <div
+                                    class="h-20 w-20 overflow-hidden rounded-full bg-gray-200"
+                                >
+                                    <img
+                                        v-if="photoPreview"
+                                        :src="photoPreview"
+                                        alt="Avatar"
+                                        class="h-full w-full object-cover"
+                                    />
+                                    <div
+                                        v-else
+                                        class="flex h-full w-full items-center justify-center text-2xl font-semibold text-white"
+                                        :class="getUserAvatarColor(user.id)"
+                                    >
+                                        {{ getInitials(user.name) }}
+                                    </div>
+                                </div>
+                                <label
+                                    for="avatar"
+                                    class="absolute right-0 bottom-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                                        />
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                                        />
+                                    </svg>
+                                    <Input
+                                        id="avatar"
+                                        type="file"
+                                        class="hidden"
+                                        name="avatar"
+                                        accept="image/jpeg,image/png,image/gif,image/webp"
+                                        @change="handlePhotoSelect"
+                                    />
+                                </label>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm text-muted-foreground">
+                                    Click the camera icon to upload a new photo
+                                </p>
+                                <p class="text-xs text-muted-foreground">
+                                    JPG, JPEG, PNG, GIF, WEBP. Max: 2MB
+                                </p>
+                            </div>
+                        </div>
+                        <InputError class="mt-2" :message="errors.avatar" />
+                    </div>
+
+                    <div class="grid gap-2">
                         <Label for="name">Name</Label>
                         <Input
                             id="name"
@@ -56,7 +160,6 @@ const user = page.props.auth.user;
                             name="name"
                             :default-value="user.name"
                             required
-                            autocomplete="name"
                             placeholder="Full name"
                         />
                         <InputError class="mt-2" :message="errors.name" />
@@ -71,7 +174,6 @@ const user = page.props.auth.user;
                             name="email"
                             :default-value="user.email"
                             required
-                            autocomplete="username"
                             placeholder="Email address"
                         />
                         <InputError class="mt-2" :message="errors.email" />

@@ -1,17 +1,41 @@
 <script setup lang="ts">
+
+import { router } from '@inertiajs/vue3';
+
 defineProps<{
     title: string;
     subtitle?: string;
     badge?: string;
 }>();
+
+const goToHome = () => {
+    router.visit('/')
+};
 </script>
 
 <template>
     <div
-        class="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 p-6"
+        class="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 p-6"
     >
         <div
-            class="w-full max-w-lg rounded-2xl border border-red-50/50 bg-white p-8 shadow-xl transition-all duration-300 sm:p-12"
+            class="fixed top-0 left-12 sm:left-24 h-full w-0.5 bg-gradient-to-b from-red-500/80 via-red-300/50 to-red-500/80"
+        ></div>
+
+        <div
+            class="fixed top-12 sm:top-24 left-0 h-0.5 w-full bg-gradient-to-r from-red-500/80 via-red-300/50 to-red-500/80"
+        ></div>
+
+        <div class="fixed top-8 sm:top-19 left-20 sm:left-36 z-10">
+            <span
+                @click="goToHome"
+                class="inline-block cursor-pointer rounded-lg bg-red-500 px-4 py-1.5 text-sm sm:text-lg font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-red-600 hover:shadow-lg active:scale-95"
+            >
+                Restaurant
+            </span>
+        </div>
+
+        <div
+            class="relative w-full max-w-lg rounded-2xl border border-red-50/50 bg-white p-8 shadow-xl transition-all duration-300 sm:p-12"
         >
             <div class="mb-8 text-center">
                 <p

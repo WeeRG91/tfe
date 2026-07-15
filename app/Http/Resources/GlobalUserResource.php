@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Http\Resources\Admin\User;
+namespace App\Http\Resources;
 
-use App\Http\Resources\Admin\Permission\PermissionResource;
-use App\Http\Resources\Admin\Role\RoleResource;
-use App\Http\Resources\Client\LoyaltyPointTransaction\LoyaltyPointTransactionResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class UserResource extends JsonResource
+class GlobalUserResource extends JsonResource
 {
     public static $wrap = null;
 
@@ -28,12 +25,8 @@ class UserResource extends JsonResource
                 : null,
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
-            'roles' => RoleResource::collection(
-                $this->whenLoaded('roles')
-            ),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'deleted_at' => $this->deleted_at,
         ];
     }
 }

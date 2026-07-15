@@ -54,7 +54,7 @@ import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage();
-const currentUser = page.props.auth?.user;
+const currentUser = computed(() => page.props.auth?.user);
 
 const { can } = usePermission();
 

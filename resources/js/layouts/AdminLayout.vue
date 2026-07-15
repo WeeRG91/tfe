@@ -25,6 +25,7 @@ const channelAdminChat = ref<EchoChannel | null>(null);
 
 onMounted(async () => {
     await orderStore.getConfirmedOrders();
+    await chatStore.fetchChats();
 
     channel.value = window.Echo.channel('orders').listen(
         '.order.placed',

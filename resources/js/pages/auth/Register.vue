@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { usePasswordStrength } from '@/composables/usePasswordStrength';
 import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
 import { login, register } from '@/routes';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, MoveLeft, MoveRight } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ref, toRef } from 'vue';
 import { toast } from 'vue-sonner';
+
+const showPassword = ref(false);
+const showPasswordConfirmation = ref(false);
 
 const registerForm = useForm({
     name: '',
@@ -13,8 +17,9 @@ const registerForm = useForm({
     password_confirmation: '',
 });
 
-const showPassword = ref(false);
-const showPasswordConfirmation = ref(false);
+const { passwordChecks, getPasswordStrengthColor } = usePasswordStrength(
+    toRef(registerForm, 'password'),
+);
 
 const submit = () => {
     registerForm.post(register().url, {
@@ -37,27 +42,6 @@ const submit = () => {
             }
         },
     });
-};
-
-const passwordChecks = computed(() => ({
-    length: registerForm.password.length >= 8,
-    uppercase: /[A-Z]/.test(registerForm.password),
-    lowercase: /[a-z]/.test(registerForm.password),
-    number: /[0-9]/.test(registerForm.password),
-    symbol: /[!@#$%^&*(),.?":{}|<>]/.test(registerForm.password),
-}));
-
-const passwordStrength = computed(() => {
-    return Object.values(passwordChecks.value).filter(Boolean).length;
-});
-
-const getStrengthColor = (index: number) => {
-    if (index < passwordStrength.value) {
-        if (passwordStrength.value <= 2) return 'bg-red-400';
-        if (passwordStrength.value === 3) return 'bg-amber-400';
-        return 'bg-emerald-400';
-    }
-    return 'bg-gray-100';
 };
 </script>
 
@@ -168,10 +152,10 @@ const getStrengthColor = (index: number) => {
                 >
                     <div class="flex gap-1">
                         <div
-                            v-for="i in 5"
+                            v-for="i in 4"
                             :key="i"
                             class="h-1 flex-1 rounded-full transition-all duration-300"
-                            :class="getStrengthColor(i)"
+                            :class="getPasswordStrengthColor(i)"
                         />
                     </div>
                     <div

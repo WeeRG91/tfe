@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\Resources\Admin\User\UserResource;
+use App\Http\Resources\GlobalUserResource;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -48,7 +49,9 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $user,
+                'user' => $user
+                    ? new GlobalUserResource($user)
+                    : null,
                 'roles' => $user
                     ? $user->getRoleNames()
                     : [],

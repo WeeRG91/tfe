@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { usePasswordStrength } from '@/composables/usePasswordStrength';
 import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
+import { login } from '@/routes';
+import password from '@/routes/password';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, MoveLeft, MoveRight } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
-import password from '@/routes/password';
+import { ref, toRef } from 'vue';
 import { toast } from 'vue-sonner';
-import { login } from '@/routes';
 
 const props = defineProps<{
     token: string;
@@ -22,26 +23,9 @@ const resetForm = useForm({
     password_confirmation: '',
 });
 
-const passwordChecks = computed(() => ({
-    length: resetForm.password.length >= 8,
-    uppercase: /[A-Z]/.test(resetForm.password),
-    lowercase: /[a-z]/.test(resetForm.password),
-    number: /[0-9]/.test(resetForm.password),
-    symbol: /[!@#$%^&*(),.?":{}|<>]/.test(resetForm.password),
-}));
-
-const passwordStrength = computed(() => {
-    return Object.values(passwordChecks.value).filter(Boolean).length;
-});
-
-const getStrengthColor = (index: number) => {
-    if (index < passwordStrength.value) {
-        if (passwordStrength.value <= 2) return 'bg-red-400';
-        if (passwordStrength.value === 3) return 'bg-amber-400';
-        return 'bg-emerald-400';
-    }
-    return 'bg-gray-100';
-};
+const { passwordChecks, getPasswordStrengthColor } = usePasswordStrength(
+    toRef(resetForm, 'password'),
+);
 
 const submit = () => {
     resetForm.post(password.stores().url, {
@@ -145,10 +129,10 @@ const submit = () => {
                 >
                     <div class="flex gap-1">
                         <div
-                            v-for="i in 5"
+                            v-for="i in 4"
                             :key="i"
                             class="h-1 flex-1 rounded-full transition-all duration-300"
-                            :class="getStrengthColor(i)"
+                            :class="getPasswordStrengthColor(i)"
                         />
                     </div>
                     <div

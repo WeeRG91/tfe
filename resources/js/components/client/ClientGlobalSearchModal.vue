@@ -14,6 +14,7 @@ import {
     ref,
     watch,
 } from 'vue';
+import { SearchResultEnum } from '@/types/search';
 
 const props = defineProps<{
     open: boolean;
@@ -21,8 +22,8 @@ const props = defineProps<{
 }>();
 
 const resultTypes: SearchResultType[] = [
-    { key: 'dish', label: 'Dishes' },
-    { key: 'drink', label: 'Drinks' },
+    { key: SearchResultEnum.DISH, label: 'Dishes' },
+    { key: SearchResultEnum.DRINK, label: 'Drinks' },
 ];
 
 const query = ref<string>('');
@@ -199,7 +200,14 @@ watch(flatResults, () => {
 </script>
 
 <template>
-    <Teleport to="body">
+    <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
+    >
         <div
             v-if="open"
             class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-sm transition-all duration-200"
@@ -212,7 +220,7 @@ watch(flatResults, () => {
                     <div
                         class="border-b border-gray-100 px-4 py-4 sm:px-6 sm:py-5"
                     >
-                        <div class="flex justify-between items-center gap-2">
+                        <div class="flex items-center justify-between gap-2">
                             <div
                                 class="flex items-center gap-2 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-lg font-semibold text-transparent sm:text-xl"
                             >
@@ -465,7 +473,7 @@ watch(flatResults, () => {
                 </div>
             </div>
         </div>
-    </Teleport>
+    </Transition>
 </template>
 
 <style scoped>
@@ -488,47 +496,8 @@ watch(flatResults, () => {
     background: #a8a8a8;
 }
 
-@keyframes fade-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes zoom-in-95 {
-    from {
-        transform: scale(0.95);
-    }
-    to {
-        transform: scale(1);
-    }
-}
-
-@keyframes slide-in-from-top-4 {
-    from {
-        transform: translateY(-1rem);
-    }
-    to {
-        transform: translateY(0);
-    }
-}
-
-.animate-in {
-    animation-duration: 0.2s;
-    animation-fill-mode: both;
-}
-
-.fade-in {
-    animation-name: fade-in;
-}
-
-.zoom-in-95 {
-    animation-name: zoom-in-95;
-}
-
-.slide-in-from-top-4 {
-    animation-name: slide-in-from-top-4;
+.fixed {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 </style>

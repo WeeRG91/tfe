@@ -11,6 +11,7 @@ import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { usePasswordStrength } from '@/composables/usePasswordStrength';
 import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbItems: BreadcrumbItem[] = [
@@ -22,6 +23,15 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 const currentPasswordInput = ref<HTMLInputElement | null>(null);
+
+const password = ref<string>('');
+
+const { passwordChecks, getPasswordStrengthColor } =
+    usePasswordStrength(password);
+const handlePasswordInput = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    password.value = target.value;
+};
 </script>
 
 <template>
@@ -46,6 +56,7 @@ const currentPasswordInput = ref<HTMLInputElement | null>(null);
                         'password_confirmation',
                         'current_password',
                     ]"
+                    @success="password = ''"
                     class="space-y-6"
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
@@ -57,7 +68,6 @@ const currentPasswordInput = ref<HTMLInputElement | null>(null);
                             name="current_password"
                             type="password"
                             class="mt-1 block w-full"
-                            autocomplete="current-password"
                             placeholder="Current password"
                         />
                         <InputError :message="errors.current_password" />
@@ -71,10 +81,74 @@ const currentPasswordInput = ref<HTMLInputElement | null>(null);
                             name="password"
                             type="password"
                             class="mt-1 block w-full"
-                            autocomplete="new-password"
                             placeholder="New password"
+                            @input="handlePasswordInput"
                         />
                         <InputError :message="errors.password" />
+                    </div>
+
+                    <div v-if="password.length > 0" class="space-y-2.5">
+                        <div class="flex gap-1">
+                            <div
+                                v-for="i in 4"
+                                :key="i"
+                                class="h-1 flex-1 rounded-full transition-all duration-300"
+                                :class="getPasswordStrengthColor(i)"
+                            />
+                        </div>
+                        <div
+                            class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-gray-400"
+                        >
+                            <span
+                                :class="{
+                                    'text-emerald-500': passwordChecks.length,
+                                }"
+                                class="transition-colors duration-200"
+                            >
+                                {{ passwordChecks.length ? '✓' : '○' }} 8+
+                                characters
+                            </span>
+                            <span
+                                :class="{
+                                    'text-emerald-500':
+                                        passwordChecks.uppercase,
+                                }"
+                                class="transition-colors duration-200"
+                            >
+                                {{
+                                    passwordChecks.uppercase ? '✓' : '○'
+                                }}
+                                Uppercase
+                            </span>
+                            <span
+                                :class="{
+                                    'text-emerald-500':
+                                        passwordChecks.lowercase,
+                                }"
+                                class="transition-colors duration-200"
+                            >
+                                {{
+                                    passwordChecks.lowercase ? '✓' : '○'
+                                }}
+                                Lowercase
+                            </span>
+                            <span
+                                :class="{
+                                    'text-emerald-500': passwordChecks.number,
+                                }"
+                                class="transition-colors duration-200"
+                            >
+                                {{ passwordChecks.number ? '✓' : '○' }} Number
+                            </span>
+                            <span
+                                :class="{
+                                    'text-emerald-500': passwordChecks.symbol,
+                                }"
+                                class="transition-colors duration-200"
+                            >
+                                {{ passwordChecks.symbol ? '✓' : '○' }} Symbol
+                            </span>
+                        </div>
                     </div>
 
                     <div class="grid gap-2">
@@ -86,7 +160,6 @@ const currentPasswordInput = ref<HTMLInputElement | null>(null);
                             name="password_confirmation"
                             type="password"
                             class="mt-1 block w-full"
-                            autocomplete="new-password"
                             placeholder="Confirm password"
                         />
                         <InputError :message="errors.password_confirmation" />

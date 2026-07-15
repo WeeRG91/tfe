@@ -6,6 +6,7 @@ import { OrderStatusType } from '@/types/order';
 export type UserType = {
     id: number;
     name: string;
+    avatar: string;
     email: string;
     email_verified_at: string;
     roles: RoleType[];
@@ -26,6 +27,7 @@ export type UserDetailType = {
     id: number;
     name: string;
     email: string;
+    avatar: string;
     email_verified_at: string;
     roles: RoleType[];
     permissions: PermissionType[];

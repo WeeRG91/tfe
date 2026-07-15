@@ -6,9 +6,11 @@ import { ref } from 'vue';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 import { Link, router } from '@inertiajs/vue3';
 import { login, logout } from '@/routes';
+import clientProfile from '@/routes/client-profile';
+import type { User as UserType } from '@/types/index';
 
 defineProps<{
-    user: any | null;
+    user: UserType | null;
 }>();
 
 const isUserMenuOpen = ref<boolean>(false);
@@ -45,7 +47,7 @@ useClickOutside(menuContainerRef, () => {
             class="flex items-center gap-2 rounded-lg px-2 py-1 transition-all duration-200 hover:bg-gray-100"
         >
             <div
-                class="relative h-8 w-8 overflow-hidden rounded-full bg-gradient-to-r from-red-500 to-red-600"
+                class="relative h-9 w-9 overflow-hidden rounded-full bg-gradient-to-r from-red-500 to-red-600"
             >
                 <img
                     v-if="user.avatar"
@@ -60,9 +62,6 @@ useClickOutside(menuContainerRef, () => {
                     <User class="h-4 w-4" />
                 </div>
             </div>
-            <span class="hidden text-sm font-medium text-gray-700 lg:inline">
-                {{ user.name.split(' ')[0] }}
-            </span>
         </button>
 
         <Link
@@ -86,7 +85,7 @@ useClickOutside(menuContainerRef, () => {
                     <p class="text-xs text-gray-500">{{ user.email }}</p>
                 </div>
                 <a
-                    href="#"
+                    :href="clientProfile.edit().url"
                     class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
                 >
                     <User class="h-4 w-4" />

@@ -7,13 +7,13 @@ import { useCartStore } from '@/stores/cart';
 import { useNotificationStore } from '@/stores/notification';
 import { usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { FilterNotificationEnum } from '@/types/notification';
 import { toast } from 'vue-sonner';
 import ChatBubble from '@/components/client/clientLayout/ChatBubble.vue';
 
 const page = usePage();
-const user = page.props.auth?.user;
+const user = computed(() => page.props.auth?.user);
 
 const notificationStore = useNotificationStore();
 const { notifications } = storeToRefs(notificationStore);
@@ -93,8 +93,8 @@ onMounted(async () => {
     await cartStore.getCart();
     await notificationStore.getNotifications(FilterNotificationEnum.ALL);
 
-    if (user?.id) {
-        channel.value = window.Echo.private(`user.${user?.id}`).listen(
+    if (user.value?.id) {
+        channel.value = window.Echo.private(`user.${user.value?.id}`).listen(
             '.order.updated',
             async () => {
                 await notificationStore.getNotifications(
@@ -107,7 +107,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
     if (channel.value) {
-        window.Echo.leave(`private-user.${user?.id}`);
+        window.Echo.leave(`private-user.${user.value?.id}`);
     }
 });
 </script>
@@ -143,7 +143,9 @@ onUnmounted(() => {
         <ChatBubble v-if="user" />
 
         <CartDrawer :open="isCartOpen" :onClose="closeCart" />
+
         <ClientGlobalSearchModal :open="isSearchOpen" :onClose="closeSearch" />
+
         <NotificationsDrawer
             :open="isNotificationsOpen"
             :onClose="closeNotifications"

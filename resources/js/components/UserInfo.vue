@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/composables/useInitials';
+import { getUserAvatarColor } from '@/lib/utils';
 import type { User } from '@/types';
 import { computed } from 'vue';
 
@@ -22,9 +23,12 @@ const showAvatar = computed(
 </script>
 
 <template>
-    <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
+    <Avatar class="h-9 w-9 overflow-hidden rounded-full">
         <AvatarImage v-if="showAvatar" :src="user?.avatar!" :alt="user?.name" />
-        <AvatarFallback class="rounded-lg text-black dark:text-white">
+        <AvatarFallback
+            class="rounded-full text-white"
+            :class="getUserAvatarColor(user.id)"
+        >
             {{ getInitials(user?.name) }}
         </AvatarFallback>
     </Avatar>

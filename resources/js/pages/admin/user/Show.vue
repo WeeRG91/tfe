@@ -232,7 +232,14 @@ const closeConfirmModal = () => {
                 class="flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-6 md:flex-row md:items-center md:justify-between"
             >
                 <div class="flex items-center gap-4">
+                    <img
+                        v-if="currentUser.avatar"
+                        :src="currentUser.avatar"
+                        :alt="currentUser.name"
+                        class="h-16 w-16 rounded-full object-cover"
+                    />
                     <div
+                        v-else
                         class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full text-xl font-semibold text-white"
                         :class="getUserAvatarColor(currentUser.id)"
                     >
@@ -559,7 +566,9 @@ const closeConfirmModal = () => {
                             currentUser.orders && currentUser.orders.length > 0
                         "
                     >
-                        <div class="order-scroll-container flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-1">
+                        <div
+                            class="order-scroll-container flex max-h-[400px] flex-col gap-1 overflow-y-auto pr-1"
+                        >
                             <div
                                 v-for="order in currentUser.orders"
                                 :key="order.id"
@@ -567,9 +576,13 @@ const closeConfirmModal = () => {
                             >
                                 <div class="flex flex-col gap-1">
                                     <div class="flex items-center gap-2">
-                                        <span class="font-medium text-sm">{{ order.order_number }}</span>
+                                        <span class="text-sm font-medium">{{
+                                            order.order_number
+                                        }}</span>
                                     </div>
-                                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                    <span
+                                        class="flex items-center gap-1.5 text-xs text-muted-foreground"
+                                    >
                                         <Calendar class="h-3 w-3" />
                                         {{ formatDate(order.created_at) }}
                                     </span>
@@ -611,15 +624,21 @@ const closeConfirmModal = () => {
                             currentUser.loyalty_points.length > 0
                         "
                     >
-                        <div class="points-scroll-container flex flex-col gap-1 max-h-[400px] overflow-y-auto pr-1">
+                        <div
+                            class="points-scroll-container flex max-h-[400px] flex-col gap-1 overflow-y-auto pr-1"
+                        >
                             <div
                                 v-for="transaction in currentUser.loyalty_points"
                                 :key="transaction.id"
                                 class="flex flex-col gap-2 rounded-lg border border-sidebar-border/30 bg-card p-4 transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
                             >
                                 <div class="flex flex-col gap-1">
-                                    <span class="font-medium text-sm">{{ transaction.description }}</span>
-                                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                    <span class="text-sm font-medium">{{
+                                        transaction.description
+                                    }}</span>
+                                    <span
+                                        class="flex items-center gap-1.5 text-xs text-muted-foreground"
+                                    >
                                         <Calendar class="h-3 w-3" />
                                         {{ formatDate(transaction.created_at) }}
                                     </span>
@@ -627,7 +646,8 @@ const closeConfirmModal = () => {
                                 <span
                                     class="inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold sm:mt-0"
                                     :class="
-                                        transaction.type === PointTypeEnum.EARNED
+                                        transaction.type ===
+                                        PointTypeEnum.EARNED
                                             ? 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400'
                                             : transaction.type ===
                                                 PointTypeEnum.REFUNDED
@@ -636,8 +656,10 @@ const closeConfirmModal = () => {
                                     "
                                 >
                                     {{
-                                        transaction.type === PointTypeEnum.EARNED ||
-                                        transaction.type === PointTypeEnum.REFUNDED
+                                        transaction.type ===
+                                            PointTypeEnum.EARNED ||
+                                        transaction.type ===
+                                            PointTypeEnum.REFUNDED
                                             ? '+'
                                             : '-'
                                     }}{{ transaction.points }}
@@ -656,14 +678,14 @@ const closeConfirmModal = () => {
                     <div>
                         <span class="text-muted-foreground">Created at:</span>
                         <span class="ml-2 font-medium">{{
-                                formatDate(currentUser.created_at)
-                            }}</span>
+                            formatDate(currentUser.created_at)
+                        }}</span>
                     </div>
                     <div>
                         <span class="text-muted-foreground">Last updated:</span>
                         <span class="ml-2 font-medium">{{
-                                formatDate(currentUser.updated_at)
-                            }}</span>
+                            formatDate(currentUser.updated_at)
+                        }}</span>
                     </div>
                 </div>
             </div>
