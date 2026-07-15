@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { useClickOutside } from '@/composables/useClickOutside';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import { formatDateForHumans, formatTime, getInitials, getUserAvatarColor } from '@/lib/utils';
+import {
+    formatDateForHumans,
+    formatTime,
+    getInitials,
+    getUserAvatarColor,
+} from '@/lib/utils';
 import chat from '@/routes/admin/chat';
 import message from '@/routes/admin/message';
 import user from '@/routes/admin/user';
@@ -13,6 +18,7 @@ import { Head } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
 import {
+    ArrowLeft,
     Check,
     CircleX,
     Loader,
@@ -21,7 +27,6 @@ import {
     MoreHorizontal,
     Send,
     SquarePen,
-    ArrowLeft,
     X,
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
@@ -496,7 +501,7 @@ watchDebounced(
                     >
                         <div class="flex items-center justify-between">
                             <h2
-                                class="mb-2 text-base sm:text-lg font-semibold text-foreground"
+                                class="mb-2 text-base font-semibold text-foreground sm:text-lg"
                             >
                                 {{
                                     isSearchFocused
@@ -519,10 +524,10 @@ watchDebounced(
                                 @focus="handleSearchFocus"
                                 type="text"
                                 placeholder="Search for users..."
-                                class="w-full rounded-lg border border-border bg-background px-3 sm:px-4 py-2 pl-9 sm:pl-10 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/50 focus:outline-none"
+                                class="w-full rounded-lg border border-border bg-background px-3 py-2 pl-9 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/50 focus:outline-none sm:px-4 sm:pl-10"
                             />
                             <svg
-                                class="absolute top-1/2 left-2.5 sm:left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground"
+                                class="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 transform text-muted-foreground sm:left-3"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -589,7 +594,7 @@ watchDebounced(
                                             class="flex items-center justify-between"
                                         >
                                             <h3
-                                                class="truncate font-medium text-foreground text-base"
+                                                class="truncate text-base font-medium text-foreground"
                                             >
                                                 {{ user.name }}
                                             </h3>
@@ -623,7 +628,7 @@ watchDebounced(
                                     Load more
                                     <span
                                         class="transition-transform duration-200 group-hover:translate-y-0.5"
-                                    >↓</span
+                                        >↓</span
                                     >
                                 </span>
                             </button>
@@ -631,7 +636,7 @@ watchDebounced(
 
                         <div v-else>
                             <div
-                                v-if="chats.length === 0"
+                                v-if="visibleChats.length === 0"
                                 class="flex h-full flex-col items-center justify-center p-4 text-center"
                             >
                                 <svg
@@ -664,7 +669,9 @@ watchDebounced(
                                     <div class="relative flex-shrink-0">
                                         <div
                                             class="flex h-10 w-10 items-center justify-center rounded-full"
-                                            :class="getUserAvatarColor(chat.user.id)"
+                                            :class="
+                                                getUserAvatarColor(chat.user.id)
+                                            "
                                         >
                                             <span
                                                 class="text-sm font-medium text-white"
@@ -672,8 +679,8 @@ watchDebounced(
                                                 {{
                                                     chat.user
                                                         ? getInitials(
-                                                            chat.user.name,
-                                                        )
+                                                              chat.user.name,
+                                                          )
                                                         : 'U'
                                                 }}
                                             </span>
@@ -697,7 +704,7 @@ watchDebounced(
                                             class="flex items-center justify-between gap-2"
                                         >
                                             <h3
-                                                class="truncate font-medium text-foreground text-base"
+                                                class="truncate text-base font-medium text-foreground"
                                                 :class="{
                                                     'font-semibold':
                                                         isMessageUnread(chat),
@@ -751,40 +758,41 @@ watchDebounced(
                                 class="flex items-center justify-between border-b border-sidebar-border/70 p-3 sm:p-4 dark:border-sidebar-border"
                             >
                                 <div class="flex items-center gap-3">
-                                    <!-- Back button for mobile -->
                                     <button
                                         v-if="isMobile"
                                         @click="goBackToChats"
-                                        class="p-1 -ml-1 text-foreground hover:bg-accent rounded-lg transition-colors"
+                                        class="-ml-1 rounded-lg p-1 text-foreground transition-colors hover:bg-accent"
                                     >
                                         <ArrowLeft class="h-5 w-5" />
                                     </button>
 
                                     <div
-                                        class="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-primary/10 flex-shrink-0"
+                                        class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 sm:h-9 sm:w-9"
                                     >
                                         <span
-                                            class="text-xs sm:text-sm font-medium text-primary"
+                                            class="text-xs font-medium text-primary sm:text-sm"
                                         >
                                             {{
                                                 selectedChat.user
                                                     ? getInitials(
-                                                        selectedChat.user
-                                                            .name,
-                                                    )
+                                                          selectedChat.user
+                                                              .name,
+                                                      )
                                                     : 'U'
                                             }}
                                         </span>
                                     </div>
                                     <div class="min-w-0">
-                                        <h3 class="font-medium text-foreground text-sm sm:text-base truncate">
+                                        <h3
+                                            class="truncate text-sm font-medium text-foreground sm:text-base"
+                                        >
                                             {{
                                                 selectedChat.user?.name ||
                                                 'Unknown User'
                                             }}
                                         </h3>
                                         <p
-                                            class="text-[10px] sm:text-xs text-muted-foreground truncate"
+                                            class="truncate text-[10px] text-muted-foreground sm:text-xs"
                                         >
                                             {{ selectedChat.user?.email || '' }}
                                         </p>
@@ -801,7 +809,7 @@ watchDebounced(
                                     class="flex h-full flex-col items-center justify-center text-center"
                                 >
                                     <svg
-                                        class="mb-3 h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground"
+                                        class="mb-3 h-10 w-10 text-muted-foreground sm:h-12 sm:w-12"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -838,7 +846,7 @@ watchDebounced(
                                         class="relative my-4 flex justify-center"
                                     >
                                         <span
-                                            class="rounded-full bg-muted px-3 py-1 text-[10px] sm:text-xs text-muted-foreground"
+                                            class="rounded-full bg-muted px-3 py-1 text-[10px] text-muted-foreground sm:text-xs"
                                         >
                                             {{
                                                 getDateSeparator(msg.created_at)
@@ -856,7 +864,7 @@ watchDebounced(
                                     >
                                         <div
                                             :class="[
-                                                'flex max-w-[85%] sm:max-w-[70%] flex-col',
+                                                'flex max-w-[85%] flex-col sm:max-w-[70%]',
                                                 msg.is_from_restaurant
                                                     ? 'items-end'
                                                     : 'items-start',
@@ -870,7 +878,7 @@ watchDebounced(
                                                         msg.deleted_at
                                                     )
                                                 "
-                                                class="mb-1 text-[10px] sm:text-xs text-muted-foreground"
+                                                class="mb-1 text-[10px] text-muted-foreground sm:text-xs"
                                             >
                                                 Modified at
                                                 {{ formatTime(msg.edited_at) }}
@@ -904,7 +912,7 @@ watchDebounced(
                                                             msg.deleted_at
                                                         )
                                                     "
-                                                    class="absolute top-1/2 -left-8 sm:-left-10 -translate-y-1/2 transition-opacity"
+                                                    class="absolute top-1/2 -left-8 -translate-y-1/2 transition-opacity sm:-left-10"
                                                     :class="
                                                         messageMenuId === msg.id
                                                             ? 'opacity-100'
@@ -939,7 +947,7 @@ watchDebounced(
                                                             msg.deleted_at
                                                         )
                                                     "
-                                                    class="mt-1 sm:mt-2 flex justify-end"
+                                                    class="mt-1 flex justify-end sm:mt-2"
                                                 >
                                                     <span
                                                         class="text-[10px] opacity-70"
@@ -964,7 +972,7 @@ watchDebounced(
                                         selectedChat.latest_message
                                             .is_from_restaurant
                                     "
-                                    class="flex justify-end text-[10px] sm:text-xs text-gray-400"
+                                    class="flex justify-end text-[10px] text-gray-400 sm:text-xs"
                                 >
                                     read at
                                     {{
@@ -990,8 +998,9 @@ watchDebounced(
                                             Cancel
                                         </button>
                                     </div>
-                                    <span class="text-[10px] sm:text-xs text-gray-400"
-                                    >Press Enter to save, Escape to
+                                    <span
+                                        class="text-[10px] text-gray-400 sm:text-xs"
+                                        >Press Enter to save, Escape to
                                         cancel</span
                                     >
                                 </div>
@@ -1002,7 +1011,7 @@ watchDebounced(
                                         @keydown="handleKeyDown"
                                         rows="1"
                                         placeholder="Type a message..."
-                                        class="max-h-32 min-h-[40px] sm:min-h-[44px] flex-1 resize-none rounded-lg border border-border bg-background px-3 sm:px-4 py-2 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/50 focus:outline-none"
+                                        class="max-h-32 min-h-[40px] flex-1 resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/50 focus:outline-none sm:min-h-[44px] sm:px-4"
                                         :disabled="isSending"
                                     />
                                     <button
@@ -1011,7 +1020,7 @@ watchDebounced(
                                         :disabled="
                                             !newMessage.trim() || isEditing
                                         "
-                                        class="flex items-center gap-2 rounded-lg bg-primary px-3 sm:px-4 py-2 text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                                        class="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4"
                                     >
                                         <Check
                                             v-if="!isEditing"
@@ -1019,7 +1028,7 @@ watchDebounced(
                                         />
                                         <Loader
                                             v-else
-                                            class="h-4 w-4 sm:h-5 sm:w-5 animate-spin"
+                                            class="h-4 w-4 animate-spin sm:h-5 sm:w-5"
                                         />
                                     </button>
                                     <button
@@ -1028,7 +1037,7 @@ watchDebounced(
                                         :disabled="
                                             !newMessage.trim() || isSending
                                         "
-                                        class="flex items-center gap-2 rounded-lg bg-primary px-3 sm:px-4 py-2 text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                                        class="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4"
                                     >
                                         <Send
                                             v-if="!isSending"
@@ -1036,7 +1045,7 @@ watchDebounced(
                                         />
                                         <Loader
                                             v-else
-                                            class="h-4 w-4 sm:h-5 sm:w-5 animate-spin"
+                                            class="h-4 w-4 animate-spin sm:h-5 sm:w-5"
                                         />
                                     </button>
                                 </div>
@@ -1046,17 +1055,19 @@ watchDebounced(
 
                     <template v-else>
                         <div
-                            class="flex flex-1 flex-col items-center justify-center p-6 sm:p-8 text-center"
+                            class="flex flex-1 flex-col items-center justify-center p-6 text-center sm:p-8"
                         >
                             <MessageCircleMore
-                                class="mb-4 h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground"
+                                class="mb-4 h-12 w-12 text-muted-foreground sm:h-16 sm:w-16"
                             />
                             <h3
-                                class="mb-2 text-base sm:text-lg font-semibold text-foreground"
+                                class="mb-2 text-base font-semibold text-foreground sm:text-lg"
                             >
                                 Select a Conversation
                             </h3>
-                            <p class="max-w-md text-xs sm:text-sm text-muted-foreground">
+                            <p
+                                class="max-w-md text-xs text-muted-foreground sm:text-sm"
+                            >
                                 Choose a chat from the sidebar to start
                                 messaging with your customers
                             </p>

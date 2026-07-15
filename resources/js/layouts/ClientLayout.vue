@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import CartDrawer from '@/components/client/cart/CartDrawer.vue';
 import ClientGlobalSearchModal from '@/components/client/ClientGlobalSearchModal.vue';
+import ChatBubble from '@/components/client/clientLayout/ChatBubble.vue';
 import LayoutHeader from '@/components/client/clientLayout/LayoutHeader.vue';
 import NotificationsDrawer from '@/components/client/notification/NotificationsDrawer.vue';
 import { useCartStore } from '@/stores/cart';
 import { useNotificationStore } from '@/stores/notification';
+import { FilterNotificationEnum } from '@/types/notification';
 import { usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { FilterNotificationEnum } from '@/types/notification';
 import { toast } from 'vue-sonner';
-import ChatBubble from '@/components/client/clientLayout/ChatBubble.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -91,7 +91,10 @@ const channel = ref<EchoChannel | null>(null);
 
 onMounted(async () => {
     await cartStore.getCart();
-    await notificationStore.getNotifications(FilterNotificationEnum.ALL);
+
+    if (user.value) {
+        await notificationStore.getNotifications(FilterNotificationEnum.ALL);
+    }
 
     if (user.value?.id) {
         channel.value = window.Echo.private(`user.${user.value?.id}`).listen(

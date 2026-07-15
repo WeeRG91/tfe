@@ -4,4 +4,6 @@ export enum SearchResultEnum {
     INGREDIENT = 'ingredient',
     MEAT = 'meat',
     ALLERGEN = 'allergen',
+    USER = 'user',
+    ROLE = 'role',
 }

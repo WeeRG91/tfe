@@ -10,7 +10,7 @@ import {
     RefreshCw,
     Shield,
 } from 'lucide-vue-next';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 const props = defineProps<{
@@ -33,8 +33,6 @@ const showPasswordModal = ref<boolean>(false);
 const passwordModalAction = ref<
     'enable-2fa' | 'disable-2fa' | 'regenerate-codes'
 >('enable-2fa');
-
-const isRecoveryCodesEmpty = computed(() => recoveryCodes.value.length === 0);
 
 const startSetup = () => {
     passwordModalAction.value = 'enable-2fa';

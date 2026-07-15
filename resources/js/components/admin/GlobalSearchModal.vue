@@ -7,10 +7,30 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { usePermission } from '@/composables/usePermission';
+import allergen from '@/routes/admin/allergen';
+import dish from '@/routes/admin/dish';
+import drink from '@/routes/admin/drink';
+import globalSearch from '@/routes/admin/global-search';
+import ingredient from '@/routes/admin/ingredient';
+import meat from '@/routes/admin/meat';
+import role from '@/routes/admin/role';
+import user from '@/routes/admin/user';
+import { GlobalSearchType, SearchResultType, SearchType } from '@/types';
+import {
+    AllergenPermissionEnum,
+    DishPermissionEnum,
+    DrinkPermissionEnum,
+    IngredientPermissionEnum,
+    MeatPermissionEnum,
+    RolePermissionEnum,
+    UserPermissionEnum,
+} from '@/types/permission';
+import { SearchResultEnum } from '@/types/search';
 import { router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
 import axios from 'axios';
-import { CornerDownLeft, Loader, Search, X } from 'lucide-vue-next';
+import { CornerDownLeft, Loader, Search, X, Shield } from 'lucide-vue-next';
 import {
     ComponentPublicInstance,
     computed,
@@ -20,30 +40,50 @@ import {
     ref,
     watch,
 } from 'vue';
-import dish from '@/routes/admin/dish';
-import drink from '@/routes/admin/drink';
-import ingredient from '@/routes/admin/ingredient';
-import meat from '@/routes/admin/meat';
-import allergen from '@/routes/admin/allergen';
-import globalSearch from '@/routes/admin/global-search';
-import {
-    GlobalSearchType,
-    SearchResultType,
-    SearchType,
-} from '@/types';
-import { SearchResultEnum } from '@/types/search';
 
 const props = defineProps<{
     open: boolean;
     onClose: () => void;
 }>();
 
+const { can } = usePermission();
+
 const resultTypes: SearchResultType[] = [
-    { key: SearchResultEnum.DISH, label: 'Dishes' },
-    { key: SearchResultEnum.DRINK, label: 'Drinks' },
-    { key: SearchResultEnum.INGREDIENT, label: 'Ingredients' },
-    { key: SearchResultEnum.MEAT, label: 'Meats' },
-    { key: SearchResultEnum.ALLERGEN, label: 'Allergens' },
+    {
+        key: SearchResultEnum.DISH,
+        label: 'Dishes',
+        permission: DishPermissionEnum.DISH_UPDATE,
+    },
+    {
+        key: SearchResultEnum.DRINK,
+        label: 'Drinks',
+        permission: DrinkPermissionEnum.DRINK_UPDATE,
+    },
+    {
+        key: SearchResultEnum.INGREDIENT,
+        label: 'Ingredients',
+        permission: IngredientPermissionEnum.INGREDIENT_UPDATE,
+    },
+    {
+        key: SearchResultEnum.MEAT,
+        label: 'Meats',
+        permission: MeatPermissionEnum.MEAT_UPDATE,
+    },
+    {
+        key: SearchResultEnum.ALLERGEN,
+        label: 'Allergens',
+        permission: AllergenPermissionEnum.ALLERGEN_UPDATE,
+    },
+    {
+        key: SearchResultEnum.ROLE,
+        label: 'Roles',
+        permission: RolePermissionEnum.ROLE_UPDATE,
+    },
+    {
+        key: SearchResultEnum.USER,
+        label: 'Users',
+        permission: UserPermissionEnum.USER_VIEW,
+    },
 ];
 
 const query = ref<string>('');
@@ -71,7 +111,9 @@ const flatResults = computed(() => {
 });
 
 const filteredResultTypes = computed(() => {
-    return resultTypes.filter((type) => results.value?.[type.key]?.length);
+    return resultTypes.filter(
+        (type) => can(type.permission) && results.value?.[type.key]?.length,
+    );
 });
 
 const totalResultsCount = computed(() => {
@@ -161,6 +203,12 @@ const goToEdit = (type: SearchResultEnum, id: number) => {
             break;
         case SearchResultEnum.ALLERGEN:
             router.visit(allergen.edit(id).url);
+            break;
+        case SearchResultEnum.ROLE:
+            router.visit(role.edit(id).url);
+            break;
+        case SearchResultEnum.USER:
+            router.visit(user.show(id).url);
             break;
         default:
             break;
@@ -322,11 +370,12 @@ watch(flatResults, () => {
                     >
                         <div class="flex items-center justify-center gap-3">
                             <img
-                                v-if="item.main_image"
+                                v-if="item.main_image && item.type !== SearchResultEnum.ROLE"
                                 :src="item.main_image"
                                 :alt="item.name"
                                 class="h-9 w-9 rounded object-cover"
                             />
+                            <Shield v-else class="h-9 w-9 text-gray-400" />
                             <span class="text-sm font-medium">
                                 {{ item.name }}
                             </span>

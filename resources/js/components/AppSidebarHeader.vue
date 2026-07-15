@@ -5,6 +5,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItemType } from '@/types';
 import { Search } from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref } from 'vue';
+import { usePermission } from '@/composables/usePermission';
 
 withDefaults(
     defineProps<{
@@ -14,6 +15,8 @@ withDefaults(
         breadcrumbs: () => [],
     },
 );
+
+const {canSearch} = usePermission();
 
 const openSearch = ref<boolean>(false);
 
@@ -51,7 +54,7 @@ onUnmounted(() => {
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </template>
         </div>
-        <div>
+        <div v-if="canSearch()">
             <button
                 @click="openModal"
                 class="flex items-center h-11 w-44 gap-2 rounded-md border px-3 py-2 text-sm text-muted-foreground shadow-sm transition hover:bg-muted"

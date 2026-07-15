@@ -3,9 +3,18 @@ import { CategoryOptionType } from '@/types/category';
 import { DishErrorType } from '@/types/dish';
 import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
 import { MeatErrorType, MeatOptionType } from '@/types/meat';
+import {
+    AllergenPermissionEnum,
+    DishPermissionEnum,
+    DrinkPermissionEnum,
+    IngredientPermissionEnum,
+    MeatPermissionEnum,
+    RolePermissionEnum,
+    UserPermissionEnum,
+} from '@/types/permission';
+import { SearchResultEnum } from '@/types/search';
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
-import { SearchResultEnum } from '@/types/search';
 
 export interface Auth {
     user: User;
@@ -109,6 +118,8 @@ export type GlobalSearchType = {
     ingredient: SearchType[];
     meat: SearchType[];
     allergen: SearchType[];
+    user: SearchType[];
+    role: SearchType[];
 };
 
 export type SearchType = {
@@ -122,4 +133,12 @@ export type SearchType = {
 export type SearchResultType = {
     key: SearchResultEnum;
     label: string;
+    permission:
+        | AllergenPermissionEnum
+        | DishPermissionEnum
+        | DrinkPermissionEnum
+        | IngredientPermissionEnum
+        | MeatPermissionEnum
+        | RolePermissionEnum
+        | UserPermissionEnum;
 };

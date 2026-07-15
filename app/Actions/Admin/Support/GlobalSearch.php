@@ -7,8 +7,10 @@ use App\Models\Dish;
 use App\Models\Drink;
 use App\Models\Ingredient;
 use App\Models\Meat;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
 
 class GlobalSearch
 {
@@ -18,7 +20,26 @@ class GlobalSearch
         'ingredient' => Ingredient::class,
         'meat' => Meat::class,
         'allergen' => Allergen::class,
+        'user' => User::class,
+        'role' => Role::class,
     ];
+
+    /**
+     * @param $item
+     * @return string
+     */
+    private function getImage($item): string
+    {
+        if (isset($item->main_image) && $item->main_image) {
+            return Storage::disk('public')->url($item->main_image);
+        }
+
+        if (isset($item->avatar) && $item->avatar) {
+            return Storage::disk('public')->url($item->avatar->path);
+        }
+
+        return Storage::disk('public')->url('images/picture.png');
+    }
 
     /**
      * @param string $type
@@ -31,9 +52,7 @@ class GlobalSearch
             'type' => $type,
             'id' => $item->id,
             'name' => $item->name,
-            'main_image' => $item->main_image
-                ? Storage::disk('public')->url($item->main_image)
-                : Storage::disk('public')->url('/images/picture.png'),
+            'main_image' => $this->getImage($item),
         ])->toArray();
     }
 
