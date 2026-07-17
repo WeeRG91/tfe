@@ -8,6 +8,7 @@ use App\Actions\Client\Drink\Queries\GetDrinks;
 use App\Enums\DishCategoryEnum;
 use App\Enums\DrinkCategoryEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Client\Dish\DishDetailResource;
 use App\Models\Dish;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

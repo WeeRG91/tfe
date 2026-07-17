@@ -11,6 +11,7 @@ use App\Http\Controllers\Client\NotificationController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\Client\RatingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -43,6 +44,10 @@ Route::controller(ClientGlobalSearchController::class)->prefix('client-global-se
 
 Route::controller(PaymentController::class)->prefix('payments')->name('payment-order.')->group(function () {
     Route::post('/stripe/webhook', 'stripeWebhook')->name('stripe-webhook');
+});
+
+Route::controller(RatingController::class)->prefix('ratings')->name('rating.')->group(function () {
+    Route::get('/{dish}/get-reviews', 'getReviews')->name('get-reviews');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -98,6 +103,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::controller(ProfileController::class)->prefix('client-profile')->name('client-profile.')->group(function () {
         Route::get('/edit', 'edit')->name('edit');
+    });
+
+    Route::controller(RatingController::class)->prefix('ratings')->name('rating.')->group(function () {
+        Route::post('/{dish}/store', 'store')->name('store');
+        Route::patch('/{rating}/update', 'update')->name('update');
+        Route::delete('/{rating}', 'destroy')->name('destroy');
     });
 });
 

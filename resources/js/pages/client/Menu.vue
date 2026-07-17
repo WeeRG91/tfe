@@ -4,18 +4,23 @@ import DishCard from '@/components/client/menu/DishCard.vue';
 import DishCardSkeleton from '@/components/client/menu/DishCardSkeleton.vue';
 import EmptyDishList from '@/components/client/menu/EmptyDishList.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
+import { useDishStore } from '@/stores/dish';
 import { CategoryOptionType } from '@/types/category';
 import { ClientDishType } from '@/types/dish';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { ReviewResultType } from '@/types/rating';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
 }>();
 
-const dishes = ref<ClientDishType[]>([]);
+const dishStore = useDishStore();
+const { dishes } = storeToRefs(dishStore);
+
 const selectedCategory = ref<number | null>(null);
 const isLoading = ref<boolean>(false);
 const hasLoaded = ref<boolean>(false);
@@ -39,7 +44,8 @@ const loadingDishes = async () => {
                 params: { category: selectedCategory.value },
             },
         );
-        dishes.value = response.data;
+
+        dishStore.setDishes(response.data);
     } catch (error) {
         console.log(error);
         toast.error('Failed to load more dishes.');
@@ -49,12 +55,36 @@ const loadingDishes = async () => {
     }
 };
 
+type EcoChannel = {
+    listen: (
+        event: string,
+        callback: (e: ReviewResultType) => void,
+    ) => EcoChannel;
+};
+
+const channel = ref<EcoChannel | null>(null);
+
 onMounted(() => {
     loadingDishes();
+
+    channel.value = window.Echo.channel('dish.rating').listen(
+        '.dish-rating',
+        async (e: ReviewResultType) => {
+            dishStore.updateDishRating(
+                e.dish_id,
+                e.rating_average,
+                e.rating_count,
+            );
+        },
+    );
 });
 
 watch(selectedCategory, () => {
     loadingDishes();
+
+    if (channel.value) {
+        window.Echo.leave('dish.rating');
+    }
 });
 </script>
 

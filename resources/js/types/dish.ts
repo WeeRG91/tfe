@@ -50,6 +50,8 @@ export type ClientDishType = {
         extra_price: number;
         main_image: string;
     }[];
+    rating_average: number;
+    rating_count: number;
 };
 
 export enum DishAvailabilityEnum {

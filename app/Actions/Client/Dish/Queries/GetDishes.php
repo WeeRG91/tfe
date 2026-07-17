@@ -17,7 +17,13 @@ class GetDishes extends BaseCursorPagination
     public function execute(Request $request): AnonymousResourceCollection
     {
         $query = Dish::query()
-            ->with(['ingredients.allergen', 'meats']);
+            ->with([
+                'ingredients.allergen',
+                'meats',
+                'ratings',
+            ])
+            ->withAvg('ratings', 'rating')
+            ->withCount('ratings');
 
         $dishes = $this->filters($query, $request)->get();
 

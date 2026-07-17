@@ -89,4 +89,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(LoyaltyPointTransaction::class);
     }
+
+    public function dishRatings(): HasMany
+    {
+        return $this->hasMany(DishRating::class);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\DishCategoryEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -55,5 +56,10 @@ class Dish extends Model
     public function notifications(): MorphMany
     {
         return $this->morphMany(Notification::class, 'notifiable');
+    }
+
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(DishRating::class);
     }
 }

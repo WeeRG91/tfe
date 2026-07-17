@@ -6,7 +6,6 @@ use App\Enums\OrderStatusEnum;
 use App\Http\Resources\Admin\Permission\PermissionResource;
 use App\Http\Resources\Admin\Role\RoleResource;
 use App\Http\Resources\Client\LoyaltyPointTransaction\LoyaltyPointTransactionResource;
-use App\Http\Resources\Client\Order\OrderResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;

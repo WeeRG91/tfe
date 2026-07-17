@@ -113,7 +113,7 @@ const handleLogout = () => {
                                 <div class="rounded-lg bg-gray-100 p-2">
                                     <User class="h-5 w-5" />
                                 </div>
-                                <span class="font-medium">Profile</span>
+                                <span class="font-medium">My Profile</span>
                             </a>
 
                             <a

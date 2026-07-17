@@ -49,6 +49,8 @@ class DishResource extends JsonResource
                     ? Storage::disk('public')->url($meat->main_image)
                     : Storage::disk('public')->url('/images/picture.png'),
             ]),
+            'rating_average' => round($this->ratings_avg_rating ?? 0, 1),
+            'rating_count' => $this->ratings_count ?? 0,
         ];
     }
 }
