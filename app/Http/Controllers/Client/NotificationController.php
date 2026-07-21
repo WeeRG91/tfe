@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Actions\Client\Notification\Commands\DeleteAllNotifications;
+use App\Actions\Client\Notification\Commands\DeleteNotification;
+use App\Actions\Client\Notification\Commands\MarkAllAsRead;
+use App\Actions\Client\Notification\Commands\MarkAsRead;
+use App\Actions\Client\Notification\Queries\GetNotifications;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Client\Notification\NotificationResource;
 use App\Models\Notification;
@@ -19,22 +24,15 @@ class NotificationController extends Controller
 
     /**
      * @param Request $request
+     * @param GetNotifications $getNotifications
      * @return JsonResponse
      */
-    public function getNotifications(Request $request): JsonResponse
+    public function getNotifications(Request $request, GetNotifications $getNotifications): JsonResponse
     {
-        $filter = $request->filter;
-
-        $notifications = Notification::query()
-            ->where('user_id', auth()->id())
-            ->when($filter !== 'all', function ($query) use ($filter) {
-                match ($filter) {
-                    'read' => $query->whereNotNull('read_at'),
-                    'unread' => $query->whereNull('read_at'),
-                };
-            })
-            ->orderBy('created_at', 'desc')
-            ->cursorPaginate(10);
+        $notifications = $getNotifications->execute(
+            auth()->user(),
+            $request->input('filter', 'all')
+        );
 
         return response()->json([
             'data' => NotificationResource::collection($notifications)->collection,
@@ -49,49 +47,46 @@ class NotificationController extends Controller
 
     /**
      * @param Notification $notification
+     * @param MarkAsRead $markAsRead
      * @return JsonResponse
      */
-    public function markAsRead(Notification $notification): JsonResponse
+    public function markAsRead(Notification $notification, MarkAsRead $markAsRead): JsonResponse
     {
-        if (!$notification->read_at) {
-            $notification->update(['read_at' => now()]);
-        }
+        $notification = $markAsRead->execute($notification);
 
         return response()->json(new NotificationResource($notification));
     }
 
     /**
+     * @param MarkAllAsRead $markAllAsRead
      * @return HttpResponse
      */
-    public function markAllAsRead(): HttpResponse
+    public function markAllAsRead(MarkAllAsRead $markAllAsRead): HttpResponse
     {
-        Notification::query()
-            ->where('user_id', auth()->id())
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+        $markAllAsRead->execute(auth()->user());
 
         return response()->noContent();
     }
 
     /**
      * @param Notification $notification
+     * @param DeleteNotification $deleteNotification
      * @return HttpResponse
      */
-    public function delete(Notification $notification): HttpResponse
+    public function delete(Notification $notification, DeleteNotification $deleteNotification): HttpResponse
     {
-        $notification->delete();
+        $deleteNotification->execute($notification);
 
         return response()->noContent();
     }
 
     /**
+     * @param DeleteAllNotifications $deleteAllNotifications
      * @return HttpResponse
      */
-    public function deleteAll(): HttpResponse
+    public function deleteAll(DeleteAllNotifications $deleteAllNotifications): HttpResponse
     {
-        Notification::query()
-            ->where('user_id', auth()->id())
-            ->delete();
+        $deleteAllNotifications->execute(auth()->user());
 
         return response()->noContent();
     }

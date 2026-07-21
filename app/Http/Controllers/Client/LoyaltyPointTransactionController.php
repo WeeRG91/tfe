@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Enums\LoyaltyPointTransactionTypeEnum;
+use App\Actions\Client\LoyaltyPointTransaction\Queries\GetLoyaltyPointTransactions;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Client\LoyaltyPointTransaction\LoyaltyPointTransactionResource;
 use App\Models\LoyaltyPointTransaction;
@@ -30,32 +30,27 @@ class LoyaltyPointTransactionController extends Controller
 
     /**
      * @param Request $request
+     * @param GetLoyaltyPointTransactions $getLoyaltyPointTransactions
      * @return JsonResponse
      */
-    public function getLoyaltyPointTransactions(Request $request): JsonResponse
+    public function getLoyaltyPointTransactions(
+        Request $request,
+        GetLoyaltyPointTransactions $getLoyaltyPointTransactions
+    ): JsonResponse
     {
-        $filter = $request->filter;
-
-        $loyaltyPointTransactions = LoyaltyPointTransaction::query()
-            ->where('user_id', auth()->user()->id)
-            ->when($filter !== 'all', function ($query) use ($filter) {
-                match ($filter) {
-                    'earned' => $query->where('type', LoyaltyPointTransactionTypeEnum::EARNED),
-                    'redeemed' => $query->where('type', LoyaltyPointTransactionTypeEnum::REDEEMED),
-                    'refunded' => $query->where('type', LoyaltyPointTransactionTypeEnum::REFUNDED),
-                };
-            })
-            ->orderBy('created_at', 'desc')
-            ->cursorPaginate(10);
+        $transactions = $getLoyaltyPointTransactions->execute(
+            auth()->id(),
+            $request->input('filter', 'all')
+        );
 
         return response()->json([
-            'data' => LoyaltyPointTransactionResource::collection($loyaltyPointTransactions)->collection,
-            'path' => $loyaltyPointTransactions->path(),
-            'per_page' => $loyaltyPointTransactions->perPage(),
-            'next_cursor' => $loyaltyPointTransactions->nextCursor()?->encode(),
-            'next_page_url' => $loyaltyPointTransactions->nextPageUrl(),
-            'prev_cursor' => $loyaltyPointTransactions->previousCursor()?->encode(),
-            'prev_page_url' => $loyaltyPointTransactions->previousPageUrl(),
+            'data' => LoyaltyPointTransactionResource::collection($transactions)->collection,
+            'path' => $transactions->path(),
+            'per_page' => $transactions->perPage(),
+            'next_cursor' => $transactions->nextCursor()?->encode(),
+            'next_page_url' => $transactions->nextPageUrl(),
+            'prev_cursor' => $transactions->previousCursor()?->encode(),
+            'prev_page_url' => $transactions->previousPageUrl(),
         ]);
     }
 }

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\Auth\ChangedEmailVerification\Commands\ResendChangedEmailVerificationLink;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Notifications\ChangedEmailVerificationNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Throwable;
 
@@ -26,7 +25,7 @@ class ChangedEmailVerificationController extends Controller
         return Inertia::render('auth/changed-email-verification/Expired');
     }
 
-    public function resend(Request $request)
+    public function resend(Request $request, ResendChangedEmailVerificationLink $resendChangedEmailVerificationLink)
     {
         $validated = $request->validate([
             'email' => ['required', 'email', 'exists:users,email'],
@@ -45,15 +44,7 @@ class ChangedEmailVerificationController extends Controller
                 return back()->withErrors(['error' => 'Email already verified. Please try to login your account.']);
             }
 
-            $url = URL::temporarySignedRoute(
-                'verify-changed-email.store',
-                now()->addDay(),
-                [
-                    'user' => $user->id,
-                ]
-            );
-
-            $user->notify(new ChangedEmailVerificationNotification($url));
+            $resendChangedEmailVerificationLink->execute($user);
 
             return back()->with(
                 'message',

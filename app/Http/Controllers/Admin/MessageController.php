@@ -2,126 +2,131 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Message\Commands\DeleteMessage;
+use App\Actions\Admin\Message\Commands\MarkAsRead;
+use App\Actions\Admin\Message\Commands\SendMessage;
+use App\Actions\Admin\Message\Commands\UnsendMessage;
+use App\Actions\Admin\Message\Commands\UpdateMessage;
 use App\Events\MessageSentBroadcast;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Chat\MessageResource;
 use App\Models\Chat;
 use App\Models\Message;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 
 class MessageController extends Controller
 {
-    public function send(Request $request, Chat $chat)
+    /**
+     * @param Request $request
+     * @param Chat $chat
+     * @param SendMessage $sendMessage
+     * @return JsonResponse
+     */
+    public function send(
+        Request $request,
+        Chat $chat,
+        SendMessage $sendMessage,
+    ): JsonResponse
     {
         $validated = $request->validate([
             'content' => 'required|string|max:2000',
         ]);
 
-        $user = auth()->user();
-
-        $message = Message::query()->create([
-            'chat_id' => $chat->id,
-            'sender_id' => $user->id,
-            'is_from_restaurant' => true,
-            'content' => $validated['content'],
-        ]);
-
-        $chat->update([
-            'last_message_at' => now(),
-        ]);
-
-        event(new MessageSentBroadcast($message, $user));
+        $message = $sendMessage->execute(
+            auth()->user(),
+            $chat,
+            $validated['content']
+        );
 
         return response()->json(new MessageResource($message));
     }
 
-    public function unsend(Message $message)
+    /**
+     * @param Message $message
+     * @param UnsendMessage $unsendMessage
+     * @return JsonResponse
+     */
+    public function unsend(Message $message, UnsendMessage $unsendMessage): JsonResponse
     {
-        $user = auth()->user();
-
         if ($message->sender_id !== auth()->user()->id) {
-            abort(403);
+            return response()->json([
+                'error' => 'Unauthorized'
+            ], 403);
         }
 
-        $message->update([
-            'unsent_at' => now(),
-        ]);
-
-        $message->load('sender');
-
-        event(new MessageSentBroadcast($message, $user));
+        $message = $unsendMessage->execute(
+            auth()->user(),
+            $message
+        );
 
         return response()->json(new MessageResource($message));
     }
 
     /**
      * @param Chat $chat
+     * @param MarkAsRead $markAsRead
      * @return HttpResponse
      */
-    public function markAsRead(Chat $chat): HttpResponse
+    public function markAsRead(Chat $chat, MarkAsRead $markAsRead): HttpResponse
     {
-        $user = auth()->user();
-
-        $messages = Message::query()
-            ->where('chat_id', $chat->id)
-            ->where('is_from_restaurant', false)
-            ->whereNull('read_at')
-            ->get();
-
-        foreach ($messages as $message) {
-            $message->update([
-                'read_at' => now(),
-            ]);
-        }
-
-        $message = Message::query()
-            ->where('chat_id', $chat->id)
-            ->latest()
-            ->first();
-
-        event(new MessageSentBroadcast($message, $user));
+        $markAsRead->execute(
+            auth()->user(),
+            $chat
+        );
 
         return response()->noContent();
     }
 
-    public function update(Request $request, Message $message)
+    /**
+     * @param Request $request
+     * @param Message $message
+     * @param UpdateMessage $updateMessage
+     * @return JsonResponse
+     */
+    public function update(
+        Request $request,
+        Message $message,
+        UpdateMessage $updateMessage
+    ): JsonResponse
     {
-        $user = auth()->user();
-
         if ($message->sender_id !== auth()->user()->id) {
-            abort(403);
+            return response()->json([
+                'error' => 'Unauthorized.'
+            ], 403);
         }
 
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:2000'],
         ]);
 
-        $message->update([
-            'content' => $validated['content'],
-            'edited_at' => now(),
-        ]);
-
-        $message->load('sender');
-
-        event(new MessageSentBroadcast($message, $user));
+        $message = $updateMessage->execute(
+            auth()->user(),
+            $message,
+            $validated['content']
+        );
 
         return response()->json(new MessageResource($message));
     }
 
-    public function destroy(Message $message)
+    /**
+     * @param Message $message
+     * @param DeleteMessage $deleteMessage
+     * @return JsonResponse
+     */
+    public function destroy(Message $message, DeleteMessage $deleteMessage): JsonResponse
     {
-        $user = auth()->user();
-
         if ($message->sender_id !== auth()->user()->id) {
-            abort(403);
+            return response()->json([
+                'error' => 'Unauthorized.'
+            ], 403);
         }
 
-        $message->delete();
-
-        $message->load('sender');
-
-        event(new MessageSentBroadcast($message, $user));
+        $message = $deleteMessage->execute(
+            auth()->user(),
+            $message
+        );
 
         return response()->json(new MessageResource($message));
     }

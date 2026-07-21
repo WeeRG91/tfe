@@ -2,48 +2,60 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Events\MessageSentBroadcast;
+use App\Actions\Admin\Chat\Commands\CreateChat;
+use App\Actions\Admin\Chat\Queries\GetChatMessages;
+use App\Actions\Admin\Chat\Queries\GetChats;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Chat\ChatResource;
 use App\Http\Resources\Admin\Chat\MessageResource;
 use App\Models\Chat;
-use App\Models\Message;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Http\JsonResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ChatController extends Controller
 {
-    public function create(User $user)
+    /**
+     * @param User $user
+     * @param CreateChat $createChat
+     * @return JsonResponse
+     */
+    public function create(User $user, CreateChat $createChat): JsonResponse
     {
-        $chat = Chat::query()->firstOrCreate([
-            'user_id' => $user->id,
-        ]);
-
-        $chat->load('user', 'latestMessage');
+        $chat = $createChat->execute($user);
 
         return response()->json(new ChatResource($chat));
     }
 
-    public function chats()
+    /**
+     * @return Response
+     */
+    public function chats(): Response
     {
         return Inertia::render('admin/chat/Chat');
     }
 
-    public function getChats()
+    /**
+     * @param GetChats $getChats
+     * @return JsonResponse
+     */
+    public function getChats(GetChats $getChats): JsonResponse
     {
-        $chats = Chat::with(['user', 'latestMessage'])
-            ->orderByDesc('last_message_at')
-            ->get();
+        $chats = $getChats->execute();
 
-        return response()->json(ChatResource::collection($chats)->collection);
+        return response()->json(ChatResource::collection($chats));
     }
 
-    public function getChatMessages(Chat $chat)
+    /**
+     * @param Chat $chat
+     * @param GetChatMessages $getChatMessages
+     * @return JsonResponse
+     */
+    public function getChatMessages(Chat $chat, GetChatMessages $getChatMessages): JsonResponse
     {
         return response()->json(
-            MessageResource::collection($chat->messages()->with('sender')->withTrashed()->latest()->take(50)->get()->reverse())
+            MessageResource::collection($getChatMessages->execute($chat))
         );
     }
 }

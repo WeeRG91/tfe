@@ -2,6 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\User\Commands\CreateUser;
+use App\Actions\Admin\User\Commands\DeleteUser;
+use App\Actions\Admin\User\Commands\InactivateUser;
+use App\Actions\Admin\User\Commands\ReactivateUser;
+use App\Actions\Admin\User\Commands\UpdateUser;
+use App\Actions\Admin\User\Queries\GetCreateUserData;
+use App\Actions\Admin\User\Queries\GetUpdateUserData;
+use App\Actions\Admin\User\Queries\GetUser;
+use App\Actions\Admin\User\Queries\GetUsers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\CreateUserRequest;
 use App\Http\Requests\Admin\User\UpdateUserRequest;
@@ -11,48 +20,35 @@ use App\Http\Resources\Admin\User\EditUserResource;
 use App\Http\Resources\Admin\User\UserDetailResource;
 use App\Http\Resources\Admin\User\UserResource;
 use App\Models\User;
-use App\Notifications\AccountActivationNotification;
-use App\Notifications\ChangedEmailVerificationNotification;
-use App\Notifications\ReactivateAccountNotification;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use Inertia\Response;
 use Throwable;
 
 class UserController extends Controller
 {
-    public function index()
+    /**
+     * @return Response
+     */
+    public function index(): Response
     {
         $this->authorize('viewAny', User::class);
 
         return Inertia::render('admin/user/Index');
     }
 
-    public function getUsers(Request $request)
+    /**
+     * @param Request $request
+     * @param GetUsers $getUsers
+     * @return JsonResponse
+     */
+    public function getUsers(Request $request, GetUsers $getUsers): JsonResponse
     {
         $this->authorize('viewAny', User::class);
 
-        $users = User::withTrashed()
-            ->with('roles')
-            ->where('name', '!=', 'Super Admin')
-            ->when($request->search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%")
-                        ->orWhere('email', 'like', "%$search%");
-                });
-            })
-            ->when($request->filter, function ($query, $filter) {
-                match ($filter) {
-                    'active' => $query->withoutTrashed(),
-                    'inactive' => $query->onlyTrashed(),
-                    default => null,
-                };
-            })
-            ->orderBy('name')
-            ->cursorPaginate(8);
+        $users = $getUsers->execute($request);
 
         return response()->json([
             'data' => UserResource::collection($users)->collection,
@@ -65,64 +61,51 @@ class UserController extends Controller
         ]);
     }
 
-    public function show(User $user)
+    /**
+     * @param User $user
+     * @param GetUser $getUser
+     * @return Response
+     */
+    public function show(User $user, GetUser $getUser): Response
     {
         $this->authorize('view', $user);
 
-        $user->load(['roles', 'roles.permissions', 'permissions', 'loyaltyPointTransactions', 'orders']);
-
         return Inertia::render('admin/user/Show', [
-            'currentUser' => new UserDetailResource($user),
+            'currentUser' => new UserDetailResource(
+                $getUser->execute($user)
+            ),
         ]);
     }
 
-    public function create()
+    /**
+     * @param GetCreateUserData $getCreateUserData
+     * @return Response
+     */
+    public function create(GetCreateUserData $getCreateUserData): Response
     {
         $this->authorize('create', User::class);
 
-        $roles = Role::with('permissions')
-            ->whereNot('name', 'Super Admin')
-            ->orderBy('name')
-            ->get();
-
-        $permissions = Permission::query()
-            ->orderBy('category')
-            ->orderBy('name')
-            ->get();
+        $results = $getCreateUserData->execute();
 
         return Inertia::render('admin/user/Create', [
-            'roles' => RoleResource::collection($roles)->collection,
-            'permissions' => PermissionResource::collection($permissions)->collection,
+            'roles' => RoleResource::collection($results['roles'])->collection,
+            'permissions' => PermissionResource::collection($results['permissions'])->collection,
         ]);
     }
 
-    public function store(CreateUserRequest $request)
+    /**
+     * @param CreateUserRequest $request
+     * @param CreateUser $createUser
+     * @return RedirectResponse
+     */
+    public function store(CreateUserRequest $request, CreateUser $createUser): RedirectResponse
     {
         $this->authorize('create', User::class);
 
         try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-            ]);
-
-            if ($request->filled('role')) {
-                $user->assignRole($request->role);
-            }
-
-            if ($request->filled('permissions')) {
-                $user->syncPermissions($request->permissions);
-            }
-
-            $url = URL::temporarySignedRoute(
-                'activate.show',
-                now()->addDay(),
-                [
-                    'user' => $user->id,
-                ]
+            $createUser->execute(
+                $request->validated()
             );
-
-            $user->notify(new AccountActivationNotification($url));
 
             return redirect()->route('admin.user.index');
         } catch (Throwable $e) {
@@ -132,68 +115,43 @@ class UserController extends Controller
         }
     }
 
-    public function edit(User $user)
+    /**
+     * @param User $user
+     * @param GetUpdateUserData $getUpdateUserData
+     * @return Response
+     */
+    public function edit(User $user, GetUpdateUserData $getUpdateUserData): Response
     {
         $this->authorize('update', $user);
 
-        $user->load(['roles', 'roles.permissions', 'permissions',]);
-
-        $roles = Role::with('permissions')
-            ->whereNot('name', 'Super Admin')
-            ->orderBy('name')
-            ->get();
-
-        $permissions = Permission::query()
-            ->orderBy('category')
-            ->orderBy('name')
-            ->get();
+        $results = $getUpdateUserData->execute($user);
 
         return Inertia::render('admin/user/Edit', [
-            'userToEdit' => new EditUserResource($user),
-            'roles' => RoleResource::collection($roles)->collection,
-            'permissions' => PermissionResource::collection($permissions)->collection,
+            'userToEdit' => new EditUserResource($results['user']),
+            'roles' => RoleResource::collection($results['roles'])->collection,
+            'permissions' => PermissionResource::collection($results['permissions'])->collection,
         ]);
     }
 
-    public function update(UpdateUserRequest $request, User $user)
+    /**
+     * @param UpdateUserRequest $request
+     * @param User $user
+     * @param UpdateUser $updateUser
+     * @return RedirectResponse
+     */
+    public function update(
+        UpdateUserRequest $request,
+        User $user,
+        UpdateUser $updateUser
+    ): RedirectResponse
     {
         $this->authorize('update', $user);
 
         try {
-            $emailChanged = $user->email !== $request->email;
-
-            $user->name = $request->name;
-            $user->email = $request->email;
-
-            if ($request->filled('password')) {
-                $user->password = Hash::make($request->password);
-            }
-
-            if ($emailChanged) {
-                $user->email_verified_at = null;
-            }
-
-            $user->save();
-
-            if ($request->filled('role')) {
-                $user->assignRole($request->role);
-            }
-
-            if ($request->filled('permissions')) {
-                $user->syncPermissions($request->permissions);
-            }
-
-            if ($emailChanged) {
-                $url = URL::temporarySignedRoute(
-                    'verify-changed-email.store',
-                    now()->addDay(),
-                    [
-                        'user' => $user->id,
-                    ]
-                );
-
-                $user->notify(new ChangedEmailVerificationNotification($url));
-            }
+            $updateUser->execute(
+                $user,
+                $request->validated()
+            );
 
             return redirect()->route('admin.user.index');
         } catch (Throwable $e) {
@@ -203,28 +161,17 @@ class UserController extends Controller
         }
     }
 
-    public function inactivate(User $user)
+    /**
+     * @param User $user
+     * @param InactivateUser $inactivateUser
+     * @return JsonResponse|RedirectResponse
+     */
+    public function inactivate(User $user, InactivateUser $inactivateUser): JsonResponse|RedirectResponse
     {
         $this->authorize('update', $user);
 
         try {
-            if ($user->hasRole('Super Admin') || $user->name === 'Super Admin') {
-                return response()->json([
-                    'message' => "You can't inactivate super admin user.",
-                ]);
-            }
-
-            if ($user->trashed()) {
-                return response()->json([
-                    'message' => 'User is already inactive.',
-                ]);
-            }
-
-            $user->forceFill([
-                'email_verified_at' => null,
-            ])->save();
-
-            $user->delete();
+            $inactivateUser->execute($user);
 
             return response()->json([
                 'message' => "User inactivated successfully",
@@ -236,26 +183,17 @@ class UserController extends Controller
         }
     }
 
-    public function reactivate(User $user)
+    /**
+     * @param User $user
+     * @param ReactivateUser $reactivateUser
+     * @return JsonResponse|RedirectResponse
+     */
+    public function reactivate(User $user, ReactivateUser $reactivateUser): JsonResponse|RedirectResponse
     {
         $this->authorize('update', $user);
 
         try {
-            if (!$user->trashed()) {
-                return response()->json([
-                    'message' => 'User is already active.',
-                ], 409);
-            }
-
-            $url = URL::temporarySignedRoute(
-                'reactivate.reactivate',
-                now()->addDay(),
-                [
-                    'user' => $user->id,
-                ]
-            );
-
-            $user->notify(new ReactivateAccountNotification($url));
+            $reactivateUser->execute($user);
 
             return response()->json([
                 'message' => "Reactivation link sent successfully",
@@ -267,21 +205,17 @@ class UserController extends Controller
         }
     }
 
-    public function destroy(User $user)
+    /**
+     * @param User $user
+     * @param DeleteUser $deleteUser
+     * @return JsonResponse|RedirectResponse
+     */
+    public function destroy(User $user, DeleteUser $deleteUser): JsonResponse|RedirectResponse
     {
         $this->authorize('delete', $user);
 
         try {
-            if ($user->hasRole('Super Admin') || $user->name === 'Super Admin') {
-                return response()->json([
-                    'message' => "You can't delete super admin user.",
-                ]);
-            }
-
-            $user->syncRoles([]);
-            $user->syncPermissions([]);
-
-            $user->forceDelete();
+            $deleteUser->execute($user);
 
             return response()->json([
                 'message' => "User deleted permanently",

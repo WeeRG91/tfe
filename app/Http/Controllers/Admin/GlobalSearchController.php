@@ -16,9 +16,11 @@ class GlobalSearchController extends Controller
      */
     public function search(Request $request, GlobalSearch $search): JsonResponse
     {
-        $query = $request->get('query');
+        $data = $request->validate([
+            'query' => ['required', 'string', 'max:255'],
+        ]);
 
-        $results = $search->execute($query);
+        $results = $search->execute($data['query']);
 
         return response()->json([
             'results' => $results,

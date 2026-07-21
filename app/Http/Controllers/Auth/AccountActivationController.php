@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\Auth\Account\Commands\ActivateAccount;
+use App\Actions\Auth\Account\Commands\ReactivateAccount;
+use App\Actions\Auth\Account\Commands\ResendReactivationLink;
+use App\Actions\Auth\Account\Commands\SendActivationLink;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ActivateAccountRequest;
 use App\Models\User;
-use App\Notifications\AccountActivationNotification;
-use App\Notifications\ReactivateAccountNotification;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
+use Inertia\Response;
 use Throwable;
 
 class AccountActivationController extends Controller
 {
-    public function show(User $user)
+    /**
+     * @param User $user
+     * @return RedirectResponse|Response
+     */
+    public function show(User $user): RedirectResponse|Response
     {
         if ($user->hasVerifiedEmail()) {
             return redirect()->route('login');
@@ -31,20 +36,24 @@ class AccountActivationController extends Controller
         ]);
     }
 
-    public function store(ActivateAccountRequest $request, User $user)
+    /**
+     * @param ActivateAccountRequest $request
+     * @param User $user
+     * @param ActivateAccount $activateAccount
+     * @return RedirectResponse
+     */
+    public function store(
+        ActivateAccountRequest $request,
+        User $user,
+        ActivateAccount $activateAccount
+    ): RedirectResponse
     {
         try {
-            if (!$user->hasVerifiedEmail()) {
-                $user->markEmailAsVerified();
-            }
-
-            $user->password = Hash::make($request->password);
-
-            $user->save();
-
-            Auth::login($user);
-
-            $request->session()->regenerate();
+            $activateAccount->execute(
+                $user,
+                $request->password,
+                $request
+            );
 
             return redirect()->route('home');
         } catch (Throwable $e) {
@@ -54,12 +63,20 @@ class AccountActivationController extends Controller
         }
     }
 
-    public function expiredActivation()
+    /**
+     * @return Response
+     */
+    public function expiredActivation(): Response
     {
         return Inertia::render('auth/account-activation/Expired');
     }
 
-    public function resendActivation(Request $request)
+    /**
+     * @param Request $request
+     * @param SendActivationLink $sendActivationLink
+     * @return RedirectResponse
+     */
+    public function resendActivation(Request $request, SendActivationLink $sendActivationLink): RedirectResponse
     {
         $validated = $request->validate([
             'email' => ['required', 'email', 'exists:users,email'],
@@ -78,15 +95,7 @@ class AccountActivationController extends Controller
                 return back()->withErrors(['error' => 'User already activated. Please try to login your account.']);
             }
 
-            $url = URL::temporarySignedRoute(
-                'activate.show',
-                now()->addDay(),
-                [
-                    'user' => $user->id,
-                ]
-            );
-
-            $user->notify(new AccountActivationNotification($url));
+           $sendActivationLink->execute($user);
 
             return back()->with(
                 'message',
@@ -99,22 +108,23 @@ class AccountActivationController extends Controller
         }
     }
 
-    public function reactivate(Request $request, User $user)
+    /**
+     * @param Request $request
+     * @param User $user
+     * @param ReactivateAccount $reactivateAccount
+     * @return RedirectResponse
+     */
+    public function reactivate(
+        Request $request,
+        User $user,
+        ReactivateAccount $reactivateAccount
+    ): RedirectResponse
     {
         try {
-            if (!$user->trashed()) {
-                return redirect()->route('login');
-            }
-
-            $user->restore();
-
-            if (!$user->hasVerifiedEmail()) {
-                $user->markEmailAsVerified();
-            }
-
-            Auth::login($user);
-
-            $request->session()->regenerate();
+            $reactivateAccount->execute(
+                $user,
+                $request
+            );
 
             return redirect()->route('home');
         } catch (Throwable $e) {
@@ -124,12 +134,20 @@ class AccountActivationController extends Controller
         }
     }
 
-    public function expiredReactivation()
+    /**
+     * @return Response
+     */
+    public function expiredReactivation(): Response
     {
         return Inertia::render('auth/account-reactivation/Expired');
     }
 
-    public function resendReactivation(Request $request)
+    /**
+     * @param Request $request
+     * @param ResendReactivationLink $resendReactivationLink
+     * @return RedirectResponse
+     */
+    public function resendReactivation(Request $request, ResendReactivationLink $resendReactivationLink): RedirectResponse
     {
         $validated = $request->validate([
             'email' => ['required', 'email', 'exists:users,email'],
@@ -145,15 +163,7 @@ class AccountActivationController extends Controller
                 return back()->withErrors(['error' => 'User not found. Please try to sign up to create an account.']);
             }
 
-            $url = URL::temporarySignedRoute(
-                'reactivate.reactivate',
-                now()->addDay(),
-                [
-                    'user' => $user->id,
-                ]
-            );
-
-            $user->notify(new ReactivateAccountNotification($url));
+            $resendReactivationLink->execute($user);
 
             return back()->with(
                 'message',

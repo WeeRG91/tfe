@@ -134,16 +134,13 @@ watch(
             @click="handleBackdropClick"
             @keydown="handleEscapeKey"
         >
-            <!-- Backdrop -->
             <div
                 class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-all"
             ></div>
 
-            <!-- Modal -->
             <div
                 class="relative mx-4 w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-2xl"
             >
-                <!-- Header -->
                 <div
                     class="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4"
                 >
@@ -174,9 +171,7 @@ watch(
                     </button>
                 </div>
 
-                <!-- Form -->
                 <form @submit.prevent="handleSubmit" class="space-y-4 p-6">
-                    <!-- Two column layout for name fields -->
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <label
@@ -238,7 +233,6 @@ watch(
                         </div>
                     </div>
 
-                    <!-- Phone -->
                     <div>
                         <label
                             class="mb-1.5 block text-sm font-medium text-gray-700"
@@ -266,7 +260,6 @@ watch(
                         </p>
                     </div>
 
-                    <!-- Street Address -->
                     <div>
                         <label
                             class="mb-1.5 block text-sm font-medium text-gray-700"
@@ -296,7 +289,6 @@ watch(
                         </p>
                     </div>
 
-                    <!-- City, Postal Code, Country -->
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div>
                             <label
@@ -363,7 +355,6 @@ watch(
                         </div>
                     </div>
 
-                    <!-- Default Address Checkbox -->
                     <div
                         class="flex items-center gap-3 rounded-lg bg-blue-50 p-3"
                     >
@@ -381,7 +372,6 @@ watch(
                         </label>
                     </div>
 
-                    <!-- Form Actions -->
                     <div class="flex gap-3 border-t border-gray-200 pt-4">
                         <button
                             type="button"
@@ -410,7 +400,6 @@ watch(
                         </button>
                     </div>
 
-                    <!-- Error Summary -->
                     <div
                         v-if="Object.keys(form.errors).length > 0"
                         class="rounded-lg bg-red-50 p-3"

@@ -8,9 +8,9 @@ class CreateAddress
 {
     /**
      * @param array $data
-     * @return Address
+     * @return array
      */
-    public function execute(array $data): Address
+    public function execute(array $data): array
     {
         $user  = auth()->user();
 
@@ -20,6 +20,9 @@ class CreateAddress
                 ->update(['is_default' => false]);
         }
 
-        return $user->addresses()->create($data);
+        return [
+            'message' => 'Address added successfully',
+            'address' => $user->addresses()->create($data),
+        ];
     }
 }

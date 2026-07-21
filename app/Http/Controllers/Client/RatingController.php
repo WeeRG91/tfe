@@ -39,6 +39,17 @@ class RatingController extends Controller
      */
     public function store(Request $request, Dish $dish): JsonResponse
     {
+        $existingRating = DishRating::query()
+            ->where('dish_id', $dish->id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($existingRating) {
+            return response()->json([
+                'message' => 'You have already rated this dish.',
+            ], 403);
+        }
+
         $validated = $request->validate([
             'rating' => ['required', 'integer', 'between:1,5'],
             'review' => ['nullable', 'string'],

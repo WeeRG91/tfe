@@ -2,33 +2,26 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Events\MessageSentBroadcast;
+use App\Actions\Client\Chat\Queries\GetChat;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Client\Chat\ChatResource;
 use App\Http\Resources\Client\Chat\MessageResource;
-use App\Models\Chat;
-use App\Models\Message;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
 
 class ChatController extends Controller
 {
 
     /**
+     * @param GetChat $getChat
      * @return JsonResponse
      */
-    public function getChat(): JsonResponse
+    public function getChat(GetChat $getChat): JsonResponse
     {
-        $user = auth()->user();
-
-        $chat = Chat::query()->firstOrCreate([
-            'user_id' => $user->id,
-        ]);
+        $result = $getChat->execute(auth()->user());
 
         return response()->json([
-            'chat' => new ChatResource($chat->load('user', 'latestMessage')),
-            'messages' => MessageResource::collection($chat->messages()->with('sender')->withTrashed()->latest()->take(50)->get()->reverse()),
+            'chat' => new ChatResource($result['chat']),
+            'messages' => MessageResource::collection($result['messages']),
         ]);
     }
 }

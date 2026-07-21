@@ -2,37 +2,48 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Roles\Commands\CreateRole;
+use App\Actions\Admin\Roles\Commands\DeleteRole;
+use App\Actions\Admin\Roles\Commands\UpdateRole;
+use App\Actions\Admin\Roles\Queries\GetRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Role\CreateRoleRequest;
 use App\Http\Requests\Admin\Role\UpdateRoleRequest;
 use App\Http\Resources\Admin\Permission\PermissionResource;
 use App\Http\Resources\Admin\Role\RoleResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Throwable;
 
 class RoleController extends Controller
 {
-    public function index()
+    /**
+     * @return Response
+     */
+    public function index(): Response
     {
         $this->authorize('viewAny', Role::class);
 
         return Inertia::render('admin/role/Index');
     }
 
-    public function getRoles(Request $request)
+    /**
+     * @param Request $request
+     * @param GetRoles $getRoles
+     * @return JsonResponse
+     */
+    public function getRoles(Request $request, GetRoles $getRoles): JsonResponse
     {
         $this->authorize('viewAny', Role::class);
 
-        $roles = Role::with('permissions')
-            ->whereNot('name', 'Super Admin')
-            ->when($request->search, fn ($query) =>
-                $query->where('name', 'LIKE', "%$request->search%")
-            )
-            ->orderBy('name')
-            ->cursorPaginate(8);
+        $roles = $getRoles->execute(
+            $request->input('search')
+        );
 
         return response()->json([
             'data' => RoleResource::collection($roles)->collection,
@@ -45,7 +56,10 @@ class RoleController extends Controller
         ]);
     }
 
-    public function create()
+    /**
+     * @return Response
+     */
+    public function create(): Response
     {
         $this->authorize('create', Role::class);
 
@@ -54,17 +68,20 @@ class RoleController extends Controller
         ]);
     }
 
-    public function store(CreateRoleRequest $request)
+    /**
+     * @param CreateRoleRequest $request
+     * @param CreateRole $createRole
+     * @return RedirectResponse
+     */
+    public function store(CreateRoleRequest $request, CreateRole $createRole): RedirectResponse
     {
         $this->authorize('create', Role::class);
 
         try {
-            $role = Role::create([
-                'name' => $request->name,
-                'guard_name' => 'web'
-            ]);
-
-            $role->syncPermissions($request->permissions);
+            $createRole->execute(
+                $request->name,
+                $request->permissions ?? []
+            );
 
             return redirect()->route('admin.role.index');
         } catch (Throwable $e) {
@@ -74,7 +91,11 @@ class RoleController extends Controller
         }
     }
 
-    public function edit(Role $role)
+    /**
+     * @param Role $role
+     * @return Response
+     */
+    public function edit(Role $role): Response
     {
         $this->authorize('update', $role);
 
@@ -86,16 +107,26 @@ class RoleController extends Controller
         ]);
     }
 
-    public function update(UpdateRoleRequest $request, Role $role)
+    /**
+     * @param UpdateRoleRequest $request
+     * @param Role $role
+     * @param UpdateRole $updateRole
+     * @return RedirectResponse
+     */
+    public function update(
+        UpdateRoleRequest $request,
+        Role $role,
+        UpdateRole $updateRole
+    ): RedirectResponse
     {
        $this->authorize('update', $role);
 
        try {
-           $role->update([
-               'name' => $request->name,
-           ]);
-
-           $role->syncPermissions($request->permissions);
+           $updateRole->execute(
+               $role,
+               $request->name,
+               $request->permissions ?? []
+           );
 
            return redirect()->route('admin.role.index');
        } catch (Throwable $e) {
@@ -105,19 +136,17 @@ class RoleController extends Controller
        }
     }
 
-    public function destroy(Role $role)
+    /**
+     * @param Role $role
+     * @param DeleteRole $deleteRole
+     * @return JsonResponse|RedirectResponse
+     */
+    public function destroy(Role $role, DeleteRole $deleteRole): JsonResponse|RedirectResponse
     {
        $this->authorize('delete', $role);
 
        try {
-           if ($role->name == 'Admin') {
-               return response()->json([
-                   'message' => "You can't delete admin role",
-               ]);
-           }
-
-           $role->permissions()->detach();
-           $role->delete();
+            $deleteRole->execute($role);
 
            return response()->json([
                'message' => "Role deleted successfully",

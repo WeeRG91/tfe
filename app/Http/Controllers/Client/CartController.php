@@ -31,7 +31,10 @@ class CartController extends Controller
      * @param GetOrCreateCart $getOrCreateCart
      * @return JsonResponse
      */
-    public function getCart(Request $request, GetOrCreateCart $getOrCreateCart): JsonResponse
+    public function getCart(
+        Request $request,
+        GetOrCreateCart $getOrCreateCart
+    ): JsonResponse
     {
         $cart = $getOrCreateCart->execute($request);
         $cart->load('user', 'items.item', 'items.meat', 'items.removedIngredients');
@@ -75,7 +78,10 @@ class CartController extends Controller
      * @param AddDishToCart $addDishToCart
      * @return JsonResponse
      */
-    public function addDish(AddDishToCartRequest $request, AddDishToCart $addDishToCart): JsonResponse
+    public function addDish(
+        AddDishToCartRequest $request,
+        AddDishToCart $addDishToCart
+    ): JsonResponse
     {
         $validated = $request->validated();
 
@@ -91,7 +97,10 @@ class CartController extends Controller
      * @param AddDrinkToCart $addDrinkToCart
      * @return JsonResponse
      */
-    public function addDrink(AddDrinkToCartRequest $request, AddDrinkToCart $addDrinkToCart): JsonResponse
+    public function addDrink(
+        AddDrinkToCartRequest $request,
+        AddDrinkToCart $addDrinkToCart
+    ): JsonResponse
     {
         $validated = $request->validated();
 
@@ -108,7 +117,11 @@ class CartController extends Controller
      * @param RemoveCartItem $removeCartItem
      * @return JsonResponse
      */
-    public function removeItem(Request $request, int $cartItemId, RemoveCartItem $removeCartItem): JsonResponse
+    public function removeItem(
+        Request $request,
+        int $cartItemId,
+        RemoveCartItem $removeCartItem
+    ): JsonResponse
     {
         $itemName = $removeCartItem->execute($request, $cartItemId);
 
@@ -123,7 +136,11 @@ class CartController extends Controller
      * @param UpdateCartItemNotes $updateNotes
      * @return HttpResponse
      */
-    public function updateNotes(Request $request, int $cartItemId, UpdateCartItemNotes $updateNotes): HttpResponse
+    public function updateNotes(
+        Request $request,
+        int $cartItemId,
+        UpdateCartItemNotes $updateNotes
+    ): HttpResponse
     {
         $validated = $request->validate([
             'notes' => 'nullable|string|max:1000',
@@ -140,7 +157,11 @@ class CartController extends Controller
      * @param UpdateCartItemQuantity $updateQuantity
      * @return JsonResponse|HttpResponse
      */
-    public function updateQuantity(Request $request, int $cartItemId, UpdateCartItemQuantity $updateQuantity): JsonResponse|HttpResponse
+    public function updateQuantity(
+        Request $request,
+        int $cartItemId,
+        UpdateCartItemQuantity $updateQuantity
+    ): JsonResponse|HttpResponse
     {
         $validated = $request->validate([
             'action' => 'required|string|in:increase,decrease',

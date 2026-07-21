@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Actions\Client\Order\Commands\CancelOrder;
+use App\Actions\Client\Order\Commands\DeleteOrder;
 use App\Actions\Client\Order\Commands\PlaceOrder\PlaceOrder;
 use App\Actions\Client\Order\Commands\Reorder\Reorder;
+use App\Actions\Client\Order\Queries\GetOrder;
+use App\Actions\Client\Order\Queries\GetOrders;
+use App\Actions\Client\Order\Queries\GetReorderData;
 use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
@@ -16,7 +21,6 @@ use App\Http\Resources\Client\Order\OrderResource;
 use App\Models\Address;
 use App\Models\LoyaltyPointTransaction;
 use App\Models\Order;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
@@ -30,12 +34,12 @@ class OrderController extends Controller
      * @param Order $order
      * @return InertiaResponse
      */
-    public function orderDetails(Order $order): InertiaResponse
+    public function orderDetails(Order $order, GetOrder $getOrder): InertiaResponse
     {
-        $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
-
         return Inertia::render('client/OrderDetails', [
-            'orderToShow' => new OrderResource($order),
+            'orderToShow' => new OrderResource(
+                $getOrder->execute($order)
+            ),
         ]);
     }
 
@@ -49,47 +53,30 @@ class OrderController extends Controller
 
     /**
      * @param Request $request
+     * @param GetOrders $getOrders
      * @return JsonResponse
      */
-    public function getOrders(Request $request): JsonResponse
+    public function getOrders(Request $request, GetOrders $getOrders): JsonResponse
     {
-        $status = $request->status;
-
-        $query = Order::query()
-            ->where('user_id', auth()->id())
-            ->when($status, function ($q) use ($status) {
-                match ($status) {
-                    'active' => $q->whereIn('status', OrderStatusEnum::activeStatuses()),
-                    'completed' => $q->where('status', OrderStatusEnum::COMPLETED->value),
-                    'cancelled' => $q->where('status', OrderStatusEnum::CANCELLED->value),
-                    default => null,
-                };
-            });
-
-        $orders = $query
-            ->with([
-                'user',
-                'items.item',
-                'items.meat',
-                'items.removedIngredients',
-                'address'
-            ])
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        $orders = $getOrders->execute(
+            auth()->user(),
+            $request->input('status'),
+        );
 
         return response()->json(OrderResource::collection($orders)->collection);
     }
 
     /**
      * @param Order $order
+     * @param GetOrder $getOrder
      * @return JsonResponse
      */
-    public function getOrder(Order $order): JsonResponse
+    public function getOrder(Order $order, GetOrder $getOrder): JsonResponse
     {
-        $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients', 'address');
-
         return response()->json([
-            'order' => new OrderResource($order),
+            'order' => new OrderResource(
+                $getOrder->execute($order)
+            ),
         ]);
     }
 
@@ -101,32 +88,31 @@ class OrderController extends Controller
      */
     public function placeOrder(PlaceOrderRequest $request, PlaceOrder $placeOrder): JsonResponse
     {
-        $result = $placeOrder->execute($request->validated());
+        $results = $placeOrder->execute($request->validated());
 
         return response()->json([
-            'message' => $result['message'],
-            'order' => new OrderResource($result['order']),
+            'message' => $results['message'],
+            'order' => new OrderResource($results['order']),
         ]);
     }
 
     /**
      * @param Order $order
+     * @param GetReorderData $getReorderData
      * @return InertiaResponse
      */
-    public function reorder(Order $order): InertiaResponse
+    public function reorder(Order $order, GetReorderData $getReorderData): InertiaResponse
     {
-        $order->load('user', 'items.item', 'items.meat', 'items.removedIngredients');
-
-        $addresses = Address::query()
-            ->where('user_id', auth()->user()->id)
-            ->orderBy('is_default', 'desc')
-            ->get();
+        $result = $getReorderData->execute(
+            auth()->user(),
+            $order,
+        );
 
         return Inertia::render('client/Reorder', [
-            'orderToReorder' => new OrderResource($order),
+            'orderToReorder' => new OrderResource($result['order']),
             'orderTypes' => OrderTypeEnum::getTypes(),
             'paymentMethods' => PaymentMethodEnum::getPaymentMethods(),
-            'addresses' => AddressResource::collection($addresses)->collection,
+            'addresses' => AddressResource::collection($result['addresses'])->collection,
         ]);
     }
 
@@ -148,43 +134,28 @@ class OrderController extends Controller
 
     /**
      * @param Order $order
+     * @param CancelOrder $cancelOrder
      * @return HttpResponse
+     * @throws Throwable
      */
-    public function cancel(Order $order): HttpResponse
+    public function cancel(Order $order, CancelOrder $cancelOrder): HttpResponse
     {
-        $user = auth()->user();
-
-        $order->update([
-            'status' => OrderStatusEnum::CANCELLED->value,
-            'cancelled_at' => now(),
-        ]);
-
-        $loyaltyPointTransaction = LoyaltyPointTransaction::query()
-            ->where('user_id', $user->id)
-            ->where('order_id', $order->id)
-            ->where('type', LoyaltyPointTransactionTypeEnum::REDEEMED->value)
-            ->first();
-
-        if ($loyaltyPointTransaction) {
-            LoyaltyPointTransaction::query()->create([
-                'user_id' => $user->id,
-                'order_id' => $order->id,
-                'points' => $loyaltyPointTransaction->points,
-                'type' => LoyaltyPointTransactionTypeEnum::REFUNDED->value,
-                'description' => 'Points refunded for order #' . $order->order_number,
-            ]);
-        }
+        $cancelOrder->execute(
+            auth()->user(),
+            $order,
+        );
 
         return response()->noContent();
     }
 
     /**
      * @param Order $order
+     * @param DeleteOrder $deleteOrder
      * @return HttpResponse
      */
-    public function destroy(Order $order): HttpResponse
+    public function destroy(Order $order, DeleteOrder $deleteOrder): HttpResponse
     {
-        $order->delete();
+        $deleteOrder->execute($order);
 
         return response()->noContent();
     }

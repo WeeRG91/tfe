@@ -18,13 +18,16 @@ class AddressController extends Controller
      * @param CreateAddress $createAddress
      * @return JsonResponse
      */
-    public function store(CreateAddressRequest $request, CreateAddress $createAddress): JsonResponse
+    public function store(
+        CreateAddressRequest $request,
+        CreateAddress $createAddress
+    ): JsonResponse
     {
-        $address = $createAddress->execute($request->validated());
+        $result = $createAddress->execute($request->validated());
 
         return response()->json([
-            'message' => 'Address saved',
-            'address' => new AddressResource($address),
+            'message' => $result['message'],
+            'address' => new AddressResource($result['address']),
         ]);
     }
 
@@ -34,7 +37,11 @@ class AddressController extends Controller
      * @param UpdateAddress $updateAddress
      * @return JsonResponse
      */
-    public function update(UpdateAddressRequest $request, int $addressId, UpdateAddress $updateAddress): JsonResponse
+    public function update(
+        UpdateAddressRequest $request,
+        int $addressId,
+        UpdateAddress $updateAddress
+    ): JsonResponse
     {
         $result = $updateAddress->execute(
             $addressId,
@@ -52,7 +59,10 @@ class AddressController extends Controller
      * @param DeleteAddress $deleteAddress
      * @return JsonResponse
      */
-    public function destroy(int $addressId, DeleteAddress $deleteAddress): JsonResponse
+    public function destroy(
+        int $addressId,
+        DeleteAddress $deleteAddress
+    ): JsonResponse
     {
         $result = $deleteAddress->execute($addressId);
 

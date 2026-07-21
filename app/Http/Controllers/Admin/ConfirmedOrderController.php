@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Admin\Order\Commands\UpdateOrderStatus;
+use App\Actions\Admin\Order\Queries\GetConfirmedOrders;
 use App\Enums\OrderStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Order\ConfirmedOrderResource;
@@ -11,10 +12,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ConfirmedOrderController extends Controller
 {
-    public function index()
+    /**
+     * @return Response
+     */
+    public function index(): Response
     {
         $this->authorize('viewAny', Order::class);
 
@@ -22,22 +27,14 @@ class ConfirmedOrderController extends Controller
     }
 
     /**
+     * @param GetConfirmedOrders $getConfirmedOrders
      * @return JsonResponse
      */
-    public function getConfirmedOrders(): JsonResponse
+    public function getConfirmedOrders(GetConfirmedOrders $getConfirmedOrders): JsonResponse
     {
         $this->authorize('viewAny', Order::class);
 
-        $confirmedOrders = Order::query()
-            ->with([
-                'user',
-                'items.item',
-                'items.meat',
-                'items.removedIngredients',
-                'address'
-            ])
-            ->whereNotNull('confirmed_at')
-            ->get();
+        $confirmedOrders = $getConfirmedOrders->execute();
 
         return response()->json(ConfirmedOrderResource::collection($confirmedOrders)->collection);
     }
