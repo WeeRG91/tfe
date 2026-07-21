@@ -11,6 +11,13 @@ class CartItem extends Model
 {
     protected $guarded = ['id'];
 
+    protected function casts(): array
+    {
+        return [
+            'spicy_level' => 'integer',
+        ];
+    }
+
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);

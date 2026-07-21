@@ -115,6 +115,28 @@ const sectionHeaderClass = computed(() => {
 
             <div class="mt-1 min-h-[40px]">
                 <template v-if="type === ItemTypeEnum.DISH">
+                    <div class="flex items-center gap-1.5 text-xs">
+                        <span :class="[sectionHeaderClass]"
+                            >🌶️ Spicy level:</span
+                        >
+                        <div class="text-xs font-medium text-gray-600">
+                            <span
+                                :class="[
+                                    cartItem.spicy_level === 0 && 'text-green-600',
+                                    cartItem.spicy_level === 1 && 'text-yellow-600',
+                                    cartItem.spicy_level === 2 && 'text-orange-600',
+                                    cartItem.spicy_level === 3 && 'text-red-600',
+                                ]"
+                            >
+                                {{
+                                    ['No spicy', 'Mild', 'Spicy', 'Hot'][
+                                        cartItem.spicy_level
+                                    ]
+                                }}
+                            </span>
+                        </div>
+                    </div>
+
                     <div
                         v-if="cartItem.meat"
                         class="flex items-center gap-1.5 text-xs"

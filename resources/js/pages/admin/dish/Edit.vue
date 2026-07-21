@@ -20,6 +20,7 @@ import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 import dish from '@/routes/admin/dish';
+import SpicyLevelSelector from '@/components/admin/dish/SpicyLevelSelector.vue';
 
 const props = defineProps<{
     dishToEdit: EditDishType;
@@ -50,9 +51,12 @@ const selectedIngredients = ref<number[]>(
     props.dishToEdit.ingredients?.map((i) => i.id),
 );
 const selectedCategory = ref<number | null>(props.dishToEdit.category ?? null);
-const name = ref(props.dishToEdit.name ?? '');
-const description = ref(props.dishToEdit.description ?? '');
-const price = ref(props.dishToEdit.price ?? 0);
+const name = ref<string>(props.dishToEdit.name ?? '');
+const description = ref<string>(props.dishToEdit.description ?? '');
+const price = ref<number>(props.dishToEdit.price ?? 0);
+const defaultSpicyLevel = ref<number>(
+    props.dishToEdit.default_spicy_level ?? 0,
+);
 const images = ref<File[]>([]);
 const ingredients = ref<IngredientOptionType[]>(props.ingredients);
 const meats = ref<MeatOptionType[]>(props.meats);
@@ -61,7 +65,8 @@ const isLoading = ref<boolean>(false);
 const dishForm = useForm({
     name: '',
     description: '',
-    price: null as number | null,
+    price: 0,
+    default_spicy_level: 0,
     category: null as number | null | undefined,
     meats: [] as number[],
     ingredients: [] as number[],
@@ -74,6 +79,7 @@ const submit = () => {
     dishForm.name = name.value;
     dishForm.description = description.value;
     dishForm.price = price.value;
+    dishForm.default_spicy_level = defaultSpicyLevel.value;
     dishForm.category = selectedCategory.value;
     dishForm.meats = selectedMeats.value;
     dishForm.ingredients = selectedIngredients.value;
@@ -159,6 +165,14 @@ const closeCreateMeatModal = () => {
                             label="Price (€)"
                             v-model="price"
                             :error="props.errors?.dishErrors?.price"
+                        />
+
+                        <SpicyLevelSelector
+                            v-model="defaultSpicyLevel"
+                            label="Select the default spiciness level for this dish"
+                            :error="
+                                props.errors?.dishErrors?.default_spicy_level
+                            "
                         />
 
                         <MultipleSelect

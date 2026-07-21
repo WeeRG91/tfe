@@ -88,7 +88,6 @@ watch(
     <div
         class="group rounded-lg border border-sidebar-border/70 bg-card p-3 transition-all hover:shadow-md md:p-4"
     >
-        <!-- Order Header - Always Visible -->
         <div class="flex items-start justify-between gap-2">
             <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-1">
@@ -125,9 +124,7 @@ watch(
             </div>
         </div>
 
-        <!-- Collapsible Content for Mobile -->
         <div class="hidden md:block">
-            <!-- Customer Info -->
             <div class="mt-3 mb-3 space-y-1 text-sm">
                 <div class="flex items-center gap-2">
                     <User
@@ -173,7 +170,6 @@ watch(
                 </div>
             </div>
 
-            <!-- Order Items Preview -->
             <div class="mb-3 border-t border-sidebar-border/50 pt-2">
                 <div class="space-y-1">
                     <div
@@ -197,7 +193,6 @@ watch(
                 </div>
             </div>
 
-            <!-- Order Total -->
             <div
                 class="mb-3 flex items-center justify-between border-t border-sidebar-border/50 pt-2"
             >
@@ -207,7 +202,6 @@ watch(
                 >
             </div>
 
-            <!-- Action Buttons -->
             <div class="flex flex-wrap items-center gap-2">
                 <div v-if="can(OrderPermissionEnum.ORDER_UPDATE)" class="flex min-w-[120px] flex-1 gap-2">
                     <button
@@ -259,9 +253,7 @@ watch(
             </div>
         </div>
 
-        <!-- Mobile Expanded Content -->
         <div class="md:hidden" v-show="isExpanded">
-            <!-- Customer Info -->
             <div class="mt-3 mb-3 space-y-2 text-sm">
                 <div class="flex items-center gap-2">
                     <User
@@ -307,7 +299,6 @@ watch(
                 </div>
             </div>
 
-            <!-- Order Items Preview -->
             <div class="mb-3 border-t border-sidebar-border/50 pt-2">
                 <div class="space-y-2">
                     <div
@@ -325,7 +316,6 @@ watch(
                 </div>
             </div>
 
-            <!-- Order Total -->
             <div
                 class="mb-3 flex items-center justify-between border-t border-sidebar-border/50 pt-2"
             >
@@ -335,7 +325,6 @@ watch(
                 >
             </div>
 
-            <!-- Action Buttons -->
             <div class="flex flex-col gap-2">
                 <div v-if="can(OrderPermissionEnum.ORDER_UPDATE)" class="flex gap-2">
                     <button

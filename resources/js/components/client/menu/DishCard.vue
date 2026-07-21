@@ -4,6 +4,7 @@ import menu from '@/routes/menu';
 import { ClientDishType, DishAvailabilityEnum } from '@/types/dish';
 import { router } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
+import { Flame } from 'lucide-vue-next';
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -114,7 +115,7 @@ const triggerStarAnimation = () => {
         </div>
 
         <div class="flex flex-1 flex-col px-4 py-2">
-            <div class="flex items-center">
+            <div class="flex flex-row justify-between items-center">
                 <h3
                     class="text-lg font-semibold uppercase transition-colors"
                     :class="{
@@ -125,6 +126,25 @@ const triggerStarAnimation = () => {
                 >
                     {{ props.dish.name }}
                 </h3>
+
+                <div class="flex items-center gap-1">
+                    <Flame
+                        v-for="i in dish.default_spicy_level"
+                        :key="i"
+                        fill="currentColor"
+                        class="h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4"
+                        :class="[
+                            i <= dish.default_spicy_level
+                                ? [
+                                      'text-green-500',
+                                      'text-yellow-500',
+                                      'text-orange-500',
+                                      'text-red-500',
+                                  ][i]
+                                : 'text-gray-300',
+                        ]"
+                    />
+                </div>
             </div>
 
             <p

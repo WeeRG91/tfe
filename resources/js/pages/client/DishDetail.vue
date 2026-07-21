@@ -13,7 +13,7 @@ import { ClientDishType } from '@/types/dish';
 import { ReviewResultType, ReviewType } from '@/types/rating';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
-import { X } from 'lucide-vue-next';
+import { X, Flame } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -246,7 +246,6 @@ onMounted(() => {
     window.addEventListener('resize', closeDropdown);
 });
 
-
 onUnmounted(() => {
     if (channel.value) {
         window.Echo.leave('dish.rating');
@@ -264,7 +263,6 @@ onUnmounted(() => {
         <section
             class="relative mx-auto flex h-full w-full max-w-7xl flex-col px-4 py-12 sm:px-6 lg:px-8 lg:py-16"
         >
-            <!-- Breadcrumb -->
             <div
                 class="relative z-10 mb-6 flex items-center gap-2 text-sm text-gray-500"
             >
@@ -275,12 +273,29 @@ onUnmounted(() => {
                     Menu
                 </button>
                 <span>/</span>
-                <span class="font-medium text-gray-900">{{
-                    props.dish.name
-                }}</span>
+                <span class="font-medium text-gray-900">
+                    {{ props.dish.name }}
+                </span>
+                <div v-if="dish.default_spicy_level > 0" class="flex items-center gap-1">
+                    <Flame
+                        v-for="i in dish.default_spicy_level"
+                        :key="i"
+                        fill="currentColor"
+                        class="h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4"
+                        :class="[
+                            i <= dish.default_spicy_level
+                                ? [
+                                      'text-green-500',
+                                      'text-yellow-500',
+                                      'text-orange-500',
+                                      'text-red-500',
+                                  ][i]
+                                : 'text-gray-300',
+                        ]"
+                    />
+                </div>
             </div>
 
-            <!-- Dish Details -->
             <div
                 class="relative z-10 grid flex-1 gap-10 lg:grid-cols-2 lg:gap-12"
             >
@@ -303,9 +318,7 @@ onUnmounted(() => {
 
                         <div class="ml-auto flex items-center gap-2">
                             <div class="flex items-center gap-2">
-                                <!-- Stars -->
                                 <div class="relative inline-block">
-                                    <!-- Background -->
                                     <div class="flex text-lg text-gray-300">
                                         <span
                                             v-for="star in 5"
@@ -314,7 +327,6 @@ onUnmounted(() => {
                                         >
                                     </div>
 
-                                    <!-- Filled -->
                                     <div
                                         class="absolute top-0 left-0 overflow-hidden text-lg whitespace-nowrap text-yellow-400"
                                         :style="{
@@ -329,7 +341,6 @@ onUnmounted(() => {
                                     </div>
                                 </div>
 
-                                <!-- Average -->
                                 <span class="font-semibold text-gray-900">
                                     {{ (ratingAverage ?? 0).toFixed(1) }}
                                 </span>
@@ -445,7 +456,6 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <!-- Reviews Section -->
             <div class="mt-16 border-t border-gray-200 pt-12">
                 <div
                     class="mb-8 flex flex-wrap items-center justify-between gap-4"
@@ -502,7 +512,6 @@ onUnmounted(() => {
                     </div>
                 </div>
 
-                <!-- Review Form -->
                 <div
                     v-if="showReviewForm"
                     class="mb-8 overflow-hidden rounded-xl bg-white p-5 shadow-md ring-1 ring-gray-100"
@@ -522,7 +531,6 @@ onUnmounted(() => {
                     </div>
 
                     <form @submit.prevent="submitReview" class="space-y-4">
-                        <!-- Rating Stars -->
                         <div>
                             <label
                                 class="mb-1.5 block text-xs font-medium text-gray-700"
@@ -550,7 +558,6 @@ onUnmounted(() => {
                             </div>
                         </div>
 
-                        <!-- Review Textarea -->
                         <div>
                             <label
                                 for="review"
@@ -567,7 +574,6 @@ onUnmounted(() => {
                             ></textarea>
                         </div>
 
-                        <!-- Action Buttons -->
                         <div class="flex items-center gap-3 pt-1">
                             <button
                                 type="submit"
@@ -593,7 +599,6 @@ onUnmounted(() => {
                     </form>
                 </div>
 
-                <!-- Edit Form -->
                 <div
                     v-if="showEditForm && editingReview"
                     class="mb-8 overflow-hidden rounded-xl bg-white p-5 shadow-md ring-1 ring-blue-100"
@@ -613,7 +618,6 @@ onUnmounted(() => {
                     </div>
 
                     <form @submit.prevent="updateReview" class="space-y-4">
-                        <!-- Rating Stars -->
                         <div>
                             <label
                                 class="mb-1.5 block text-xs font-medium text-gray-700"
@@ -641,7 +645,6 @@ onUnmounted(() => {
                             </div>
                         </div>
 
-                        <!-- Review Textarea -->
                         <div>
                             <label
                                 for="edit-review"
@@ -658,7 +661,6 @@ onUnmounted(() => {
                             ></textarea>
                         </div>
 
-                        <!-- Action Buttons -->
                         <div class="flex items-center gap-3 pt-1">
                             <button
                                 type="submit"
@@ -684,7 +686,6 @@ onUnmounted(() => {
                     </form>
                 </div>
 
-                <!-- Reviews Grid - Simple Grid Layout -->
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div
                         v-for="review in reviews"
@@ -692,7 +693,6 @@ onUnmounted(() => {
                         class="overflow-hidden rounded-2xl border border-gray-100 bg-white px-6 py-4 shadow-sm transition-all hover:shadow-lg"
                     >
                         <div class="flex items-start gap-4">
-                            <!-- Avatar -->
                             <div class="flex-shrink-0">
                                 <div
                                     v-if="review.user.avatar"
@@ -713,7 +713,6 @@ onUnmounted(() => {
                                 </div>
                             </div>
 
-                            <!-- Review Content -->
                             <div class="min-w-0 flex-1">
                                 <div
                                     class="flex items-start justify-between gap-2"
@@ -754,7 +753,6 @@ onUnmounted(() => {
                                         </div>
                                     </div>
 
-                                    <!-- Dropdown Menu for own reviews -->
                                     <div
                                         v-if="review.user.id === user?.id"
                                         class="relative flex-shrink-0"
@@ -779,7 +777,6 @@ onUnmounted(() => {
                                             </svg>
                                         </button>
 
-                                        <!-- Dropdown -->
                                         <Teleport to="body">
                                             <div
                                                 v-if="
@@ -828,7 +825,6 @@ onUnmounted(() => {
                                     {{ review.review }}
                                 </p>
 
-                                <!-- Review footer with date -->
                                 <div
                                     class="mt-3 flex items-center justify-between text-xs text-gray-400"
                                 >
@@ -845,7 +841,6 @@ onUnmounted(() => {
                         </div>
                     </div>
 
-                    <!-- Empty State -->
                     <div
                         v-if="!reviews.length"
                         class="col-span-full rounded-2xl border-2 border-dashed border-gray-200 py-16 text-center"

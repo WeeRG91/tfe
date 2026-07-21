@@ -24,6 +24,7 @@ class DishResource extends JsonResource
                 : Storage::disk('public')->url('/images/picture.png'),
             'description' => $this->description,
             'price' => $this->price,
+            'default_spicy_level' => $this->default_spicy_level,
             'is_available' => $this->is_available ? 'Available' : 'Unavailable',
             'category' => DishCategoryEnum::getCategory($this->category),
             'ingredients' => $this->whenLoaded('ingredients')->map(fn ($ingredient) => [

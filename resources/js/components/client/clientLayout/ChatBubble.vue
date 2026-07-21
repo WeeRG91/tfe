@@ -371,7 +371,7 @@ watch(messageMenuId, (id) => {
 </script>
 
 <template>
-    <div ref="chatBubbleRef" class="fixed right-6 bottom-6 z-50">
+    <div ref="chatBubbleRef" class="fixed right-6 bottom-6 z-40">
         <button
             @click="toggleChat"
             class="relative flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-white shadow-lg transition-all hover:scale-105 hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"

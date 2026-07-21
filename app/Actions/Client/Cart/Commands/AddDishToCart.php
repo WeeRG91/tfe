@@ -27,6 +27,7 @@ class AddDishToCart
             ->where('item_id', $data['item_id'])
             ->where('item_type', ItemTypeEnum::from($data['item_type'])->model())
             ->where('meat_id', $data['meat_id'])
+            ->where('spicy_level', $data['spicy_level'])
             ->with('removedIngredients')
             ->get();
 
@@ -55,6 +56,7 @@ class AddDishToCart
             'item_type' => ItemTypeEnum::from($data['item_type'])->model(),
             'meat_id' => $data['meat_id'],
             'quantity' => $data['quantity'],
+            'spicy_level' => $data['spicy_level'],
             'notes' => $data['notes'],
         ]);
 

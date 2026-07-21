@@ -33,6 +33,7 @@ class AddDishToCartRequest extends FormRequest
                 'exists:meats,id'
             ],
             'quantity' => ['required', 'integer', 'min:1'],
+            'spicy_level' => ['required', 'integer', 'between:0,3'],
             'removed_ingredients' => ['nullable', 'array'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];

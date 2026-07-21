@@ -65,11 +65,21 @@ const getItemTypeColor = (itemType: number) => {
                             €{{ formatPrice(item.unit_price) }} each
                         </p>
 
-                        <!-- Customizations -->
                         <div
                             v-if="item.item_type === ItemTypeEnum.DISH"
                             class="mt-1 space-y-0.5 text-xs"
                         >
+                            <p
+                                class="flex items-center gap-1 text-gray-600"
+                            >
+                                <span class="text-red-500">🌶️</span>
+                                <span>Spicy level:</span>
+                                <span class="font-medium">
+                                    {{
+                                        ['No spicy', 'Mild', 'Spicy', 'Hot'][item.spicy_level]
+                                    }}
+                                </span>
+                            </p>
                             <p
                                 v-if="item.meat"
                                 class="flex items-center gap-1 text-gray-600"

@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart';
+import { ItemTypeEnum } from '@/types/cart';
 import { ClientDishType } from '@/types/dish';
+import { Flame } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import { formatPrice } from '@/lib/utils';
-import { ItemTypeEnum } from '@/types/cart';
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -25,6 +26,7 @@ const removedIngredients = ref<number[]>([]);
 const notes = ref<string>('');
 const error = ref<string>('');
 
+const spicyLevel = ref<number>(props.dish.default_spicy_level ?? 0);
 const meats = computed(() => props.dish?.meats ?? []);
 const ingredients = computed(() => props.dish?.ingredients ?? []);
 const totalPrice = computed(() => {
@@ -58,6 +60,7 @@ const addToCart = async () => {
             item_type: ItemTypeEnum.DISH,
             meat_id: selectedMeat.value,
             quantity: quantity.value,
+            spicy_level: spicyLevel.value,
             removed_ingredients: removedIngredients.value,
             notes: notes.value || '',
         });
@@ -95,6 +98,7 @@ watch(
         if (isOpen) {
             selectedMeat.value = null;
             quantity.value = 1;
+            spicyLevel.value = props.dish.default_spicy_level ?? 0;
             removedIngredients.value = [];
             notes.value = '';
             error.value = '';
@@ -386,6 +390,82 @@ watch(
                                 class="absolute right-2 bottom-2 text-xs text-gray-400"
                             >
                                 {{ notes.length }}/500
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spicy Level -->
+                    <div class="mb-3">
+                        <h3
+                            class="mb-2 flex flex-row items-center text-xs font-semibold tracking-wider text-gray-700 uppercase"
+                        >
+                            <span
+                                :class="[
+                                    spicyLevel === 0 && 'text-green-500',
+                                    spicyLevel === 1 && 'text-yellow-500',
+                                    spicyLevel === 2 && 'text-orange-500',
+                                    spicyLevel === 3 && 'text-red-500',
+                                ]"
+                            >
+                                Spicy Level
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <Flame
+                                    v-for="i in spicyLevel"
+                                    :key="i"
+                                    fill="currentColor"
+                                    class="h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4"
+                                    :class="[
+                                        i <= spicyLevel
+                                            ? [
+                                                  'text-green-500',
+                                                  'text-yellow-500',
+                                                  'text-orange-500',
+                                                  'text-red-500',
+                                              ][i]
+                                            : 'text-gray-300',
+                                    ]"
+                                />
+                            </div>
+                        </h3>
+
+                        <div class="flex items-center gap-2">
+                            <button
+                                v-for="level in 4"
+                                :key="level - 1"
+                                @click="spicyLevel = level - 1"
+                                class="relative flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-medium transition-all duration-200 hover:scale-105"
+                                :class="[
+                                    spicyLevel === level - 1
+                                        ? {
+                                              0: 'border-green-500 bg-green-500 text-white shadow-lg shadow-green-200',
+                                              1: 'border-yellow-500 bg-yellow-500 text-white shadow-lg shadow-yellow-200',
+                                              2: 'border-orange-500 bg-orange-500 text-white shadow-lg shadow-orange-200',
+                                              3: 'border-red-500 bg-red-500 text-white shadow-lg shadow-red-200',
+                                          }[level - 1]
+                                        : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400',
+                                ]"
+                            >
+                                <span class="relative z-10">{{
+                                    level - 1
+                                }}</span>
+                            </button>
+
+                            <div class="ml-2 text-xs font-medium text-gray-600">
+                                <span
+                                    :class="[
+                                        spicyLevel === 0 && 'text-green-600',
+                                        spicyLevel === 1 && 'text-yellow-600',
+                                        spicyLevel === 2 && 'text-orange-600',
+                                        spicyLevel === 3 && 'text-red-600',
+                                    ]"
+                                >
+                                    {{
+                                        ['No spicy', 'Mild', 'Spicy', 'Hot'][
+                                            spicyLevel
+                                        ]
+                                    }}
+                                </span>
                             </div>
                         </div>
                     </div>

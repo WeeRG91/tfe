@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import ClientLayout from '@/layouts/ClientLayout.vue';
-import { formatPrice, getOrderStatusVariant, getOrderTypeIcon } from '@/lib/utils';
+import {
+    formatPrice,
+    getOrderStatusVariant,
+    getOrderTypeIcon,
+} from '@/lib/utils';
 import paymentOrder from '@/routes/payment-order';
 import { OrderType } from '@/types/order';
 import { Head } from '@inertiajs/vue3';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
-import {
-    CreditCard,
-    Soup,
-    MapPin,
-    User,
-    HandCoins,
-} from 'lucide-vue-next';
+import { CreditCard, Soup, MapPin, User, HandCoins } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
@@ -98,7 +96,11 @@ onMounted(() => {
                                 <div class="text-right">
                                     <p class="text-sm text-gray-500">Status</p>
                                     <span
-                                        :class="getOrderStatusVariant(props.order.status.value)"
+                                        :class="
+                                            getOrderStatusVariant(
+                                                props.order.status.value,
+                                            )
+                                        "
                                         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                                     >
                                         {{ props.order.status.label }}
@@ -268,6 +270,14 @@ onMounted(() => {
                                                 {{ item.item.name }}
                                             </div>
                                             <div
+                                                class="mt-1 text-xs text-gray-500"
+                                            >
+                                                Spicy level:
+                                                {{
+                                                    ['No spicy', 'Mild', 'Spicy', 'Hot',][item.spicy_level]
+                                                }}
+                                            </div>
+                                            <div
                                                 v-if="item.meat"
                                                 class="mt-1 text-xs text-gray-500"
                                             >
@@ -336,7 +346,7 @@ onMounted(() => {
                 </div>
 
                 <div class="lg:w-96">
-                    <div class="sticky sm:top-20 space-y-6">
+                    <div class="sticky space-y-6 sm:top-20">
                         <div class="rounded-lg border bg-white p-6">
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"

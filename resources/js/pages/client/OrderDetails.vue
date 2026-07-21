@@ -151,7 +151,6 @@ onUnmounted(() => {
             </div>
         </section>
 
-        <!-- Print receipt -->
         <div id="receipt" class="hidden">
             <OrderReceipt v-if="currentOrder" :order-to-show="currentOrder" />
         </div>

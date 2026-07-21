@@ -30,14 +30,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const name = ref<string>('');
 const description = ref<string>('');
-const extra_price = ref<number | null>(null);
+const extra_price = ref<number>(0);
 const images = ref<File[]>([]);
 const isLoading = ref<boolean>(false);
 
 const meatForm = useForm({
     name: '',
     description: '',
-    extra_price: null as number | null,
+    extra_price: 0,
     images: [] as File[],
 });
 

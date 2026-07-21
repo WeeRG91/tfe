@@ -16,6 +16,7 @@ export type CartItemType = {
     meat: MeatItemType;
     removed_ingredients: RemovedIngredientType[];
     quantity: number;
+    spicy_level: number;
     unit_price: number;
     total_inc_vat: number;
     notes: string;
@@ -55,6 +56,7 @@ export type AddDishToCartType = {
     item_type: ItemTypeEnum;
     meat_id: number;
     quantity: number;
+    spicy_level: number;
     removed_ingredients?: number[];
     notes?: string;
 };

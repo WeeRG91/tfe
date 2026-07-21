@@ -53,6 +53,7 @@ class CartItemResource extends JsonResource
                     'main_image' => $ingredient->main_image,
                 ]) : [],
             'quantity' => $this->quantity,
+            'spicy_level' => $this->spicy_level,
             'unit_price' => $this->unit_price,
             'total_inc_vat' => $this->total,
             'notes' => $this->notes,

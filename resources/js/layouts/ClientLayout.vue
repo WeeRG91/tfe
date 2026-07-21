@@ -18,7 +18,7 @@ const user = computed(() => page.props.auth?.user);
 const notificationStore = useNotificationStore();
 const { notifications } = storeToRefs(notificationStore);
 const cartStore = useCartStore();
-const { cartItemCount } = storeToRefs(cartStore);
+const { items } = storeToRefs(cartStore);
 
 const isCartOpen = ref<boolean>(false);
 const isSearchOpen = ref<boolean>(false);
@@ -119,7 +119,7 @@ onUnmounted(() => {
     <div class="flex min-h-screen flex-col bg-white text-gray-900">
         <LayoutHeader
             :user="user"
-            :cart-item-count="cartItemCount"
+            :cart-item-count="items.length"
             :unread-notifications-count="
                 notifications.filter((n) => !n.read_at).length
             "

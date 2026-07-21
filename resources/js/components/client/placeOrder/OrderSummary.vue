@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Soup } from 'lucide-vue-next';
 import { formatPrice } from '@/lib/utils';
 import { CartItemType } from '@/types/cart';
 import { OrderItemType } from '@/types/order';
+import { Soup } from 'lucide-vue-next';
 
 defineProps<{
     items: CartItemType[] | OrderItemType[];
@@ -27,7 +27,6 @@ defineProps<{
         </h2>
 
         <div class="space-y-3">
-            <!-- Items list -->
             <div
                 v-for="item in items"
                 :key="item.id"
@@ -37,6 +36,16 @@ defineProps<{
                     <div class="flex-1">
                         <div class="font-medium">
                             {{ item.quantity }}x {{ item.item.name }}
+                        </div>
+                        <div class="mt-1 text-xs text-gray-600">
+                            <span class="font-medium">Spicy level:</span>
+                            <span class="ml-0.5 text-gray-500">
+                                {{
+                                    ['No spicy', 'Mild', 'Spicy', 'Hot'][
+                                        item.spicy_level
+                                    ]
+                                }}
+                            </span>
                         </div>
                         <div
                             v-if="item.meat"
@@ -73,7 +82,6 @@ defineProps<{
                 </div>
             </div>
 
-            <!-- Totals -->
             <div class="mt-3 space-y-1 border-t pt-3">
                 <div
                     v-if="vat12Total"

@@ -46,6 +46,7 @@ export type OrderItemType = {
     meat: MeatItemType;
     removed_ingredients: RemovedIngredientType[];
     quantity: number;
+    spicy_level: number;
     unit_price: number;
     total_inc_vat: number;
     notes: string;

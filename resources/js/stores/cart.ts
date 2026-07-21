@@ -1,4 +1,9 @@
-import { AddDishToCartType, AddDrinkToCartType, CartType } from '@/types/cart';
+import {
+    AddDishToCartType,
+    AddDrinkToCartType,
+    CartItemType,
+    CartType,
+} from '@/types/cart';
 import axios from 'axios';
 import { defineStore } from 'pinia';
 
@@ -9,9 +14,7 @@ export const useCartStore = defineStore('cart', {
     }),
 
     getters: {
-        items: (state) => state.cart?.items ?? [],
-
-        cartItemCount: (state) => state.cart?.items?.length ?? 0,
+        items: (state): CartItemType[] => state.cart?.items ?? [],
     },
 
     actions: {

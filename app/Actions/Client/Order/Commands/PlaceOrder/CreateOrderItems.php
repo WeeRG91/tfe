@@ -50,6 +50,7 @@ class CreateOrderItems
                 'item_type' => $item->item_type,
                 'meat_id' => $item->meat_id,
                 'quantity' => $item->quantity,
+                'spicy_level' => $item->spicy_level,
                 'unit_price' => $item->unit_price,
                 'vat_rate' => $vatRate,
                 'vat_amount' => $vatAmount,

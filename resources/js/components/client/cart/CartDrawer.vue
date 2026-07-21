@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart';
+import { ItemTypeEnum } from '@/types/cart';
 import {
     Coffee,
     CreditCard,
@@ -13,7 +14,6 @@ import {
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { ItemTypeEnum } from '@/types/cart';
 
 const props = defineProps<{
     open: boolean;
@@ -274,13 +274,51 @@ watch(
 
                                         <div class="mt-2 space-y-1.5">
                                             <div
-                                                v-if="item.meat"
                                                 class="flex items-center gap-1.5"
                                             >
                                                 <span
                                                     class="text-xs font-medium text-gray-500"
-                                                    >Meat:</span
                                                 >
+                                                    Spicy Level:
+                                                </span>
+                                                <div
+                                                    class="text-xs font-medium text-gray-600"
+                                                >
+                                                    <span
+                                                        :class="[
+                                                            item.spicy_level ===
+                                                                0 &&
+                                                                'text-green-600',
+                                                            item.spicy_level ===
+                                                                1 &&
+                                                                'text-yellow-600',
+                                                            item.spicy_level ===
+                                                                2 &&
+                                                                'text-orange-600',
+                                                            item.spicy_level ===
+                                                                3 &&
+                                                                'text-red-600',
+                                                        ]"
+                                                    >
+                                                        {{
+                                                            [
+                                                                'No spicy',
+                                                                'Mild',
+                                                                'Spicy',
+                                                                'Hot',
+                                                            ][item.spicy_level]
+                                                        }}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div
+                                                v-if="item.meat"
+                                                class="flex items-center gap-1.5"
+                                            >
+                                                <span class="text-xs font-medium text-gray-500">
+                                                    Meat:
+                                                </span>
                                                 <div
                                                     class="flex items-center gap-1"
                                                 >

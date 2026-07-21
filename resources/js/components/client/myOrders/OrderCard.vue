@@ -97,7 +97,6 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
     <div
         class="rounded-lg border bg-white shadow-sm transition-all hover:shadow-md"
     >
-        <!-- Order Header -->
         <div
             @click="toggleDetails"
             class="cursor-pointer p-4 transition-colors hover:bg-gray-50"
@@ -150,7 +149,6 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                     </div>
                 </div>
 
-                <!-- Progress Bar -->
                 <div class="mt-2">
                     <div
                         class="mb-1 flex justify-between text-xs text-gray-600"

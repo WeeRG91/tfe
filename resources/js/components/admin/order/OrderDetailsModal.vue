@@ -92,7 +92,6 @@ watch(
         <div
             class="relative mx-2 w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-900"
         >
-            <!-- Header -->
             <div
                 class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
             >
@@ -139,12 +138,9 @@ watch(
                 </button>
             </div>
 
-            <!-- Content -->
             <div class="max-h-[calc(100vh-8rem)] overflow-y-auto p-6">
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                    <!-- Left Column - Order Details -->
                     <div class="space-y-6 lg:col-span-2">
-                        <!-- Order Items -->
                         <div
                             class="rounded-lg border border-gray-200 dark:border-gray-700"
                         >
@@ -195,7 +191,12 @@ watch(
                                                 </span>
                                             </div>
 
-                                            <!-- Meat option -->
+                                            <div
+                                                class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                                            >
+                                                Spicy level: {{ ['No spicy', 'Mild', 'Spicy', 'Hot'][item.spicy_level] }}
+                                            </div>
+
                                             <div
                                                 v-if="item.meat"
                                                 class="mt-1 text-xs text-gray-500 dark:text-gray-400"
@@ -203,7 +204,6 @@ watch(
                                                 Meat: {{ item.meat.name }}
                                             </div>
 
-                                            <!-- Removed ingredients -->
                                             <div
                                                 v-if="
                                                     item.removed_ingredients
@@ -224,7 +224,6 @@ watch(
                             </div>
                         </div>
 
-                        <!-- Order Timeline -->
                         <div
                             class="rounded-lg border border-gray-200 dark:border-gray-700"
                         >
@@ -379,9 +378,7 @@ watch(
                         </div>
                     </div>
 
-                    <!-- Right Column - Customer & Payment Info -->
                     <div class="space-y-6">
-                        <!-- Customer Information -->
                         <div
                             class="rounded-lg border border-gray-200 dark:border-gray-700"
                         >
@@ -508,7 +505,6 @@ watch(
                             </div>
                         </div>
 
-                        <!-- Payment Information -->
                         <div
                             class="rounded-lg border border-gray-200 dark:border-gray-700"
                         >
@@ -586,7 +582,6 @@ watch(
                             </div>
                         </div>
 
-                        <!-- Order Summary -->
                         <div
                             class="rounded-lg border border-gray-200 dark:border-gray-700"
                         >
@@ -650,7 +645,6 @@ watch(
                                     >
                                 </div>
 
-                                <!-- VAT Breakdown -->
                                 <div
                                     v-if="order.vat_breakdown?.length"
                                     class="space-y-1 pl-4"

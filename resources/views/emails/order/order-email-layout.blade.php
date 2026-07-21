@@ -407,6 +407,7 @@
                                     <div class="item-name">{{ $item->item->name }}</div>
                                     <div class="item-details">
                                         <p><strong>Category:</strong> {{ $item->item->category->label() }}</p>
+                                        <p class="meat-info">• {{ ['No spicy', 'Mild', 'Spicy', 'Hot'][$item->spicy_level] }}</p>
                                         @if($item->meat)
                                             <p class="meat-info">✓ {{ $item->meat->name }} @if($item->meat->extra_price > 0)(+€{{ number_format($item->meat->extra_price, 2) }})@endif</p>
                                         @endif

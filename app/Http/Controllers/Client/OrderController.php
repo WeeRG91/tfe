@@ -32,6 +32,7 @@ class OrderController extends Controller
 {
     /**
      * @param Order $order
+     * @param GetOrder $getOrder
      * @return InertiaResponse
      */
     public function orderDetails(Order $order, GetOrder $getOrder): InertiaResponse

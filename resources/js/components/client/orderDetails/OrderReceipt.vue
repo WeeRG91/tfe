@@ -36,6 +36,9 @@ defineProps<{
                     <span>{{ item.quantity }} x {{ item.item?.name }}</span>
                     <span>€{{ formatPrice(item.total_inc_vat) }}</span>
                 </div>
+                <div>
+                    &nbsp;• {{ ['No spicy', 'Mild', 'Spicy', 'Hot'][item.spicy_level] }}
+                </div>
                 <div v-if="item.meat">
                     &nbsp;+ {{ item.meat.name }} (€{{
                         formatPrice(item.meat.extra_price)

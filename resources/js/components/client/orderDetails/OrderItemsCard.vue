@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { OrderType } from '@/types/order';
 import { formatPrice } from '@/lib/utils';
+import { OrderType } from '@/types/order';
 import { Soup } from 'lucide-vue-next';
 
 defineProps<{
@@ -27,6 +27,16 @@ defineProps<{
                     <div class="flex-1">
                         <div class="font-medium">
                             {{ item.quantity }}x {{ item.item?.name }}
+                        </div>
+                        <div
+                            class="mt-1 text-xs text-gray-500"
+                        >
+                            Spicy level:
+                            {{
+                                ['No spicy', 'Mild', 'Spicy', 'Hot'][
+                                    item.spicy_level
+                                ]
+                            }}
                         </div>
                         <div
                             v-if="item.meat"

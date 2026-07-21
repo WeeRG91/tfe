@@ -28,6 +28,7 @@ class DishCreateRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'category' => ['required', new Enum(DishCategoryEnum::class)],
+            'default_spicy_level' => ['required', 'integer', 'between:0,3'],
             'price' => ['required', 'numeric'],
             'meats' => ['nullable', 'array', 'exists:meats,id'],
             'ingredients' => ['required', 'array', 'exists:ingredients,id'],

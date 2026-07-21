@@ -7,6 +7,7 @@ export type DishType = {
     main_image: string;
     description: string | null;
     price: number;
+    default_spicy_level: number;
     category: CategoryOptionType;
     is_available: string;
     created_at: string;
@@ -20,6 +21,7 @@ export type EditDishType = {
     category: number;
     description: string;
     price: number;
+    default_spicy_level: number;
     meats: { id: number }[];
     ingredients: { id: number }[];
     main_image: string;
@@ -30,6 +32,7 @@ export type DishErrorType = {
     name?: string;
     description?: string;
     price?: string;
+    default_spicy_level?: string;
     meats?: string;
     ingredients?: string;
     category?: string;
@@ -41,6 +44,7 @@ export type ClientDishType = {
     main_image: string;
     description: string | null;
     price: number;
+    default_spicy_level: number;
     category: CategoryOptionType;
     is_available: string;
     ingredients: ShowIngredientType[];

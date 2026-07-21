@@ -20,6 +20,7 @@ class Dish extends Model
     {
         return [
             'category' => DishCategoryEnum::class,
+            'default_spicy_lavel' =>'integer',
         ];
     }
 
