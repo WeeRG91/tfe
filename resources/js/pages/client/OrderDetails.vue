@@ -28,42 +28,50 @@ const removeOrder = (orderId: number) => {
 };
 
 const printOrder = () => {
-    const content = document.getElementById('receipt')?.innerHTML;
+    const receipt = document.getElementById('receipt');
 
-    const win = window.open('', '', 'width=300,height=600');
+    if (!receipt) return;
 
-    if (!win || !content) return;
+    const win = window.open('', '_blank', 'width=300,height=600');
 
-    win.document.write(`
-        <html>
-            <head>
-                <title>Receipt</title>
-                <style>
-                    body {
-                        font-family: "Courier New", monospace;
-                        width: 280px;
-                        margin: 0;
-                        padding: 10px;
-                    }
-                    .divider {
-                        border-top: 1px dashed black;
-                        margin: 6px 0;
-                    }
-                    .flex {
-                        display: flex;
-                        justify-content: space-between;
-                    }
-                    .text-center {
-                        text-align: center;
-                    }
-                </style>
-            </head>
-            <body>${content}</body>
-        </html>
-    `);
+    if (!win) return;
+
+    win.document.documentElement.lang = 'en';
+
+    const style = win.document.createElement('style');
+    style.textContent = `
+        body {
+            font-family: "Courier New", monospace;
+            width: 280px;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .divider {
+            border-top: 1px dashed black;
+            margin: 6px 0;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    `;
+
+    win.document.head.appendChild(style);
+
+    win.document.body.innerHTML = receipt.innerHTML;
 
     win.document.close();
+
+    win.focus();
+
     win.print();
+
     win.close();
 };
 
@@ -138,7 +146,7 @@ onUnmounted(() => {
                 </div>
 
                 <div class="lg:w-96">
-                    <div class="sticky sm:top-20 space-y-6">
+                    <div class="sticky space-y-6 sm:top-20">
                         <PaymentSummaryCard :order-to-show="currentOrder" />
 
                         <QuickActionsCard

@@ -16,11 +16,14 @@ const props = defineProps<{
     availablePoints: LoyaltyPointTransactionType[];
 }>()
 
+console.log(props.availablePoints)
+
 const filterOptions: { label: string; value: FilterPointEnum }[] = [
     { label: 'All', value: FilterPointEnum.ALL },
     { label: 'Earned', value: FilterPointEnum.EARNED },
     { label: 'Redeemed', value: FilterPointEnum.REDEEMED },
     { label: 'Refunded', value: FilterPointEnum.REFUNDED },
+    { label: 'Reversed', value: FilterPointEnum.REVERSED },
 ];
 
 const loyaltyPointTransactions = ref<LoyaltyPointTransactionType[]>([]);

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ImageService
 {
@@ -19,7 +20,17 @@ class ImageService
         $folder ??= 'images/' . Str::snake(class_basename($model));
 
         foreach ($files as $file) {
-            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $extension = match ($file->getMimeType()) {
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/webp' => 'webp',
+                default => throw ValidationException::withMessages([
+                    'images' => 'Unsupported image format.',
+                ]),
+            };
+
+            $fileName = Str::uuid()->toString().'.'.$extension;
+
             $path = $file->storeAs($folder, $fileName, 'public');
 
             $model->images()->create([

@@ -10,7 +10,7 @@ import { OrderType } from '@/types/order';
 import { Head } from '@inertiajs/vue3';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
-import { CreditCard, Soup, MapPin, User, HandCoins } from 'lucide-vue-next';
+import { CreditCard, HandCoins, MapPin, Soup, User } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
@@ -20,36 +20,74 @@ const props = defineProps<{
 const stripe = ref<any>(null);
 const elements = ref<any>(null);
 const isLoading = ref<boolean>(false);
+const isInitializing = ref<boolean>(true);
+const paymentError = ref<string | null>(null);
 
 const initPayment = async () => {
-    const { data } = await axios.get(
-        paymentOrder.createPaymentIntent(props.order.id).url,
-    );
+    isInitializing.value = true;
+    paymentError.value = null;
 
-    stripe.value = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+    try {
+        const { data } = await axios.post(
+            paymentOrder.createPaymentIntent(props.order.id).url,
+        );
 
-    elements.value = stripe.value.elements({
-        clientSecret: data.client_secret,
-    });
+        if (!data.client_secret) {
+            paymentError.value = 'Payment could not be initialized.';
+            return;
+        }
 
-    const paymentElement = elements.value.create('payment');
-    paymentElement.mount('#stripe-payment-element');
+        stripe.value = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+        if (!stripe.value) {
+            paymentError.value = 'Stripe could not be loaded.';
+            return;
+        }
+
+        elements.value = stripe.value.elements({
+            clientSecret: data.client_secret,
+        });
+
+        const paymentElement = elements.value.create('payment');
+        paymentElement.mount('#stripe-payment-element');
+    } catch (error: any) {
+        paymentError.value =
+            error.response?.data?.message ??
+            error.message ??
+            'Unable to initialize payment. Please try again.';
+    } finally {
+        isInitializing.value = false;
+    }
 };
 
 const pay = async () => {
+    if (!stripe.value || !elements.value || isLoading.value) {
+        return;
+    }
+
     isLoading.value = true;
+    paymentError.value = null;
 
-    const { error } = await stripe.value.confirmPayment({
-        elements: elements.value,
-        confirmParams: {
-            return_url:
-                window.location.origin +
-                `/payments/${props.order.id}/payment-success`,
-        },
-    });
+    try {
+        const { error } = await stripe.value.confirmPayment({
+            elements: elements.value,
+            confirmParams: {
+                return_url:
+                    window.location.origin +
+                    `/payments/${props.order.id}/payment-success`,
+            },
+        });
 
-    if (error) {
-        alert(error.message);
+        if (error) {
+            paymentError.value =
+                error.message ??
+                'Your payment could not be completed. Please try again.';
+
+            isLoading.value = false;
+        }
+    } catch {
+        paymentError.value = 'An unexpected error occurred. Please try again.';
+
         isLoading.value = false;
     }
 };
@@ -274,7 +312,12 @@ onMounted(() => {
                                             >
                                                 Spicy level:
                                                 {{
-                                                    ['No spicy', 'Mild', 'Spicy', 'Hot',][item.spicy_level]
+                                                    [
+                                                        'No spicy',
+                                                        'Mild',
+                                                        'Spicy',
+                                                        'Hot',
+                                                    ][item.spicy_level]
                                                 }}
                                             </div>
                                             <div
@@ -446,21 +489,50 @@ onMounted(() => {
                                 class="mb-6 min-h-[120px]"
                             ></div>
 
+                            <div
+                                v-if="paymentError"
+                                role="alert"
+                                class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4"
+                            >
+                                <p class="font-medium text-red-800">
+                                    Payment unsuccessful
+                                </p>
+                                <p class="mt-1 text-sm text-red-700">
+                                    {{ paymentError }}
+                                </p>
+                                <p class="mt-2 text-xs text-red-600">
+                                    Your order has not been charged. You can
+                                    correct your payment details and try again.
+                                </p>
+                            </div>
+
                             <button
+                                type="button"
+                                :disabled="
+                                    isLoading || isInitializing || !stripe
+                                "
                                 @click="pay"
-                                class="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 py-3 text-sm text-white transition-all hover:shadow-md hover:shadow-red-200"
+                                class="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 py-3 text-sm text-white transition-all hover:shadow-md hover:shadow-red-200 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 <span
                                     class="relative z-10 flex items-center justify-center gap-2 font-semibold"
                                 >
                                     <span
-                                        v-if="isLoading"
+                                        v-if="isLoading || isInitializing"
                                         class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                                     ></span>
                                     <CreditCard v-else class="h-4 w-4" />
-                                    Pay €{{
-                                        formatPrice(props.order.total_inc_vat)
-                                    }}
+
+                                    <span v-if="isInitializing"
+                                        >Loading payment form…</span
+                                    >
+                                    <span v-else>
+                                        Pay €{{
+                                            formatPrice(
+                                                props.order.total_inc_vat,
+                                            )
+                                        }}
+                                    </span>
                                 </span>
                                 <div
                                     class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-red-600 to-red-700 transition-transform duration-300 group-hover:translate-x-0"

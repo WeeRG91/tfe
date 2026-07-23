@@ -17,4 +17,7 @@ export enum PaymentStatusEnum {
     PENDING = 1,
     PAID = 2,
     FAILED = 3,
+    REFUND_PENDING = 4,
+    REFUNDED = 5,
+    REFUND_FAILED = 6,
 }

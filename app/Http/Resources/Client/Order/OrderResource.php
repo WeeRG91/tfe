@@ -54,6 +54,8 @@ class OrderResource extends JsonResource
             'vat_total' => $this->vat_total,
             'vat_breakdown' => $this->vat_breakdown ?? [],
             'delivery_fee' => $this->delivery_fee,
+            'stripe_refund_status' => $this->stripe_refund_status,
+            'stripe_refund_id' => $this->stripe_refund_id,
             'items' => $this->whenLoaded('items')->map(fn ($item) => new OrderItemResource($item)),
         ];
     }

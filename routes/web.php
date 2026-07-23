@@ -71,8 +71,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::controller(PaymentController::class)->prefix('payments')->name('payment-order.')->group(function () {
         Route::get('/{order}/payment', 'payment')->name('payment');
-        Route::get('/{order}/create-payment-intent', 'createPaymentIntent')->name('create-payment-intent');
         Route::get('/{order}/payment-success', 'paymentSuccess')->name('payment-success');
+        Route::post('/{order}/create-payment-intent', 'createPaymentIntent')->name('create-payment-intent');
     });
 
     Route::controller(NotificationController::class)->prefix('notifications')->name('notification.')->group(function () {

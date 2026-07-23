@@ -37,6 +37,8 @@ class OrderController extends Controller
      */
     public function orderDetails(Order $order, GetOrder $getOrder): InertiaResponse
     {
+        $this->authorize('view', $order);
+
         return Inertia::render('client/OrderDetails', [
             'orderToShow' => new OrderResource(
                 $getOrder->execute($order)
@@ -74,6 +76,8 @@ class OrderController extends Controller
      */
     public function getOrder(Order $order, GetOrder $getOrder): JsonResponse
     {
+        $this->authorize('view', $order);
+
         return response()->json([
             'order' => new OrderResource(
                 $getOrder->execute($order)
@@ -141,10 +145,9 @@ class OrderController extends Controller
      */
     public function cancel(Order $order, CancelOrder $cancelOrder): HttpResponse
     {
-        $cancelOrder->execute(
-            auth()->user(),
-            $order,
-        );
+        $this->authorize('cancel', $order);
+
+        $cancelOrder->execute($order);
 
         return response()->noContent();
     }
@@ -156,6 +159,8 @@ class OrderController extends Controller
      */
     public function destroy(Order $order, DeleteOrder $deleteOrder): HttpResponse
     {
+        $this->authorize('delete', $order);
+
         $deleteOrder->execute($order);
 
         return response()->noContent();

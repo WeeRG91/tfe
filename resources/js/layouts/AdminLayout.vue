@@ -24,19 +24,26 @@ type EchoChannel = {
     listen: (event: string, callback: () => void) => EchoChannel;
 };
 
-const channel = ref<EchoChannel | null>(null);
+const channelOrderPlaced = ref<EchoChannel | null>(null);
+const channelOrderCancelled = ref<EchoChannel | null>(null);
 const channelAdminChat = ref<EchoChannel | null>(null);
 
 onMounted(async () => {
     if (can(OrderPermissionEnum.ORDER_VIEW)) {
         await orderStore.getConfirmedOrders();
 
-        channel.value = window.Echo.channel('orders').listen(
-            '.order.placed',
+        channelOrderPlaced.value = window.Echo.private('order-placed').listen(
+            '.order-placed',
             async () => {
                 await orderStore.getConfirmedOrders();
             },
         );
+
+        channelOrderCancelled.value = window.Echo.private(
+            'order-cancelled',
+        ).listen('.order-cancelled', async () => {
+            await orderStore.getConfirmedOrders();
+        });
     }
 
     if (can(ChatPermissionEnum.CHAT_VIEW)) {
@@ -53,8 +60,12 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-    if (channel.value) {
-        window.Echo.leave('orders');
+    if (channelOrderPlaced.value) {
+        window.Echo.leave('order-placed');
+    }
+
+    if (channelOrderCancelled.value) {
+        window.Echo.leave('order-cancelled');
     }
 
     if (channelAdminChat.value) {

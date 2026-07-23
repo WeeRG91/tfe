@@ -9,6 +9,9 @@ enum PaymentStatusEnum: int
     case PENDING = 1;
     case PAID = 2;
     case FAILED = 3;
+    case REFUND_PENDING = 4;
+    case REFUNDED = 5;
+    case REFUND_FAILED = 6;
 
     public function label(): string
     {
@@ -16,6 +19,9 @@ enum PaymentStatusEnum: int
             self::PENDING => 'Pending',
             self::PAID => 'Paid',
             self::FAILED => 'Failed',
+            self::REFUND_PENDING => 'Refund pending',
+            self::REFUNDED => 'Refunded',
+            self::REFUND_FAILED => 'Refund failed',
         };
     }
 
@@ -33,5 +39,19 @@ enum PaymentStatusEnum: int
             self::getPaymentStatuses(),
             fn($item) => $item['value'] === $case->value,
         );
+    }
+
+    public static function fromStripeRefundStatus(
+        string $status
+    ): self {
+        return match ($status) {
+            'succeeded' => self::REFUNDED,
+
+            'pending',
+            'requires_action' => self::REFUND_PENDING,
+
+            'failed',
+            'canceled' => self::REFUND_FAILED,
+        };
     }
 }

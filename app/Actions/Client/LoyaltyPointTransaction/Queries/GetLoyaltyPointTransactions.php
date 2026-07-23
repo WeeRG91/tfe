@@ -22,6 +22,7 @@ class GetLoyaltyPointTransactions
                     'earned' => $query->where('type', LoyaltyPointTransactionTypeEnum::EARNED),
                     'redeemed' => $query->where('type', LoyaltyPointTransactionTypeEnum::REDEEMED),
                     'refunded' => $query->where('type', LoyaltyPointTransactionTypeEnum::REFUNDED),
+                    'reversed' => $query->where('type', LoyaltyPointTransactionTypeEnum::REVERSED),
                     default => null,
                 };
             })

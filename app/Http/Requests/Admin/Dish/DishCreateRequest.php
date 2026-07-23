@@ -32,7 +32,15 @@ class DishCreateRequest extends FormRequest
             'price' => ['required', 'numeric'],
             'meats' => ['nullable', 'array', 'exists:meats,id'],
             'ingredients' => ['required', 'array', 'exists:ingredients,id'],
-            'images' => ['nullable', 'array'],
+            'images' => ['nullable', 'array', 'max:5'],
+            'images.*' => [
+                'required',
+                'file',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+                'dimensions:min_width=5000,min_height=5000',
+            ],
         ];
     }
 }

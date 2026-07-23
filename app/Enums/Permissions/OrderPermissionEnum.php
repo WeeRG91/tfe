@@ -6,6 +6,7 @@ enum OrderPermissionEnum: string
 {
     case ORDER_VIEW = 'order.view';
     case ORDER_UPDATE = 'order.update';
+    case ORDER_CANCEL = 'order.cancel';
 
     public function label(): string
     {

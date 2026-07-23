@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formatDate } from '@/lib/utils';
 import { LoyaltyPointTransactionType, PointTypeEnum } from '@/types/point';
-import { Clock, LucideProps, Minus, Plus, X } from 'lucide-vue-next';
+import { Clock, LucideProps, Minus, Plus, X, RefreshCw } from 'lucide-vue-next';
 import { FunctionalComponent } from 'vue';
 
 defineProps<{
@@ -13,6 +13,7 @@ const getPointIcon = (type: PointTypeEnum) => {
         [PointTypeEnum.EARNED]: Plus,
         [PointTypeEnum.REDEEMED]: Minus,
         [PointTypeEnum.REFUNDED]: X,
+        [PointTypeEnum.REVERSED]: RefreshCw,
     };
     return icon[type] || Clock;
 };
@@ -22,6 +23,7 @@ const getPointColor = (type: PointTypeEnum) => {
         [PointTypeEnum.EARNED]: 'text-green-600',
         [PointTypeEnum.REDEEMED]: 'text-red-600',
         [PointTypeEnum.REFUNDED]: 'text-yellow-600',
+        [PointTypeEnum.REVERSED]: 'text-orange-600',
     };
     return color[type] || 'text-gray-600';
 };
@@ -31,6 +33,7 @@ const getPointBgColor = (type: PointTypeEnum) => {
         [PointTypeEnum.EARNED]: 'bg-green-100',
         [PointTypeEnum.REDEEMED]: 'bg-red-100',
         [PointTypeEnum.REFUNDED]: 'bg-yellow-100',
+        [PointTypeEnum.REVERSED]: 'bg-orange-100',
     };
     return bgColor[type] || 'bg-gray-100';
 };
@@ -40,6 +43,7 @@ const getPointPrefix = (type: PointTypeEnum) => {
         [PointTypeEnum.EARNED]: '+',
         [PointTypeEnum.REDEEMED]: '-',
         [PointTypeEnum.REFUNDED]: '+',
+        [PointTypeEnum.REVERSED]: '-',
     };
     return prefix[type] || '';
 };
@@ -89,7 +93,6 @@ const getTypeLabel = (type: PointTypeEnum) => {
             </div>
         </div>
 
-        <!-- Right Section - Points -->
         <div class="ml-2 shrink-0 text-right md:ml-4">
             <p
                 class="text-base font-bold md:text-lg"

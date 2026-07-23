@@ -9,9 +9,10 @@ import ClientLayout from '@/layouts/ClientLayout.vue';
 import order from '@/routes/order';
 import { OrderType } from '@/types/order';
 import { PaymentStatusEnum } from '@/types/payment';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import axios from 'axios';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, onUnmounted } from 'vue';
+import paymentOrder from '@/routes/payment-order';
 
 const props = defineProps<{
     orderToPay: OrderType;
@@ -19,101 +20,161 @@ const props = defineProps<{
 
 const paidOrder = ref<OrderType>(props.orderToPay);
 const isPaid = computed(
-    () => paidOrder.value?.payment_status.value === PaymentStatusEnum.PAID,
+    () => paidOrder.value.payment_status.value === PaymentStatusEnum.PAID,
+);
+const hasFailed = computed(
+    () => paidOrder.value.payment_status.value === PaymentStatusEnum.FAILED,
+);
+const isPending = computed(
+    () => paidOrder.value.payment_status.value === PaymentStatusEnum.PENDING,
 );
 
 const printOrder = () => {
-    const content = document.getElementById('receipt')?.innerHTML;
+    const receipt = document.getElementById('receipt');
 
-    const win = window.open('', '', 'width=300,height=600');
+    if (!receipt) return;
 
-    if (!win || !content) return;
+    const win = window.open('', '_blank', 'width=300,height=600');
 
-    win.document.write(`
-        <html>
-            <head>
-                <title>Receipt</title>
-                <style>
-                    body {
-                        font-family: "Courier New", monospace;
-                        width: 280px;
-                        margin: 0;
-                        padding: 10px;
-                    }
-                    .divider {
-                        border-top: 1px dashed black;
-                        margin: 6px 0;
-                    }
-                    .flex {
-                        display: flex;
-                        justify-content: space-between;
-                    }
-                    .text-center {
-                        text-align: center;
-                    }
-                </style>
-            </head>
-            <body>${content}</body>
-        </html>
-    `);
+    if (!win) return;
+
+    win.document.documentElement.lang = 'en';
+
+    const style = win.document.createElement('style');
+    style.textContent = `
+        body {
+            font-family: "Courier New", monospace;
+            width: 280px;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .divider {
+            border-top: 1px dashed black;
+            margin: 6px 0;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    `;
+
+    win.document.head.appendChild(style);
+
+    win.document.body.innerHTML = receipt.innerHTML;
 
     win.document.close();
+
+    win.focus();
+
     win.print();
+
     win.close();
 };
 
+let paymentTimer: ReturnType<typeof setTimeout> | null = null;
+
 const checkPayment = async () => {
-    if (isPaid.value) return;
+    if (isPaid.value || hasFailed.value) {
+        return;
+    }
 
-    const { data } = await axios.get(order.getOrder(props.orderToPay.id).url);
+    try {
+        const { data } = await axios.get(
+            order.getOrder(props.orderToPay.id).url,
+        );
 
-    if (data.order.payment_status.value === PaymentStatusEnum.PAID) {
         paidOrder.value = data.order as OrderType;
-    } else {
-        setTimeout(checkPayment, 2000);
+
+        if (data.order.payment_status.value === PaymentStatusEnum.PENDING) {
+            paymentTimer = setTimeout(checkPayment, 2000);
+        }
+    } catch {
+        paymentTimer = setTimeout(checkPayment, 5000);
     }
 };
 
 onMounted(() => {
     checkPayment();
 });
+
+onUnmounted(() => {
+    if (paymentTimer) {
+        clearTimeout(paymentTimer);
+    }
+});
 </script>
 
 <template>
-    <Head title="Payment Successful" />
+    <Head
+        :title="
+            isPaid
+                ? 'Payment Successful'
+                : hasFailed
+                  ? 'Payment Failed'
+                  : 'Confirming Payment'
+        "
+    />
 
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-8">
-                <p class="text-sm tracking-widest text-red-500 uppercase">
+                <p class="text-sm tracking-widest text-red-500 uppercase mb-1">
                     [ Payment Details ]
                 </p>
-                <h1
-                    v-if="!isPaid"
-                    class="text-4xl font-semibold uppercase md:text-5xl"
+                <div
+                    v-if="isPending"
+                    class="rounded-lg border border-yellow-200 bg-yellow-50 p-5"
                 >
-                    Waiting for payment confirmation...
-                </h1>
-                <p v-if="!isPaid" class="mt-2 text-gray-600">
-                    Thank you for your order.
-                </p>
-                <p v-if="!isPaid" class="mt-1 text-sm text-gray-500">
-                    A confirmation email will be sent to your registered email
-                    address, when the payment has been confirmed.
-                </p>
-                <h1
-                    v-if="isPaid"
-                    class="text-4xl font-semibold text-green-600 uppercase md:text-5xl"
+                    <h1 class="text-2xl font-semibold text-yellow-800">
+                        Confirming your payment…
+                    </h1>
+                    <p class="mt-2 text-sm text-yellow-700">
+                        Please wait while we receive confirmation from Stripe.
+                        Do not close this page.
+                    </p>
+                </div>
+                <div
+                    v-else-if="isPaid"
+                    class="rounded-lg border border-green-200 bg-green-50 p-5"
                 >
-                    Payment successful!
-                </h1>
-                <p v-if="isPaid" class="mt-2 text-gray-600">
-                    Thank you for your order. Your payment has been confirmed.
-                </p>
-                <p v-if="isPaid" class="mt-1 text-sm text-gray-500">
-                    A confirmation email has been sent to your registered email
-                    address.
-                </p>
+                    <h1 class="text-2xl font-semibold text-green-800">
+                        Payment successful
+                    </h1>
+                    <p class="mt-2 text-green-700">
+                        Thank you for your order. Your payment has been
+                        confirmed.
+                    </p>
+                    <p class="mt-1 text-sm text-green-700">
+                        A confirmation email has been sent to your registered
+                        email address.
+                    </p>
+                </div>
+                <div
+                    v-else-if="hasFailed"
+                    class="rounded-lg border border-red-200 bg-red-50 p-5"
+                >
+                    <h1 class="text-2xl font-semibold text-red-800">
+                        Payment unsuccessful
+                    </h1>
+
+                    <p class="mt-2 text-sm text-red-700">
+                        We could not complete your payment. Your order has not
+                        been confirmed.
+                    </p>
+
+                    <Link
+                        :href="paymentOrder.payment(paidOrder.id).url"
+                        class="mt-4 inline-flex rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                    >
+                        Try payment again
+                    </Link>
+                </div>
             </div>
 
             <div class="flex flex-col gap-6 lg:flex-row">
@@ -151,7 +212,7 @@ onMounted(() => {
                 </div>
 
                 <div class="lg:w-96">
-                    <div class="sticky sm:top-20 space-y-6">
+                    <div class="sticky space-y-6 sm:top-20">
                         <PaymentSummaryCard :order-to-show="paidOrder" />
 
                         <QuickActionsCard

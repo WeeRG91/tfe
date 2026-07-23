@@ -11,7 +11,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
-use Stripe\Exception\ApiErrorException;;
+use Stripe\Exception\ApiErrorException;
+use Throwable;
+
+;
 
 class PaymentController extends Controller
 {
@@ -42,11 +45,13 @@ class PaymentController extends Controller
      */
     public function createPaymentIntent(Order $order, CreatePaymentIntent $createPaymentIntent): JsonResponse
     {
-        $result = $createPaymentIntent->execute($order);
+        $this->authorize('pay', $order);
+
+        $results = $createPaymentIntent->execute($order);
 
         return response()->json([
-            'message' => $result['message'],
-            'client_secret' => $result['client_secret'],
+            'message' => $results['message'],
+            'client_secret' => $results['client_secret'],
         ]);
     }
 
@@ -54,6 +59,7 @@ class PaymentController extends Controller
      * @param Request $request
      * @param HandleStripeWebhook $handleStripeWebhook
      * @return JsonResponse
+     * @throws Throwable
      */
     public function stripeWebhook(Request $request, HandleStripeWebhook $handleStripeWebhook): JsonResponse
     {

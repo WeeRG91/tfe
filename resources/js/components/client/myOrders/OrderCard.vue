@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import {
     formatDate,
     formatPrice,
@@ -12,6 +13,7 @@ import {
 import order from '@/routes/order';
 import paymentOrder from '@/routes/payment-order';
 import { OrderStatusEnum, OrderType } from '@/types/order';
+import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/payment';
 import { router } from '@inertiajs/vue3';
 import {
     ChevronDown,
@@ -25,7 +27,6 @@ import {
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import OrderItemsList from './OrderItemsList.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const props = defineProps<{
     orderToShow: OrderType;
@@ -42,6 +43,17 @@ const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
 const expandedOrderId = ref<number | null>(null);
+
+const cancellationDescription = computed(() => {
+    if (
+        props.orderToShow.payment_method.value === PaymentMethodEnum.CARD &&
+        props.orderToShow.payment_status.value === PaymentStatusEnum.PAID
+    ) {
+        return `This order has already been paid. Cancelling it will refund of €${formatPrice(props.orderToShow.total_inc_vat)} to your original payment method.`;
+    }
+
+    return 'Are you sure you want to cancel this order?'
+});
 
 const isExpanded = computed(
     () => expandedOrderId.value === props.orderToShow.id,
@@ -293,11 +305,11 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                     <button
                         v-if="
                             orderToShow.status?.value ===
-                            OrderStatusEnum.PENDING
+                            OrderStatusEnum.PENDING || orderToShow.status.value === OrderStatusEnum.CONFIRMED
                         "
                         @click="
                             openConfirmModal(
-                                'Are you sure you want to cancel this order?',
+                                cancellationDescription,
                                 'destructive',
                                 () => cancelOrder(),
                             )
@@ -327,9 +339,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                     <button
                         v-if="
                             orderToShow.status?.value ===
-                                OrderStatusEnum.COMPLETED ||
-                            orderToShow.status?.value ===
-                                OrderStatusEnum.CANCELLED
+                            OrderStatusEnum.CANCELLED
                         "
                         @click="
                             openConfirmModal(

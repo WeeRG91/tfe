@@ -35,6 +35,8 @@ export type OrderType = {
     }[];
     delivery_fee: number;
     items: OrderItemType[];
+    stripe_refund_status: StripeRefundStatus;
+    stripe_refund_id: string | null;
 };
 
 export type OrderItemType = {
@@ -147,3 +149,11 @@ export const ActiveStatuses = [
     OrderStatusEnum.READY,
     OrderStatusEnum.DELIVERING,
 ];
+
+export type StripeRefundStatus =
+    | 'pending'
+    | 'requires_action'
+    | 'succeeded'
+    | 'failed'
+    | 'canceled'
+    | null;

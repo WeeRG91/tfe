@@ -9,7 +9,14 @@ import {
 } from '@/lib/utils';
 import { useOrderStore } from '@/stores/order';
 import { OrderStatusEnum, OrderType, OrderTypeEnum } from '@/types/order';
-import { ChevronDown, ChevronUp, Coffee, MapPin, User } from 'lucide-vue-next';
+import {
+    ChevronDown,
+    ChevronUp,
+    Coffee,
+    MapPin,
+    User,
+    LoaderCircle,
+} from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { usePermission } from '@/composables/usePermission';
@@ -20,7 +27,7 @@ const props = defineProps<{
     updateStatusOrderId: number | null;
 }>();
 
-const {can} = usePermission();
+const { can } = usePermission();
 
 const emit = defineEmits<{
     'update-status': [orderId: number, newStatus: OrderStatusEnum];
@@ -86,6 +93,7 @@ watch(
 
 <template>
     <div
+        @click="toggleExpand"
         class="group rounded-lg border border-sidebar-border/70 bg-card p-3 transition-all hover:shadow-md md:p-4"
     >
         <div class="flex items-start justify-between gap-2">
@@ -112,7 +120,6 @@ watch(
                     {{ order.status.label }}
                 </span>
                 <button
-                    @click="toggleExpand"
                     class="rounded-md p-1 transition-colors hover:bg-sidebar-accent md:hidden"
                 >
                     <component
@@ -203,7 +210,10 @@ watch(
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <div v-if="can(OrderPermissionEnum.ORDER_UPDATE)" class="flex min-w-[120px] flex-1 gap-2">
+                <div
+                    v-if="can(OrderPermissionEnum.ORDER_UPDATE)"
+                    class="flex min-w-[120px] flex-1 gap-2"
+                >
                     <button
                         v-for="(btn, index) in orderStatusActions"
                         :key="index"
@@ -218,26 +228,9 @@ watch(
                             "
                             class="flex items-center justify-center"
                         >
-                            <svg
+                            <LoaderCircle
                                 class="h-3 w-3 animate-spin md:h-4 md:w-4"
-                                viewBox="0 0 24 24"
-                            >
-                                <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="white"
-                                    stroke-width="3"
-                                    fill="none"
-                                    opacity="0.3"
-                                />
-                                <path
-                                    d="M22 12a10 10 0 0 1-10 10"
-                                    stroke="white"
-                                    stroke-width="3"
-                                    fill="none"
-                                />
-                            </svg>
+                            />
                         </span>
                         <span v-else>{{ btn.label }}</span>
                     </button>
@@ -326,7 +319,10 @@ watch(
             </div>
 
             <div class="flex flex-col gap-2">
-                <div v-if="can(OrderPermissionEnum.ORDER_UPDATE)" class="flex gap-2">
+                <div
+                    v-if="can(OrderPermissionEnum.ORDER_UPDATE)"
+                    class="flex gap-2"
+                >
                     <button
                         v-for="(btn, index) in orderStatusActions"
                         :key="index"
@@ -341,26 +337,7 @@ watch(
                             "
                             class="flex items-center justify-center"
                         >
-                            <svg
-                                class="h-4 w-4 animate-spin"
-                                viewBox="0 0 24 24"
-                            >
-                                <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="white"
-                                    stroke-width="3"
-                                    fill="none"
-                                    opacity="0.3"
-                                />
-                                <path
-                                    d="M22 12a10 10 0 0 1-10 10"
-                                    stroke="white"
-                                    stroke-width="3"
-                                    fill="none"
-                                />
-                            </svg>
+                            <LoaderCircle class="h-4 w-4 animate-spin" />
                         </span>
                         <span v-else>{{ btn.label }}</span>
                     </button>

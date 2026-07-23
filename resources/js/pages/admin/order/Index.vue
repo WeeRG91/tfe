@@ -7,12 +7,14 @@ import { OrderStatusEnum } from '@/types/order';
 import { Head } from '@inertiajs/vue3';
 import {
     CheckCircle,
-    ChevronDown,
-    ChevronUp,
     Clock,
     Package,
     RefreshCw,
     Truck,
+    X,
+    CircleX,
+    ChevronUp,
+    ChevronDown,
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
@@ -28,6 +30,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const updatedStatusOrderId = ref<number | null>(null);
 const expandedColumns = ref<Set<string>>(new Set(['confirmed']));
+const showCompletedModal = ref(false);
+const showCancelledModal = ref(false);
 
 const columns = computed(() => [
     {
@@ -41,7 +45,8 @@ const columns = computed(() => [
                 !o.prepare_at &&
                 !o.ready_at &&
                 !o.delivered_at &&
-                !o.completed_at,
+                !o.completed_at &&
+                !o.cancelled_at,
         ),
         emptyText: 'No confirmed orders',
     },
@@ -61,19 +66,22 @@ const columns = computed(() => [
         icon: Truck,
         color: 'purple',
         orders: (confirmedOrders.value ?? []).filter(
-            (o) => (o.ready_at || o.delivered_at) && !o.completed_at,
+            (o) =>
+                (o.ready_at || o.delivered_at) &&
+                !o.completed_at &&
+                !o.cancelled_at,
         ),
         emptyText: 'No orders ready for delivery',
     },
-    {
-        key: 'completed',
-        title: 'Completed',
-        icon: CheckCircle,
-        color: 'green',
-        orders: (confirmedOrders.value ?? []).filter((o) => o.completed_at),
-        emptyText: 'No completed orders',
-    },
 ]);
+
+const completedOrders = computed(() => {
+    return (confirmedOrders.value ?? []).filter((o) => o.completed_at);
+});
+
+const cancelledOrders = computed(() => {
+    return (confirmedOrders.value ?? []).filter((o) => o.cancelled_at);
+});
 
 const handleStatusUpdate = async (
     orderId: number,
@@ -108,6 +116,22 @@ const isColumnExpanded = (columnKey: string) => {
     return expandedColumns.value.has(columnKey);
 };
 
+const openCompletedModal = () => {
+    showCompletedModal.value = true;
+};
+
+const openCancelledModal = () => {
+    showCancelledModal.value = true;
+};
+
+const closeCompletedModal = () => {
+    showCompletedModal.value = false;
+};
+
+const closeCancelledModal = () => {
+    showCancelledModal.value = false;
+};
+
 onMounted(async () => {
     await orderStore.getConfirmedOrders();
 });
@@ -131,13 +155,37 @@ onMounted(async () => {
                         Manage and track orders by status
                     </p>
                 </div>
-                <button
-                    @click="refreshOrders"
-                    class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sidebar-border/70 px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent sm:w-auto"
-                >
-                    <RefreshCw :size="16" />
-                    Refresh
-                </button>
+                <div class="flex flex-wrap gap-2">
+                    <div
+                        class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row"
+                    >
+                        <button
+                            @click="openCompletedModal"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 sm:w-auto"
+                        >
+                            <CheckCircle :size="16" />
+                            <span class="whitespace-nowrap"
+                                >Completed ({{ completedOrders.length }})</span
+                            >
+                        </button>
+                        <button
+                            @click="openCancelledModal"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 sm:w-auto"
+                        >
+                            <CircleX :size="16" />
+                            <span class="whitespace-nowrap"
+                                >Cancelled ({{ cancelledOrders.length }})</span
+                            >
+                        </button>
+                        <button
+                            @click="refreshOrders"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sidebar-border/70 px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent sm:w-auto"
+                        >
+                            <RefreshCw :size="16" />
+                            Refresh
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div class="block space-y-3 md:hidden">
@@ -207,8 +255,8 @@ onMounted(async () => {
             </div>
 
             <div
-                class="hidden grid-cols-1 gap-4 overflow-x-auto md:grid md:grid-cols-4 lg:gap-6"
-                style="min-width: 800px"
+                class="hidden grid-cols-1 gap-4 overflow-x-auto md:grid md:grid-cols-3 lg:gap-6"
+                style="min-width: 600px"
             >
                 <div
                     v-for="column in columns"
@@ -256,7 +304,153 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
+
+        <div
+            v-if="showCompletedModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+            @click.self="closeCompletedModal"
+        >
+            <div
+                class="relative mx-2 w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-900"
+            >
+                <div
+                    class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
+                >
+                    <div class="flex items-center gap-3">
+                        <CheckCircle :size="24" class="text-green-600" />
+                        <div>
+                            <h2
+                                class="text-xl font-semibold text-gray-900 dark:text-white"
+                            >
+                                Completed Orders
+                            </h2>
+                            <p
+                                class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                            >
+                                <span>
+                                    {{ completedOrders.length }} order{{
+                                        completedOrders.length !== 1 ? 's' : ''
+                                    }}
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-100"
+                                >
+                                    <CheckCircle :size="14" />
+                                    Completed
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        @click="closeCompletedModal"
+                        class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
+                    >
+                        <X :size="20" />
+                    </button>
+                </div>
+
+                <div
+                    class="modal-scroll max-h-[calc(100vh-8rem)] overflow-y-auto p-6"
+                >
+                    <div class="flex flex-col gap-3">
+                        <OrderCard
+                            v-for="order in completedOrders"
+                            :key="order.id"
+                            :order="order"
+                            :update-status-order-id="updatedStatusOrderId"
+                            @update-status="handleStatusUpdate"
+                        />
+                        <div
+                            v-if="completedOrders.length === 0"
+                            class="rounded-lg border border-dashed border-sidebar-border/70 p-8 text-center"
+                        >
+                            <p class="text-sm text-muted-foreground">
+                                No completed orders
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="showCancelledModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+            @click.self="closeCancelledModal"
+        >
+            <div
+                class="relative mx-2 w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-900"
+            >
+                <div
+                    class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
+                >
+                    <div class="flex items-center gap-3">
+                        <CheckCircle :size="24" class="text-green-600" />
+                        <div>
+                            <h2
+                                class="text-xl font-semibold text-gray-900 dark:text-white"
+                            >
+                                Completed Orders
+                            </h2>
+                            <p
+                                class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                            >
+                                <span>
+                                    {{ cancelledOrders.length }} order{{
+                                        cancelledOrders.length !== 1 ? 's' : ''
+                                    }}
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-100"
+                                >
+                                    <CheckCircle :size="14" />
+                                    Completed
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        @click="closeCancelledModal"
+                        class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
+                    >
+                        <X :size="20" />
+                    </button>
+                </div>
+
+                <div
+                    class="modal-scroll max-h-[calc(100vh-8rem)] overflow-y-auto p-6"
+                >
+                    <div class="flex flex-col gap-3">
+                        <OrderCard
+                            v-for="order in cancelledOrders"
+                            :key="order.id"
+                            :order="order"
+                            :update-status-order-id="updatedStatusOrderId"
+                            @update-status="handleStatusUpdate"
+                        />
+                        <div
+                            v-if="cancelledOrders.length === 0"
+                            class="rounded-lg border border-dashed border-sidebar-border/70 p-8 text-center"
+                        >
+                            <p class="text-sm text-muted-foreground">
+                                No completed orders
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </AdminLayout>
 </template>
 
-<style scoped></style>
+<style scoped>
+.modal-scroll {
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.modal-scroll::-webkit-scrollbar {
+    display: none;
+}
+</style>

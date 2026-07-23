@@ -28,13 +28,11 @@ class DishRatingUpdatedBroadcast implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, Channel>
+     * @return Channel
      */
-    public function broadcastOn(): array
+    public function broadcastOn(): Channel
     {
-        return [
-            new channel('dish.rating'),
-        ];
+        return new channel('dish.rating');
     }
 
     public function broadcastWith(): array

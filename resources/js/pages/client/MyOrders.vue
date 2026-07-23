@@ -65,7 +65,14 @@ const loadOrders = async () => {
 };
 
 type EchoChannel = {
-    listen: (event: string, callback: () => void) => EchoChannel;
+    listen: (
+        event: string,
+        callback: (e: {
+            id: number;
+            order_number: string;
+            status: number;
+        }) => void,
+    ) => EchoChannel;
 };
 
 const channel = ref<EchoChannel | null>(null);
@@ -76,8 +83,11 @@ onMounted(async () => {
     if (user?.id) {
         channel.value = window.Echo.private(`user.${user?.id}`).listen(
             '.order.updated',
-            async () => {
-                await loadOrders();
+            async (e: { id: number; order_number: string; status: number }) => {
+                console.log(e);
+                if (e.status !== OrderStatusEnum.CANCELLED) {
+                    await loadOrders();
+                }
             },
         );
     }

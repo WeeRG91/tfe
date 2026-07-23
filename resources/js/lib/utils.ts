@@ -1,24 +1,24 @@
 import { OrderStatusEnum, OrderTypeEnum } from '@/types/order';
 import { InertiaLinkProps } from '@inertiajs/vue3';
-import { clsx, type ClassValue } from 'clsx';
+import { type ClassValue, clsx } from 'clsx';
 import {
     AlertCircle,
     Banknote,
+    Bell,
+    BookOpenCheck,
     CheckCircle,
+    CircleX,
     Clock,
+    CookingPot,
     CreditCard,
+    Gift,
     LucideProps,
     Package,
+    Salad,
     ShoppingBag,
     Truck,
     Utensils,
-    CookingPot,
-    BookOpenCheck,
-    CircleX,
-    Salad,
-    Wine,
-    Gift,
-    Bell,
+    Wine
 } from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
 import { FunctionalComponent } from 'vue';
@@ -26,7 +26,6 @@ import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/payment';
 import { NotifiableTypeEnum, NotificationTypeEnum } from '@/types/notification';
 import order from '@/routes/order';
 import menu from '@/routes/menu';
-import { PermissionType } from '@/types/permission';
 import { LoyaltyPointTransactionType, PointTypeEnum } from '@/types/point';
 
 export function cn(...inputs: ClassValue[]) {
@@ -145,6 +144,9 @@ export const getPaymentStatusVariant = (status: PaymentStatusEnum) => {
         [PaymentStatusEnum.PENDING]: 'bg-yellow-100 text-yellow-800',
         [PaymentStatusEnum.PAID]: 'bg-green-100 text-green-800',
         [PaymentStatusEnum.FAILED]: 'bg-red-100 text-red-800',
+        [PaymentStatusEnum.REFUND_PENDING]: 'bg-yellow-100 text-yellow-800',
+        [PaymentStatusEnum.REFUNDED]: 'bg-orange-100 text-orange-800',
+        [PaymentStatusEnum.REFUND_FAILED]: 'bg-red-100 text-red-800',
     };
     return variants[status] || 'bg-gray-100 text-gray-800';
 };
@@ -154,6 +156,9 @@ export const getPaymentStatusIcon = (status: PaymentStatusEnum) => {
         [PaymentStatusEnum.PENDING]: Clock,
         [PaymentStatusEnum.PAID]: CheckCircle,
         [PaymentStatusEnum.FAILED]: AlertCircle,
+        [PaymentStatusEnum.REFUND_PENDING]: Clock,
+        [PaymentStatusEnum.REFUNDED]: CheckCircle,
+        [PaymentStatusEnum.REFUND_FAILED]: AlertCircle,
     };
     return variants[status] || 'bg-gray-100 text-gray-800';
 };
@@ -246,6 +251,8 @@ export const getTotalPoints = (transactions: LoyaltyPointTransactionType[]) => {
                 return total - transaction.points;
             case PointTypeEnum.REFUNDED:
                 return total + transaction.points;
+            case PointTypeEnum.REVERSED:
+                return total - transaction.points;
         }
     }, 0);
 };

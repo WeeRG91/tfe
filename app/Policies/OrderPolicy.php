@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use App\Enums\OrderStatusEnum;
+use App\Enums\PaymentStatusEnum;
 use App\Enums\Permissions\OrderPermissionEnum;
 use App\Models\Order;
 use App\Models\User;
@@ -22,7 +24,8 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        return $user->can(OrderPermissionEnum::ORDER_VIEW->value);
+        return $order->user_id === $user->id
+            || $user->can(OrderPermissionEnum::ORDER_VIEW->value);
     }
 
     /**
@@ -41,12 +44,32 @@ class OrderPolicy
         return $user->can(OrderPermissionEnum::ORDER_UPDATE->value);
     }
 
+    public function cancel(User $user, Order $order): bool
+    {
+        $canBeCancelled = in_array($order->status, [
+            OrderStatusEnum::PENDING,
+            OrderStatusEnum::CONFIRMED,
+        ], true);
+
+        return $canBeCancelled && (
+                $order->user_id === $user->id ||
+                $user->can(OrderPermissionEnum::ORDER_CANCEL->value)
+            );
+    }
+
+    public function pay(User $user, Order $order): bool
+    {
+        return $order->user_id === $user->id
+            && $order->payment_status !== PaymentStatusEnum::PAID;
+    }
+
     /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Order $order): bool
     {
-        return false;
+        return $order->user_id === $user->id
+            && $order->status === OrderStatusEnum::CANCELLED;
     }
 
     /**

@@ -7,7 +7,6 @@ use App\Actions\Client\Order\Commands\CreateOrder;
 use App\Actions\Client\Order\Commands\HandleLoyaltyPoints;
 use App\Enums\PaymentMethodEnum;
 use App\Events\OrderPlacedBroadcast;
-use App\Models\Cart;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -27,18 +26,23 @@ readonly class PlaceOrder
      */
     public function execute(array $data): array
     {
-        $cart = Cart::query()->findOrFail($data['cart_id']);
-        $cart->load('items.item', 'items.meat', 'items.removedIngredients');
         $user = auth()->user();
 
-        if (!$cart || $cart->items->isEmpty()) {
-            return [
-                'message' => 'Cart is empty',
-                'order' => null,
-            ];
-        }
+        return DB::transaction(function () use ($data, $user) {
+            $cart = $user->cart()
+                ->whereKey($data['cart_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        return DB::transaction(function () use ($cart, $data, $user) {
+            $cart->load('items.item', 'items.meat', 'items.removedIngredients');
+
+            if (!$cart || $cart->items->isEmpty()) {
+                return [
+                    'message' => 'Cart is empty',
+                    'order' => null,
+                ];
+            }
+
             $order = $this->createOrder->execute($data, $user);
 
             [$itemsTotalIncVat, $vatBreakdown] = $this->createOrderItems->execute($order, $cart);

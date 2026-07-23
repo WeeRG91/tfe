@@ -41,7 +41,8 @@ const ordersConfirmed = computed(() =>
             !order.prepare_at &&
             !order.ready_at &&
             !order.delivered_at &&
-            !order.completed_at,
+            !order.completed_at &&
+            !order.cancelled_at,
     ),
 );
 </script>
@@ -67,7 +68,7 @@ const ordersConfirmed = computed(() =>
                     >
                         <div class="flex items-center gap-2">
                             <component :is="item.icon" :size="16" />
-                            <span>{{ item.title }}</span>
+                            <span class="text-nowrap">{{ item.title }}</span>
                         </div>
 
                         <span

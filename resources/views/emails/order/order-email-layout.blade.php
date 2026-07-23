@@ -40,6 +40,7 @@
         .header-ready { background-color: #2196f3; }
         .header-delivering { background-color: #ff9800; }
         .header-completed { background-color: #9c27b0; }
+        .header-cancelled { background-color: #ff0000; }
 
         .header h1 {
             margin: 0;
@@ -79,6 +80,7 @@
         .section-title-ready { color: #2196f3; border-left: 3px solid #2196f3; }
         .section-title-delivering { color: #ff9800; border-left: 3px solid #ff9800; }
         .section-title-completed { color: #9c27b0; border-left: 3px solid #9c27b0; }
+        .section-title-cancelled { color: #ff0000; border-left: 3px solid #ff0000; }
 
         .badge {
             display: inline-block;
@@ -95,6 +97,7 @@
         .badge-ready { background-color: #2196f3; color: white; }
         .badge-delivering { background-color: #ff9800; color: white; }
         .badge-completed { background-color: #9c27b0; color: white; }
+        .badge-cancelled { background-color: #ff0000; color: white; }
 
         .status-card {
             background-color: #f9f9f9;
@@ -389,76 +392,11 @@
 
             @yield('status-content')
 
-            <div class="section">
-                <div class="section-title {{ $sectionTitleClass }}">Your Order</div>
-
-                <table class="items-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th style="text-align: center; width: 50px;">Qty</th>
-                            <th style="text-align: right; width: 80px;">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($order->items as $item)
-                            <tr>
-                                <td>
-                                    <div class="item-name">{{ $item->item->name }}</div>
-                                    <div class="item-details">
-                                        <p><strong>Category:</strong> {{ $item->item->category->label() }}</p>
-                                        <p class="meat-info">• {{ ['No spicy', 'Mild', 'Spicy', 'Hot'][$item->spicy_level] }}</p>
-                                        @if($item->meat)
-                                            <p class="meat-info">✓ {{ $item->meat->name }} @if($item->meat->extra_price > 0)(+€{{ number_format($item->meat->extra_price, 2) }})@endif</p>
-                                        @endif
-                                        @if($item->removed_ingredients)
-                                            <p><strong>Removed:</strong> @foreach($item->removed_ingredients as $ingredient)<span class="removed-ingredient">{{ $ingredient->name }}</span>@if(!$loop->last), @endif @endforeach</p>
-                                        @endif
-                                        @if($item->notes)
-                                            <p><strong>Note:</strong> {{ $item->notes }}</p>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td style="text-align: center; vertical-align: middle;">{{ $item->quantity }}</td>
-                                <td style="text-align: right; vertical-align: middle;">€{{ number_format($item->total_inc_vat, 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="action-button">
+                <a href="{{ route('order.order-details', $order) }}" class="btn">
+                    View Order Details
+                </a>
             </div>
-
-            <div class="section">
-                <div class="section-title {{ $sectionTitleClass }}">Payment Summary</div>
-                <div class="totals">
-                    @foreach($order->vat_breakdown as $vat)
-                        <div class="totals-row"><div class="totals-label">VAT {{ $vat['vat_rate'] }}%:</div><div class="totals-value">€{{ number_format($vat['vat_total'], 2) }}</div></div>
-                    @endforeach
-                    <div class="totals-row"><div class="totals-label">Subtotal:</div><div class="totals-value">€{{ number_format($order->subtotal, 2) }}</div></div>
-                    @if($order->discount_total > 0)
-                        <div class="totals-row"><div class="totals-label">Discount:</div><div class="totals-value">-€{{ number_format($order->discount_total, 2) }}</div></div>
-                    @endif
-                    @if($order->delivery_fee > 0)
-                        <div class="totals-row"><div class="totals-label">Delivery fee:</div><div class="totals-value">€{{ number_format($order->delivery_fee, 2) }}</div></div>
-                    @endif
-                    <div class="totals-row grand-total"><div class="totals-label">Total:</div><div class="totals-value">€{{ number_format($order->total_inc_vat, 2) }}</div></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title {{ $sectionTitleClass }}">Payment Method</div>
-                <div class="info-grid">
-                    <div class="info-item"><div class="info-label">Method</div><div class="info-value">{{ $order->payment_method->label() }}</div></div>
-                    <div class="info-item"><div class="info-label">Status</div><div class="info-value">{{ $order->payment_status->label() }}</div></div>
-                    @if($order->paid_at)<div class="info-item"><div class="info-label">Paid At</div><div class="info-value">{{ $order->paid_at }}</div></div>@endif
-                </div>
-            </div>
-
-            @if($order->notes)
-                <div class="section">
-                    <div class="section-title {{ $sectionTitleClass }}">Special Instructions</div>
-                    <div class="notes-box">{{ $order->notes }}</div>
-                </div>
-            @endif
         </div>
 
         <div class="footer">

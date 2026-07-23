@@ -85,6 +85,23 @@ class SendOrderUpdatedNotification
 
                 Mail::to($order->user->email)->queue(new OrderUpdatedMail($order, OrderStatusEnum::COMPLETED->label()));
                 break;
+            case OrderStatusEnum::CANCELLED:
+                DB::table('notifications')->insert([
+                    'user_id' => $order->user_id,
+                    'notifiable_id' => $order->id,
+                    'notifiable_type' => Order::class,
+                    'type' => NotificationTypeEnum::ORDER_CANCELLED,
+                    'title' => 'Order Cancelled',
+                    'message' => "Your order #$order->order_number has been cancelled.",
+                    'data' => json_encode([
+                        'order_number' => $order->order_number,
+                    ]),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                Mail::to($order->user->email)->queue(new OrderUpdatedMail($order, OrderStatusEnum::CANCELLED->label()));
+                break;
         }
 
         event(new StatusOrderUpdatedBroadcast($order));

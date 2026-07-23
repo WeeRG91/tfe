@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Permissions\ChatPermissionEnum;
+use App\Enums\Permissions\OrderPermissionEnum;
 use App\Models\Chat;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -22,4 +23,12 @@ Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
 
 Broadcast::channel('admin.chats', function ($user) {
     return $user->can(ChatPermissionEnum::CHAT_VIEW->value);
+});
+
+Broadcast::channel('order-placed', function ($user) {
+    return $user->can(OrderPermissionEnum::ORDER_VIEW);
+});
+
+Broadcast::channel('order-cancelled', function ($user) {
+    return $user->can(OrderPermissionEnum::ORDER_VIEW);
 });

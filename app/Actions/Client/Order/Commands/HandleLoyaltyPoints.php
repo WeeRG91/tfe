@@ -6,6 +6,7 @@ use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Models\LoyaltyPointTransaction;
 use App\Models\Order;
 use App\Models\User;
+use Illuminate\Validation\ValidationException;
 
 class HandleLoyaltyPoints
 {
@@ -16,6 +17,7 @@ class HandleLoyaltyPoints
      * @param float $finalTotal
      * @param bool $isCash
      * @return void
+     * @throws ValidationException
      */
     public function execute(
         User $user,
@@ -25,6 +27,19 @@ class HandleLoyaltyPoints
         bool $isCash
     ): void
     {
+        $lockedUser = User::query()
+            ->whereKey($user->id)
+            ->lockForUpdate()
+            ->firstOrFail();
+
+        $pointBalance = $this->getPointBalance($lockedUser);
+
+        if ($usedPoints > $pointBalance) {
+            throw ValidationException::withMessages([
+                'used_points' => 'You do not have enough loyalty points.',
+            ]);
+        }
+
         if ($usedPoints > 0) {
             LoyaltyPointTransaction::query()->create([
                 'user_id' => $user->id,
@@ -46,5 +61,23 @@ class HandleLoyaltyPoints
                 'description' => 'Points earned from order #' . $order->order_number,
             ]);
         }
+    }
+
+    private function getPointBalance(User $user): int
+    {
+        return (int) $user->loyaltyPointTransactions()
+            ->get()
+            ->sum(
+                fn (LoyaltyPointTransaction $transaction) =>
+                    match ($transaction->type) {
+                        LoyaltyPointTransactionTypeEnum::EARNED,
+                        LoyaltyPointTransactionTypeEnum::REFUNDED, =>
+                            $transaction->points,
+
+                        LoyaltyPointTransactionTypeEnum::REDEEMED,
+                        LoyaltyPointTransactionTypeEnum::REVERSED =>
+                        -$transaction->points,
+                    }
+            );
     }
 }

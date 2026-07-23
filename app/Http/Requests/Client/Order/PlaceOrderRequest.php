@@ -5,6 +5,7 @@ namespace App\Http\Requests\Client\Order;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +27,13 @@ class PlaceOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cart_id' => ['required', 'exists:carts,id'],
+            'cart_id' => [
+                'required',
+                Rule::exists('carts', 'id')->where(
+                    fn (Builder $query) =>
+                        $query->where('user_id', $this->user()->id)
+                )
+            ],
             'type' => ['required', Rule::in(OrderTypeEnum::values())],
             'table_number' => [
                 'nullable',
@@ -54,13 +61,16 @@ class PlaceOrderRequest extends FormRequest
             ],
             'address_id' => [
                 'nullable',
-                'exists:addresses,id',
+                Rule::exists('addresses', 'id')->where(
+                    fn (Builder $query) =>
+                        $query->where('user_id', $this->user()->id)
+                ),
                 'required_if:type,' . OrderTypeEnum::DELIVERY->value,
                 'prohibited_unless:type,' . OrderTypeEnum::DELIVERY->value
             ],
             'payment_method' => ['required', Rule::in(PaymentMethodEnum::values())],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'used_points' => ['nullable', 'integer', 'min:0'],
+            'used_points' => ['nullable', 'integer', Rule::in([0, 300, 550])],
         ];
     }
 }

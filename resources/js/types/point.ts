@@ -10,6 +10,7 @@ export enum PointTypeEnum {
     EARNED = 'Earned',
     REDEEMED = 'Redeemed',
     REFUNDED = 'Refunded',
+    REVERSED = 'Reversed',
 }
 
 export enum FilterPointEnum {
@@ -17,4 +18,5 @@ export enum FilterPointEnum {
     EARNED = 'earned',
     REDEEMED = 'redeemed',
     REFUNDED = 'refunded',
+    REVERSED = 'reversed',
 }

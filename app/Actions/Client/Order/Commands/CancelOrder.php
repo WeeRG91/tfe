@@ -2,53 +2,62 @@
 
 namespace App\Actions\Client\Order\Commands;
 
-use App\Enums\LoyaltyPointTransactionTypeEnum;
+use App\Actions\Client\Payment\Commands\finalizeRefundedOrder;
+use App\Actions\Client\Payment\Commands\RefundStripeOrder;
 use App\Enums\OrderStatusEnum;
-use App\Models\LoyaltyPointTransaction;
+use App\Enums\PaymentMethodEnum;
+use App\Enums\PaymentStatusEnum;
+use App\Events\OrderCancelledBroadcast;
+use App\Events\StatusOrderUpdated;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
-class CancelOrder
+readonly class CancelOrder
 {
+    public function __construct(
+        private RefundStripeOrder $refundStripeOrder,
+        private FinalizeRefundedOrder $finalizeRefundedOrder,
+    ) {}
 
     /**
-     * @param User $user
      * @param Order $order
      * @return void
      * @throws Throwable
+     * @throws ValidationException
      */
-    public function execute(User $user, Order $order): void
+    public function execute(Order $order): void
     {
-        DB::transaction(function () use ($user, $order) {
-
-            $order->update([
-                'status' => OrderStatusEnum::CANCELLED->value,
-                'cancelled_at' => now(),
+        if (! in_array($order->status, [
+            OrderStatusEnum::PENDING,
+            OrderStatusEnum::CONFIRMED
+        ], true)) {
+            throw ValidationException::withMessages([
+                'order' => 'This order can no longer be cancelled.',
             ]);
+        }
 
+        $isPaidStripeOrder =
+            $order->payment_method !== PaymentMethodEnum::CASH
+            && $order->payment_status === PaymentStatusEnum::PAID;
 
-            $transaction = LoyaltyPointTransaction::query()
-                ->where('user_id', $user->id)
-                ->where('order_id', $order->id)
-                ->where(
-                    'type',
-                    LoyaltyPointTransactionTypeEnum::REDEEMED->value
-                )
-                ->first();
+        if ($isPaidStripeOrder) {
+            $this->refundStripeOrder->execute($order);
 
+            $order->refresh();
 
-            if ($transaction) {
-                LoyaltyPointTransaction::query()->create([
-                    'user_id' => $user->id,
-                    'order_id' => $order->id,
-                    'points' => $transaction->points,
-                    'type' => LoyaltyPointTransactionTypeEnum::REFUNDED->value,
-                    'description' =>
-                        'Points refunded for order #' . $order->order_number,
+            if ($order->stripe_refund_status !== 'succeeded') {
+                throw ValidationException::withMessages([
+                    'order' =>
+                        'The refund is being processed. The order cannot be finalized yet.',
                 ]);
             }
-        });
+        }
+
+        if ($order->payment_method === PaymentMethodEnum::CASH) {
+           $this->finalizeRefundedOrder->execute($order);
+        }
     }
 }

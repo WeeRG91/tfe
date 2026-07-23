@@ -67,6 +67,7 @@ class OrderUpdatedMail extends Mailable
             OrderStatusEnum::READY->label() => 'Order Ready',
             OrderStatusEnum::DELIVERING->label() => 'Order Out For delivery',
             OrderStatusEnum::COMPLETED->label() => 'Order Completed',
+            OrderStatusEnum::CANCELLED->label() => 'Order Cancelled',
         };
     }
 }
