@@ -29,10 +29,16 @@ class DishUpdateRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'category' => ['required', new Enum(DishCategoryEnum::class)],
             'default_spicy_level' => ['required', 'integer', 'between:0,3'],
-            'price' => ['required', 'numeric'],
+            'price' => ['required', 'decimal:0,2', 'min:0', 'max:99999.99'],
             'meats' => ['nullable', 'array', 'exists:meats,id'],
             'ingredients' => ['required', 'array', 'exists:ingredients,id'],
-            'images' => ['nullable', 'array'],
+            'images' => ['nullable', 'array', 'max:5'],
+            'images.*' => [
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+                'dimensions:min_width=800,min_height=600,max_width=4000,max_height=4000',
+            ],
         ];
     }
 }

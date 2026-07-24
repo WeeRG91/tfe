@@ -43,11 +43,7 @@ class MessageController extends Controller
      */
     public function unsend(Message $message, UnsendMessage $unsendMessage): JsonResponse
     {
-        if ($message->sender_id !== auth()->user()->id) {
-            return response()->json([
-                'error' => 'Unauthorized'
-            ], 403);
-        }
+       abort_unless($message->sender_id === auth()->id(), 403);
 
        $message = $unsendMessage->execute(
            auth()->user(),
@@ -84,11 +80,7 @@ class MessageController extends Controller
         UpdateMessage $updateMessage
     ): JsonResponse
     {
-        if ($message->sender_id !== auth()->id()) {
-            return response()->json([
-                'error' => 'Unauthorized.'
-            ], 403);
-        }
+        abort_unless($message->sender_id === auth()->id(), 403);
 
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:2000'],
@@ -110,11 +102,7 @@ class MessageController extends Controller
      */
     public function destroy(Message $message, DeleteMessage $deleteMessage): JsonResponse
     {
-        if ($message->sender_id !== auth()->user()->id) {
-            return response()->json([
-                'error' => 'Unauthorized.'
-            ], 403);
-        }
+        abort_unless($message->sender_id === auth()->id(), 403);
 
         $message = $deleteMessage->execute(
             auth()->user(),

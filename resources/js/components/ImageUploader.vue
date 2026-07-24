@@ -24,23 +24,63 @@ const previewUrls = ref<string[]>([]);
 const isDragging = ref<boolean>(false);
 const error = ref<string>();
 
-const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
-const ALLOWED_TYPES = ['image/jpg', 'image/jpeg', 'image/png'];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const ALLOWED_TYPES = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
 const MAX_IMAGES = 5;
+const MIN_WIDTH = 800;
+const MIN_HEIGHT = 600;
+const MAX_WIDTH = 4000;
+const MAX_HEIGHT = 4000;
 
-const validateImages = (images: File[]) => {
-    if (images.length + images.values.length > MAX_IMAGES) {
+const getImageDimensions = async (
+    file: File,
+): Promise<{ width: number; height: number }> => {
+    const bitmap = await createImageBitmap(file);
+
+    return {
+        width: bitmap.width,
+        height: bitmap.height,
+    };
+};
+
+const validateImages = async (images: File[]) => {
+    error.value = '';
+
+    if (images.length > MAX_IMAGES) {
         error.value = `You can only upload up to ${MAX_IMAGES} images.`;
+        return false;
     }
 
-    images.forEach((image: File) => {
+    for (const image of images) {
         if (!ALLOWED_TYPES.includes(image.type)) {
             error.value = `${image.name} has an invalid file type.`;
+            return false;
         }
+
         if (image.size > MAX_IMAGE_SIZE) {
-            error.value = `${image.size} exceeds the maximum size of 2MB.`;
+            error.value = `${image.name} exceeds the maximum size of 5 MB.`;
+            return false;
         }
-    });
+
+        const { width, height } = await getImageDimensions(image);
+
+        if (
+            width < MIN_WIDTH ||
+            height < MIN_HEIGHT ||
+            width > MAX_WIDTH ||
+            height > MAX_HEIGHT
+        ) {
+            error.value =
+                `${image.name} must have dimensions between ` +
+                `${MIN_WIDTH}×${MIN_HEIGHT}px and ` +
+                `${MAX_WIDTH}×${MAX_HEIGHT}px. ` +
+                `Current size: ${width}×${height}px.`;
+
+            return false;
+        }
+    }
+
+    return true;
 };
 
 const handleDrop = (event: DragEvent) => {

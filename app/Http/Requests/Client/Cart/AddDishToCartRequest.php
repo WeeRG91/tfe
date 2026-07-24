@@ -32,9 +32,10 @@ class AddDishToCartRequest extends FormRequest
                 'required_if:item_type,' . ItemTypeEnum::DISH->value,
                 'exists:meats,id'
             ],
-            'quantity' => ['required', 'integer', 'min:1'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:50'],
             'spicy_level' => ['required', 'integer', 'between:0,3'],
             'removed_ingredients' => ['nullable', 'array'],
+            'removed_ingredients.*' => ['integer', 'distinct', 'exists:ingredients,id'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

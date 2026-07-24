@@ -27,7 +27,7 @@ class AddDrinkToCartRequest extends FormRequest
         return [
             'item_id' => ['required'],
             'item_type' => ['required', new Enum(ItemTypeEnum::class)],
-            'quantity' => ['required', 'integer', 'min:1'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:50'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

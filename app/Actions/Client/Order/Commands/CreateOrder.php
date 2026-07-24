@@ -7,6 +7,7 @@ use App\Enums\PaymentMethodEnum;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class CreateOrder
 {
@@ -21,7 +22,7 @@ class CreateOrder
 
         return Order::query()->create([
             'user_id' => $user->id,
-            'order_number' => 'ORD-' . now()->format('Ymd') . '-' . rand(1000, 9999),
+            'order_number' => 'ORD-'.Str::ulid(),
             'type' => $data['type'],
             'table_number' => $data['table_number'] ?? null,
             'pickup_time' => $data['pickup_time'] ?? null,

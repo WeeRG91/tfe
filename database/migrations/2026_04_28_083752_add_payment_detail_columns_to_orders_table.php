@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('order_number')->after('id');
+            $table->string('order_number')->after('id')->unique();
             $table->string('pickup_name')->nullable()->after('pickup_time');
             $table->string('pickup_phone')->nullable()->after('pickup_name');
             $table->unsignedInteger('payment_method')->default(PaymentMethodEnum::CASH->value)->after('status');

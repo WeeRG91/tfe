@@ -52,6 +52,8 @@ class NotificationController extends Controller
      */
     public function markAsRead(Notification $notification, MarkAsRead $markAsRead): JsonResponse
     {
+        $this->authorize('update', $notification);
+
         $notification = $markAsRead->execute($notification);
 
         return response()->json(new NotificationResource($notification));
@@ -75,6 +77,8 @@ class NotificationController extends Controller
      */
     public function delete(Notification $notification, DeleteNotification $deleteNotification): HttpResponse
     {
+        $this->authorize('delete', $notification);
+
         $deleteNotification->execute($notification);
 
         return response()->noContent();

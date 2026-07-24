@@ -52,7 +52,7 @@ class RatingController extends Controller
 
         $validated = $request->validate([
             'rating' => ['required', 'integer', 'between:1,5'],
-            'review' => ['nullable', 'string'],
+            'review' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $rating = DishRating::query()->create([
@@ -76,14 +76,10 @@ class RatingController extends Controller
     {
         $validated = $request->validate([
             'rating' => ['required', 'integer', 'between:1,5'],
-            'review' => ['nullable', 'string'],
+            'review' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        if ($rating->user_id !== auth()->id()) {
-            return response()->json([
-                'message' => 'You can only edit your own rating.',
-            ], 403);
-        }
+        abort_unless($rating->user_id === auth()->id(), 403);
 
         $rating->update([
             'rating' => $validated['rating'],
@@ -105,11 +101,7 @@ class RatingController extends Controller
 
     public function destroy(DishRating $rating): JsonResponse
     {
-        if ($rating->user_id !== auth()->id()) {
-            return response()->json([
-                'message' => 'You can only delete your own rating.',
-            ], 403);
-        }
+        abort_unless($rating->user_id === auth()->id(), 403);
 
         $dish = $rating->dish;
         $deletedReviewId = $rating->id;

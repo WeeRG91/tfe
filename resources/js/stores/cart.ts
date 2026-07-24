@@ -7,6 +7,8 @@ import {
 import axios from 'axios';
 import { defineStore } from 'pinia';
 
+const GUEST_TOKEN_KEY = 'guest_token';
+
 export const useCartStore = defineStore('cart', {
     state: () => ({
         cart: null as CartType | null,
@@ -22,7 +24,7 @@ export const useCartStore = defineStore('cart', {
             this.isLoading = true;
 
             try {
-                const guestToken = localStorage.getItem('guest_token');
+                const guestToken = localStorage.getItem(GUEST_TOKEN_KEY);
 
                 const { data } = await axios.get('/cart/get-cart', {
                     headers: guestToken ? { 'X-Guest-Token': guestToken } : {},
@@ -31,7 +33,7 @@ export const useCartStore = defineStore('cart', {
                 this.cart = data as CartType;
 
                 if (data.guest_token) {
-                    localStorage.setItem('guest_token', data.guest_token);
+                    localStorage.setItem(GUEST_TOKEN_KEY, data.guest_token);
                 }
             } catch (error) {
                 console.error('Failed to fetch cart: ', error);
@@ -45,7 +47,7 @@ export const useCartStore = defineStore('cart', {
             this.isLoading = true;
 
             try {
-                const guestToken = localStorage.getItem('guest_token');
+                const guestToken = localStorage.getItem(GUEST_TOKEN_KEY);
 
                 const { data } = await axios.post(
                     '/cart/items/add-dish',
@@ -72,7 +74,7 @@ export const useCartStore = defineStore('cart', {
             this.isLoading = true;
 
             try {
-                const guestToken = localStorage.getItem('guest_token');
+                const guestToken = localStorage.getItem(GUEST_TOKEN_KEY);
 
                 const { data } = await axios.post(
                     '/cart/items/add-drink',
@@ -97,7 +99,7 @@ export const useCartStore = defineStore('cart', {
 
         async removeItem(cartItemId: number) {
             try {
-                const guestToken = localStorage.getItem('guest_token');
+                const guestToken = localStorage.getItem(GUEST_TOKEN_KEY);
 
                 const { data } = await axios.delete(
                     `/cart/items/${cartItemId}`,
@@ -123,7 +125,7 @@ export const useCartStore = defineStore('cart', {
             this.isLoading = true;
 
             try {
-                const guestToken = localStorage.getItem('guest_token');
+                const guestToken = localStorage.getItem(GUEST_TOKEN_KEY);
 
                 await axios.patch(
                     `/cart/items/${cartItemId}/notes`,
@@ -152,7 +154,7 @@ export const useCartStore = defineStore('cart', {
             action: 'increase' | 'decrease',
         ) {
             try {
-                const guestToken = localStorage.getItem('guestToken');
+                const guestToken = localStorage.getItem(GUEST_TOKEN_KEY);
                 await axios.patch(
                     `/cart/items/${cartItemId}/quantity`,
                     { action },

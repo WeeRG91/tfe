@@ -26,7 +26,13 @@ class IngredientCreateRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'allergen_id' => ['nullable', 'exists:allergens,id'],
-            'images' => ['nullable', 'array'],
+            'images' => ['nullable', 'array', 'max:5'],
+            'images.*' => [
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+                'dimensions:min_width=800,min_height=600,max_width=4000,max_height=4000',
+            ],
         ];
     }
 }

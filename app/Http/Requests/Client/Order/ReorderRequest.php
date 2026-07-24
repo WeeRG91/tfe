@@ -44,6 +44,7 @@ class ReorderRequest extends FormRequest
             'pickup_time' => [
                 'nullable',
                 'date',
+                'after:now',
                 'required_if:type,' . OrderTypeEnum::TAKEAWAY->value,
                 'prohibited_unless:type,' . OrderTypeEnum::TAKEAWAY->value
             ],

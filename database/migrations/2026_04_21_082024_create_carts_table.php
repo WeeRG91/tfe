@@ -18,6 +18,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['user_id', 'guest_token']);
+
+            $table->unique('user_id');
+            $table->unique('guest_token');
         });
     }
 

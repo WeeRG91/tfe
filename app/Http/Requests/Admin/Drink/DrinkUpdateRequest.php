@@ -28,8 +28,14 @@ class DrinkUpdateRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'category' => ['required', new Enum(DrinkCategoryEnum::class)],
-            'price' => ['required', 'numeric'],
-            'images' => ['nullable', 'array'],
+            'price' => ['required', 'decimal:0,2', 'min:0', 'max:99999.99'],
+            'images' => ['nullable', 'array', 'max:5'],
+            'images.*' => [
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+                'dimensions:min_width=800,min_height=600,max_width=4000,max_height=4000',
+            ],
         ];
     }
 }
