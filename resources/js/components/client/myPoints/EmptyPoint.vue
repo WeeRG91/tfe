@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { Gift } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -9,10 +12,9 @@ import { Gift } from 'lucide-vue-next';
         <div class="mb-4 rounded-full bg-gray-200 p-4">
             <Gift class="h-8 w-8 text-gray-400" />
         </div>
-        <h3 class="mb-2 text-lg font-semibold text-gray-900">No points yet</h3>
+        <h3 class="mb-2 text-lg font-semibold text-gray-900">{{ t('point.emptyPoint.title') }}</h3>
         <p class="max-w-md text-sm text-gray-500">
-            Start earning loyalty points by placing orders and participating in
-            promotions.
+            {{ t('point.emptyPoint.description') }}
         </p>
     </div>
 </template>

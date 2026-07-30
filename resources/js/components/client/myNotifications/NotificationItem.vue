@@ -1,16 +1,17 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import {
-    formatDateForHumans,
     getNotificationIcon,
     getNotificationIconBgColor,
     getNotificationIconColor,
     notificationRoutes,
 } from '@/lib/utils';
 import { NotifiableTypeEnum, NotificationType } from '@/types/notification';
+import { router } from '@inertiajs/vue3';
 import { CheckCircle2, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { router } from '@inertiajs/vue3';
-import ConfirmModal from '@/components/ConfirmModal.vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     notification: NotificationType;
@@ -18,6 +19,10 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['mark-read', 'delete']);
+
+const { t } = useI18n();
+
+const { formatDateForHumans } = useDateFormatter();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -84,7 +89,6 @@ const deleteNotification = () => {
             notification.read_at ? 'opacity-80' : '',
         ]"
     >
-        <!-- Icon based on notification type -->
         <div
             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
             :class="getNotificationIconBgColor(notification.type)"
@@ -96,7 +100,6 @@ const deleteNotification = () => {
             />
         </div>
 
-        <!-- Content -->
         <div class="flex-1 space-y-1">
             <div class="flex flex-wrap items-start justify-between gap-2">
                 <h4 class="font-medium text-gray-900">
@@ -111,22 +114,21 @@ const deleteNotification = () => {
                 <p class="text-sm text-gray-600">
                     {{ notification.message }}
                 </p>
-                <!-- Action Buttons -->
                 <div
                     class="flex shrink-0 items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
                 >
-                    <!-- Mark as read button -->
                     <button
                         v-if="!notification.read_at"
                         @click.stop="markAsRead"
                         class="rounded-md p-1.5 text-blue-600 transition-colors hover:bg-blue-50"
-                        title="Mark as read"
+                        :title="t('notification.notificationItem.markAsRead')"
                     >
                         <CheckCircle2 class="h-4 w-4" />
-                        <span class="sr-only">Mark as read</span>
+                        <span class="sr-only">{{
+                            t('notification.notificationItem.markAsRead')
+                        }}</span>
                     </button>
 
-                    <!-- Delete button -->
                     <button
                         @click.stop="
                             openConfirmModal(
@@ -136,10 +138,12 @@ const deleteNotification = () => {
                             )
                         "
                         class="rounded-md p-1.5 text-red-600 transition-colors hover:bg-red-50"
-                        title="Delete"
+                        :title="t('notification.notificationItem.delete')"
                     >
                         <Trash2 class="h-4 w-4" />
-                        <span class="sr-only">Delete</span>
+                        <span class="sr-only">{{
+                            t('notification.notificationItem.delete')
+                        }}</span>
                     </button>
                 </div>
             </div>
@@ -157,20 +161,17 @@ const deleteNotification = () => {
 </template>
 
 <style scoped>
-/* Smooth transitions for hover effects */
 .group {
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 200ms;
 }
 
-/* Ensure buttons don't cause layout shift */
 button {
     cursor: pointer;
     user-select: none;
 }
 
-/* Better touch targets for mobile */
 @media (max-width: 640px) {
     button {
         padding: 0.5rem;

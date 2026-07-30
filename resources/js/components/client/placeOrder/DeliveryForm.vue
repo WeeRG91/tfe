@@ -11,6 +11,7 @@ import {
     Home,
 } from 'lucide-vue-next';
 import type { AddressType } from '@/types/address';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     selectedAddressId: number | null;
@@ -28,6 +29,8 @@ const emit = defineEmits<{
 const selectAddress = (id: number) => {
     emit('update:selectedAddressId', id);
 };
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -35,7 +38,7 @@ const selectAddress = (id: number) => {
         <div class="mb-4 flex items-center justify-between">
             <h2 class="flex items-center gap-2 text-lg font-semibold uppercase">
                 <MapPin class="h-5 w-5" />
-                Delivery Address
+                {{ t('cart.orderType.deliveryForm.title') }}
             </h2>
             <button
                 v-if="props.addresses.length > 0"
@@ -47,7 +50,6 @@ const selectAddress = (id: number) => {
             </button>
         </div>
 
-        <!-- Address List -->
         <div v-if="props.addresses.length > 0" class="space-y-4">
             <div
                 v-for="addr in addresses"
@@ -68,7 +70,6 @@ const selectAddress = (id: number) => {
                     ]"
                 >
                     <div class="flex items-start justify-between">
-                        <!-- Main content area (clickable) -->
                         <div
                             class="flex-1 cursor-pointer"
                             @click="selectAddress(addr.id)"
@@ -86,7 +87,8 @@ const selectAddress = (id: number) => {
                                         <User
                                             :class="[
                                                 'h-4 w-4',
-                                                props.selectedAddressId === addr.id
+                                                props.selectedAddressId ===
+                                                addr.id
                                                     ? 'text-red-600'
                                                     : 'text-gray-500',
                                             ]"
@@ -102,7 +104,9 @@ const selectAddress = (id: number) => {
                                     class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700"
                                 >
                                     <Star class="h-3 w-3" />
-                                    Default
+                                    {{
+                                        t('cart.orderType.deliveryForm.default')
+                                    }}
                                 </span>
                             </div>
 
@@ -127,7 +131,6 @@ const selectAddress = (id: number) => {
                             </div>
                         </div>
 
-                        <!-- Action buttons -->
                         <div class="ml-4 flex items-center gap-1">
                             <button
                                 @click.stop="emit('editAddress', addr)"
@@ -163,19 +166,20 @@ const selectAddress = (id: number) => {
             </div>
         </div>
 
-        <!-- No Addresses State -->
         <div
             v-else
             class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
         >
             <MapPin class="mx-auto h-12 w-12 text-gray-400" />
-            <p class="mt-2 text-sm text-gray-600">No saved addresses found</p>
+            <p class="mt-2 text-sm text-gray-600">
+                {{ t('cart.orderType.deliveryForm.noAddresses') }}
+            </p>
             <button
                 @click="emit('addAddress')"
                 class="mt-3 inline-flex items-center gap-2 rounded-md bg-red-500 px-4 py-2 text-sm text-white transition hover:bg-red-600"
             >
                 <Home class="h-4 w-4" />
-                Add New Address
+                {{ t('cart.orderType.deliveryForm.addNewAddress') }}
             </button>
         </div>
     </div>

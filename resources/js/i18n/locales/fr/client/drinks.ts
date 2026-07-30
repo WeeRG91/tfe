@@ -1,0 +1,30 @@
+export default {
+    pageTitle: 'Boissons',
+    eyebrow: 'Nos boissons',
+    heading: 'Choisissez vos boissons',
+    loadError: 'Impossible de charger les boissons.',
+    categories: {
+        all: 'Toutes',
+        softDrink: 'Boisson sans alcool',
+        hotDrink: 'Boisson chaude',
+        smoothie: 'Smoothie',
+        beer: 'Bière',
+        wine: 'Vin',
+        cocktail: 'Cocktail',
+        mocktail: 'Cocktail sans alcool',
+    },
+    addDrinkModal: {
+        addFailed: "Impossible d'ajouter l'article.",
+        specialInstructions: 'Instructions spéciales (facultatif)',
+        specialInstructionsPlaceholder: 'Ex. : plus de sucre, sans sucre...',
+        quantity: 'Quantité',
+        total: 'Total',
+        cancel: 'Annuler',
+        addToCart: 'Ajouter au panier',
+    },
+    card: {
+        add: 'Ajouter',
+        available: 'Disponible',
+        unavailable: 'Indisponible',
+    },
+};

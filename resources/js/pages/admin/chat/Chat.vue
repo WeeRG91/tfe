@@ -2,7 +2,6 @@
 import { useClickOutside } from '@/composables/useClickOutside';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import {
-    formatDateForHumans,
     formatTime,
     getInitials,
     getUserAvatarColor,
@@ -32,6 +31,7 @@ import {
 import { storeToRefs } from 'pinia';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -42,6 +42,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const chatStore = useChatStore();
 const { chats } = storeToRefs(chatStore);
+
+const { formatDateForHumans } = useDateFormatter();
 
 const users = ref<UserType[]>([]);
 const selectedChatId = ref<number | null>(null);

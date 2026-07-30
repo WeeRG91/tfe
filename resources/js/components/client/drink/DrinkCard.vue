@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { formatPrice } from '@/lib/utils';
 import { ClientDrinkType, DrinkAvailabilityEnum } from '@/types/drink';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
     drink: ClientDrinkType;
@@ -19,7 +22,8 @@ const emit = defineEmits<{
                 props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
             'hover:scale-[1.02] hover:shadow-lg':
                 props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
-            'cursor-not-allowed': props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+            'cursor-not-allowed':
+                props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
         }"
     >
         <div class="relative h-full w-44 overflow-hidden">
@@ -29,9 +33,11 @@ const emit = defineEmits<{
                 class="h-full w-full object-cover transition duration-500"
                 :class="{
                     'group-hover:scale-100':
-                        props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+                        props.drink.is_available ===
+                        DrinkAvailabilityEnum.UNAVAILABLE,
                     'group-hover:scale-105':
-                        props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
+                        props.drink.is_available ===
+                        DrinkAvailabilityEnum.AVAILABLE,
                 }"
             />
         </div>
@@ -42,7 +48,8 @@ const emit = defineEmits<{
                     class="text-md leading-tight font-semibold uppercase transition-colors"
                     :class="{
                         'text-gray-400':
-                            props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+                            props.drink.is_available ===
+                            DrinkAvailabilityEnum.UNAVAILABLE,
                     }"
                 >
                     {{ props.drink.name }}
@@ -51,9 +58,11 @@ const emit = defineEmits<{
                     class="font-semibold whitespace-nowrap transition-colors"
                     :class="{
                         'text-gray-400':
-                            props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+                            props.drink.is_available ===
+                            DrinkAvailabilityEnum.UNAVAILABLE,
                         'text-red-500':
-                            props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
+                            props.drink.is_available ===
+                            DrinkAvailabilityEnum.AVAILABLE,
                     }"
                 >
                     €{{ formatPrice(props.drink.price) }}
@@ -63,8 +72,12 @@ const emit = defineEmits<{
             <p
                 class="mt-1 line-clamp-3 text-sm transition-colors"
                 :class="{
-                    'text-gray-400': props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
-                    'text-gray-600': props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
+                    'text-gray-400':
+                        props.drink.is_available ===
+                        DrinkAvailabilityEnum.UNAVAILABLE,
+                    'text-gray-600':
+                        props.drink.is_available ===
+                        DrinkAvailabilityEnum.AVAILABLE,
                 }"
             >
                 {{ props.drink.description }}
@@ -79,9 +92,11 @@ const emit = defineEmits<{
                             class="text-sm transition-colors"
                             :class="{
                                 'text-gray-300':
-                                    props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+                                    props.drink.is_available ===
+                                    DrinkAvailabilityEnum.UNAVAILABLE,
                                 'text-yellow-400':
-                                    props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
+                                    props.drink.is_available ===
+                                    DrinkAvailabilityEnum.AVAILABLE,
                             }"
                         >
                             ★
@@ -90,9 +105,11 @@ const emit = defineEmits<{
                             class="ml-1 text-xs transition-colors"
                             :class="{
                                 'text-gray-400':
-                                    props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+                                    props.drink.is_available ===
+                                    DrinkAvailabilityEnum.UNAVAILABLE,
                                 'text-gray-500':
-                                    props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
+                                    props.drink.is_available ===
+                                    DrinkAvailabilityEnum.AVAILABLE,
                             }"
                         >
                             (4)
@@ -103,17 +120,21 @@ const emit = defineEmits<{
                         class="flex items-center gap-1 text-xs transition-colors"
                         :class="{
                             'text-gray-400':
-                                props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+                                props.drink.is_available ===
+                                DrinkAvailabilityEnum.UNAVAILABLE,
                             'text-gray-500':
-                                props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
+                                props.drink.is_available ===
+                                DrinkAvailabilityEnum.AVAILABLE,
                         }"
                     >
                         <span
                             :class="{
                                 'text-gray-400':
-                                    props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+                                    props.drink.is_available ===
+                                    DrinkAvailabilityEnum.UNAVAILABLE,
                                 'text-red-700':
-                                    props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
+                                    props.drink.is_available ===
+                                    DrinkAvailabilityEnum.AVAILABLE,
                             }"
                         >
                             ♥
@@ -127,20 +148,25 @@ const emit = defineEmits<{
                         class="text-xs tracking-widest uppercase transition-colors"
                         :class="{
                             'text-gray-400':
-                                props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
+                                props.drink.is_available ===
+                                DrinkAvailabilityEnum.UNAVAILABLE,
                             'text-gray-500':
-                                props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE,
+                                props.drink.is_available ===
+                                DrinkAvailabilityEnum.AVAILABLE,
                         }"
                     >
-                        {{ props.drink.category.label }}
+                        {{ t(`drinks.categories.${props.drink.category.key}`) }}
                     </span>
 
                     <button
-                        v-if="props.drink.is_available === DrinkAvailabilityEnum.AVAILABLE"
+                        v-if="
+                            props.drink.is_available ===
+                            DrinkAvailabilityEnum.AVAILABLE
+                        "
                         @click.stop="emit('add', props.drink)"
-                        class="text-sm text-red-500 transition-all cursor-pointer duration-300 hover:translate-x-1 hover:text-red-600"
+                        class="cursor-pointer text-sm text-red-500 transition-all duration-300 hover:translate-x-1 hover:text-red-600"
                     >
-                        Add
+                        {{ t('drinks.card.add') }}
                         <span
                             class="inline-block transition-transform group-hover:translate-x-1"
                             >→</span
@@ -152,7 +178,7 @@ const emit = defineEmits<{
                         disabled
                         class="cursor-not-allowed text-sm text-gray-400"
                     >
-                        Unavailable
+                        {{ t('drinks.card.unavailable') }}
                     </button>
                 </div>
             </div>

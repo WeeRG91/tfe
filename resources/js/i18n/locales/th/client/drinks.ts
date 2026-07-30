@@ -1,0 +1,30 @@
+export default {
+    pageTitle: 'เครื่องดื่ม',
+    eyebrow: 'เครื่องดื่มของเรา',
+    heading: 'เลือกเครื่องดื่มของคุณ',
+    loadError: 'ไม่สามารถโหลดรายการเครื่องดื่มได้',
+    categories: {
+        all: 'ทั้งหมด',
+        softDrink: 'เครื่องดื่มไม่มีแอลกอฮอล์',
+        hotDrink: 'เครื่องดื่มร้อน',
+        smoothie: 'สมูทตี้',
+        beer: 'เบียร์',
+        wine: 'ไวน์',
+        cocktail: 'ค็อกเทล',
+        mocktail: 'ม็อกเทล',
+    },
+    addDrinkModal: {
+        addFailed: 'ไม่สามารถเพิ่มรายการได้',
+        specialInstructions: 'คำแนะนำเพิ่มเติม (ไม่บังคับ)',
+        specialInstructionsPlaceholder: 'เช่น เพิ่มน้ำตาล, ไม่ใส่น้ำตาล...',
+        quantity: 'จำนวน',
+        total: 'รวม',
+        cancel: 'ยกเลิก',
+        addToCart: 'เพิ่มลงตะกร้า',
+    },
+    card: {
+        add: 'เพิ่ม',
+        available: 'พร้อมจำหน่าย',
+        unavailable: 'ไม่พร้อมจำหน่าย',
+    },
+};

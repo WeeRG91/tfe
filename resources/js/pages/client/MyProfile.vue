@@ -6,6 +6,7 @@ import ClientLayout from '@/layouts/ClientLayout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { Key, QrCode, UserCircle } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     twoFactorAuthEnabled: boolean;
@@ -14,35 +15,37 @@ const props = defineProps<{
 
 const page = usePage();
 
+const { t } = useI18n();
+
 const user = computed(() => page.props.auth?.user);
 type TabType = 'info' | 'password' | 'two-factor';
 
 const activeTab = ref<TabType>('info');
 
-const tabs = [
+const tabs = computed(() => [
     {
         id: 'info' as TabType,
-        label: 'Profile Info',
+        label: t('profile.tabs.info.label'),
         icon: UserCircle,
-        description: 'Update your personal information',
+        description: t('profile.tabs.info.description'),
     },
     {
         id: 'password' as TabType,
-        label: 'Password',
+        label: t('profile.tabs.password.label'),
         icon: Key,
-        description: 'Change your password',
+        description: t('profile.tabs.password.description'),
     },
     {
         id: 'two-factor' as TabType,
-        label: 'Two-Factor Auth',
+        label: t('profile.tabs.twoFactor.label'),
         icon: QrCode,
-        description: 'Add extra security to your account',
+        description: t('profile.tabs.twoFactor.description'),
     },
-];
+]);
 </script>
 
 <template>
-    <Head title="My Profile" />
+    <Head :title="t('profile.pageTitle')" />
 
     <ClientLayout>
         <section class="mx-auto max-w-7xl px-4 py-3 md:px-6 md:py-4">
@@ -50,13 +53,13 @@ const tabs = [
                 <p
                     class="text-xs tracking-widest text-red-500 uppercase md:text-sm"
                 >
-                    [ My Account ]
+                    [ {{ t('profile.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    My Profile
+                    {{ t('profile.title') }}
                 </h1>
                 <p class="mt-0.5 text-xs text-gray-600 md:mt-1 md:text-sm">
-                    Manage your account settings and preferences
+                    {{ t('profile.description') }}
                 </p>
             </div>
 

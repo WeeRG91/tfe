@@ -5,6 +5,7 @@ import { Home, MapPin, Phone, User, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import address from '@/routes/address';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     isOpen: boolean;
@@ -15,6 +16,8 @@ const emit = defineEmits<{
     close: [];
     save: [address: AddressType];
 }>();
+
+const { t } = useI18n();
 
 const first_name = ref<string>('');
 const last_name = ref<string>('');
@@ -51,16 +54,19 @@ const handleSubmit = async () => {
 
     try {
         if (props.addressToEdit) {
-            const { data } = await axios.post(address.update(props.addressToEdit.id).url, {
-                first_name: first_name.value,
-                last_name: last_name.value,
-                phone: phone.value,
-                street: street.value,
-                city: city.value,
-                postal_code: postal_code.value,
-                country: country.value,
-                is_default: is_default.value,
-            });
+            const { data } = await axios.post(
+                address.update(props.addressToEdit.id).url,
+                {
+                    first_name: first_name.value,
+                    last_name: last_name.value,
+                    phone: phone.value,
+                    street: street.value,
+                    city: city.value,
+                    postal_code: postal_code.value,
+                    country: country.value,
+                    is_default: is_default.value,
+                },
+            );
 
             const editedAddress = data.address as AddressType;
 
@@ -83,7 +89,7 @@ const handleSubmit = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to add address');
+        toast.error(t('cart.orderType.deliveryForm.addressModal.addFailed'));
 
         if (axios.isAxiosError(error) && error.response?.status === 422) {
             form.value.errors = error.response.data.errors || {};
@@ -151,14 +157,24 @@ watch(
                         <div>
                             <h2 class="text-xl font-semibold text-white">
                                 {{
-                                    address ? 'Edit Address' : 'Add New Address'
+                                    addressToEdit
+                                        ? t(
+                                              'cart.orderType.deliveryForm.addressModal.editTitle',
+                                          )
+                                        : t(
+                                              'cart.orderType.deliveryForm.addressModal.addTitle',
+                                          )
                                 }}
                             </h2>
                             <p class="mt-0.5 text-xs text-white/80">
                                 {{
-                                    address
-                                        ? 'Update your delivery address details'
-                                        : 'Enter your delivery address details'
+                                    addressToEdit
+                                        ? t(
+                                              'cart.orderType.deliveryForm.addressModal.editDescription',
+                                          )
+                                        : t(
+                                              'cart.orderType.deliveryForm.addressModal.addDescription',
+                                          )
                                 }}
                             </p>
                         </div>
@@ -177,7 +193,15 @@ watch(
                             <label
                                 class="mb-1.5 block text-sm font-medium text-gray-700"
                             >
-                                First Name *
+                                {{
+                                    t(
+                                        'cart.orderType.deliveryForm.addressModal.firstName',
+                                    )
+                                }}
+                                <span
+                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    >*</span
+                                >
                             </label>
                             <div class="relative">
                                 <User
@@ -192,7 +216,11 @@ watch(
                                         'border-red-500':
                                             form.errors.first_name,
                                     }"
-                                    placeholder="John"
+                                    :placeholder="
+                                        t(
+                                            'cart.orderType.deliveryForm.addressModal.firstNamePlaceholder',
+                                        )
+                                    "
                                 />
                             </div>
                             <p
@@ -207,7 +235,15 @@ watch(
                             <label
                                 class="mb-1.5 block text-sm font-medium text-gray-700"
                             >
-                                Last Name *
+                                {{
+                                    t(
+                                        'cart.orderType.deliveryForm.addressModal.lastName',
+                                    )
+                                }}
+                                <span
+                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    >*</span
+                                >
                             </label>
                             <div class="relative">
                                 <User
@@ -221,7 +257,11 @@ watch(
                                     :class="{
                                         'border-red-500': form.errors.last_name,
                                     }"
-                                    placeholder="Doe"
+                                    :placeholder="
+                                        t(
+                                            'cart.orderType.deliveryForm.addressModal.lastNamePlaceholder',
+                                        )
+                                    "
                                 />
                             </div>
                             <p
@@ -237,7 +277,14 @@ watch(
                         <label
                             class="mb-1.5 block text-sm font-medium text-gray-700"
                         >
-                            Phone Number *
+                            {{
+                                t(
+                                    'cart.orderType.deliveryForm.addressModal.phoneNumber',
+                                )
+                            }}
+                            <span class="text-sm text-red-500 sm:text-[18px]"
+                                >*</span
+                            >
                         </label>
                         <div class="relative">
                             <Phone
@@ -264,7 +311,14 @@ watch(
                         <label
                             class="mb-1.5 block text-sm font-medium text-gray-700"
                         >
-                            Street Address *
+                            {{
+                                t(
+                                    'cart.orderType.deliveryForm.addressModal.streetAddress',
+                                )
+                            }}
+                            <span class="text-sm text-red-500 sm:text-[18px]"
+                                >*</span
+                            >
                         </label>
                         <div class="relative">
                             <MapPin
@@ -278,7 +332,11 @@ watch(
                                 :class="{
                                     'border-red-500': form.errors.street,
                                 }"
-                                placeholder="123 Main St, Apt 4B"
+                                :placeholder="
+                                    t(
+                                        'cart.orderType.deliveryForm.addressModal.streetPlaceholder',
+                                    )
+                                "
                             />
                         </div>
                         <p
@@ -294,7 +352,15 @@ watch(
                             <label
                                 class="mb-1.5 block text-sm font-medium text-gray-700"
                             >
-                                City *
+                                {{
+                                    t(
+                                        'cart.orderType.deliveryForm.addressModal.city',
+                                    )
+                                }}
+                                <span
+                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    >*</span
+                                >
                             </label>
                             <input
                                 v-model="city"
@@ -302,7 +368,11 @@ watch(
                                 required
                                 class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
                                 :class="{ 'border-red-500': form.errors.city }"
-                                placeholder="Brussels"
+                                :placeholder="
+                                    t(
+                                        'cart.orderType.deliveryForm.addressModal.cityPlaceholder',
+                                    )
+                                "
                             />
                             <p
                                 v-if="form.errors.city"
@@ -316,7 +386,15 @@ watch(
                             <label
                                 class="mb-1.5 block text-sm font-medium text-gray-700"
                             >
-                                Postal Code *
+                                {{
+                                    t(
+                                        'cart.orderType.deliveryForm.addressModal.postalCode',
+                                    )
+                                }}
+                                <span
+                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    >*</span
+                                >
                             </label>
                             <input
                                 v-model="postal_code"
@@ -340,17 +418,41 @@ watch(
                             <label
                                 class="mb-1.5 block text-sm font-medium text-gray-700"
                             >
-                                Country
+                                {{
+                                    t(
+                                        'cart.orderType.deliveryForm.addressModal.country',
+                                    )
+                                }}
+                                <span
+                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    >*</span
+                                >
                             </label>
                             <select
                                 v-model="country"
                                 class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
                             >
-                                <option value="Belgium">Belgium</option>
-                                <option value="Netherlands">Netherlands</option>
-                                <option value="France">France</option>
-                                <option value="Germany">Germany</option>
-                                <option value="Luxembourg">Luxembourg</option>
+                                <option value="Belgium">
+                                    {{
+                                        t(
+                                            'cart.orderType.deliveryForm.addressModal.countries.belgium',
+                                        )
+                                    }}
+                                </option>
+                                <option value="France">
+                                    {{
+                                        t(
+                                            'cart.orderType.deliveryForm.addressModal.countries.france',
+                                        )
+                                    }}
+                                </option>
+                                <option value="Luxembourg">
+                                    {{
+                                        t(
+                                            'cart.orderType.deliveryForm.addressModal.countries.luxembourg',
+                                        )
+                                    }}
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -368,7 +470,11 @@ watch(
                             for="is_default"
                             class="cursor-pointer text-sm text-gray-700"
                         >
-                            Set as default address
+                            {{
+                                t(
+                                    'cart.orderType.deliveryForm.addressModal.defaultAddress',
+                                )
+                            }}
                         </label>
                     </div>
 
@@ -378,7 +484,11 @@ watch(
                             @click="closeModal"
                             class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
                         >
-                            Cancel
+                            {{
+                                t(
+                                    'cart.orderType.deliveryForm.addressModal.cancel',
+                                )
+                            }}
                         </button>
                         <button
                             type="submit"
@@ -392,10 +502,26 @@ watch(
                                 <span
                                     class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                                 ></span>
-                                {{addressToEdit ? 'Updating...' : 'Saving...' }}
+                                {{
+                                    addressToEdit
+                                        ? t(
+                                              'cart.orderType.deliveryForm.addressModal.updating',
+                                          )
+                                        : t(
+                                              'cart.orderType.deliveryForm.addressModal.saving',
+                                          )
+                                }}
                             </span>
                             <span v-else>
-                                {{ addressToEdit ? 'Update' : 'Save' }}
+                                {{
+                                    addressToEdit
+                                        ? t(
+                                              'cart.orderType.deliveryForm.addressModal.update',
+                                          )
+                                        : t(
+                                              'cart.orderType.deliveryForm.addressModal.save',
+                                          )
+                                }}
                             </span>
                         </button>
                     </div>
@@ -405,7 +531,11 @@ watch(
                         class="rounded-lg bg-red-50 p-3"
                     >
                         <p class="text-xs text-red-600">
-                            Please fix the errors above before submitting.
+                            {{
+                                t(
+                                    'cart.orderType.deliveryForm.addressModal.validationMessage',
+                                )
+                            }}
                         </p>
                     </div>
                 </form>

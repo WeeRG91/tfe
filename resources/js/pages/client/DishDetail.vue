@@ -2,11 +2,7 @@
 import AnimatedButton from '@/components/AnimatedButton.vue';
 import AddDishToCartModal from '@/components/client/cart/AddDishToCartModal.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
-import {
-    formatDateForHumans,
-    getInitials,
-    getUserAvatarColor,
-} from '@/lib/utils';
+import { getInitials, getUserAvatarColor } from '@/lib/utils';
 import rating from '@/routes/rating';
 import { useDishStore } from '@/stores/dish';
 import { ClientDishType } from '@/types/dish';
@@ -16,10 +12,13 @@ import axios from 'axios';
 import { X, Flame } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     dish: ClientDishType;
 }>();
+
+const { formatDateForHumans } = useDateFormatter();
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user || null);
@@ -276,7 +275,10 @@ onUnmounted(() => {
                 <span class="font-medium text-gray-900">
                     {{ props.dish.name }}
                 </span>
-                <div v-if="dish.default_spicy_level > 0" class="flex items-center gap-1">
+                <div
+                    v-if="dish.default_spicy_level > 0"
+                    class="flex items-center gap-1"
+                >
                     <Flame
                         v-for="i in dish.default_spicy_level"
                         :key="i"

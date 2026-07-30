@@ -9,6 +9,14 @@ enum PaymentMethodEnum: int
     case CASH = 1;
     case CARD = 2;
 
+    public function key(): string
+    {
+        return match ($this) {
+            self::CASH => 'cash',
+            self::CARD => 'card',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -26,6 +34,7 @@ enum PaymentMethodEnum: int
     {
         return array_map(fn ($case) => [
             'value' => $case->value,
+            'key' => $case->key(),
             'label' => $case->label(),
         ], self::cases());
     }

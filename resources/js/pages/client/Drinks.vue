@@ -9,7 +9,10 @@ import { ClientDrinkType } from '@/types/drink';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
+
+const { t } = useI18n();
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -43,7 +46,7 @@ const loadingDrinks = async () => {
         drinks.value = response.data;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more drinks');
+        toast.error(t('drinks.loadError'));
     } finally {
         isLoading.value = false;
         hasLoaded.value = true;
@@ -60,15 +63,15 @@ watch(selectedCategory, () => {
 </script>
 
 <template>
-    <Head title="Drink Page" />
+    <Head :title="t('drinks.pageTitle')" />
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
-                    [ Our Drinks ]
+                    [ {{ t('drinks.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    Choose Your Drinks
+                    {{ t('drinks.heading') }}
                 </h1>
             </div>
 
@@ -82,7 +85,7 @@ watch(selectedCategory, () => {
                             : 'border-red-500 bg-red-500 text-white hover:bg-red-600'
                     "
                 >
-                    All
+                    {{ t('drinks.categories.all') }}
                 </button>
 
                 <button
@@ -96,7 +99,7 @@ watch(selectedCategory, () => {
                             : 'text-gray-600 hover:bg-gray-100'
                     "
                 >
-                    {{ category.label }}
+                    {{ t(`drinks.categories.${category.key}`) }}
                 </button>
             </div>
 

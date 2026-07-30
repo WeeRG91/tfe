@@ -1,0 +1,40 @@
+export default {
+    pageTitle: 'Page du menu',
+    eyebrow: 'Notre menu',
+    heading: 'Découvrez nos plats',
+    loadFailed: 'Impossible de charger davantage de plats.',
+    categories: {
+        all: 'Tous',
+        appetizer: 'Entrée',
+        main_course: 'Plat principal',
+        soup: 'Soupe',
+        noodles: 'Nouilles',
+        dessert: 'Dessert',
+        vegetarian: 'Végétarien',
+    },
+    addDishModal: {
+        close: 'Fermer',
+        quantity: 'Quantité',
+        chooseMeat: 'Choisissez votre viande',
+        selectMeat: 'Veuillez sélectionner une viande.',
+        removeIngredients: 'Retirer des ingrédients',
+        instructionsOptional: 'Instructions spéciales (facultatif)',
+        instructionsPlaceholder:
+            'Par ex. sauce supplémentaire, sans oignons, plus épicé...',
+        addingToCart: 'Ajout en cours...',
+        addToCart: 'Ajouter au panier',
+        addFailed: "Impossible d'ajouter l'article au panier.",
+        total: 'Total',
+        cancel: 'Annuler',
+    },
+    card: {
+        add: 'Ajouter',
+        available: 'Disponible',
+        unavailable: 'Indisponible',
+    },
+    emptyList: {
+        title: 'Aucun plat disponible',
+        description: "Nous n'avons trouvé aucun plat pour le moment.",
+        addition: 'Veuillez revenir plus tard ou essayer une autre catégorie.',
+    },
+};

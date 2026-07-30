@@ -4,6 +4,8 @@ import { CartItemType, ItemTypeEnum } from '@/types/cart';
 import { SquarePen } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { getSpicyLevelLabels } from '@/lib/const';
 
 const cartStore = useCartStore();
 const { isLoading } = storeToRefs(cartStore);
@@ -20,6 +22,15 @@ const emit = defineEmits<{
     'update-notes': [cartItemId: number, notes: string];
     remove: [cartItemId: number];
 }>();
+
+const { t } = useI18n();
+const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
+
+const categoryLabel = computed(() => {
+    return props.type === ItemTypeEnum.DISH
+        ? t(`cart.dishCategories.${props.cartItem.item.category.key}`)
+        : t(`cart.drinkCategories.${props.cartItem.item.category.key}`);
+});
 
 const isEditingNotes = ref<boolean>(false);
 const editedNotes = ref<string>(props.cartItem.notes || '');
@@ -92,14 +103,9 @@ const sectionHeaderClass = computed(() => {
                         {{ cartItem.item.name }}
                     </h3>
                     <span
-                        :class="[
-                            'text-xs tracking-widest uppercase',
-                            type === ItemTypeEnum.DRINK
-                                ? 'text-blue-500'
-                                : 'text-gray-400',
-                        ]"
+                        class="text-xs tracking-widest text-gray-400 uppercase"
                     >
-                        {{ cartItem.item.category.label }}
+                        {{ categoryLabel }}
                     </span>
                 </div>
                 <span
@@ -117,22 +123,22 @@ const sectionHeaderClass = computed(() => {
                 <template v-if="type === ItemTypeEnum.DISH">
                     <div class="flex items-center gap-1.5 text-xs">
                         <span :class="[sectionHeaderClass]"
-                            >🌶️ Spicy level:</span
+                            >🌶️ {{ t('common.spicyLevel.title') }}:</span
                         >
                         <div class="text-xs font-medium text-gray-600">
                             <span
                                 :class="[
-                                    cartItem.spicy_level === 0 && 'text-green-600',
-                                    cartItem.spicy_level === 1 && 'text-yellow-600',
-                                    cartItem.spicy_level === 2 && 'text-orange-600',
-                                    cartItem.spicy_level === 3 && 'text-red-600',
+                                    cartItem.spicy_level === 0 &&
+                                        'text-green-600',
+                                    cartItem.spicy_level === 1 &&
+                                        'text-yellow-600',
+                                    cartItem.spicy_level === 2 &&
+                                        'text-orange-600',
+                                    cartItem.spicy_level === 3 &&
+                                        'text-red-600',
                                 ]"
                             >
-                                {{
-                                    ['No spicy', 'Mild', 'Spicy', 'Hot'][
-                                        cartItem.spicy_level
-                                    ]
-                                }}
+                                {{ spicyLevelLabels[cartItem.spicy_level] }}
                             </span>
                         </div>
                     </div>
@@ -141,7 +147,9 @@ const sectionHeaderClass = computed(() => {
                         v-if="cartItem.meat"
                         class="flex items-center gap-1.5 text-xs"
                     >
-                        <span :class="[sectionHeaderClass]">🥩 Meat:</span>
+                        <span :class="[sectionHeaderClass]"
+                            >🥩 {{ t('cart.cartItemCard.meat') }}:</span
+                        >
                         <span class="font-medium">{{
                             cartItem.meat.name
                         }}</span>
@@ -157,7 +165,9 @@ const sectionHeaderClass = computed(() => {
                         v-if="cartItem.removed_ingredients?.length"
                         class="mt-0.5 text-xs"
                     >
-                        <span :class="[sectionHeaderClass]">🚫 Removed:</span>
+                        <span :class="[sectionHeaderClass]"
+                            >🚫 {{ t('cart.cartItemCard.removed') }}:</span
+                        >
                         <span class="ml-1 text-xs text-gray-600">
                             {{
                                 cartItem.removed_ingredients
@@ -174,13 +184,18 @@ const sectionHeaderClass = computed(() => {
                         "
                         class="flex items-center gap-1.5 text-xs text-gray-400 italic"
                     >
-                        <span>🍽️ No customizations</span>
+                        <span
+                            >🍽️
+                            {{ t('cart.cartItemCard.noCustomizations') }}</span
+                        >
                     </div>
                 </template>
 
                 <template v-else>
                     <div class="flex items-center gap-1.5 text-xs">
-                        <span class="text-blue-500">🍹 Ready to serve</span>
+                        <span class="text-blue-500"
+                            >🍹 {{ t('cart.cartItemCard.readyToServe') }}</span
+                        >
                     </div>
                 </template>
             </div>
@@ -191,11 +206,13 @@ const sectionHeaderClass = computed(() => {
                         v-if="cartItem.notes"
                         class="rounded-md bg-gray-50 p-1.5 text-xs text-gray-600"
                     >
-                        <span class="text-gray-500">📝 Notes:</span>
+                        <span class="text-gray-500"
+                            >📝 {{ t('cart.cartItemCard.notes') }}:</span
+                        >
                         <span class="ml-1">{{ cartItem.notes }}</span>
                     </div>
                     <div v-else class="text-xs text-gray-400 italic">
-                        No notes added
+                        {{ t('cart.cartItemCard.noNotes') }}
                     </div>
                     <button
                         @click="startEditNotes"
@@ -208,14 +225,14 @@ const sectionHeaderClass = computed(() => {
                         v-else
                         class="absolute top-1 right-1 cursor-pointer text-xs text-green-500 transition"
                     >
-                        Saved!
+                        {{ t('cart.cartItemCard.saved') }}
                     </span>
                 </div>
 
                 <div v-else class="space-y-1">
                     <textarea
                         v-model="editedNotes"
-                        placeholder="Add special instructions..."
+                        :placeholder="t('cart.cartItemCard.notesPlaceholder')"
                         rows="1"
                         class="w-full rounded-md border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                         @keydown.ctrl.enter.prevent="saveNotes"
@@ -231,13 +248,15 @@ const sectionHeaderClass = computed(() => {
                                 v-if="isLoading"
                                 class="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent"
                             ></span>
-                            <span v-else>Save</span>
+                            <span v-else>{{
+                                t('cart.cartItemCard.save')
+                            }}</span>
                         </button>
                         <button
                             @click="cancelEditNotes"
                             class="w-14 cursor-pointer rounded-md border border-gray-300 px-2 py-0.5 text-xs text-gray-600 transition hover:bg-gray-50"
                         >
-                            Cancel
+                            {{ t('cart.cartItemCard.cancel') }}
                         </button>
                         <span
                             class="ml-auto flex items-center text-xs text-gray-400"
@@ -273,13 +292,15 @@ const sectionHeaderClass = computed(() => {
 
                     <div class="flex items-center gap-3">
                         <span class="text-xs text-gray-500">
-                            €{{ formatPrice(cartItem.unit_price) }}/each
+                            €{{ formatPrice(cartItem.unit_price) }}/{{
+                                t('cart.cartItemCard.each')
+                            }}
                         </span>
                         <button
                             @click.prevent="emit('remove', cartItem.id)"
                             class="flex cursor-pointer items-center gap-0.5 text-xs text-red-500 transition hover:text-red-600"
                         >
-                            <span>Remove</span>
+                            <span>{{ t('cart.cartItemCard.remove') }}</span>
                             <span
                                 v-if="loadingRemoveItemId === cartItem.id"
                                 class="h-1 w-1 animate-spin rounded-full border-2 border-red-500 border-t-transparent p-1"

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import {
-    formatDate,
     formatPrice,
     getOrderStatusIcon,
     getOrderStatusVariant,
@@ -27,6 +26,8 @@ import {
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import OrderItemsList from './OrderItemsList.vue';
+import { useI18n } from 'vue-i18n';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     orderToShow: OrderType;
@@ -37,6 +38,10 @@ const emit = defineEmits<{
     cancel: [orderId: number];
     remove: [orderId: number];
 }>();
+
+const { t } = useI18n();
+
+const { formatDate } = useDateFormatter();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -49,10 +54,13 @@ const cancellationDescription = computed(() => {
         props.orderToShow.payment_method.value === PaymentMethodEnum.CARD &&
         props.orderToShow.payment_status.value === PaymentStatusEnum.PAID
     ) {
-        return `This order has already been paid. Cancelling it will refund of €${formatPrice(props.orderToShow.total_inc_vat)} to your original payment method.`;
+        return t(
+            'order.orderCard.refundConfirmation',
+            formatPrice(props.orderToShow.total_inc_vat),
+        );
     }
 
-    return 'Are you sure you want to cancel this order?'
+    return t('order.orderCard.cancelConfirmation');
 });
 
 const isExpanded = computed(
@@ -145,7 +153,11 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                                         "
                                         class="h-3 w-3"
                                     />
-                                    {{ orderToShow.status.label }}
+                                    {{
+                                        t(
+                                            `common.orderStatus.${orderToShow.status.key}`,
+                                        )
+                                    }}
                                 </span>
                             </div>
                             <p class="text-xs text-gray-500">
@@ -154,7 +166,9 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         </div>
                     </div>
                     <div class="shrink-0 text-right">
-                        <p class="text-xs text-gray-500">Total</p>
+                        <p class="text-xs text-gray-500">
+                            {{ t('order.orderCard.total') }}
+                        </p>
                         <p class="text-lg font-bold text-red-500">
                             €{{ formatPrice(orderToShow.total_inc_vat) }}
                         </p>
@@ -165,7 +179,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                     <div
                         class="mb-1 flex justify-between text-xs text-gray-600"
                     >
-                        <span>Order Progress</span>
+                        <span>{{ t('order.orderCard.orderProgress') }}</span>
                         <span
                             >{{
                                 getOrderStatusProgress(
@@ -190,7 +204,9 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                             :is="getOrderTypeIcon(orderToShow.type.value)"
                             class="h-3 w-3"
                         />
-                        <span>{{ orderToShow.type.label }}</span>
+                        <span>{{
+                            t(`common.orderTypes.${orderToShow.type.key}`)
+                        }}</span>
                     </div>
                     <ChevronDown
                         class="h-4 w-4 text-gray-400 transition-transform duration-200"
@@ -209,10 +225,13 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                             <p
                                 class="text-xs font-semibold text-gray-500 uppercase"
                             >
-                                Customer
+                                {{ t('order.orderCard.customer') }}
                             </p>
                             <p class="text-sm font-medium text-gray-800">
-                                {{ orderToShow.user?.name || 'Guest' }}
+                                {{
+                                    orderToShow.user?.name ||
+                                    t('order.orderCard.guest')
+                                }}
                             </p>
                             <p class="text-xs text-gray-500">
                                 {{ orderToShow.user?.email }}
@@ -240,10 +259,14 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                             <p
                                 class="text-xs font-semibold text-gray-500 uppercase"
                             >
-                                Payment
+                                {{ t('order.orderCard.payment') }}
                             </p>
                             <p class="text-sm text-gray-700">
-                                {{ orderToShow.payment_method?.label }}
+                                {{
+                                    t(
+                                        `common.paymentMethod.${orderToShow.payment_method.key}`,
+                                    )
+                                }}
                             </p>
                             <span
                                 :class="[
@@ -261,7 +284,11 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                                     "
                                     class="h-3 w-3"
                                 />
-                                {{ orderToShow.payment_status.label }}
+                                {{
+                                    t(
+                                        `common.paymentStatus.${orderToShow.payment_status.key}`,
+                                    )
+                                }}
                             </span>
                         </div>
                     </div>
@@ -277,7 +304,9 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                                 <p
                                     class="text-xs font-semibold text-amber-700 uppercase"
                                 >
-                                    Special Instructions
+                                    {{
+                                        t('order.orderCard.specialInstructions')
+                                    }}
                                 </p>
                                 <p class="text-sm text-gray-600 italic">
                                     "{{ orderToShow.notes }}"
@@ -299,13 +328,15 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
                     >
                         <NotebookText class="h-4 w-4" />
-                        <span>See Details</span>
+                        <span>{{ t('order.orderCard.seeDetails') }}</span>
                     </button>
 
                     <button
                         v-if="
                             orderToShow.status?.value ===
-                            OrderStatusEnum.PENDING || orderToShow.status.value === OrderStatusEnum.CONFIRMED
+                                OrderStatusEnum.PENDING ||
+                            orderToShow.status.value ===
+                                OrderStatusEnum.CONFIRMED
                         "
                         @click="
                             openConfirmModal(
@@ -317,7 +348,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
                     >
                         <XCircle class="h-4 w-4" />
-                        <span>Cancel Order</span>
+                        <span>{{ t('order.orderCard.cancelOrder') }}</span>
                     </button>
 
                     <button
@@ -333,7 +364,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
                     >
                         <CreditCard class="h-4 w-4" />
-                        <span>Complete</span>
+                        <span>{{ t('order.orderCard.completeOrder') }}</span>
                     </button>
 
                     <button
@@ -343,7 +374,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         "
                         @click="
                             openConfirmModal(
-                                'Are you sure you want to remove this order?',
+                                t('order.orderCard.removeConfirmation'),
                                 'destructive',
                                 () => removeOrder(),
                             )
@@ -351,7 +382,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
                     >
                         <XCircle class="h-4 w-4" />
-                        <span>Remove Order</span>
+                        <span>{{ t('order.orderCard.removeOrder') }}</span>
                     </button>
 
                     <button
@@ -369,7 +400,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-500 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-red-600 disabled:opacity-50 sm:w-40"
                     >
                         <Repeat class="h-4 w-4" />
-                        <span>Reorder Now</span>
+                        <span>{{ t('order.orderCard.reorder') }}</span>
                     </button>
                 </div>
             </div>

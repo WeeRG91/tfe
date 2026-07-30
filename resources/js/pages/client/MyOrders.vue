@@ -13,6 +13,9 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { Clock, Loader, Star, XCircle } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -23,11 +26,22 @@ const { orders } = storeToRefs(orderStore);
 const selectedStatusValue = ref<FilterOrderEnum>(FilterOrderEnum.ACTIVE);
 const isLoading = ref<boolean>(false);
 
-const filterOptions: { label: string; value: FilterOrderEnum }[] = [
-    { label: 'Active Orders', value: FilterOrderEnum.ACTIVE },
-    { label: 'Completed Orders', value: FilterOrderEnum.COMPLETED },
-    { label: 'Cancelled Orders', value: FilterOrderEnum.CANCELLED },
-];
+const filterOptions = computed<{ label: string; value: FilterOrderEnum }[]>(
+    () => [
+        {
+            label: t('order.filters.active'),
+            value: FilterOrderEnum.ACTIVE,
+        },
+        {
+            label: t('order.filters.completed'),
+            value: FilterOrderEnum.COMPLETED,
+        },
+        {
+            label: t('order.filters.cancelled'),
+            value: FilterOrderEnum.CANCELLED,
+        },
+    ],
+);
 
 const groupedOrders = computed(() => {
     const groups = {
@@ -105,18 +119,18 @@ watch(selectedStatusValue, async () => {
 </script>
 
 <template>
-    <Head title="My Orders" />
+    <Head :title="t('order.pageTitle')" />
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-6">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
-                    [ My Account ]
+                    [ {{ t('order.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    My Orders
+                    {{ t('order.title') }}
                 </h1>
                 <p class="mt-1 text-sm text-gray-600">
-                    Track, manage, and reorder your favorite meals
+                    {{ t('order.description') }}
                 </p>
             </div>
 
@@ -149,7 +163,7 @@ watch(selectedStatusValue, async () => {
                 <template v-if="selectedStatusValue === FilterOrderEnum.ACTIVE">
                     <OrderList
                         v-if="groupedOrders.active.length"
-                        title="Active Orders"
+                        :title="t('order.filters.active')"
                         :icon="Clock"
                         icon-color="amber"
                         :orders="groupedOrders.active"
@@ -161,7 +175,7 @@ watch(selectedStatusValue, async () => {
                 >
                     <OrderList
                         v-if="groupedOrders.completed.length"
-                        title="Completed Orders"
+                        :title="t('order.filters.completed')"
                         :icon="Star"
                         icon-color="emerald"
                         :orders="groupedOrders.completed"
@@ -173,7 +187,7 @@ watch(selectedStatusValue, async () => {
                 >
                     <OrderList
                         v-if="groupedOrders.cancelled.length"
-                        title="Cancelled Orders"
+                        :title="t('order.filters.cancelled')"
                         :icon="XCircle"
                         icon-color="red"
                         :orders="groupedOrders.cancelled"

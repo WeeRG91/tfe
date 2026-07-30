@@ -1,21 +1,38 @@
 import { computed, ref, Ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-export type PointsOptions = {
+export type PointOption = {
     points: number;
     discount: number;
     label: string;
 };
 
 export function useLoyaltyPoints(userPoints: Ref<number>) {
+    const { t } = useI18n();
+
     const selectedPoints = ref<number>(0);
 
-    const pointsOptions: PointsOptions[] = [
-        { points: 300, discount: 5, label: '300 points -> €5 off' },
-        { points: 550, discount: 10, label: '550 points -> €5 off' },
-    ];
+    const pointsOptions = computed<PointOption[]>(() => [
+        {
+            points: 300,
+            discount: 5,
+            label: t('cart.loyaltyPoints.options', {
+                points: 300,
+                amount: 5,
+            }),
+        },
+        {
+            points: 550,
+            discount: 10,
+            label: t('cart.loyaltyPoints.options', {
+                points: 550,
+                amount: 10,
+            }),
+        },
+    ]);
 
     const selectedOption = computed(() =>
-        pointsOptions.find((opt) => opt.points === selectedPoints.value),
+        pointsOptions.value.find((opt) => opt.points === selectedPoints.value),
     );
 
     const discountAmount = computed(() => {

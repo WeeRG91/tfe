@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { OrderTypeEnum, OrderTypeType } from '@/types/order';
 import { ShoppingBag, Store, Table, Truck } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     modelValue: OrderTypeEnum | null;
@@ -10,6 +11,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     'update:modelValue': [value: OrderTypeEnum];
 }>();
+
+const {t} = useI18n()
 
 const getOrderTypeIcon = (orderTypeValue: OrderTypeEnum) => {
     switch (orderTypeValue) {
@@ -35,7 +38,7 @@ const selectType = (value: OrderTypeEnum) => {
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
             <Store class="h-5 w-5" />
-            Order Type
+            {{ t('cart.orderType.title') }}
         </h2>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -59,7 +62,7 @@ const selectType = (value: OrderTypeEnum) => {
                             : 'text-gray-400'
                     "
                 />
-                <span class="font-medium">{{ orderType.label }}</span>
+                <span class="font-medium">{{ t(`common.orderTypes.${orderType.key}`) }}</span>
             </button>
         </div>
     </div>

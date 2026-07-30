@@ -4,6 +4,7 @@ import { OrderType } from '@/types/order';
 import { ref } from 'vue';
 import { useOrderStore } from '@/stores/order';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
 
 const orderStore = useOrderStore();
 
@@ -13,6 +14,8 @@ const props = defineProps<{
     iconColor: string;
     orders: OrderType[];
 }>();
+
+const {t} = useI18n();
 
 const ordersToShow = ref<OrderType[]>(props.orders ?? []);
 const isConfirmLoading = ref<boolean>(false);
@@ -28,7 +31,7 @@ const cancelOrder = async (orderId: number) => {
         );
     } catch (error) {
         console.error(error);
-        toast.error('Failed to cancel the order.');
+        toast.error(t('order.orderList.errors.cancel'));
     } finally {
         isConfirmLoading.value = false;
     }
@@ -45,7 +48,7 @@ const removeOrder = async (orderId: number) => {
         );
     } catch (error) {
         console.error(error);
-        toast.error('Failed to remove the order.');
+        toast.error(t('order.orderList.errors.remove'));
     } finally {
         isConfirmLoading.value = false;
     }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Table } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     modelValue: string;
@@ -8,6 +9,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     'update:modelValue': [value: string];
 }>();
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -16,12 +19,13 @@ const emit = defineEmits<{
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
             <Table class="h-5 w-5" />
-            Table Details
+            {{ t('cart.orderType.dineInForm.title') }}
         </h2>
 
         <div>
             <label class="mb-1 block text-sm font-medium text-gray-700">
-                Table Number *
+                {{ t('cart.orderType.dineInForm.tableNumber') }}
+                <span class="text-sm text-red-500 sm:text-[18px]">*</span>
             </label>
             <input
                 :value="props.modelValue"
@@ -32,11 +36,13 @@ const emit = defineEmits<{
                     )
                 "
                 type="text"
-                placeholder="e.g., 12, A3, 5B"
+                :placeholder="
+                    t('cart.orderType.dineInForm.tableNumberPlaceholder')
+                "
                 class="w-full rounded-md border border-gray-300 p-2.5 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
             />
             <p class="mt-1 text-xs text-gray-500">
-                Enter your table number for dine-in service
+                {{ t('cart.orderType.dineInForm.helperText') }}
             </p>
         </div>
     </div>

@@ -12,11 +12,14 @@ import {
 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     user: UserType;
     twoFactorAuthEnabled: boolean;
 }>();
+
+const { t } = useI18n();
 
 const isLoading = ref<boolean>(false);
 const isVerifying = ref<boolean>(false);
@@ -70,10 +73,10 @@ const initializeTwoFactorSetup = async () => {
         recoveryCodes.value = recovery.data;
 
         showSetup.value = true;
-        toast.success('Scan the QR code with your authenticator app.');
+        toast.success(t('profile.twoFactorTab.success.setupStarted'));
     } catch (e) {
         console.error(e);
-        toast.error('Unable to setup two-factor authentication.');
+        toast.error(t('profile.twoFactorTab.errors.setupFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -81,7 +84,7 @@ const initializeTwoFactorSetup = async () => {
 
 const verifyAndEnable = async () => {
     if (verificationCode.value.length !== 6) {
-        toast.error('Please enter all 6 digits.');
+        toast.error(t('profile.twoFactorTab.setup.incompleteCode'));
         return;
     }
 
@@ -96,10 +99,10 @@ const verifyAndEnable = async () => {
         showSetup.value = false;
         showRecoveryCodes.value = true;
 
-        toast.success('Two-factor authentication enabled successfully!');
+        toast.success(t('profile.twoFactorTab.success.enabled'));
     } catch (e) {
         console.error(e);
-        toast.error('Invalid authentication code. Please try again.');
+        toast.error(t('profile.twoFactorTab.errors.invalidCode'));
     } finally {
         isVerifying.value = false;
     }
@@ -123,10 +126,10 @@ const disableTwoFactor = async () => {
         showSetup.value = false;
         showRecoveryCodes.value = false;
 
-        toast.success('Two-factor authentication disabled.');
+        toast.success(t('profile.twoFactorTab.success.disabled'));
     } catch (error) {
         console.error(error);
-        toast.error('Unable to disable two-factor authentication.');
+        toast.error(t('profile.twoFactorTab.errors.disableFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -147,10 +150,10 @@ const regenerateRecoveryCodes = async () => {
 
         recoveryCodes.value = response.data;
 
-        toast.success('Recovery codes regenerated successfully!');
+        toast.success(t('profile.twoFactorTab.success.regenerated'));
     } catch (error) {
         console.error(error);
-        toast.error('Unable to regenerate recovery codes.');
+        toast.error(t('profile.twoFactorTab.errors.regenerateFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -163,7 +166,7 @@ const toggleRecoveryCodes = async () => {
             recoveryCodes.value = data;
         } catch (error) {
             console.error(error);
-            toast.error('Unable to load recovery codes.');
+            toast.error(t('profile.twoFactorTab.errors.loadRecoveryCodes'));
             return;
         }
     }
@@ -180,7 +183,7 @@ const copyRecoveryCodes = async () => {
         }, 3000);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to copy codes');
+        toast.error(t('profile.twoFactorTab.errors.copyFailed'));
     }
 };
 
@@ -197,7 +200,7 @@ const downloadRecoveryCodes = () => {
 
 const copySecretKey = async () => {
     await navigator.clipboard.writeText(secretKey.value);
-    toast.success('Secret key copied.');
+    toast.success(t('profile.twoFactorTab.success.copiedSecretKey'));
 };
 </script>
 
@@ -212,15 +215,17 @@ const copySecretKey = async () => {
 
         <div>
             <h2 class="text-lg font-semibold sm:text-xl md:text-2xl">
-                Two-Factor Authentication
+                {{ t('profile.twoFactorTab.title') }}
             </h2>
             <p class="mt-1 text-xs text-gray-500 sm:text-sm">
-                Add an extra layer of security to your account
+                {{ t('profile.twoFactorTab.description') }}
             </p>
         </div>
 
         <div class="rounded-lg border p-3 sm:p-4">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div
+                class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            >
                 <div class="flex items-center gap-3">
                     <div
                         class="rounded-full p-1.5 sm:p-2"
@@ -238,14 +243,22 @@ const copySecretKey = async () => {
                         />
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-900 sm:text-base">
-                            {{ isTwoFactorEnabled ? 'Enabled' : 'Disabled' }}
+                        <p
+                            class="text-sm font-medium text-gray-900 sm:text-base"
+                        >
+                            {{
+                                isTwoFactorEnabled
+                                    ? t('profile.twoFactorTab.status.enabled')
+                                    : t('profile.twoFactorTab.status.disabled')
+                            }}
                         </p>
                         <p class="text-xs text-gray-500 sm:text-sm">
                             {{
                                 isTwoFactorEnabled
-                                    ? 'Your account is protected with 2FA'
-                                    : 'Your account is not protected with 2FA'
+                                    ? t('profile.twoFactorTab.status.protected')
+                                    : t(
+                                          'profile.twoFactorTab.status.unprotected',
+                                      )
                             }}
                         </p>
                     </div>
@@ -256,7 +269,11 @@ const copySecretKey = async () => {
                     :disabled="isLoading"
                     class="w-full rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
-                    {{ isLoading ? 'Loading...' : 'Enable 2FA' }}
+                    {{
+                        isLoading
+                            ? t('profile.twoFactorTab.actions.loading')
+                            : t('profile.twoFactorTab.actions.enable')
+                    }}
                 </button>
                 <button
                     v-else
@@ -264,22 +281,30 @@ const copySecretKey = async () => {
                     :disabled="isLoading"
                     class="w-full rounded-lg border border-red-500 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
-                    {{ isLoading ? 'Loading...' : 'Disable 2FA' }}
+                    {{
+                        isLoading
+                            ? t('profile.twoFactorTab.actions.loading')
+                            : t('profile.twoFactorTab.actions.disable')
+                    }}
                 </button>
             </div>
         </div>
 
-        <div v-if="showSetup && !isTwoFactorEnabled" class="space-y-4 sm:space-y-6">
+        <div
+            v-if="showSetup && !isTwoFactorEnabled"
+            class="space-y-4 sm:space-y-6"
+        >
             <div class="rounded-lg border p-4 sm:p-6">
                 <h3 class="text-base font-semibold text-gray-900 sm:text-lg">
-                    Step 1: Scan QR Code
+                    {{ t('profile.twoFactorTab.setup.step1Title') }}
                 </h3>
                 <p class="mt-1 text-xs text-gray-500 sm:text-sm">
-                    Scan the QR code with your authenticator app (Google
-                    Authenticator, Authy, etc.)
+                    {{ t('profile.twoFactorTab.setup.step1Description') }}
                 </p>
 
-                <div class="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6">
+                <div
+                    class="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6"
+                >
                     <div class="flex-shrink-0">
                         <div class="rounded-lg bg-white p-3 shadow-sm sm:p-4">
                             <div
@@ -300,14 +325,16 @@ const copySecretKey = async () => {
 
                     <div class="w-full flex-1">
                         <p class="text-xs text-gray-500 sm:text-sm">
-                            If you can't scan the QR code, enter this secret key
-                            manually into your authenticator app.
+                            {{ t('profile.twoFactorTab.setup.manualEntry') }}
                         </p>
                         <div class="mt-2 flex flex-wrap items-center gap-2">
                             <code
                                 class="flex-1 truncate rounded bg-gray-100 px-2 py-1 font-mono text-xs sm:px-3 sm:text-sm"
                             >
-                                {{ secretKey || 'Loading...' }}
+                                {{
+                                    secretKey ||
+                                    t('profile.twoFactorTab.actions.loading')
+                                }}
                             </code>
                             <button
                                 v-if="secretKey"
@@ -315,15 +342,17 @@ const copySecretKey = async () => {
                                 class="rounded p-1 hover:bg-gray-100"
                                 type="button"
                             >
-                                <Copy class="h-3 w-3 text-gray-500 sm:h-4 sm:w-4" />
+                                <Copy
+                                    class="h-3 w-3 text-gray-500 sm:h-4 sm:w-4"
+                                />
                             </button>
                         </div>
                         <p class="mt-2 text-xs text-gray-500 sm:text-sm">
-                            App name:
+                            {{ t('profile.twoFactorTab.setup.appName') }}:
                             <span class="font-medium">Thai Restaurant</span>
                         </p>
                         <p class="text-xs text-gray-500 sm:text-sm">
-                            Account:
+                            {{ t('profile.twoFactorTab.setup.account') }}:
                             <span class="font-medium">{{ user.email }}</span>
                         </p>
                     </div>
@@ -332,23 +361,29 @@ const copySecretKey = async () => {
 
             <div class="rounded-lg border p-4 sm:p-6">
                 <h3 class="text-base font-semibold text-gray-900 sm:text-lg">
-                    Step 2: Verify Code
+                    {{ t('profile.twoFactorTab.setup.step2Title') }}
                 </h3>
                 <p class="mt-1 text-xs text-gray-500 sm:text-sm">
-                    Enter the 6-digit code from your authenticator app
+                    {{ t('profile.twoFactorTab.setup.step2Description') }}
                 </p>
 
-                <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+                <div
+                    class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4"
+                >
                     <div class="flex-1">
-                        <label for="verification-code" class="sr-only"
-                        >Verification Code</label
-                        >
+                        <label for="verification-code" class="sr-only">{{
+                            t('profile.twoFactorTab.setup.verificationCode')
+                        }}</label>
                         <input
                             id="verification-code"
                             v-model="verificationCode"
                             type="text"
                             maxlength="6"
-                            placeholder="Enter 6-digit code"
+                            :placeholder="
+                                t(
+                                    'profile.twoFactorTab.setup.verificationPlaceholder',
+                                )
+                            "
                             class="w-full rounded-lg border border-gray-300 px-3 py-2 text-center text-xl tracking-widest focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:outline-none sm:px-4 sm:text-2xl"
                             @keyup.enter="verifyAndEnable"
                         />
@@ -358,7 +393,11 @@ const copySecretKey = async () => {
                         :disabled="isVerifying || verificationCode.length !== 6"
                         class="w-full rounded-lg bg-red-500 px-4 py-2 text-sm text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6"
                     >
-                        {{ isVerifying ? 'Verifying...' : 'Verify & Enable' }}
+                        {{
+                            isVerifying
+                                ? t('profile.twoFactorTab.actions.verifying')
+                                : t('profile.twoFactorTab.actions.verify')
+                        }}
                     </button>
                 </div>
 
@@ -371,7 +410,7 @@ const copySecretKey = async () => {
                     class="mt-2"
                 >
                     <p class="text-xs text-red-500 sm:text-sm">
-                        Please enter all 6 digits
+                        {{ t('profile.twoFactorTab.setup.incompleteCode') }}
                     </p>
                 </div>
             </div>
@@ -385,17 +424,21 @@ const copySecretKey = async () => {
                 <AlertCircle
                     class="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 sm:h-5 sm:w-5"
                 />
-                <div class="flex-1 min-w-0">
-                    <h3 class="text-base font-semibold text-yellow-900 sm:text-lg">
-                        Save Your Recovery Codes
+                <div class="min-w-0 flex-1">
+                    <h3
+                        class="text-base font-semibold text-yellow-900 sm:text-lg"
+                    >
+                        {{ t('profile.twoFactorTab.recoveryCodes.title') }}
                     </h3>
                     <p class="text-xs text-yellow-700 sm:text-sm">
-                        These codes can be used to access your account if you
-                        lose your authenticator device. Store them in a safe
-                        place.
+                        {{
+                            t('profile.twoFactorTab.recoveryCodes.description')
+                        }}
                     </p>
 
-                    <div class="mt-3 grid grid-cols-1 gap-2 font-mono text-xs sm:mt-4 sm:grid-cols-2 sm:gap-2 sm:text-sm">
+                    <div
+                        class="mt-3 grid grid-cols-1 gap-2 font-mono text-xs sm:mt-4 sm:grid-cols-2 sm:gap-2 sm:text-sm"
+                    >
                         <div
                             v-for="(code, index) in recoveryCodes"
                             :key="index"
@@ -409,7 +452,7 @@ const copySecretKey = async () => {
                         <button
                             @click="copyRecoveryCodes"
                             :disabled="recoveryCodes.length === 0"
-                            class="inline-flex sm:w-36 flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-white disabled:hover:shadow-sm sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
+                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-white disabled:hover:shadow-sm sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
                             type="button"
                         >
                             <Copy
@@ -419,29 +462,42 @@ const copySecretKey = async () => {
                                     'text-gray-400': recoveryCodes.length === 0,
                                 }"
                             />
-                            <Check v-else class="h-3 w-3 text-green-500 sm:h-4 sm:w-4" />
-                            <span class="hidden xs:inline">{{ copiedCode ? 'Copied!' : 'Copy' }}</span>
+                            <Check
+                                v-else
+                                class="h-3 w-3 text-green-500 sm:h-4 sm:w-4"
+                            />
+                            <span class="xs:inline hidden">{{
+                                copiedCode
+                                    ? t('profile.twoFactorTab.actions.copied')
+                                    : t('profile.twoFactorTab.actions.copy')
+                            }}</span>
                         </button>
                         <button
                             @click="downloadRecoveryCodes"
                             :disabled="recoveryCodes.length === 0"
-                            class="inline-flex sm:w-36 flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-white disabled:hover:shadow-sm sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
+                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-white disabled:hover:shadow-sm sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
                             type="button"
                         >
                             <Download class="h-3 w-3 sm:h-4 sm:w-4" />
-                            <span class="hidden xs:inline">Download</span>
+                            <span class="xs:inline hidden">
+                                {{ t('profile.twoFactorTab.actions.download') }}
+                            </span>
                         </button>
                         <button
                             @click="confirmRegenerateRecoveryCodes"
                             :disabled="isLoading"
-                            class="inline-flex sm:w-36 flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
+                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
                             type="button"
                         >
                             <RefreshCw
                                 class="h-3 w-3 sm:h-4 sm:w-4"
                                 :class="{ 'animate-spin': isLoading }"
                             />
-                            <span class="hidden xs:inline">Regenerate</span>
+                            <span class="xs:inline hidden">
+                                {{
+                                    t('profile.twoFactorTab.actions.regenerate')
+                                }}
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -453,21 +509,32 @@ const copySecretKey = async () => {
             class="rounded-lg border border-green-200 bg-green-50 p-3 sm:p-4"
         >
             <div class="flex items-start gap-2 sm:gap-3">
-                <Check class="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 sm:h-5 sm:w-5" />
+                <Check
+                    class="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 sm:h-5 sm:w-5"
+                />
                 <div class="min-w-0">
                     <p class="text-xs font-medium text-green-900 sm:text-sm">
-                        Two-factor authentication is enabled
+                        {{ t('profile.twoFactorTab.enabledNotice.title') }}
                     </p>
                     <p class="text-xs text-green-700 sm:text-sm">
-                        Your account is protected with an extra layer of
-                        security. You'll need your authenticator app to sign in.
+                        {{
+                            t('profile.twoFactorTab.enabledNotice.description')
+                        }}
                     </p>
                     <button
                         @click="toggleRecoveryCodes()"
                         class="mt-1.5 text-xs text-green-700 underline transition-colors hover:text-green-900 sm:mt-2 sm:text-sm"
                         type="button"
                     >
-                        {{ showRecoveryCodes ? 'Hide' : 'Show' }} recovery codes
+                        {{
+                            showRecoveryCodes
+                                ? t(
+                                      'profile.twoFactorTab.actions.hideRecoveryCodes',
+                                  )
+                                : t(
+                                      'profile.twoFactorTab.actions.showRecoveryCodes',
+                                  )
+                        }}
                     </button>
                 </div>
             </div>

@@ -1,0 +1,121 @@
+export default {
+    pageTitle: 'Mes commandes',
+    eyebrow: 'Mon compte',
+    title: 'Mes commandes',
+    description: 'Suivez, gérez et commandez à nouveau vos plats préférés',
+    filters: {
+        active: 'Commandes en cours',
+        completed: 'Commandes terminées',
+        cancelled: 'Commandes annulées',
+    },
+    emptyOrder: {
+        title: 'Aucune commande pour le moment',
+        description:
+            "Il semble que vous n'ayez pas encore passé de commande. Découvrez notre délicieux menu !",
+        browseMenu: 'Voir le menu',
+    },
+    orderList: {
+        errors: {
+            cancel: "Impossible d'annuler la commande.",
+            remove: 'Impossible de supprimer la commande.',
+        },
+    },
+    orderCard: {
+        total: 'Total',
+        orderProgress: 'Progression de la commande',
+        customer: 'Client',
+        guest: 'Invité',
+        payment: 'Paiement',
+        specialInstructions: 'Instructions spéciales',
+        seeDetails: 'Voir les détails',
+        cancelOrder: 'Annuler la commande',
+        completeOrder: 'Finaliser le paiement',
+        removeOrder: 'Supprimer la commande',
+        reorder: 'Commander à nouveau',
+        removeConfirmation:
+            'Êtes-vous sûr de vouloir supprimer cette commande ?',
+        cancelConfirmation: 'Êtes-vous sûr de vouloir annuler cette commande ?',
+        refundConfirmation:
+            'Cette commande a déjà été payée. Son annulation entraînera un remboursement de {amount} € sur votre moyen de paiement d’origine.',
+    },
+    orderItemsList: {
+        title: 'Articles de la commande',
+        itemCount: '{count} article | {count} articles',
+        each: "l'unité",
+        meat: 'Viande',
+        removed: 'Retiré',
+        subtotal: 'Sous-total',
+        deliveryFee: 'Frais de livraison',
+        discount: 'Réduction',
+        total: 'Total',
+    },
+    orderDetailsPage: {
+        pageTitle: 'Détails de la commande',
+        eyebrow: 'Ma commande',
+        orderNumber: 'Commande nº {number}',
+        placedOn: 'Passée le {date}',
+    },
+    orderStatusTimeline: {
+        title: 'Statut de la commande',
+        steps: {
+            placed: {
+                title: 'Commande passée',
+                description: 'Votre commande a bien été reçue',
+            },
+            confirmed: {
+                title: 'Confirmée',
+                description: 'Le restaurant a confirmé votre commande',
+            },
+            preparing: {
+                title: 'En préparation',
+                description: 'Votre commande est en cours de préparation',
+            },
+            ready: {
+                title: 'Prête',
+                description: 'Votre commande est prête à être récupérée',
+            },
+            delivering: {
+                title: 'En cours de livraison',
+                description: 'Votre commande est en route',
+            },
+            completed: {
+                title: 'Terminée',
+                description: 'Votre commande a été livrée',
+            },
+        },
+    },
+    orderDetailsCard: {
+        title: 'Détails de la commande',
+        orderType: 'Type de commande',
+        table: 'Table',
+        pickupTime: 'Heure de retrait',
+        pickupInformation: 'Informations de retrait',
+        deliveryAddress: 'Adresse de livraison',
+        paymentMethod: 'Mode de paiement',
+        paidOn: 'Payé le {date}',
+        orderNotes: 'Notes de la commande',
+        notAvailable: 'Indisponible',
+    },
+    orderItemsCard: {
+        title: 'Articles de la commande',
+        meat: 'Viande',
+        without: 'Sans',
+        note: 'Remarque',
+    },
+    paymentSummaryCard: {
+        title: 'Récapitulatif du paiement',
+        vat: 'TVA ({rate} %)',
+        totalVat: 'Total de la TVA',
+        subtotal: 'Sous-total',
+        deliveryFee: 'Frais de livraison',
+        totalPaid: 'Total payé',
+        via: 'par',
+    },
+    quickActionsCard: {
+        printOrderSummary: 'Imprimer le récapitulatif de la commande',
+        removeOrder: 'Supprimer la commande',
+        continueShopping: 'Continuer les achats',
+        needHelp: "Besoin d'aide ?",
+        contactSupport: 'Contactez notre service client',
+    },
+};

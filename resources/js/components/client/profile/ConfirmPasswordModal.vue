@@ -3,13 +3,10 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { X, Eye, EyeOff, Shield } from 'lucide-vue-next';
 import axios from 'axios';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     open: boolean;
-    title?: string;
-    description?: string;
-    confirmText?: string;
-    cancelText?: string;
     action: 'enable-2fa' | 'disable-2fa' | 'regenerate-codes';
 }>();
 
@@ -17,6 +14,8 @@ const emit = defineEmits<{
     (e: 'close'): void;
     (e: 'confirmed'): void;
 }>();
+
+const { t } = useI18n();
 
 const password = ref<string>('');
 const passwordError = ref<string>('');
@@ -27,39 +26,47 @@ const content = computed(() => {
     switch (props.action) {
         case 'enable-2fa':
             return {
-                title: props.title || 'Enable Two-Factor Authentication',
-                description:
-                    props.description ??
-                    'Please enter your password to enable two-factor authentication.',
-                confirmText: props.confirmText || 'Enable 2FA',
+                title: t('profile.confirmPasswordModal.enableTwoFactor.title'),
+                description: t(
+                    'profile.confirmPasswordModal.enableTwoFactor.description',
+                ),
+                confirmText: t(
+                    'profile.confirmPasswordModal.enableTwoFactor.confirm',
+                ),
                 icon: Shield,
             };
 
         case 'disable-2fa':
             return {
-                title: props.title || 'Disable Two-Factor Authentication',
-                description:
-                    props.description ??
-                    'Please enter your password to disable two-factor authentication.',
-                confirmText: props.confirmText || 'Disable 2FA',
+                title: t('profile.confirmPasswordModal.disableTwoFactor.title'),
+                description: t(
+                    'profile.confirmPasswordModal.disableTwoFactor.description',
+                ),
+                confirmText: t(
+                    'profile.confirmPasswordModal.disableTwoFactor.confirm',
+                ),
                 icon: Shield,
             };
 
         case 'regenerate-codes':
             return {
-                title: props.title || 'Regenerate Recovery Codes',
-                description:
-                    props.description ??
-                    'Please enter your password to regenerate your recovery codes.',
-                confirmText: props.confirmText || 'Regenerate Codes',
+                title: t('profile.confirmPasswordModal.regenerateCodes.title'),
+                description: t(
+                    'profile.confirmPasswordModal.regenerateCodes.description',
+                ),
+                confirmText: t(
+                    'profile.confirmPasswordModal.regenerateCodes.confirm',
+                ),
                 icon: Shield,
             };
 
         default:
             return {
-                title: 'Confirm Password',
-                description: 'Please enter your password.',
-                confirmText: 'Confirm',
+                title: t('profile.confirmPasswordModal.default.title'),
+                description: t(
+                    'profile.confirmPasswordModal.default.description',
+                ),
+                confirmText: t('profile.confirmPasswordModal.confirm'),
                 icon: Shield,
             };
     }
@@ -80,7 +87,7 @@ const closeModal = () => {
 
 const confirmPassword = async () => {
     if (!password.value) {
-        passwordError.value = 'Password is required';
+        passwordError.value = t('profile.confirmPasswordModal.errors.required');
         return;
     }
 
@@ -97,9 +104,13 @@ const confirmPassword = async () => {
         emit('close');
     } catch (error: any) {
         if (error.response?.status === 422) {
-            passwordError.value = 'Invalid password. Please try again.';
+            passwordError.value = t(
+                'profile.confirmPasswordModal.errors.invalid',
+            );
         } else {
-            toast.error('Unable to verify password. Please try again.');
+            toast.error(
+                t('profile.confirmPasswordModal.errors.verificationFailed'),
+            );
         }
     } finally {
         isConfirming.value = false;
@@ -174,15 +185,19 @@ watch(
                 </div>
 
                 <div class="mt-6">
-                    <label for="confirm-password-modal" class="sr-only"
-                        >Password</label
-                    >
+                    <label for="confirm-password-modal" class="sr-only">{{
+                        t('profile.confirmPasswordModal.password')
+                    }}</label>
                     <div class="relative">
                         <input
                             id="confirm-password-modal"
                             v-model="password"
-                            :type="showPassword ? 'text' : 'password'"
-                            placeholder="Enter your password"
+                            type="password"
+                            :placeholder="
+                                t(
+                                    'profile.confirmPasswordModal.passwordPlaceholder',
+                                )
+                            "
                             class="w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-10 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:outline-none"
                             :class="{
                                 'border-red-500 focus:ring-red-200':
@@ -214,7 +229,7 @@ watch(
                         :disabled="isConfirming"
                         type="button"
                     >
-                        {{ cancelText || 'Cancel' }}
+                        {{ t('profile.confirmPasswordModal.cancel') }}
                     </button>
                     <button
                         @click="confirmPassword"
@@ -246,7 +261,7 @@ watch(
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                 ></path>
                             </svg>
-                            Verifying...
+                            {{ t('profile.confirmPasswordModal.confirming') }}
                         </span>
                         <span v-else>{{ content.confirmText }}</span>
                     </button>

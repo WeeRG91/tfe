@@ -6,6 +6,9 @@ import { toast } from 'vue-sonner';
 import { ClientDrinkType } from '@/types/drink';
 import { formatPrice } from '@/lib/utils';
 import { ItemTypeEnum } from '@/types/cart';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
     drink: ClientDrinkType;
@@ -43,7 +46,7 @@ const addToCart = async () => {
         toast.success(response.message);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to add item');
+        toast.error(t('drinks.addDrinkModal.addFailed'));
     }
 };
 
@@ -130,13 +133,17 @@ watch(
                         <h3
                             class="mb-2 text-xs font-semibold tracking-wider text-gray-700 uppercase"
                         >
-                            Special instructions (optional)
+                            {{ t('drinks.addDrinkModal.specialInstructions') }}
                         </h3>
                         <div class="relative">
                             <textarea
                                 v-model="notes"
                                 rows="1"
-                                placeholder="e.g.more sugar, no sugar..."
+                                :placeholder="
+                                    t(
+                                        'drinks.addDrinkModal.specialInstructionsPlaceholder',
+                                    )
+                                "
                                 class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 placeholder-gray-400 transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
                                 :class="{
                                     'border-red-500 ring-2 ring-red-500/20':
@@ -156,7 +163,7 @@ watch(
                         <h3
                             class="mb-2 text-xs font-semibold tracking-wider text-gray-700 uppercase"
                         >
-                            Quantity
+                            {{ t('drinks.addDrinkModal.quantity') }}
                         </h3>
                         <div class="flex items-center gap-3">
                             <button
@@ -186,7 +193,7 @@ watch(
                         <span
                             class="text-xs tracking-wider text-gray-600 uppercase"
                         >
-                            Total
+                            {{ t('drinks.addDrinkModal.total') }}
                         </span>
                         <span class="text-2xl font-bold text-red-500">
                             €{{ totalPrice.toFixed(2) }}
@@ -198,7 +205,7 @@ watch(
                             @click="emit('close')"
                             class="flex-1 rounded-lg border border-gray-300 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
                         >
-                            Cancel
+                            {{ t('drinks.addDrinkModal.cancel') }}
                         </button>
                         <button
                             @click="addToCart"
@@ -233,7 +240,7 @@ watch(
                                     </svg>
                                 </span>
                                 <span v-else>
-                                    Add to Cart
+                                    {{ t('drinks.addDrinkModal.addToCart') }}
                                     <span
                                         class="animate-arrow ml-2 inline-block"
                                         >→</span

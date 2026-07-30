@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { OrderType } from '@/types/order';
+import { OrderType, OrderTypeEnum } from '@/types/order';
 import { Check, Clock } from 'lucide-vue-next';
 import { formatTime } from '@/lib/utils';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     orderToShow: OrderType;
 }>();
+
+const { t } = useI18n();
 
 type OrderDateKey =
     | 'created_at'
@@ -24,19 +27,23 @@ type Step = {
 };
 
 const orderSteps = computed<Step[]>(() => {
-    const isDelivery = props.orderToShow.type?.label === 'Delivery';
+    const isDelivery = props.orderToShow.type?.value === OrderTypeEnum.DELIVERY;
 
     const steps: Step[] = [
         {
             value: 1,
-            label: 'Order Placed',
-            description: 'Your order has been received',
+            label: t('order.orderStatusTimeline.steps.placed.title'),
+            description: t(
+                'order.orderStatusTimeline.steps.placed.description',
+            ),
             dateKey: 'created_at',
         },
         {
             value: 2,
-            label: 'Confirmed',
-            description: 'Restaurant has confirmed your order',
+            label: t('order.orderStatusTimeline.steps.confirmed.title'),
+            description: t(
+                'order.orderStatusTimeline.steps.confirmed.description',
+            ),
             dateKey: 'confirmed_at',
         },
     ];
@@ -45,26 +52,34 @@ const orderSteps = computed<Step[]>(() => {
         steps.push(
             {
                 value: 3,
-                label: 'Preparing',
-                description: 'Your order is being prepared',
+                label: t('order.orderStatusTimeline.steps.preparing.title'),
+                description: t(
+                    'order.orderStatusTimeline.steps.preparing.description',
+                ),
                 dateKey: 'prepare_at',
             },
             {
                 value: 4,
-                label: 'Ready',
-                description: 'Your order is ready for pickup',
+                label: t('order.orderStatusTimeline.steps.ready.title'),
+                description: t(
+                    'order.orderStatusTimeline.steps.ready.description',
+                ),
                 dateKey: 'ready_at',
             },
             {
                 value: 5,
-                label: 'Out for Delivery',
-                description: 'Your order is on the way',
+                label: t('order.orderStatusTimeline.steps.delivering.title'),
+                description: t(
+                    'order.orderStatusTimeline.steps.delivering.description',
+                ),
                 dateKey: 'delivered_at',
             },
             {
                 value: 6,
-                label: 'Completed',
-                description: 'Your order has been delivered',
+                label: t('order.orderStatusTimeline.steps.completed.title'),
+                description: t(
+                    'order.orderStatusTimeline.steps.completed.description',
+                ),
                 dateKey: 'completed_at',
             },
         );
@@ -72,20 +87,26 @@ const orderSteps = computed<Step[]>(() => {
         steps.push(
             {
                 value: 3,
-                label: 'Preparing',
-                description: 'Your order is being prepared',
+                label: t('order.orderStatusTimeline.steps.preparing.title'),
+                description: t(
+                    'order.orderStatusTimeline.steps.preparing.description',
+                ),
                 dateKey: 'prepare_at',
             },
             {
                 value: 4,
-                label: 'Ready',
-                description: 'Your order is ready for pickup',
+                label: t('order.orderStatusTimeline.steps.ready.title'),
+                description: t(
+                    'order.orderStatusTimeline.steps.ready.description',
+                ),
                 dateKey: 'ready_at',
             },
             {
                 value: 6,
-                label: 'Completed',
-                description: 'Order completed',
+                label: t('order.orderStatusTimeline.steps.completed.title'),
+                description: t(
+                    'order.orderStatusTimeline.steps.completed.description',
+                ),
                 dateKey: 'completed_at',
             },
         );
@@ -122,10 +143,9 @@ const getStepDate = (stepValue: number) => {
             class="mb-6 flex items-center gap-2 text-lg font-semibold uppercase"
         >
             <Clock class="h-5 w-5 text-red-500" />
-            Order Status
+            {{ t('order.orderStatusTimeline.title') }}
         </h2>
 
-        <!-- Mobile: Vertical Timeline -->
         <div class="md:hidden">
             <div class="relative">
                 <div
@@ -214,7 +234,6 @@ const getStepDate = (stepValue: number) => {
             </div>
         </div>
 
-        <!-- Desktop: Horizontal Timeline -->
         <div class="hidden md:block">
             <div class="relative px-4">
                 <div class="flex items-start justify-between">

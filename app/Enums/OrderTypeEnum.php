@@ -15,6 +15,15 @@ enum OrderTypeEnum: int
         return array_column(self::cases(), 'value');
     }
 
+    public function key(): string
+    {
+        return match ($this) {
+            self::DINE_IN => 'dinein',
+            self::TAKEAWAY => 'takeaway',
+            self::DELIVERY => 'delivery',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -28,6 +37,7 @@ enum OrderTypeEnum: int
     {
         return array_map(fn ($case) => [
             'value' => $case->value,
+            'key' => $case->key(),
             'label' => $case->label(),
         ], self::cases());
     }

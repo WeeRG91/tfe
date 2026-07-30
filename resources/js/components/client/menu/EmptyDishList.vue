@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const {t} = useI18n()
+</script>
 
 <template>
     <div
@@ -10,11 +14,13 @@
             🍽️
         </div>
 
-        <h3 class="mt-4 text-lg font-semibold">No dishes available</h3>
+        <h3 class="mt-4 text-lg font-semibold">{{ t('menu.emptyList.title') }}</h3>
 
         <p class="mt-2 max-w-sm text-sm text-gray-500">
-            We couldn’t find any dishes at the moment. Please check back later
-            or try a different category.
+            {{ t('menu.emptyList.description') }}
+        </p>
+        <p class="mt-2 max-w-sm text-sm text-gray-500">
+            {{ t('menu.emptyList.addition') }}
         </p>
     </div>
 </template>

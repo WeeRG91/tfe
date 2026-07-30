@@ -9,6 +9,7 @@ import { createApp, Fragment, h } from 'vue';
 import { Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css';
 import { initializeTheme } from './composables/useAppearance';
+import { createI18nInstance } from '@/i18n';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -22,6 +23,10 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
+        const i18n = createI18nInstance(
+            props.initialPage.props.locale,
+        )
+
         createApp({
             render: () =>
                 h(Fragment, [
@@ -36,6 +41,7 @@ createInertiaApp({
         })
             .use(plugin)
             .use(pinia)
+            .use(i18n)
             .mount(el);
     },
     progress: {

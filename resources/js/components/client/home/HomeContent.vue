@@ -2,42 +2,40 @@
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 import AnimatedButton from '@/components/AnimatedButton.vue';
 import menu from '@/routes/menu';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const slides = [
     {
         image: '/images/dish-1.jpg',
-        title: 'Main Courses',
-        word: 'Spicy',
-        description:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto repellat optio nam at ipsa sequi accusamus, minima doloremque quod. Harum.',
+        title: t('home.slides.mainCourses.title'),
+        word: t('home.slides.mainCourses.word'),
+        description: t('home.slides.mainCourses.description'),
     },
     {
         image: '/images/dish-2.jpg',
-        title: 'Soups',
-        word: 'Tangy',
-        description:
-            'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla amet debitis ea saepe deserunt veniam modi inventore adipisci vel illum! Consequuntur hic ut',
+        title: t('home.slides.soups.title'),
+        word: t('home.slides.soups.word'),
+        description: t('home.slides.soups.description'),
     },
     {
         image: '/images/dish-3.jpg',
-        title: 'Appetizers',
-        word: 'Aromatic',
-        description:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto repellat optio nam at ipsa sequi accusamus, minima doloremque quod. Harum.',
+        title: t('home.slides.appetizers.title'),
+        word: t('home.slides.appetizers.word'),
+        description: t('home.slides.appetizers.description'),
     },
     {
         image: '/images/dish-4.jpg',
-        title: 'Noodles',
-        word: 'Savory',
-        description:
-            'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla amet debitis ea saepe deserunt veniam modi inventore adipisci vel illum! Consequuntur hic ut',
+        title: t('home.slides.noodles.title'),
+        word: t('home.slides.noodles.word'),
+        description: t('home.slides.noodles.description'),
     },
     {
         image: '/images/dish-5.jpg',
-        title: 'Vegetarians',
-        word: 'Fresh',
-        description:
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto repellat optio nam at ipsa sequi accusamus, minima doloremque quod. Harum.',
+        title: t('home.slides.vegetarians.title'),
+        word: t('home.slides.vegetarians.word'),
+        description: t('home.slides.vegetarians.description'),
     },
 ];
 
@@ -149,7 +147,7 @@ const goToSlide = (index: number) => {
         </Transition>
 
         <h1 class="mb-6 text-4xl font-semibold uppercase md:text-5xl">
-            Our
+            {{ t('home.headingPrefix') }}
             <Transition name="fade-slide" mode="out-in">
                 <span
                     :key="slides[currentIndex].title"
@@ -172,7 +170,7 @@ const goToSlide = (index: number) => {
         <AnimatedButton
             as="a"
             :href="menu.dish().url"
-            text="Let's get spicy"
+            :text="t('home.callToAction')"
         />
     </section>
 

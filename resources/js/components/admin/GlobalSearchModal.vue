@@ -112,7 +112,7 @@ const flatResults = computed(() => {
 
 const filteredResultTypes = computed(() => {
     return resultTypes.filter(
-        (type) => can(type.permission) && results.value?.[type.key]?.length,
+        (type) => can(type.permission!) && results.value?.[type.key]?.length,
     );
 });
 

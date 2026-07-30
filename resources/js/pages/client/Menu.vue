@@ -13,6 +13,9 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { ReviewResultType } from '@/types/rating';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -48,7 +51,7 @@ const loadingDishes = async () => {
         dishStore.setDishes(response.data);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more dishes.');
+        toast.error(t('menuPage.loadFailed'));
     } finally {
         isLoading.value = false;
         hasLoaded.value = true;
@@ -89,15 +92,15 @@ watch(selectedCategory, () => {
 </script>
 
 <template>
-    <Head title="Menu Page" />
+    <Head :title="t('menu.pageTitle')" />
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
-                    [ Our Menu ]
+                    [ {{ t('menu.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    Discover Our Dishes
+                    {{ t('menu.heading') }}
                 </h1>
             </div>
 
@@ -111,7 +114,7 @@ watch(selectedCategory, () => {
                             : 'border-red-500 bg-red-500 text-white hover:bg-red-600'
                     "
                 >
-                    All
+                    {{ t('menu.categories.all') }}
                 </button>
 
                 <button
@@ -125,7 +128,7 @@ watch(selectedCategory, () => {
                             : 'text-gray-600 hover:bg-gray-100'
                     "
                 >
-                    {{ category.label }}
+                    {{ t(`menu.categories.${category.key}`) }}
                 </button>
             </div>
 

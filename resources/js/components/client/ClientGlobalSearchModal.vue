@@ -15,6 +15,9 @@ import {
     watch,
 } from 'vue';
 import { SearchResultEnum } from '@/types/search';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
     open: boolean;
@@ -22,8 +25,8 @@ const props = defineProps<{
 }>();
 
 const resultTypes: SearchResultType[] = [
-    { key: SearchResultEnum.DISH, label: 'Dishes' },
-    { key: SearchResultEnum.DRINK, label: 'Drinks' },
+    { key: SearchResultEnum.DISH, label: t('search.dishes') },
+    { key: SearchResultEnum.DRINK, label: t('search.drinks') },
 ];
 
 const query = ref<string>('');
@@ -227,7 +230,7 @@ watch(flatResults, () => {
                                 <Sparkles
                                     class="h-4 w-4 text-red-600 sm:h-5 sm:w-5"
                                 />
-                                Find your favorites
+                                {{ t('search.title') }}
                             </div>
 
                             <button
@@ -238,7 +241,7 @@ watch(flatResults, () => {
                             </button>
                         </div>
                         <p class="mt-1 text-xs text-gray-500 sm:text-sm">
-                            Search through dishes and drinks
+                            {{ t('search.subtitle') }}
                         </p>
                     </div>
 
@@ -253,7 +256,7 @@ watch(flatResults, () => {
                                 ref="inputRef"
                                 v-model="query"
                                 type="text"
-                                placeholder="Search dishes, drinks..."
+                                :placeholder="t('search.placeholder')"
                                 class="h-10 w-full rounded-xl border border-gray-200 bg-white pr-9 pl-9 text-sm text-gray-900 transition-all duration-200 placeholder:text-gray-400 focus:border-gray-300 focus:ring-2 focus:ring-gray-200 focus:outline-none sm:h-12 sm:pr-10 sm:pl-10 sm:text-base"
                             />
                             <button
@@ -279,7 +282,7 @@ watch(flatResults, () => {
                                 class="h-6 w-6 animate-spin text-gray-500 sm:h-8 sm:w-8"
                             />
                             <p class="text-xs text-gray-500 sm:text-sm">
-                                Searching...
+                                {{ t('search.searching') }}
                             </p>
                         </div>
 
@@ -295,7 +298,7 @@ watch(flatResults, () => {
                                 />
                             </div>
                             <p class="text-xs text-gray-500 sm:text-sm">
-                                Start typing to search for dishes and drinks
+                                {{ t('search.startTyping') }}
                             </p>
                         </div>
 
@@ -306,10 +309,10 @@ watch(flatResults, () => {
                             <p
                                 class="text-sm font-medium text-gray-700 sm:text-base"
                             >
-                                No results found
+                                {{ t('search.noResults') }}
                             </p>
                             <p class="text-xs text-gray-500 sm:text-sm">
-                                Try searching with different keywords
+                                {{ t('search.tryDifferentKeywords') }}
                             </p>
                         </div>
 
@@ -319,8 +322,11 @@ watch(flatResults, () => {
                                 class="bg-gray-50/50 px-4 py-2 sm:px-6 sm:py-3"
                             >
                                 <p class="text-[10px] text-gray-500 sm:text-xs">
-                                    Found {{ totalResultsCount }} result{{
-                                        totalResultsCount !== 1 ? 's' : ''
+                                    {{
+                                        t(
+                                            'search.foundResults',
+                                            totalResultsCount,
+                                        )
                                     }}
                                 </p>
                             </div>
@@ -412,7 +418,7 @@ watch(flatResults, () => {
                                                 <p
                                                     class="mt-0.5 text-[10px] text-gray-500 sm:text-xs"
                                                 >
-                                                    {{ item.category.label }}
+                                                    {{ t(`menu.categories.${item.category.key}`) }}
                                                 </p>
                                             </div>
                                         </div>
@@ -452,14 +458,14 @@ watch(flatResults, () => {
                                     class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
                                     >↓</kbd
                                 >
-                                <span>to navigate</span>
+                                <span>{{ t('search.keyboard.navigate') }}</span>
                             </div>
                             <div class="flex items-center gap-1">
                                 <kbd
                                     class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
                                     >Enter</kbd
                                 >
-                                <span>to select</span>
+                                <span>{{ t('search.keyboard.select') }}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-1">
@@ -467,7 +473,7 @@ watch(flatResults, () => {
                                 class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
                                 >Esc</kbd
                             >
-                            <span>to close</span>
+                            <span>{{ t('search.keyboard.close') }}</span>
                         </div>
                     </div>
                 </div>

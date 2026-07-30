@@ -7,6 +7,8 @@ import { Flame } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
+import { getSpicyLevelLabels } from '@/lib/const';
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -16,6 +18,9 @@ const props = defineProps<{
 const emit = defineEmits<{
     close: [];
 }>();
+
+const { t } = useI18n();
+const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
 
 const cartStore = useCartStore();
 const { isLoading } = storeToRefs(cartStore);
@@ -50,7 +55,7 @@ const toggleIngredient = (id: number) => {
 
 const addToCart = async () => {
     if (!selectedMeat.value) {
-        error.value = 'Please select meat';
+        error.value = t('menu.addDishModal.selectMeat');
         return;
     }
 
@@ -70,7 +75,7 @@ const addToCart = async () => {
         toast.success(response.message);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to add item');
+        toast.error(t('menu.addDishModal.addFailed'));
     }
 };
 
@@ -160,7 +165,7 @@ watch(
                         <h3 class="mb-2 flex justify-between">
                             <span
                                 class="text-xs font-semibold tracking-wider text-gray-700 uppercase"
-                                >Choose your meat</span
+                                >{{ t('menu.addDishModal.chooseMeat') }}</span
                             >
                             <span
                                 v-if="error && selectedMeat === null"
@@ -218,7 +223,7 @@ watch(
                                     </div>
                                 </div>
 
-                                <div class="flex-1">
+                                <div class="flex-1 flex-row">
                                     <span
                                         class="block text-xs font-semibold transition-all"
                                         :class="{
@@ -231,7 +236,6 @@ watch(
                                         {{ meat.name }}
                                     </span>
                                     <span
-                                        v-if="meat.extra_price > 0"
                                         class="text-xs font-medium text-red-500"
                                     >
                                         +€{{ meat.extra_price }}
@@ -268,7 +272,7 @@ watch(
                         <h3
                             class="mb-2 text-xs font-semibold tracking-wider text-gray-700 uppercase"
                         >
-                            Remove ingredients
+                            {{ t('menu.addDishModal.removeIngredients') }}
                         </h3>
                         <div class="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
                             <label
@@ -372,13 +376,17 @@ watch(
                         <h3
                             class="mb-2 text-xs font-semibold tracking-wider text-gray-700 uppercase"
                         >
-                            Special instructions (optional)
+                            {{ t('menu.addDishModal.instructionsOptional') }}
                         </h3>
                         <div class="relative">
                             <textarea
                                 v-model="notes"
                                 rows="1"
-                                placeholder="e.g., extra sauce, no onions, make it spicy..."
+                                :placeholder="
+                                    t(
+                                        'menu.addDishModal.instructionsPlaceholder',
+                                    )
+                                "
                                 class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 placeholder-gray-400 transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
                                 :class="{
                                     'border-red-500 ring-2 ring-red-500/20':
@@ -394,7 +402,6 @@ watch(
                         </div>
                     </div>
 
-                    <!-- Spicy Level -->
                     <div class="mb-3">
                         <h3
                             class="mb-2 flex flex-row items-center text-xs font-semibold tracking-wider text-gray-700 uppercase"
@@ -407,7 +414,7 @@ watch(
                                     spicyLevel === 3 && 'text-red-500',
                                 ]"
                             >
-                                Spicy Level
+                                {{ t('common.spicyLevel.title') }}
                             </span>
                             <div class="flex items-center gap-1">
                                 <Flame
@@ -460,11 +467,7 @@ watch(
                                         spicyLevel === 3 && 'text-red-600',
                                     ]"
                                 >
-                                    {{
-                                        ['No spicy', 'Mild', 'Spicy', 'Hot'][
-                                            spicyLevel
-                                        ]
-                                    }}
+                                    {{ spicyLevelLabels[spicyLevel] }}
                                 </span>
                             </div>
                         </div>
@@ -474,7 +477,7 @@ watch(
                         <h3
                             class="mb-2 text-xs font-semibold tracking-wider text-gray-700 uppercase"
                         >
-                            Quantity
+                            {{ t('menu.addDishModal.quantity') }}
                         </h3>
                         <div class="flex items-center gap-3">
                             <button
@@ -504,7 +507,7 @@ watch(
                         <span
                             class="text-xs tracking-wider text-gray-600 uppercase"
                         >
-                            Total
+                            {{ t('menu.addDishModal.total') }}
                         </span>
                         <span class="text-2xl font-bold text-red-500">
                             €{{ formatPrice(totalPrice) }}
@@ -516,7 +519,7 @@ watch(
                             @click="emit('close')"
                             class="flex-1 rounded-lg border border-gray-300 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
                         >
-                            Cancel
+                            {{ $t('menu.addDishModal.cancel') }}
                         </button>
                         <button
                             @click="addToCart"
@@ -527,31 +530,10 @@ watch(
                             >
                                 <span
                                     v-if="isLoading"
-                                    class="flex items-center justify-center"
-                                >
-                                    <svg
-                                        class="h-4 w-4 animate-spin text-white"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            class="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            stroke-width="4"
-                                        ></circle>
-                                        <path
-                                            class="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
-                                </span>
+                                    class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent text-white"
+                                ></span>
                                 <span v-else>
-                                    Add to Cart
+                                    {{ t('menu.addDishModal.addToCart') }}
                                     <span
                                         class="animate-arrow ml-2 inline-block"
                                         >→</span

@@ -1,0 +1,58 @@
+export default {
+    dates: {
+        today: 'วันนี้',
+        yesterday: 'เมื่อวาน',
+    },
+    invalidDate: 'วันที่ไม่ถูกต้อง',
+    language: 'ภาษา',
+    orderTypes: {
+        dinein: 'รับประทานที่ร้าน',
+        takeaway: 'สั่งกลับบ้าน',
+        delivery: 'จัดส่ง',
+    },
+    paymentMethod: {
+        card: 'บัตร',
+        cash: 'เงินสด',
+    },
+    paymentStatus: {
+        pending: 'รอการชำระเงิน',
+        paid: 'ชำระเงินแล้ว',
+        failed: 'การชำระเงินล้มเหลว',
+        refundPending: 'กำลังดำเนินการคืนเงิน',
+        refunded: 'คืนเงินแล้ว',
+        refundFailed: 'การคืนเงินล้มเหลว',
+    },
+    notSet: 'ไม่ได้กำหนด',
+    orderStatus: {
+        pending: 'รอยืนยัน',
+        confirmed: 'ยืนยันแล้ว',
+        preparing: 'กำลังเตรียมอาหาร',
+        ready: 'พร้อมรับแล้ว',
+        delivering: 'กำลังจัดส่ง',
+        completed: 'เสร็จสิ้น',
+        cancelled: 'ยกเลิกแล้ว',
+    },
+    pointFilters: {
+        all: 'ทั้งหมด',
+        earned: 'ได้รับ',
+        redeemed: 'แลกใช้แล้ว',
+        refunded: 'คืนคะแนนแล้ว',
+        reversed: 'ยกเลิกย้อนหลัง',
+    },
+    spicyLevel: {
+        title: 'ระดับความเผ็ด',
+        noSpicy: 'ไม่เผ็ด',
+        mild: 'เผ็ดน้อย',
+        spicy: 'เผ็ด',
+        hot: 'เผ็ดมาก',
+    },
+    timeAgo: {
+        justNow: 'เมื่อสักครู่',
+        minute: '{count} นาทีที่แล้ว',
+        minutes: '{count} นาทีที่แล้ว',
+        hour: '{count} ชั่วโมงที่แล้ว',
+        hours: '{count} ชั่วโมงที่แล้ว',
+        day: '{count} วันที่แล้ว',
+        days: '{count} วันที่แล้ว',
+    },
+};

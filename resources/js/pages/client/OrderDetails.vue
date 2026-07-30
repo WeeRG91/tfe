@@ -8,13 +8,19 @@ import ClientLayout from '@/layouts/ClientLayout.vue';
 import { OrderType } from '@/types/order';
 import { Head, usePage } from '@inertiajs/vue3';
 import OrderReceipt from '@/components/client/orderDetails/OrderReceipt.vue';
-import { formatDate, getOrderStatusVariant } from '@/lib/utils';
+import { getOrderStatusVariant } from '@/lib/utils';
 import { useOrderStore } from '@/stores/order';
 import { onMounted, onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     orderToShow: OrderType;
 }>();
+
+const { t } = useI18n();
+
+const { formatDate } = useDateFormatter();
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -103,7 +109,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <Head title="OrderDetails" />
+    <Head :title="t('order.orderDetailsPage.pageTitle')" />
     <ClientLayout>
         <section v-if="currentOrder" class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-8">
@@ -112,15 +118,23 @@ onUnmounted(() => {
                         <p
                             class="text-sm tracking-widest text-red-500 uppercase"
                         >
-                            [ My Order ]
+                            [ {{ t('order.orderDetailsPage.eyebrow') }} ]
                         </p>
                         <h1
                             class="text-4xl font-semibold uppercase md:text-5xl"
                         >
-                            Order #{{ currentOrder.order_number }}
+                            {{
+                                t('order.orderDetailsPage.orderNumber', {
+                                    number: currentOrder.order_number,
+                                })
+                            }}
                         </h1>
                         <p class="mt-2 text-gray-600">
-                            Placed on {{ formatDate(currentOrder.created_at) }}
+                            {{
+                                t('order.orderDetailsPage.placedOn', {
+                                    date: formatDate(currentOrder.created_at),
+                                })
+                            }}
                         </p>
                     </div>
                     <div
@@ -129,7 +143,7 @@ onUnmounted(() => {
                             getOrderStatusVariant(currentOrder.status.value),
                         ]"
                     >
-                        {{ currentOrder.status.label }}
+                        {{ t(`common.orderStatus.${currentOrder.status.key}`) }}
                     </div>
                 </div>
             </div>

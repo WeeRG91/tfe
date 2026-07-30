@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { CalendarDays, User, Phone } from 'lucide-vue-next';
-import { formatDate } from '@/lib/utils';
+import { CalendarDays, Phone, User } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 defineProps<{
     pickupName: string;
@@ -15,6 +16,10 @@ const emit = defineEmits<{
     'update:pickupPhone': [value: string];
     'update:pickupTime': [value: string];
 }>();
+
+const { t } = useI18n();
+
+const { formatDate } = useDateFormatter();
 </script>
 
 <template>
@@ -23,14 +28,14 @@ const emit = defineEmits<{
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
             <CalendarDays class="h-5 w-5" />
-            Pickup Information
+            {{ t('cart.orderType.takeawayForm.title') }}
         </h2>
 
         <div class="space-y-4">
-            <!-- Pickup Name -->
             <div>
                 <label class="mb-1 block text-sm font-medium text-gray-700">
-                    Pickup Name *
+                    {{ t('cart.orderType.takeawayForm.pickupName') }}
+                    <span class="text-sm text-red-500 sm:text-[18px]">*</span>
                 </label>
                 <div class="relative">
                     <User
@@ -45,16 +50,20 @@ const emit = defineEmits<{
                             )
                         "
                         type="text"
-                        placeholder="Full name for pickup"
+                        :placeholder="
+                            t(
+                                'cart.orderType.takeawayForm.pickupNamePlaceholder',
+                            )
+                        "
                         class="w-full rounded-md border border-gray-300 py-2.5 pr-3 pl-10 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
                     />
                 </div>
             </div>
 
-            <!-- Pickup Phone -->
             <div>
                 <label class="mb-1 block text-sm font-medium text-gray-700">
-                    Pickup Phone *
+                    {{ t('cart.orderType.takeawayForm.pickupPhone') }}
+                    <span class="text-sm text-red-500 sm:text-[18px]">*</span>
                 </label>
                 <div class="relative">
                     <Phone
@@ -69,19 +78,23 @@ const emit = defineEmits<{
                             )
                         "
                         type="tel"
-                        placeholder="Phone number for contact"
+                        :placeholder="
+                            t(
+                                'cart.orderType.takeawayForm.pickupPhonePlaceholder',
+                            )
+                        "
                         class="w-full rounded-md border border-gray-300 py-2.5 pr-3 pl-10 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
                     />
                 </div>
                 <p class="mt-1 text-xs text-gray-500">
-                    We'll send order updates to this number
+                    {{ t('cart.orderType.takeawayForm.pickupPhoneHelper') }}
                 </p>
             </div>
 
-            <!-- Pickup Time -->
             <div>
                 <label class="mb-1 block text-sm font-medium text-gray-700">
-                    Preferred Pickup Time *
+                    {{ t('cart.orderType.takeawayForm.pickupTime') }}
+                    <span class="text-sm text-red-500 sm:text-[18px]">*</span>
                 </label>
                 <input
                     :value="pickupTime"
@@ -97,13 +110,14 @@ const emit = defineEmits<{
                     class="w-full rounded-md border border-gray-300 p-2.5 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
                 />
                 <p class="mt-1 text-xs text-gray-500">
-                    Minimum 30 minutes from now, up to 7 days in advance
+                    {{ t('cart.orderType.takeawayForm.pickupTimeHelper') }}
                 </p>
                 <div
                     v-if="pickupTime"
                     class="mt-2 rounded-md bg-blue-50 p-2 text-sm text-blue-700"
                 >
-                    📅 Your order will be ready at: {{ formatDate(pickupTime) }}
+                    📅 {{ t('cart.orderType.takeawayForm.readyAt') }}:
+                    {{ formatDate(pickupTime) }}
                 </div>
             </div>
         </div>

@@ -6,6 +6,7 @@ import HeaderActions from './HeaderActions.vue';
 import MobileMenu from './MobileMenu.vue';
 import UserMenu from './UserMenu.vue';
 import { User } from '@/types';
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 
 defineProps<{
     user: User | null;

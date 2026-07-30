@@ -14,11 +14,16 @@ import {
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { getSpicyLevelLabels } from '@/lib/const';
 
 const props = defineProps<{
     open: boolean;
     onClose: () => void;
 }>();
+
+const { t } = useI18n();
+const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
 
 const cartStore = useCartStore();
 const { items } = storeToRefs(cartStore);
@@ -117,7 +122,9 @@ watch(
                     <div class="rounded-full bg-red-100 p-2">
                         <ShoppingBag class="h-5 w-5 text-red-500" />
                     </div>
-                    <h2 class="text-xl font-bold text-gray-800">Your Cart</h2>
+                    <h2 class="text-xl font-bold text-gray-800">
+                        {{ t('cart.cartDrawer.title') }}
+                    </h2>
                     <span
                         v-if="items.length"
                         class="rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white"
@@ -143,10 +150,10 @@ watch(
                         <ShoppingBag class="h-12 w-12 text-gray-400" />
                     </div>
                     <p class="mb-2 text-xl font-semibold text-gray-600">
-                        Your cart is empty
+                        {{ t('cart.cartDrawer.empty.title') }}
                     </p>
                     <p class="text-center text-gray-400">
-                        Looks like you haven't added any items yet
+                        {{ t('cart.cartDrawer.empty.description') }}
                     </p>
                 </div>
 
@@ -160,10 +167,15 @@ watch(
                                 <h3
                                     class="text-sm font-semibold tracking-wide text-gray-600 uppercase"
                                 >
-                                    Dishes
+                                    {{ t('cart.cartDrawer.dishes') }}
                                 </h3>
                                 <span class="text-xs text-gray-400">
-                                    {{ dishItems.length }} items
+                                    {{
+                                        t(
+                                            'cart.cartDrawer.items',
+                                            dishItems.length,
+                                        )
+                                    }}
                                 </span>
                             </div>
                         </div>
@@ -279,7 +291,11 @@ watch(
                                                 <span
                                                     class="text-xs font-medium text-gray-500"
                                                 >
-                                                    Spicy Level:
+                                                    {{
+                                                        t(
+                                                            'common.spicyLevel.title',
+                                                        )
+                                                    }}:
                                                 </span>
                                                 <div
                                                     class="text-xs font-medium text-gray-600"
@@ -301,12 +317,9 @@ watch(
                                                         ]"
                                                     >
                                                         {{
-                                                            [
-                                                                'No spicy',
-                                                                'Mild',
-                                                                'Spicy',
-                                                                'Hot',
-                                                            ][item.spicy_level]
+                                                            spicyLevelLabels[
+                                                                item.spicy_level
+                                                            ]
                                                         }}
                                                     </span>
                                                 </div>
@@ -316,8 +329,14 @@ watch(
                                                 v-if="item.meat"
                                                 class="flex items-center gap-1.5"
                                             >
-                                                <span class="text-xs font-medium text-gray-500">
-                                                    Meat:
+                                                <span
+                                                    class="text-xs font-medium text-gray-500"
+                                                >
+                                                    {{
+                                                        t(
+                                                            'cart.cartDrawer.meat',
+                                                        )
+                                                    }}:
                                                 </span>
                                                 <div
                                                     class="flex items-center gap-1"
@@ -349,21 +368,15 @@ watch(
                                             >
                                                 <span
                                                     class="text-xs font-medium text-gray-500"
-                                                    >Removed:</span
+                                                    >{{
+                                                        t(
+                                                            'cart.cartDrawer.removed',
+                                                        )
+                                                    }}:</span
                                                 >
                                                 <div
                                                     class="flex flex-wrap gap-1"
                                                 >
-                                                    <span
-                                                        class="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600"
-                                                    >
-                                                        {{
-                                                            item
-                                                                .removed_ingredients
-                                                                .length
-                                                        }}
-                                                        ingredients
-                                                    </span>
                                                     <span
                                                         v-if="
                                                             item
@@ -401,7 +414,11 @@ watch(
                                                 class="flex items-center justify-between text-xs"
                                             >
                                                 <span class="text-gray-500"
-                                                    >Item total:</span
+                                                    >{{
+                                                        t(
+                                                            'cart.cartDrawer.itemTotal',
+                                                        )
+                                                    }}:</span
                                                 >
                                                 <span
                                                     class="text-sm font-semibold text-gray-800"
@@ -428,10 +445,15 @@ watch(
                                 <h3
                                     class="text-sm font-semibold tracking-wide text-gray-600 uppercase"
                                 >
-                                    Drinks
+                                    {{ t('cart.cartDrawer.drinks') }}
                                 </h3>
                                 <span class="text-xs text-gray-400">
-                                    {{ drinkItems.length }} items
+                                    {{
+                                        t(
+                                            'cart.cartDrawer.items',
+                                            drinkItems.length,
+                                        )
+                                    }}
                                 </span>
                             </div>
                         </div>
@@ -539,7 +561,11 @@ watch(
                                                 class="flex items-center justify-between text-xs"
                                             >
                                                 <span class="text-gray-500"
-                                                    >Item total:</span
+                                                    >{{
+                                                        t(
+                                                            'cart.cartDrawer.itemTotal',
+                                                        )
+                                                    }}:</span
                                                 >
                                                 <span
                                                     class="text-sm font-semibold text-gray-800"
@@ -562,7 +588,7 @@ watch(
                     <div
                         class="flex justify-between p-3 text-base font-bold text-gray-800"
                     >
-                        <span>Total (incl. VAT)</span>
+                        <span>{{ t('cart.cartDrawer.total') }}</span>
                         <span class="text-red-500"
                             >€{{ formatPrice(subtotal) }}</span
                         >
@@ -576,7 +602,7 @@ watch(
                             class="relative z-10 flex items-center justify-center gap-2 font-semibold"
                         >
                             <CreditCard class="h-5 w-5" />
-                            Go to Checkout
+                            {{ t('cart.cartDrawer.checkout') }}
                         </span>
                         <div
                             class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-red-600 to-red-700 transition-transform duration-300 group-hover:translate-x-0"
@@ -584,7 +610,7 @@ watch(
                     </button>
 
                     <p class="text-center text-xs text-gray-400">
-                        Secure payment powered by Stripe
+                        {{ t('cart.cartDrawer.securePayment') }}
                     </p>
                 </div>
             </div>

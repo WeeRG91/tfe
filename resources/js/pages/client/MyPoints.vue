@@ -1,30 +1,52 @@
 <script setup lang="ts">
+import EmptyPoint from '@/components/client/myPoints/EmptyPoint.vue';
+import PointItem from '@/components/client/myPoints/PointItem.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
+import { getTotalPoints } from '@/lib/utils';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 import { CursorPaginated } from '@/types';
 import { FilterPointEnum, LoyaltyPointTransactionType } from '@/types/point';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { Award, ClockArrowUp, Loader } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { formatDate, getTotalPoints } from '@/lib/utils';
-import EmptyPoint from '@/components/client/myPoints/EmptyPoint.vue';
-import PointItem from '@/components/client/myPoints/PointItem.vue';
-import { Loader, Award, ClockArrowUp } from 'lucide-vue-next';
+import { locales } from '@/lib/const';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     availablePoints: LoyaltyPointTransactionType[];
-}>()
+}>();
 
-console.log(props.availablePoints)
+const { t, locale } = useI18n();
 
-const filterOptions: { label: string; value: FilterPointEnum }[] = [
-    { label: 'All', value: FilterPointEnum.ALL },
-    { label: 'Earned', value: FilterPointEnum.EARNED },
-    { label: 'Redeemed', value: FilterPointEnum.REDEEMED },
-    { label: 'Refunded', value: FilterPointEnum.REFUNDED },
-    { label: 'Reversed', value: FilterPointEnum.REVERSED },
-];
+const { formatDate } = useDateFormatter();
+
+const filterOptions = computed<{ label: string; value: FilterPointEnum }[]>(
+    () => [
+        {
+            label: t('common.pointFilters.all'),
+            value: FilterPointEnum.ALL,
+        },
+        {
+            label: t('common.pointFilters.earned'),
+            value: FilterPointEnum.EARNED,
+        },
+        {
+            label: t('common.pointFilters.redeemed'),
+            value: FilterPointEnum.REDEEMED,
+        },
+        {
+            label: t('common.pointFilters.refunded'),
+            value: FilterPointEnum.REFUNDED,
+        },
+        {
+            label: t('common.pointFilters.reversed'),
+            value: FilterPointEnum.REVERSED,
+        },
+    ],
+);
 
 const loyaltyPointTransactions = ref<LoyaltyPointTransactionType[]>([]);
 const nextCursor = ref<string>('');
@@ -33,9 +55,8 @@ const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 
-
-const latestPointTransaction = computed(() =>
-    props.availablePoints.at(0) ?? null
+const latestPointTransaction = computed(
+    () => props.availablePoints.at(0) ?? null,
 );
 
 const loadLoyaltyPointTransactions = async () => {
@@ -60,7 +81,7 @@ const loadLoyaltyPointTransactions = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load loyalty points');
+        toast.error(t('poinyt.errors.loadFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -68,6 +89,7 @@ const loadLoyaltyPointTransactions = async () => {
 
 const groupedTransactions = computed(() => {
     const groups: Record<string, LoyaltyPointTransactionType[]> = {};
+    const currentLocale = locales[locale.value] ?? 'en-GB';
 
     loyaltyPointTransactions.value.forEach((transaction) => {
         const date = new Date(transaction.created_at);
@@ -77,16 +99,16 @@ const groupedTransactions = computed(() => {
 
         let label: string;
         if (date.toDateString() === today.toDateString()) {
-            label = 'Today';
+            label = t('common.dates.today');
         } else if (date.toDateString() === yesterday.toDateString()) {
-            label = 'Yesterday';
+            label = t('common.dates.yesterday');
         } else if (date.getFullYear() === today.getFullYear()) {
-            label = date.toLocaleDateString('en-US', {
+            label = date.toLocaleDateString(currentLocale, {
                 month: 'long',
                 day: 'numeric',
             });
         } else {
-            label = date.toLocaleDateString('en-US', {
+            label = date.toLocaleDateString(currentLocale, {
                 month: 'long',
                 year: 'numeric',
             });
@@ -133,7 +155,7 @@ watch(filterPoint, resetAndReload);
 </script>
 
 <template>
-    <Head title="My Points" />
+    <Head :title="t('point.pageTitle')" />
 
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-4 py-3 md:px-6 md:py-4">
@@ -141,18 +163,18 @@ watch(filterPoint, resetAndReload);
                 <p
                     class="text-xs tracking-widest text-red-500 uppercase md:text-sm"
                 >
-                    [ My Account ]
+                    [ {{ t('point.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    My Points
+                    {{ t('point.title') }}
                 </h1>
                 <p class="mt-0.5 text-xs text-gray-600 md:mt-1 md:text-sm">
-                    Track your loyalty points and rewards
+                    {{ t('point.description') }}
                 </p>
             </div>
 
             <div
-                class="mb-4 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-white shadow-lg sm:mb-6 md:px-6 sm:py-4"
+                class="mb-4 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-white shadow-lg sm:mb-6 sm:py-4 md:px-6"
             >
                 <div
                     class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
@@ -165,7 +187,7 @@ watch(filterPoint, resetAndReload);
                             <p
                                 class="text-xs font-medium opacity-90 md:text-sm"
                             >
-                                Available Points
+                                {{ t('point.availablePoints') }}
                             </p>
                             <p
                                 class="text-2xl font-bold tracking-tight md:text-3xl"
@@ -185,19 +207,23 @@ watch(filterPoint, resetAndReload);
                             <p
                                 class="text-xs font-medium opacity-90 md:text-sm"
                             >
-                                Last Update
+                                {{ t('point.lastUpdate') }}
                             </p>
                             <p
                                 v-if="latestPointTransaction"
                                 class="text-xl font-bold tracking-tight md:text-2xl"
                             >
-                                {{ formatDate(latestPointTransaction.created_at) }}
+                                {{
+                                    formatDate(
+                                        latestPointTransaction.created_at,
+                                    )
+                                }}
                             </p>
                             <p
                                 v-else
                                 class="text-xl font-bold tracking-tight md:text-2xl"
                             >
-                                Not updated yet
+                                {{ t('point.notUpdatedYet') }}
                             </p>
                         </div>
                     </div>

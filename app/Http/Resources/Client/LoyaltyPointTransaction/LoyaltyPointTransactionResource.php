@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Client\LoyaltyPointTransaction;
 
+use App\Enums\LoyaltyPointTransactionTypeEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,7 @@ class LoyaltyPointTransactionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => $this->type->label(),
+            'type' => LoyaltyPointTransactionTypeEnum::getStatus($this->type),
             'points' => $this->points,
             'description' => $this->description,
             'created_at' => $this->created_at,

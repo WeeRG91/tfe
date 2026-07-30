@@ -2,10 +2,16 @@
 import { formatPrice } from '@/lib/utils';
 import { OrderType } from '@/types/order';
 import { Soup } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
+import { getSpicyLevelLabels } from '@/lib/const';
 
 defineProps<{
     orderToShow: OrderType;
 }>();
+
+const { t } = useI18n();
+const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
 </script>
 
 <template>
@@ -14,7 +20,7 @@ defineProps<{
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
             <Soup class="h-5 w-5 text-red-500" />
-            Order Items
+            {{ t('order.orderItemsCard.title') }}
         </h2>
 
         <div class="space-y-3">
@@ -28,21 +34,16 @@ defineProps<{
                         <div class="font-medium">
                             {{ item.quantity }}x {{ item.item?.name }}
                         </div>
-                        <div
-                            class="mt-1 text-xs text-gray-500"
-                        >
-                            Spicy level:
-                            {{
-                                ['No spicy', 'Mild', 'Spicy', 'Hot'][
-                                    item.spicy_level
-                                ]
-                            }}
+                        <div class="mt-1 text-xs text-gray-500">
+                            {{ t('common.spicyLevel.title') }}:
+                            {{ spicyLevelLabels[item.spicy_level] }}
                         </div>
                         <div
                             v-if="item.meat"
                             class="mt-1 text-xs text-gray-500"
                         >
-                            Meat: {{ item.meat.name }}
+                            {{ t('order.orderItemsCard.meat') }}:
+                            {{ item.meat.name }}
                             <span
                                 v-if="item.meat.extra_price > 0"
                                 class="text-gray-400"
@@ -57,7 +58,7 @@ defineProps<{
                             "
                             class="mt-1 text-xs text-gray-400"
                         >
-                            Without:
+                            {{ t('order.orderItemsCard.without') }}:
                             {{
                                 item.removed_ingredients
                                     .map((ing) => ing.name)
@@ -68,7 +69,8 @@ defineProps<{
                             v-if="item.notes"
                             class="mt-1 text-xs text-gray-400"
                         >
-                            Note: {{ item.notes }}
+                            {{ t('order.orderItemsCard.note') }}:
+                            {{ item.notes }}
                         </div>
                     </div>
                     <div class="ml-4 font-medium whitespace-nowrap">

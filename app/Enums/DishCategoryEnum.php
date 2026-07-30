@@ -13,6 +13,18 @@ enum DishCategoryEnum: int
     case DESSERT = 5;
     case VEGETARIAN = 6;
 
+    public function key(): string
+    {
+        return match ($this) {
+            self::APPETIZER => 'appetizer',
+            self::MAIN_COURSE => 'main_course',
+            self::SOUP => 'soup',
+            self::NOODLES => 'noodles',
+            self::DESSERT => 'dessert',
+            self::VEGETARIAN => 'vegetarian',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -41,6 +53,7 @@ enum DishCategoryEnum: int
     {
         return array_map(fn ($case) => [
             'value' => $case->value,
+            'key' => $case->key(),
             'label' => $case->label(),
             'color' => self::getColor($case),
         ], self::cases());

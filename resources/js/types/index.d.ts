@@ -35,15 +35,17 @@ export interface NavItem {
     permission?: string;
 }
 
-export type AppPageProps<
-    T extends Record<string, unknown> = Record<string, unknown>,
-> = T & {
-    name: string;
-    quote: { message: string; author: string };
-    auth: Auth;
-    sidebarOpen: boolean;
-    flash: FlashProps;
-};
+export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> =
+    T & {
+        name: string;
+        quote: { message: string; author: string };
+        auth: Auth;
+        locale: string;
+        availableLocales: Record<string, string>;
+        sidebarOpen: boolean;
+        flash: FlashProps;
+        [key: string]: unknown;
+    };
 
 export interface User {
     id: number;
@@ -133,7 +135,7 @@ export type SearchType = {
 export type SearchResultType = {
     key: SearchResultEnum;
     label: string;
-    permission:
+    permission?:
         | AllergenPermissionEnum
         | DishPermissionEnum
         | DrinkPermissionEnum

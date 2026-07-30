@@ -12,6 +12,7 @@ import TakeawayForm from '@/components/client/placeOrder/TakeawayForm.vue';
 import { useLoyaltyPoints } from '@/composables/useLoyaltyPoints';
 import { useVatCalculator } from '@/composables/useVatCalculator';
 import ClientLayout from '@/layouts/ClientLayout.vue';
+import { getTotalPoints } from '@/lib/utils';
 import address from '@/routes/address';
 import order from '@/routes/order';
 import paymentOrder from '@/routes/payment-order';
@@ -20,13 +21,13 @@ import { useOrderStore } from '@/stores/order';
 import { AddressType } from '@/types/address';
 import { OrderTypeEnum, OrderTypeType } from '@/types/order';
 import { PaymentMethodType } from '@/types/payment';
+import { LoyaltyPointTransactionType } from '@/types/point';
 import { Head, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { LoyaltyPointTransactionType } from '@/types/point';
-import { getTotalPoints } from '@/lib/utils';
 
 const props = defineProps<{
     orderTypes: OrderTypeType[];
@@ -34,6 +35,8 @@ const props = defineProps<{
     addresses: AddressType[];
     loyaltyPointTransactions: LoyaltyPointTransactionType[];
 }>();
+
+const { t } = useI18n();
 
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
@@ -57,7 +60,9 @@ const deliveryFee = computed(() =>
     selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY ? 2 : 0,
 );
 
-const loyaltyPoints = computed(() => getTotalPoints(props.loyaltyPointTransactions) ?? 0);
+const loyaltyPoints = computed(
+    () => getTotalPoints(props.loyaltyPointTransactions) ?? 0,
+);
 
 const selectedOrderType = computed(() => {
     return props.orderTypes.find(
@@ -183,7 +188,7 @@ const deleteAddress = async (addressId: number) => {
         selectDefaultAddress();
     } catch (error) {
         console.log(error);
-        toast.error('Failed to delete address');
+        toast.error(t('cart.placeOrderPage.errors.deleteAddress'));
     } finally {
         deletedAddressId.value = null;
     }
@@ -191,7 +196,7 @@ const deleteAddress = async (addressId: number) => {
 
 const placeOrder = async () => {
     if (!isFormValid.value || !selectedOrderType.value) {
-        toast.error('Please complete all required fields');
+        toast.error(t('cart.placeOrderPage.errors.requiredFields'));
         return;
     }
 
@@ -220,7 +225,7 @@ const placeOrder = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to place order');
+        toast.error(t('cart.placeOrderPage.errors.placeOrder'));
     }
 };
 
@@ -254,19 +259,19 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Place Order" />
+    <Head :title="t('cart.placeOrderPage.pageTitle')" />
 
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
-                    [ Secure Checkout ]
+                    [ {{ t('cart.placeOrderPage.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    Place Your Order
+                    {{ t('cart.placeOrderPage.title') }}
                 </h1>
                 <p class="mt-1 text-sm text-gray-600">
-                    Complete your order details below
+                    {{ t('cart.placeOrderPage.description') }}
                 </p>
             </div>
 
@@ -320,7 +325,9 @@ onMounted(() => {
                         <OrderNotes
                             v-model="notes"
                             :max-length="500"
-                            placeholder="Any special requests or dietary requirements?"
+                            :placeholder="
+                                t('cart.placeOrderPage.notesPlaceholder')
+                            "
                         />
 
                         <LoyaltyPointsSection
@@ -338,7 +345,10 @@ onMounted(() => {
                             :items="items"
                             :subtotal="subtotalBeforeDeliveryFee"
                             :delivery-fee="
-                                selectedOrderType?.value === OrderTypeEnum.DELIVERY ? 2 : 0
+                                selectedOrderType?.value ===
+                                OrderTypeEnum.DELIVERY
+                                    ? 2
+                                    : 0
                             "
                             :discount-amount="discountAmount"
                             :vat12-total="vat12Total"

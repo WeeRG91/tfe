@@ -1,0 +1,30 @@
+export default {
+    pageTitle: 'Drinks',
+    eyebrow: 'Our Drinks',
+    heading: 'Choose Your Drinks',
+    loadError: 'Failed to load drinks.',
+    categories: {
+        all: 'All',
+        softDrink: 'Soft drink',
+        hotDrink: 'Hot drink',
+        smoothie: 'Smoothie',
+        beer: 'Beer',
+        wine: 'wine',
+        cocktail: 'Cocktail',
+        mocktail: 'Mocktail',
+    },
+    addDrinkModal: {
+        addFailed: 'Failed to add item.',
+        specialInstructions: 'Special instructions (optional)',
+        specialInstructionsPlaceholder: 'e.g. more sugar, no sugar...',
+        quantity: 'Quantity',
+        total: 'Total',
+        cancel: 'Cancel',
+        addToCart: 'Add to Cart',
+    },
+    card: {
+        add: 'Add',
+        available: 'Available',
+        unavailable: 'Unavailable',
+    },
+};

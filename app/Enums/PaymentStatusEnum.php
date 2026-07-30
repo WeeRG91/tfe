@@ -13,6 +13,18 @@ enum PaymentStatusEnum: int
     case REFUNDED = 5;
     case REFUND_FAILED = 6;
 
+    public function key(): string
+    {
+        return match ($this) {
+            self::PENDING => 'pending',
+            self::PAID => 'paid',
+            self::FAILED => 'failed',
+            self::REFUND_PENDING => 'refundPending',
+            self::REFUNDED => 'refunded',
+            self::REFUND_FAILED => 'refundFailed',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -29,6 +41,7 @@ enum PaymentStatusEnum: int
     {
         return array_map(fn ($case) => [
             'value' => $case->value,
+            'key' => $case->key(),
             'label' => $case->label(),
         ], self::cases());
     }

@@ -10,6 +10,9 @@ import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import { ItemTypeEnum } from '@/types/cart';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const cartStore = useCartStore();
 const { items } = storeToRefs(cartStore);
@@ -26,11 +29,17 @@ const drinkItems = computed(() =>
 );
 
 const subtotalDishes = computed(() => {
-    return dishItems.value.reduce((sum, item) => sum + (item.total_inc_vat || 0), 0);
+    return dishItems.value.reduce(
+        (sum, item) => sum + (item.total_inc_vat || 0),
+        0,
+    );
 });
 
 const subtotalDrinks = computed(() => {
-    return drinkItems.value.reduce((sum, item) => sum + (item.total_inc_vat || 0), 0);
+    return drinkItems.value.reduce(
+        (sum, item) => sum + (item.total_inc_vat || 0),
+        0,
+    );
 });
 
 const subtotal = computed(() => {
@@ -78,18 +87,18 @@ const handleRemoveItem = async (cartItemId: number) => {
 </script>
 
 <template>
-    <Head title="Checkout Page" />
+    <Head :title="t('cart.checkoutPage.pageTitle')" />
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
-                    [ Checkout ]
+                    [ {{ t('cart.checkoutPage.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    Your Cart
+                    {{ t('cart.checkoutPage.title') }}
                 </h1>
                 <p class="mt-1 text-sm text-gray-600">
-                    Review your cart before placing your order
+                    {{ t('cart.checkoutPage.description') }}
                 </p>
             </div>
 
@@ -113,7 +122,7 @@ const handleRemoveItem = async (cartItemId: number) => {
                                     <h2
                                         class="text-sm font-semibold tracking-wide text-gray-700 uppercase"
                                     >
-                                        Dishes
+                                        {{ t('cart.checkoutPage.dishes') }}
                                     </h2>
                                     <span class="text-xs text-gray-400">
                                         {{ dishItems.length }}
@@ -148,7 +157,7 @@ const handleRemoveItem = async (cartItemId: number) => {
                                     <h2
                                         class="text-sm font-semibold tracking-wide text-gray-700 uppercase"
                                     >
-                                        Drinks
+                                        {{ t('cart.checkoutPage.drinks') }}
                                     </h2>
                                     <span class="text-xs text-gray-400">
                                         {{ drinkItems.length }}
@@ -179,13 +188,17 @@ const handleRemoveItem = async (cartItemId: number) => {
                 </div>
 
                 <div v-if="items.length" class="lg:w-80">
-                    <div class="sticky sm:top-20 rounded-lg border bg-white p-4">
+                    <div
+                        class="sticky rounded-lg border bg-white p-4 sm:top-20"
+                    >
                         <h2 class="mb-3 text-lg font-semibold uppercase">
-                            Order Summary
+                            {{ t('cart.checkoutPage.orderSummary') }}
                         </h2>
 
                         <div class="mt-3 flex justify-between font-semibold">
-                            <span>Total (incl. VAT)</span>
+                            <span>{{
+                                t('cart.checkoutPage.totalIncludingVat')
+                            }}</span>
                             <span class="text-red-500"
                                 >€{{ formatPrice(subtotal) }}</span
                             >
@@ -193,7 +206,11 @@ const handleRemoveItem = async (cartItemId: number) => {
 
                         <div class="mt-4 space-y-3">
                             <textarea
-                                placeholder="Special instructions..."
+                                :placeholder="
+                                    t(
+                                        'cart.checkoutPage.specialInstructionsPlaceholder',
+                                    )
+                                "
                                 class="w-full rounded-md border p-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
                                 rows="2"
                             ></textarea>
@@ -206,7 +223,7 @@ const handleRemoveItem = async (cartItemId: number) => {
                                     class="relative z-10 flex items-center justify-center gap-2 font-semibold"
                                 >
                                     <CreditCard class="h-4 w-4" />
-                                    Place your order
+                                    {{ t('cart.checkoutPage.placeOrder') }}
                                 </span>
                                 <div
                                     class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-red-600 to-red-700 transition-transform duration-300 group-hover:translate-x-0"
@@ -215,8 +232,8 @@ const handleRemoveItem = async (cartItemId: number) => {
                         </div>
 
                         <div class="mt-3 text-center text-xs text-gray-500">
-                            <p>By placing your order, you agree to our</p>
-                            <p>Terms of Service and Privacy Policy</p>
+                            <p>{{ t('cart.checkoutPage.agreementText') }}</p>
+                            <p>{{ t('cart.checkoutPage.termsAndPrivacy') }}</p>
                         </div>
                     </div>
                 </div>

@@ -71,26 +71,6 @@ export const formatTime = (date: string | null) => {
     });
 };
 
-export const formatDateForHumans = (date: string | null) => {
-    if (!date) return 'Not set';
-
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return 'Invalid date';
-
-    const diff = Date.now() - d.getTime();
-
-    const mins = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins} min ago`;
-    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
-
-    return d.toLocaleDateString();
-};
-
 export const formatAddress = (address: any) => {
     if (!address) return '';
     return `${address.street}, ${address.city}, ${address.country}, ${address.postal_code}`;
@@ -244,7 +224,7 @@ export const getTotalPoints = (transactions: LoyaltyPointTransactionType[]) => {
     if (!transactions.length) return 0;
 
     return transactions.reduce((total, transaction) => {
-        switch (transaction.type as PointTypeEnum) {
+        switch (transaction.type.label as PointTypeEnum) {
             case PointTypeEnum.EARNED:
                 return total + transaction.points;
             case PointTypeEnum.REDEEMED:

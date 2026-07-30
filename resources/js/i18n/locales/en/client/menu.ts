@@ -1,0 +1,40 @@
+export default {
+    pageTitle: 'Menu Page',
+    eyebrow: 'Our Menu',
+    heading: 'Discover Our Dishes',
+    loadFailed: 'Failed to load more dishes.',
+    categories: {
+        all: 'All',
+        appetizer: 'Appetizer',
+        main_course: 'Main course',
+        soup: 'Soup',
+        noodles: 'Noodles',
+        dessert: 'Dessert',
+        vegetarian: 'Vegetarian',
+    },
+    addDishModal: {
+        close: 'Close',
+        quantity: 'Quantity',
+        chooseMeat: 'Choose your meat',
+        selectMeat: 'Please select a meat.',
+        removeIngredients: 'Remove ingredients',
+        instructionsOptional: 'Special instructions (optional)',
+        instructionsPlaceholder:
+            'e.g. extra sauce, no onions, make it spicy...',
+        addingToCart: 'Adding...',
+        addToCart: 'Add to cart',
+        addFailed: 'Failed to add the item to your cart.',
+        total: 'Total',
+        cancel: 'Cancel',
+    },
+    card: {
+        add: 'Add',
+        available: 'Available',
+        unavailable: 'Unavailable',
+    },
+    emptyList: {
+        title: 'No dishes available',
+        description: "We couldn't find any dishes at the moment.",
+        Addition: 'Please check back later or try a different category.',
+    },
+};

@@ -14,6 +14,19 @@ enum DrinkCategoryEnum: int
     case COCKTAIL = 6;
     case MOCKTAIL = 7;
 
+    public function key(): string
+    {
+        return match ($this) {
+            self::SOFT_DRINK => 'softDrink',
+            self::HOT_DRINK => 'hotDrink',
+            self::SMOOTHIE => 'smoothie',
+            self::BEER => 'beer',
+            self::WINE => 'wine',
+            self::COCKTAIL=> 'cocktail',
+            self::MOCKTAIL=> 'mocktail',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -44,6 +57,7 @@ enum DrinkCategoryEnum: int
     {
         return array_map(fn ($case) => [
             'value' => $case->value,
+            'key' => $case->key(),
             'label' => $case->label(),
             'color' => self::getColor($case),
         ], self::cases());

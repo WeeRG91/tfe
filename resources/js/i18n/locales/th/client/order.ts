@@ -1,0 +1,121 @@
+export default {
+    pageTitle: 'คำสั่งซื้อของฉัน',
+    eyebrow: 'บัญชีของฉัน',
+    title: 'คำสั่งซื้อของฉัน',
+    description: 'ติดตาม จัดการ และสั่งเมนูโปรดของคุณอีกครั้ง',
+    filters: {
+        active: 'คำสั่งซื้อที่กำลังดำเนินการ',
+        completed: 'คำสั่งซื้อที่เสร็จสมบูรณ์',
+        cancelled: 'คำสั่งซื้อที่ยกเลิก',
+    },
+    emptyOrder: {
+        title: 'ยังไม่มีคำสั่งซื้อ',
+        description:
+            'ดูเหมือนว่าคุณยังไม่ได้สั่งอาหารเลย ลองเลือกเมนูอร่อย ๆ ของเราได้เลย!',
+        browseMenu: 'ดูเมนู',
+    },
+    orderList: {
+        errors: {
+            cancel: 'ไม่สามารถยกเลิกคำสั่งซื้อได้',
+            remove: 'ไม่สามารถลบคำสั่งซื้อได้',
+        },
+    },
+    orderCard: {
+        total: 'ยอดรวม',
+        orderProgress: 'ความคืบหน้าของคำสั่งซื้อ',
+        customer: 'ลูกค้า',
+        guest: 'ผู้เยี่ยมชม',
+        payment: 'การชำระเงิน',
+        specialInstructions: 'คำแนะนำพิเศษ',
+        seeDetails: 'ดูรายละเอียด',
+        cancelOrder: 'ยกเลิกคำสั่งซื้อ',
+        completeOrder: 'ชำระเงินให้เสร็จ',
+        removeOrder: 'ลบคำสั่งซื้อ',
+        reorder: 'สั่งอีกครั้ง',
+        removeConfirmation: 'คุณแน่ใจหรือไม่ว่าต้องการลบคำสั่งซื้อนี้?',
+        cancelConfirmation: 'คุณแน่ใจหรือไม่ว่าต้องการยกเลิกคำสั่งซื้อนี้?',
+        refundConfirmation:
+            'คำสั่งซื้อนี้ชำระเงินแล้ว หากยกเลิก คุณจะได้รับเงินคืน {amount} € ไปยังวิธีการชำระเงินเดิม',
+    },
+    orderItemsList: {
+        title: 'รายการอาหารในคำสั่งซื้อ',
+        itemCount: '{count} รายการ',
+        each: 'ต่อรายการ',
+        meat: 'เนื้อสัตว์',
+        removed: 'ไม่ใส่',
+        subtotal: 'ยอดรวมก่อนค่าบริการ',
+        deliveryFee: 'ค่าจัดส่ง',
+        discount: 'ส่วนลด',
+        total: 'ยอดรวม',
+    },
+    orderDetailsPage: {
+        pageTitle: 'รายละเอียดคำสั่งซื้อ',
+        eyebrow: 'คำสั่งซื้อของฉัน',
+        orderNumber: 'คำสั่งซื้อ #{number}',
+        placedOn: 'สั่งซื้อเมื่อ {date}',
+    },
+    orderStatusTimeline: {
+        title: 'สถานะคำสั่งซื้อ',
+        steps: {
+            placed: {
+                title: 'รับคำสั่งซื้อแล้ว',
+                description: 'เราได้รับคำสั่งซื้อของคุณแล้ว',
+            },
+            confirmed: {
+                title: 'ยืนยันแล้ว',
+                description: 'ร้านอาหารยืนยันคำสั่งซื้อของคุณแล้ว',
+            },
+            preparing: {
+                title: 'กำลังเตรียมอาหาร',
+                description: 'กำลังเตรียมคำสั่งซื้อของคุณ',
+            },
+            ready: {
+                title: 'พร้อมรับแล้ว',
+                description: 'คำสั่งซื้อของคุณพร้อมรับแล้ว',
+            },
+            delivering: {
+                title: 'กำลังจัดส่ง',
+                description: 'คำสั่งซื้อกำลังอยู่ระหว่างการจัดส่ง',
+            },
+            completed: {
+                title: 'เสร็จสิ้น',
+                description: 'จัดส่งคำสั่งซื้อเรียบร้อยแล้ว',
+            },
+        },
+    },
+    orderDetailsCard: {
+        title: 'รายละเอียดคำสั่งซื้อ',
+        orderType: 'ประเภทคำสั่งซื้อ',
+        table: 'โต๊ะ',
+        pickupTime: 'เวลารับสินค้า',
+        pickupInformation: 'ข้อมูลการรับสินค้า',
+        deliveryAddress: 'ที่อยู่จัดส่ง',
+        paymentMethod: 'วิธีการชำระเงิน',
+        paidOn: 'ชำระเงินเมื่อ {date}',
+        orderNotes: 'หมายเหตุคำสั่งซื้อ',
+        notAvailable: 'ไม่มีข้อมูล',
+    },
+    orderItemsCard: {
+        title: 'รายการอาหารในคำสั่งซื้อ',
+        spicyLevel: 'ระดับความเผ็ด',
+        meat: 'เนื้อสัตว์',
+        without: 'ไม่ใส่',
+        note: 'หมายเหตุ',
+    },
+    paymentSummaryCard: {
+        title: 'สรุปการชำระเงิน',
+        vat: 'ภาษีมูลค่าเพิ่ม ({rate}%)',
+        totalVat: 'ภาษีมูลค่าเพิ่มทั้งหมด',
+        subtotal: 'ยอดรวมก่อนค่าบริการ',
+        deliveryFee: 'ค่าจัดส่ง',
+        totalPaid: 'ยอดชำระทั้งหมด',
+        via: 'ผ่าน',
+    },
+    quickActionsCard: {
+        printOrderSummary: 'พิมพ์สรุปคำสั่งซื้อ',
+        removeOrder: 'ลบคำสั่งซื้อ',
+        continueShopping: 'เลือกซื้อสินค้าต่อ',
+        needHelp: 'ต้องการความช่วยเหลือหรือไม่?',
+        contactSupport: 'ติดต่อฝ่ายบริการลูกค้าของเรา',
+    },
+};

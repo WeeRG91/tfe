@@ -5,6 +5,9 @@ import { ClientDishType, DishAvailabilityEnum } from '@/types/dish';
 import { router } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 import { Flame } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -115,7 +118,7 @@ const triggerStarAnimation = () => {
         </div>
 
         <div class="flex flex-1 flex-col px-4 py-2">
-            <div class="flex flex-row justify-between items-center">
+            <div class="flex flex-row items-center justify-between">
                 <h3
                     class="text-lg font-semibold uppercase transition-colors"
                     :class="{
@@ -268,7 +271,7 @@ const triggerStarAnimation = () => {
                                 DishAvailabilityEnum.UNAVAILABLE,
                         }"
                     >
-                        {{ props.dish.category.label }}
+                        {{ t(`menu.categories.${props.dish.category.key}`) }}
                     </span>
 
                     <button
@@ -279,7 +282,7 @@ const triggerStarAnimation = () => {
                         @click.stop="emit('add', props.dish)"
                         class="cursor-pointer text-sm text-red-500 transition-all duration-300 hover:translate-x-1 hover:text-red-600"
                     >
-                        Add
+                        {{ $t('menu.card.add') }}
                         <span
                             class="inline-block transition-transform group-hover:translate-x-1"
                             >→</span
@@ -291,7 +294,7 @@ const triggerStarAnimation = () => {
                         disabled
                         class="cursor-not-allowed text-sm text-gray-400"
                     >
-                        Unavailable
+                        {{ $t('menu.card.unavailable') }}
                     </button>
                 </div>
             </div>

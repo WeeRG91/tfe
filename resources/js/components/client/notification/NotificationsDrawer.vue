@@ -2,7 +2,6 @@
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { useClickOutside } from '@/composables/useClickOutside';
 import {
-    formatDateForHumans,
     getNotificationIcon,
     getNotificationIconBgColor,
     getNotificationIconColor,
@@ -21,6 +20,8 @@ import {
     X,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     open: boolean;
@@ -35,6 +36,9 @@ const emit = defineEmits<{
     delete: [notificationId: number];
     'delete-all': [];
 }>();
+
+const { t } = useI18n();
+const { formatDateForHumans } = useDateFormatter();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -146,20 +150,20 @@ watch(
             class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl"
         >
             <div class="flex h-full flex-col">
-                <!-- Header -->
                 <div
                     class="flex items-center justify-between border-b border-gray-100 p-4"
                 >
                     <div class="flex items-center gap-2">
                         <Bell class="h-5 w-5 text-red-500" />
                         <h2 class="text-lg font-semibold text-gray-900">
-                            Notifications
+                            {{ t('notification.notificationDrawer.title') }}
                         </h2>
                         <span
                             v-if="unreadCount > 0"
                             class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-600"
                         >
-                            {{ unreadCount }} new
+                            {{ unreadCount }}
+                            {{ t('notification.notificationDrawer.new') }}
                         </span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -172,7 +176,6 @@ watch(
                                 <MoreHorizontal class="h-5 w-5" />
                             </button>
 
-                            <!-- Dropdown menu -->
                             <Transition name="dropdown-fade">
                                 <div
                                     v-if="showDropdown"
@@ -184,19 +187,29 @@ watch(
                                         class="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
                                     >
                                         <Eye class="h-4 w-4" />
-                                        <span>See all</span>
+                                        <span>{{
+                                            t(
+                                                'notification.notificationDrawer.menu.seeAll',
+                                            )
+                                        }}</span>
                                     </button>
                                     <button
                                         @click.stop="markAllAsRead"
                                         class="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
                                     >
                                         <CheckCheck class="h-4 w-4" />
-                                        <span>Mark all as read</span>
+                                        <span>{{
+                                            t(
+                                                'notification.notificationDrawer.menu.markAllAsRead',
+                                            )
+                                        }}</span>
                                     </button>
                                     <button
                                         @click.stop="
                                             openConfirmModal(
-                                                `Are you sure you want to delete all notifications?`,
+                                                t(
+                                                    'notification.notificationDrawer.confirm.deleteAll',
+                                                ),
                                                 'destructive',
                                                 () => deleteAllNotifications(),
                                             )
@@ -204,7 +217,11 @@ watch(
                                         class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                                     >
                                         <Trash2 class="h-4 w-4" />
-                                        <span>Delete all</span>
+                                        <span>{{
+                                            t(
+                                                'notification.notificationDrawer.menu.deleteAll',
+                                            )
+                                        }}</span>
                                     </button>
                                 </div>
                             </Transition>
@@ -226,9 +243,17 @@ watch(
                         class="flex h-full flex-col items-center justify-center p-8 text-center"
                     >
                         <Bell class="mb-3 h-12 w-12 text-gray-300" />
-                        <p class="text-gray-500">No notifications yet</p>
+                        <p class="text-gray-500">
+                            {{
+                                t('notification.notificationDrawer.empty.title')
+                            }}
+                        </p>
                         <p class="mt-1 text-sm text-gray-400">
-                            We'll notify you when something arrives
+                            {{
+                                t(
+                                    'notification.notificationDrawer.empty.description',
+                                )
+                            }}
                         </p>
                     </div>
 
@@ -246,7 +271,6 @@ watch(
                                 class="cursor-pointer p-4"
                             >
                                 <div class="flex gap-3">
-                                    <!-- Icon based on notification type -->
                                     <div
                                         :class="[
                                             'mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full',
@@ -306,7 +330,11 @@ watch(
                                                 ></span>
                                                 <span
                                                     class="ml-1 text-xs text-red-600"
-                                                    >New</span
+                                                    >{{
+                                                        t(
+                                                            'notification.notificationDrawer.new',
+                                                        )
+                                                    }}</span
                                                 >
                                             </div>
 
@@ -321,20 +349,28 @@ watch(
                                                         )
                                                     "
                                                     class="rounded-md px-2 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50"
-                                                    title="Mark as read"
+                                                    :title="
+                                                        t(
+                                                            'notification.notificationDrawer.actions.markAsRead',
+                                                        )
+                                                    "
                                                 >
                                                     <CheckCircle2
                                                         class="h-3.5 w-3.5"
                                                     />
-                                                    <span class="sr-only"
-                                                        >Mark as read</span
-                                                    >
+                                                    <span class="sr-only">{{
+                                                        t(
+                                                            'notification.notificationDrawer.actions.markAsRead',
+                                                        )
+                                                    }}</span>
                                                 </button>
 
                                                 <button
                                                     @click.stop="
                                                         openConfirmModal(
-                                                            'Are you sure you want to delete notification?',
+                                                            t(
+                                                                'notification.notificationDrawer.confirm.delete',
+                                                            ),
                                                             'destructive',
                                                             () =>
                                                                 deleteNotification(
@@ -343,14 +379,20 @@ watch(
                                                         )
                                                     "
                                                     class="rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
-                                                    title="Delete"
+                                                    :title="
+                                                        t(
+                                                            'notification.notificationDrawer.actions.delete',
+                                                        )
+                                                    "
                                                 >
                                                     <Trash2
                                                         class="h-3.5 w-3.5"
                                                     />
-                                                    <span class="sr-only"
-                                                        >Delete</span
-                                                    >
+                                                    <span class="sr-only">{{
+                                                        t(
+                                                            'notification.notificationDrawer.actions.delete',
+                                                        )
+                                                    }}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -366,7 +408,11 @@ watch(
                         class="mt-2 flex w-full items-center justify-center gap-2 border-t border-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-blue-600"
                     >
                         <Eye class="h-4 w-4" />
-                        <span>See all notifications</span>
+                        <span>{{
+                            t(
+                                'notification.notificationDrawer.menu.seeAllNotifications',
+                            )
+                        }}</span>
                     </button>
                 </div>
             </div>
@@ -382,7 +428,6 @@ watch(
         </div>
     </Transition>
 
-    <!-- Backdrop -->
     <Transition name="fade">
         <div
             v-if="open"

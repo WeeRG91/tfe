@@ -1,0 +1,120 @@
+export default {
+    pageTitle: 'My Orders',
+    eyebrow: 'My Account',
+    title: 'My Orders',
+    description: 'Track, manage, and reorder your favorite meals',
+    filters: {
+        active: 'Active Orders',
+        completed: 'Completed Orders',
+        cancelled: 'Cancelled Orders',
+    },
+    emptyOrder: {
+        title: 'No orders yet',
+        description:
+            "Looks like you haven't placed any orders yet. Start exploring our delicious menu!",
+        browseMenu: 'Browse Menu',
+    },
+    orderList: {
+        errors: {
+            cancel: 'Failed to cancel the order.',
+            remove: 'Failed to remove the order.',
+        },
+    },
+    orderCard: {
+        total: 'Total',
+        orderProgress: 'Order Progress',
+        customer: 'Customer',
+        guest: 'Guest',
+        payment: 'Payment',
+        specialInstructions: 'Special Instructions',
+        seeDetails: 'See Details',
+        cancelOrder: 'Cancel Order',
+        completeOrder: 'Complete Payment',
+        removeOrder: 'Remove Order',
+        reorder: 'Reorder',
+        removeConfirmation: 'Are you sure you want to remove this order?',
+        cancelConfirmation: 'Are you sure you want to cancel this order?',
+        refundConfirmation:
+            'This order has already been paid. Cancelling it will refund €{amount} to your original payment method.',
+    },
+    orderItemsList: {
+        title: 'Order Items',
+        itemCount: '{count} item | {count} items',
+        each: 'each',
+        meat: 'Meat',
+        removed: 'Removed',
+        subtotal: 'Subtotal',
+        deliveryFee: 'Delivery Fee',
+        discount: 'Discount',
+        total: 'Total',
+    },
+    orderDetailsPage: {
+        pageTitle: 'Order Details',
+        eyebrow: 'My Order',
+        orderNumber: 'Order #{number}',
+        placedOn: 'Placed on {date}',
+    },
+    orderStatusTimeline: {
+        title: 'Order Status',
+        steps: {
+            placed: {
+                title: 'Order Placed',
+                description: 'Your order has been received',
+            },
+            confirmed: {
+                title: 'Confirmed',
+                description: 'The restaurant has confirmed your order',
+            },
+            preparing: {
+                title: 'Preparing',
+                description: 'Your order is being prepared',
+            },
+            ready: {
+                title: 'Ready',
+                description: 'Your order is ready for pickup',
+            },
+            delivering: {
+                title: 'Out for Delivery',
+                description: 'Your order is on the way',
+            },
+            completed: {
+                title: 'Completed',
+                description: 'Your order has been delivered',
+            },
+        },
+    },
+    orderDetailsCard: {
+        title: 'Order Details',
+        orderType: 'Order Type',
+        table: 'Table',
+        pickupTime: 'Pickup Time',
+        pickupInformation: 'Pickup Information',
+        deliveryAddress: 'Delivery Address',
+        paymentMethod: 'Payment Method',
+        paidOn: 'Paid on {date}',
+        orderNotes: 'Order Notes',
+        notAvailable: 'N/A',
+    },
+    orderItemsCard: {
+        title: 'Order Items',
+        meat: 'Meat',
+        without: 'Without',
+        note: 'Note',
+    },
+    paymentSummaryCard: {
+        title: 'Payment Summary',
+        vat: 'VAT ({rate}%)',
+        totalVat: 'Total VAT',
+        subtotal: 'Subtotal',
+        deliveryFee: 'Delivery Fee',
+        totalPaid: 'Total Paid',
+        via: 'via',
+    },
+    quickActionsCard: {
+        printOrderSummary: 'Print Order Summary',
+        removeOrder: 'Remove Order',
+        continueShopping: 'Continue Shopping',
+        needHelp: 'Need Help?',
+        contactSupport: 'Contact our customer support',
+    },
+};

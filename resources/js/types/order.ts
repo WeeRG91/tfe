@@ -112,11 +112,13 @@ export type ReorderPayloadType = {
 
 export type OrderTypeType = {
     value: number;
+    key: string;
     label: string;
 };
 
 export type OrderStatusType = {
     value: number;
+    key: string;
     label: string;
 };
 

@@ -1,26 +1,38 @@
 <script setup lang="ts">
 import EmptyNotification from '@/components/client/myNotifications/EmptyNotification.vue';
 import NotificationItem from '@/components/client/myNotifications/NotificationItem.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import { useClickOutside } from '@/composables/useClickOutside';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import notification from '@/routes/notification';
+import { useNotificationStore } from '@/stores/notification';
 import { CursorPaginated } from '@/types';
 import { FilterNotificationEnum, NotificationType } from '@/types/notification';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { CheckCheck, Loader, MoreHorizontal, Trash2 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
-import { useNotificationStore } from '@/stores/notification';
-import ConfirmModal from '@/components/ConfirmModal.vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
+import { locales } from '@/lib/const';
+
+const { t, locale } = useI18n();
 
 const notificationStore = useNotificationStore();
 
-const filterOptions: { label: string; value: FilterNotificationEnum }[] = [
-    { label: 'All', value: FilterNotificationEnum.ALL },
-    { label: 'Read', value: FilterNotificationEnum.READ },
-    { label: 'Unread', value: FilterNotificationEnum.UNREAD },
-];
+const filterOptions = computed<
+    { label: string; value: FilterNotificationEnum }[]
+>(() => [
+    { label: t('notification.filters.all'), value: FilterNotificationEnum.ALL },
+    {
+        label: t('notification.filters.read'),
+        value: FilterNotificationEnum.READ,
+    },
+    {
+        label: t('notification.filters.unread'),
+        value: FilterNotificationEnum.UNREAD,
+    },
+]);
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -53,6 +65,7 @@ const closeConfirmModal = () => {
 
 const groupedNotifications = computed(() => {
     const groups: Record<string, NotificationType[]> = {};
+    const currentLocale = locales[locale.value] ?? 'en-GB';
 
     notifications.value.forEach((notification) => {
         const date = new Date(notification.created_at);
@@ -62,16 +75,16 @@ const groupedNotifications = computed(() => {
 
         let label: string;
         if (date.toDateString() === today.toDateString()) {
-            label = 'Today';
+            label = t('common.dates.today');
         } else if (date.toDateString() === yesterday.toDateString()) {
-            label = 'Yesterday';
+            label = t('common.dates.yesterday');
         } else if (date.getFullYear() === today.getFullYear()) {
-            label = date.toLocaleDateString('en-US', {
+            label = date.toLocaleDateString(currentLocale, {
                 month: 'long',
                 day: 'numeric',
             });
         } else {
-            label = date.toLocaleDateString('en-US', {
+            label = date.toLocaleDateString(currentLocale, {
                 month: 'long',
                 year: 'numeric',
             });
@@ -125,10 +138,10 @@ const deleteNotification = async (id: number) => {
 
         notifications.value = notifications.value.filter((n) => n.id !== id);
 
-        toast.success('Notification deleted successfully.');
+        toast.success(t('notification.success.deleted'));
     } catch (error) {
         console.log(error);
-        toast.error('Failed to delete notification.');
+        toast.error(t('notification.errors.deleteFailed'));
     } finally {
         isConfirmLoading.value = false;
     }
@@ -142,10 +155,10 @@ const deleteAll = async () => {
 
         notifications.value = [];
 
-        toast.success('All notifications deleted successfully.');
+        toast.success(t('notification.success.deletedAll'));
     } catch (error) {
         console.log(error);
-        toast.error('Failed to delete all notifications.');
+        toast.error(t('notification.errors.deleteAllFailed'));
     } finally {
         isConfirmLoading.value = false;
     }
@@ -178,7 +191,7 @@ const loadNotifications = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load notifications.');
+        toast.error(t('notification.errors.loadFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -222,18 +235,18 @@ watch(activeFilter, () => {
 </script>
 
 <template>
-    <Head title="Notifications" />
+    <Head :title="t('notification.pageTitle')" />
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-6">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
-                    [ My Account ]
+                    [ {{ t('notification.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    Notifications
+                    {{ t('notification.title') }}
                 </h1>
                 <p class="mt-1 text-sm text-gray-600">
-                    Stay updated with your order status and exclusive offers
+                    {{ t('notification.description') }}
                 </p>
             </div>
 
@@ -260,7 +273,7 @@ watch(activeFilter, () => {
                     <button
                         @click.stop="toggleDropdown"
                         class="rounded-full p-2 text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600"
-                        aria-label="More options"
+                        :aria-label="t('notification.menu.moreOptions')"
                     >
                         <MoreHorizontal class="h-5 w-5" />
                     </button>
@@ -276,12 +289,14 @@ watch(activeFilter, () => {
                                 class="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
                             >
                                 <CheckCheck class="h-4 w-4" />
-                                <span>Mark all as read</span>
+                                <span>{{
+                                    t('notification.menu.markAllAsRead')
+                                }}</span>
                             </button>
                             <button
                                 @click.stop="
                                     openConfirmModal(
-                                        'Are you sure you want to delete all notifications?',
+                                        t('notification.confirm.deleteAll'),
                                         'destructive',
                                         () => deleteAll(),
                                     )
@@ -289,7 +304,7 @@ watch(activeFilter, () => {
                                 class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                             >
                                 <Trash2 class="h-4 w-4" />
-                                <span>Delete all</span>
+                                <span>{{ t('notification.menu.deleteAll') }}</span>
                             </button>
                         </div>
                     </Transition>

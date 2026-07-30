@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { useClickOutside } from '@/composables/useClickOutside';
 import order from '@/routes/order';
-import { LogIn, NotepadText, User } from 'lucide-vue-next';
+import { LogIn, NotepadText, User, Trophy } from 'lucide-vue-next';
 import { ref } from 'vue';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 import { Link, router } from '@inertiajs/vue3';
 import { login, logout } from '@/routes';
 import clientProfile from '@/routes/client-profile';
 import type { User as UserType } from '@/types/index';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 defineProps<{
     user: UserType | null;
@@ -70,7 +73,7 @@ useClickOutside(menuContainerRef, () => {
             class="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700 hover:shadow-md sm:flex"
         >
             <LogIn class="h-4 w-4" />
-            Sign in
+            {{ t('navigation.userMenu.signIn') }}
         </Link>
 
         <Transition name="dropdown">
@@ -89,28 +92,28 @@ useClickOutside(menuContainerRef, () => {
                     class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
                 >
                     <User class="h-4 w-4" />
-                    My Profile
+                    {{ t('navigation.userMenu.profile') }}
                 </a>
                 <a
                     :href="order.myOrders().url"
                     class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
                 >
                     <NotepadText class="h-4 w-4" />
-                    My Orders
+                    {{ t('navigation.userMenu.orders') }}
                 </a>
                 <a
                     :href="loyaltyPointTransaction.myPoints().url"
                     class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
                 >
-                    <NotepadText class="h-4 w-4" />
-                    My Points
+                    <Trophy class="h-4 w-4" />
+                    {{ t('navigation.userMenu.points') }}
                 </a>
                 <button
                     @click="handleLogout"
                     class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                 >
                     <LogIn class="h-4 w-4" />
-                    Sign Out
+                    {{ t('navigation.userMenu.signOut') }}
                 </button>
             </div>
         </Transition>

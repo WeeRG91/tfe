@@ -1,0 +1,30 @@
+export default {
+    pageTitle: 'Gedrénks',
+    eyebrow: 'Eis Gedrénks',
+    heading: 'Wielt Är Gedrénks',
+    loadError: 'D’Gedrénks konnten net geluede ginn.',
+    categories: {
+        all: 'All',
+        softDrink: 'Softdrink',
+        hotDrink: 'Waarmt Gedrénks',
+        smoothie: 'Smoothie',
+        beer: 'Béier',
+        wine: 'Wäin',
+        cocktail: 'Cocktail',
+        mocktail: 'Cocktail ouni Alkohol',
+    },
+    addDrinkModal: {
+        addFailed: 'Den Artikel konnt net derbäigesat ginn.',
+        specialInstructions: 'Besonnesch Uweisungen (optional)',
+        specialInstructionsPlaceholder: 'z. B. méi Zocker, ouni Zocker...',
+        quantity: 'Quantitéit',
+        total: 'Total',
+        cancel: 'Ofbriechen',
+        addToCart: 'An de Wuerekuerf',
+    },
+    card: {
+        add: 'Dobäisetzen',
+        available: 'Disponibel',
+        unavailable: 'Net disponibel',
+    },
+};

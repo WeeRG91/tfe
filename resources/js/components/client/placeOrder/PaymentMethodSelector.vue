@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { HandCoins } from 'lucide-vue-next';
 import { PaymentMethodEnum, PaymentMethodType } from '@/types/payment';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     modelValue: number | null;
@@ -10,6 +11,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     'update:modelValue': [value: number | null];
 }>();
+
+const { t } = useI18n();
 
 const getPaymentIcon = (method: PaymentMethodEnum) => {
     switch (method) {
@@ -25,11 +28,11 @@ const getPaymentIcon = (method: PaymentMethodEnum) => {
 const getPaymentDescription = (method: PaymentMethodEnum) => {
     switch (method) {
         case PaymentMethodEnum.CASH:
-            return 'Pay after receiving your order or your meal';
+            return t('cart.paymentMethod.descriptions.cash');
         case PaymentMethodEnum.CARD:
-            return 'Pay securely with card';
+            return t('cart.paymentMethod.descriptions.card');
         default:
-            return 'Select payment method';
+            return t('cart.paymentMethod.descriptions.default');
     }
 };
 
@@ -44,7 +47,7 @@ const selectMethod = (value: number) => {
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
             <HandCoins class="h-5 w-5" />
-            Payment Method
+            {{ t('cart.paymentMethod.title') }}
         </h2>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -64,7 +67,7 @@ const selectMethod = (value: number) => {
                 </span>
                 <div class="text-left">
                     <div class="font-medium">
-                        {{ method.label }}
+                        {{ t(`common.paymentMethod.${method.key}`) }}
                     </div>
                     <div class="text-xs text-gray-500">
                         {{ getPaymentDescription(method.value) }}

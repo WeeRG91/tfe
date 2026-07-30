@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import settings from '@/actions/App/Http/Controllers/Settings';
+import ConfirmUserDeleteModal from '@/components/client/profile/ConfirmUserDeleteModal.vue';
 import verification from '@/routes/verification';
 import type { User as UserType } from '@/types/index';
 import { router, useForm } from '@inertiajs/vue3';
 import { Camera, Mail, Save, Trash2, User } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import ConfirmUserDeleteModal from '@/components/client/profile/ConfirmUserDeleteModal.vue';
 
 const props = defineProps<{
     user: UserType;
     mustVerifyEmail?: boolean;
     status?: string;
 }>();
+
+const { t } = useI18n();
 
 const isEditing = ref(false);
 const photoPreview = ref<string | null>(props.user.avatar || null);
@@ -38,7 +41,7 @@ const updateProfile = () => {
 
             console.log(response);
             isEditing.value = false;
-            toast.success('Profile updated successfully!');
+            toast.success(t('profile.infoTab.success.updated'));
         },
         onError: (errors) => {
             console.log(errors);
@@ -61,7 +64,7 @@ const handlePhotoSelect = (event: Event) => {
         const file = input.files[0];
 
         if (file.size > 2 * 1024 * 1024) {
-            toast.error('Photo size must be less than 2MB');
+            toast.error(t('profile.infoTab.photo.tooLarge'));
             input.value = '';
             return;
         }
@@ -73,9 +76,7 @@ const handlePhotoSelect = (event: Event) => {
             'image/webp',
         ];
         if (!validTypes.includes(file.type)) {
-            toast.error(
-                'Please upload a valid image (JPEG, PNG, GIF, or WEBP)',
-            );
+            toast.error(t('profile.infoTab.photo.invalidType'));
             input.value = '';
             return;
         }
@@ -110,12 +111,10 @@ const openDeleteModal = () => {
 const resendVerification = () => {
     verifyForm.post(verification.send().url, {
         onSuccess: () => {
-            toast.success('Verification email sent successfully!');
+            toast.success(t('profile.infoTab.verification.sentSuccess'));
         },
         onError: () => {
-            toast.error(
-                'Unable to send the verification email. Please try again.',
-            );
+            toast.error(t('profile.infoTab.verification.sentFailed'));
         },
     });
 };
@@ -125,33 +124,33 @@ const resendVerification = () => {
     <div class="space-y-6">
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold md:text-2xl">
-                Profile Information
+                {{ t('profile.infoTab.title') }}
             </h2>
             <button
                 v-if="!isEditing"
                 @click="isEditing = true"
                 class="rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100"
             >
-                Edit Profile
+                {{ t('profile.infoTab.editProfile') }}
             </button>
         </div>
 
         <div v-if="mustVerifyEmail && !user.email_verified_at" class="mb-4">
             <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                 <p class="text-sm text-yellow-800">
-                    Your email address is unverified.
+                    {{ t('profile.infoTab.verification.unverified') }}
                     <button
                         @click="resendVerification"
                         class="font-medium text-yellow-900 underline decoration-yellow-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-yellow-700"
                     >
-                        Click here to resend the verification email.
+                        {{ t('profile.infoTab.verification.resend') }}
                     </button>
                 </p>
                 <div
                     v-if="status === 'verification-link-sent'"
                     class="mt-2 text-sm font-medium text-green-600"
                 >
-                    A new verification link has been sent to your email address.
+                    {{ t('profile.infoTab.verification.sent') }}
                 </div>
             </div>
         </div>
@@ -163,7 +162,7 @@ const resendVerification = () => {
                         <label
                             class="mb-1.5 block text-sm font-medium text-gray-700"
                         >
-                            Profile Photo
+                            {{ t('profile.infoTab.photo.label') }}
                         </label>
 
                         <div class="relative mx-auto h-32 w-32 flex-shrink-0">
@@ -173,7 +172,7 @@ const resendVerification = () => {
                                 <img
                                     v-if="photoPreview"
                                     :src="photoPreview"
-                                    alt="Profile photo"
+                                    :alt="t('profile.infoTab.photo.alt')"
                                     class="h-full w-full object-cover"
                                 />
                                 <div
@@ -204,7 +203,7 @@ const resendVerification = () => {
                                 v-if="isEditing"
                                 class="mt-1 text-xs text-gray-500"
                             >
-                                JPG, JPEG, PNG. Max: 2MB
+                                {{ t('profile.infoTab.photo.requirements') }}
                             </p>
                             <p
                                 v-if="updateForm.errors.avatar"
@@ -229,7 +228,7 @@ const resendVerification = () => {
                         <label
                             class="mb-1.5 block text-sm font-medium text-gray-700"
                         >
-                            Full Name
+                            {{ t('profile.infoTab.form.fullName') }}
                         </label>
                         <div class="relative">
                             <div
@@ -246,7 +245,11 @@ const resendVerification = () => {
                                     'border-red-500 ring-2 ring-red-500/20':
                                         updateForm.errors.name,
                                 }"
-                                placeholder="Enter your full name"
+                                :placeholder="
+                                    t(
+                                        'profile.infoTab.form.fullNamePlaceholder',
+                                    )
+                                "
                             />
                         </div>
                         <p
@@ -261,7 +264,7 @@ const resendVerification = () => {
                         <label
                             class="mb-1.5 block text-sm font-medium text-gray-700"
                         >
-                            Email Address
+                            {{ t('profile.infoTab.form.email') }}
                         </label>
                         <div class="relative">
                             <div
@@ -278,7 +281,9 @@ const resendVerification = () => {
                                     'border-red-500 ring-2 ring-red-500/20':
                                         updateForm.errors.email,
                                 }"
-                                placeholder="Enter your email address"
+                                :placeholder="
+                                    t('profile.infoTab.form.emailPlaceholder')
+                                "
                             />
                         </div>
                         <p
@@ -307,8 +312,8 @@ const resendVerification = () => {
                             ></span>
                             {{
                                 updateForm.processing
-                                    ? 'Saving...'
-                                    : 'Save Changes'
+                                    ? t('profile.infoTab.form.saving')
+                                    : t('profile.infoTab.form.save')
                             }}
                         </button>
                         <button
@@ -316,7 +321,7 @@ const resendVerification = () => {
                             @click="cancelEdit"
                             class="rounded-lg border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                         >
-                            Cancel
+                            {{ t('profile.infoTab.form.cancel') }}
                         </button>
                     </div>
                 </div>
@@ -325,18 +330,17 @@ const resendVerification = () => {
 
         <div class="border-t border-gray-200 pt-6">
             <h2 class="text-xl font-semibold text-red-600 md:text-2xl">
-                Delete Account
+                {{ t('profile.infoTab.delete.title') }}
             </h2>
             <p class="mt-2 text-sm text-gray-600">
-                Once your account is deleted, all of its resources and data will
-                be permanently deleted. Please be certain before proceeding.
+                {{ t('profile.infoTab.delete.description') }}
             </p>
             <button
                 @click="openDeleteModal"
                 class="mt-4 flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 hover:text-red-700"
             >
                 <Trash2 class="h-4 w-4" />
-                Delete Account
+                {{ t('profile.infoTab.delete.button') }}
             </button>
         </div>
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { PointsOptions } from '@/composables/useLoyaltyPoints';
 import { Gift, Sparkles } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     loyaltyPoints: number;
@@ -15,6 +16,8 @@ const emit = defineEmits<{
     apply: [points: number];
     remove: [];
 }>();
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -26,26 +29,26 @@ const emit = defineEmits<{
                 <div class="mb-3 flex items-center gap-2">
                     <Sparkles class="h-5 w-5 text-amber-500" />
                     <h2 class="text-lg font-semibold text-amber-800">
-                        Loyalty Rewards
+                        {{ t('cart.loyaltyPoints.title') }}
                     </h2>
                 </div>
 
                 <div class="mb-4">
                     <p class="text-sm text-amber-700">
-                        You have
+                        {{ t('cart.loyaltyPoints.youHave') }}
                         <span class="font-bold text-amber-900">{{
                             props.loyaltyPoints
                         }}</span>
-                        loyalty points
+                        {{ t('cart.loyaltyPoints.points') }}
                     </p>
                     <p class="mt-1 text-xs text-amber-600">
-                        ✨ Earn 5 points per €1 spent on this order
+                        ✨ {{ t('cart.loyaltyPoints.earnRate') }}
                     </p>
                 </div>
 
                 <div class="space-y-2">
                     <p class="text-sm font-medium text-amber-800">
-                        Redeem your points:
+                        {{ t('cart.loyaltyPoints.redeemTitle') }}
                     </p>
                     <div class="flex flex-wrap gap-3">
                         <button
@@ -65,7 +68,10 @@ const emit = defineEmits<{
                             ]"
                             :title="
                                 !canUseOption(option.points)
-                                    ? `Need ${option.points} points, you have ${props.loyaltyPoints}`
+                                    ? t('loyaltyPoints.tooltipNeed', {
+                                          required: option.points,
+                                          current: props.loyaltyPoints,
+                                      })
                                     : ''
                             "
                         >
@@ -74,13 +80,15 @@ const emit = defineEmits<{
                                 v-if="!canUseOption(option.points)"
                                 class="ml-1 text-xs"
                             >
-                                (Need
-                                {{ option.points - props.loyaltyPoints }} more)
+                                {{
+                                    t(
+                                        'cart.loyaltyPoints.needMore',
+                                        option.points - props.loyaltyPoints,
+                                    )
+                                }}
                             </span>
                         </button>
                     </div>
-
-                    <!-- Show message when user has points but not enough for any option -->
                     <div
                         v-if="
                             props.loyaltyPoints > 0 && props.loyaltyPoints < 300
@@ -88,25 +96,30 @@ const emit = defineEmits<{
                         class="mt-2 rounded-md bg-amber-100/50 p-2"
                     >
                         <p class="text-xs text-amber-700">
-                            💡 You need {{ 300 - props.loyaltyPoints }} more
-                            points to unlock your first discount! Complete this
-                            order to earn {{ props.earnedPoints }} points.
+                            💡
+                            {{
+                                t('cart.loyaltyPoints.firstDiscount', {
+                                    count: 300 - props.loyaltyPoints,
+                                    earned: props.earnedPoints,
+                                })
+                            }}
                         </p>
                     </div>
-
-                    <!-- Show info when user has 0 points -->
                     <div
                         v-if="props.loyaltyPoints === 0"
                         class="mt-2 rounded-md bg-amber-100/50 p-2"
                     >
                         <p class="text-xs text-amber-700">
-                            💡 Start earning points with every order! You'll
-                            earn
-                            {{ props.earnedPoints }} points from this order.
+                            💡
+                            {{
+                                t(
+                                    'cart.loyaltyPoints.startEarning',
+                                    props.earnedPoints,
+                                )
+                            }}
                         </p>
                     </div>
 
-                    <!-- Applied discount section -->
                     <div
                         v-if="props.selectedPoints"
                         class="mt-3 flex items-center justify-between rounded-md bg-amber-100 p-3"
@@ -114,14 +127,19 @@ const emit = defineEmits<{
                         <div class="flex items-center gap-2">
                             <Gift class="h-4 w-4 text-amber-600" />
                             <span class="text-sm text-amber-800">
-                                €{{ props.discountAmount }} discount applied
+                                €{{
+                                    t(
+                                        'cart.loyaltyPoints.discountApplied',
+                                        props.discountAmount,
+                                    )
+                                }}
                             </span>
                         </div>
                         <button
                             @click="emit('remove')"
                             class="text-xs text-amber-600 underline hover:text-amber-800"
                         >
-                            Remove
+                            {{ t('cart.loyaltyPoints.remove') }}
                         </button>
                     </div>
                 </div>

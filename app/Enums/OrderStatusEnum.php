@@ -19,6 +19,19 @@ enum OrderStatusEnum: int
         return array_column(self::cases(), 'value');
     }
 
+    public function key(): string
+    {
+        return match ($this) {
+            self::PENDING => 'pending',
+            self::CONFIRMED => 'confirmed',
+            self::PREPARING => 'preparing',
+            self::READY => 'ready',
+            self::DELIVERING => 'delivering',
+            self::COMPLETED => 'completed',
+            self::CANCELLED => 'cancelled',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -49,6 +62,7 @@ enum OrderStatusEnum: int
     {
         return array_map(fn ($case) => [
             'value' => $case->value,
+            'key' => $case->key(),
             'label' => $case->label(),
         ], self::cases());
     }

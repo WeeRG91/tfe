@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import settings from '@/actions/App/Http/Controllers/Settings';
 import { usePasswordStrength } from '@/composables/usePasswordStrength';
 import { useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, Lock, Save } from 'lucide-vue-next';
 import { ref, toRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import settings from '@/actions/App/Http/Controllers/Settings';
+
+const { t } = useI18n();
 
 const showCurrentPassword = ref(false);
 const showNewPassword = ref(false);
@@ -25,7 +28,7 @@ const updatePassword = () => {
         preserveScroll: true,
         onSuccess: () => {
             passwordForm.reset();
-            toast.success('Password updated successfully!');
+            toast.success(t('profile.passwordTab.success.updated'));
         },
         onError: (errors) => {
             if (errors.current_password) {
@@ -42,16 +45,18 @@ const updatePassword = () => {
 <template>
     <div class="space-y-5">
         <div>
-            <h2 class="text-xl font-semibold md:text-2xl">Change Password</h2>
+            <h2 class="text-xl font-semibold md:text-2xl">
+                {{ t('profile.passwordTab.title') }}
+            </h2>
             <p class="mt-1 text-sm text-gray-500">
-                Ensure your account is using a strong password to stay secure
+                {{ t('profile.passwordTab.desciption') }}
             </p>
         </div>
 
         <form @submit.prevent="updatePassword" class="space-y-4">
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700">
-                    Current Password
+                    {{ t('profile.passwordTab.form.currentPassword') }}
                 </label>
                 <div class="relative">
                     <div
@@ -67,7 +72,11 @@ const updatePassword = () => {
                             'border-red-500 ring-2 ring-red-500/20':
                                 passwordForm.errors.current_password,
                         }"
-                        placeholder="Enter your current password"
+                        :placeholder="
+                            t(
+                                'profile.passwordTab.form.currentPasswordPlaceholder',
+                            )
+                        "
                     />
                     <button
                         type="button"
@@ -88,7 +97,7 @@ const updatePassword = () => {
 
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700">
-                    New Password
+                    {{ t('profile.passwordTab.form.newPassword') }}
                 </label>
                 <div class="relative">
                     <div
@@ -104,7 +113,9 @@ const updatePassword = () => {
                             'border-red-500 ring-2 ring-red-500/20':
                                 passwordForm.errors.password,
                         }"
-                        placeholder="Enter your new password"
+                        :placeholder="
+                            t('profile.passwordTab.form.newPasswordPlaceholder')
+                        "
                     />
                     <button
                         type="button"
@@ -143,8 +154,12 @@ const updatePassword = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.length ? '✓' : '○' }} 8+
-                            characters
+                            {{ passwordChecks.length ? '✓' : '○' }}
+                            {{
+                                t(
+                                    'profile.passwordTab.passwordStrength.minLength',
+                                )
+                            }}
                         </span>
                         <span
                             :class="{
@@ -152,7 +167,12 @@ const updatePassword = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.uppercase ? '✓' : '○' }} Uppercase
+                            {{ passwordChecks.uppercase ? '✓' : '○' }}
+                            {{
+                                t(
+                                    'profile.passwordTab.passwordStrength.uppercase',
+                                )
+                            }}
                         </span>
                         <span
                             :class="{
@@ -160,7 +180,12 @@ const updatePassword = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.lowercase ? '✓' : '○' }} Lowercase
+                            {{ passwordChecks.lowercase ? '✓' : '○' }}
+                            {{
+                                t(
+                                    'profile.passwordTab.passwordStrength.lowercase',
+                                )
+                            }}
                         </span>
                         <span
                             :class="{
@@ -168,7 +193,10 @@ const updatePassword = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.number ? '✓' : '○' }} Number
+                            {{ passwordChecks.number ? '✓' : '○' }}
+                            {{
+                                t('profile.passwordTab.passwordStrength.number')
+                            }}
                         </span>
                         <span
                             :class="{
@@ -176,7 +204,12 @@ const updatePassword = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.symbol ? '✓' : '○' }} Symbol
+                            {{ passwordChecks.symbol ? '✓' : '○' }}
+                            {{
+                                t(
+                                    'profile.passwordTab.passwordStrength.symbol',
+                                )
+                            }}
                         </span>
                     </div>
                 </div>
@@ -184,7 +217,7 @@ const updatePassword = () => {
 
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700">
-                    Confirm New Password
+                    {{ t('profile.passwordTab.form.confirmPassword') }}
                 </label>
                 <div class="relative">
                     <div
@@ -200,7 +233,11 @@ const updatePassword = () => {
                             'border-red-500 ring-2 ring-red-500/20':
                                 passwordForm.errors.password_confirmation,
                         }"
-                        placeholder="Confirm your new password"
+                        :placeholder="
+                            t(
+                                'profile.passwordTab.form.confirmPasswordPlaceholder',
+                            )
+                        "
                     />
                     <button
                         type="button"
@@ -230,7 +267,9 @@ const updatePassword = () => {
                     class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"
                 ></span>
                 {{
-                    passwordForm.processing ? 'Updating...' : 'Update Password'
+                    passwordForm.processing
+                        ? t('profile.passwordTab.form.updating')
+                        : t('profile.passwordTab.form.update')
                 }}
             </button>
         </form>

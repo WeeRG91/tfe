@@ -1,10 +1,12 @@
 export type PaymentMethodType = {
     value: number;
+    key: string;
     label: string;
 };
 
 export type PaymentStatusType = {
     value: number;
+    key: string;
     label: string;
 };
 

@@ -12,8 +12,24 @@ use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\RatingController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+
+Route::post('/locale', function (Request $request) {
+    $validated = $request->validate([
+        'locale' => [
+            'required',
+            'string',
+            Rule::in(array_keys(config('locales.supported'))),
+        ],
+    ]);
+
+    $request->session()->put('locale', $validated['locale']);
+
+    return back();
+})->name('locale.update');
 
 Route::get('/', function () {
     return Inertia::render('client/Home');
