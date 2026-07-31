@@ -66,9 +66,11 @@ class MeatController extends Controller
         $this->authorize('create', Meat::class);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $request->validated(),
-                $request->file('images') ?? [],
+                data: $validated,
+                files: $request->file('images', []),
             );
 
             return redirect()
@@ -94,15 +96,22 @@ class MeatController extends Controller
         $this->authorize('create', Meat::class);
 
         try {
+            $validated = $request->validated();
+
             $meat = $command->execute(
-                $request->validated(),
-                $request->file('images') ?? [],
+                data: $validated,
+                files: $request->file('images', []),
+            );
+
+            $translation = $meat->translate(
+                app()->getLocale(),
+                false
             );
 
             return back()->with([
                 'createdMeat' => [
                     'value' => $meat->id,
-                    'label' => $meat->name,
+                    'label' => $translation?->name ?? '',
                 ],
             ]);
         } catch (Throwable $e) {
@@ -142,10 +151,12 @@ class MeatController extends Controller
         $this->authorize('update', $meat);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $meat,
-                $request->validated(),
-                $request->file('images') ?? [],
+                meat: $meat,
+                data: $validated,
+                files: $request->file('images', []),
             );
 
             return redirect()

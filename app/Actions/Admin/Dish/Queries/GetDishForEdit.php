@@ -13,7 +13,12 @@ class GetDishForEdit
      */
     public function execute(Dish $dish): DishEditResource
     {
-        $dish->load(['ingredients', 'images']);
+        $dish->load([
+            'translations',
+            'ingredients',
+            'meats',
+            'images',
+        ]);
 
         return new DishEditResource($dish);
     }

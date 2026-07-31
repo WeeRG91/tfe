@@ -45,7 +45,7 @@ export default {
     },
     dishCategories: {
         appetizer: 'Appetizer',
-        main_course: 'Main course',
+        mainCourse: 'Main course',
         soup: 'Soup',
         noodles: 'Noodles',
         dessert: 'Dessert',

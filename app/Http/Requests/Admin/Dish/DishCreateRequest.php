@@ -25,13 +25,15 @@ class DishCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'name' => ['required', 'string', 'max:255',],
+            'description' => ['nullable', 'string',],
             'category' => ['required', new Enum(DishCategoryEnum::class)],
             'default_spicy_level' => ['required', 'integer', 'between:0,3'],
             'price' => ['required', 'decimal:0,2', 'min:0', 'max:99999.99'],
-            'meats' => ['nullable', 'array', 'exists:meats,id'],
-            'ingredients' => ['required', 'array', 'exists:ingredients,id'],
+            'meats' => ['nullable', 'array'],
+            'meats.*' => ['integer', 'distinct', 'exists:meats,id'],
+            'ingredients' => ['required', 'array', 'min:1'],
+            'ingredients.*' => ['integer', 'distinct', 'exists:ingredients,id'],
             'images' => ['nullable', 'array', 'max:5'],
             'images.*' => [
                 'image',

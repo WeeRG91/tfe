@@ -13,10 +13,8 @@ return new class extends Migration
     {
         Schema::create('drinks', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('description')->nullable();
             $table->decimal('price', 8, 2)->default(0);
-            $table->unsignedInteger('category')->default(0);
+            $table->unsignedTinyInteger('category')->default(0);
             $table->boolean('is_available')->default(true);
             $table->timestamps();
             $table->softDeletes();

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Flame } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     modelValue: number;
@@ -13,36 +14,38 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: number): void;
 }>();
 
-const levels = [
+const { t } = useI18n();
+
+const levels = computed(() => [
     {
         value: 0,
-        label: 'Not spicy',
+        label: t('dish.spicyLevel.noSpicy'),
         bg: 'bg-green-400',
         text: 'text-green-500',
         border: 'border-green-500',
     },
     {
         value: 1,
-        label: 'Mild',
+        label: t('dish.spicyLevel.mild'),
         bg: 'bg-yellow-400',
         text: 'text-yellow-500',
         border: 'border-yellow-500',
     },
     {
         value: 2,
-        label: 'Spicy',
+        label: t('dish.spicyLevel.spicy'),
         bg: 'bg-orange-400',
         text: 'text-orange-500',
         border: 'border-orange-500',
     },
     {
         value: 3,
-        label: 'Hot',
+        label: t('dish.spicyLevel.hot'),
         bg: 'bg-red-400',
         text: 'text-red-500',
         border: 'border-red-500',
     },
-];
+]);
 
 const selectedLevel = computed({
     get: () => props.modelValue,
@@ -71,25 +74,8 @@ const selectedLevel = computed({
                     disabled && 'cursor-not-allowed opacity-60',
                 ]"
             >
-                <div class="flex items-center gap-1">
-                    <Flame
-                        v-for="i in level.value"
-                        :key="i"
-                        class="h-3.5 w-3.5 transition-colors duration-200 sm:h-4 sm:w-4"
-                        :class="[
-                            selectedLevel === level.value
-                                ? 'text-white'
-                                : level.text,
-                        ]"
-                        :fill="
-                            selectedLevel === level.value
-                                ? 'white'
-                                : 'currentColor'
-                        "
-                    />
-                </div>
                 <span
-                    class="text-[11px] font-medium sm:text-xs"
+                    class="text-xs font-medium"
                     :class="
                         selectedLevel === level.value
                             ? 'text-white'

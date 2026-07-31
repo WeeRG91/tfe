@@ -6,7 +6,7 @@ export default {
     categories: {
         all: 'ทั้งหมด',
         appetizer: 'อาหารเรียกน้ำย่อย',
-        main_course: 'อาหารจานหลัก',
+        mainCourse: 'อาหารจานหลัก',
         soup: 'เมนูแกงและต้ม',
         noodles: 'เมนูเส้น',
         dessert: 'ของหวาน',

@@ -13,7 +13,11 @@ class GetIngredientForEdit
      */
     public function execute(Ingredient $ingredient): IngredientEditResource
     {
-        $ingredient->load('allergen', 'images');
+        $ingredient->load([
+            'translations',
+            'allergen',
+            'images',
+        ]);
 
         return new IngredientEditResource($ingredient);
     }

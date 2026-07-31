@@ -71,9 +71,11 @@ class AllergenController extends Controller
         $this->authorize('create', Allergen::class);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $request->validated(),
-                $request->file('images') ?? []
+                data: $validated,
+                files: $request->file('images', []),
             );
 
             return redirect()
@@ -121,10 +123,12 @@ class AllergenController extends Controller
         $this->authorize('update', $allergen);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $allergen,
-                $request->validated(),
-                $request->file('images') ?? []
+                allergen: $allergen,
+                data:$validated,
+                files: $request->file('images', []),
             );
 
             return redirect()

@@ -13,7 +13,10 @@ class GetDrinkForEdit
      */
     public function execute(Drink $drink): DrinkEditResource
     {
-        $drink->load('images');
+        $drink->load([
+            'translations',
+            'images',
+        ]);
 
         return new DrinkEditResource($drink);
     }

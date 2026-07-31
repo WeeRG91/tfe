@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\Dish;
 
+use App\Models\Dish;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -17,11 +18,21 @@ class DishEditResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /** @var Dish $dish */
+        $dish = $this->resource;
+
+        $locale = app()->getLocale();
+
+        $translation = $dish->translate(
+            $locale,
+            false
+        );
+
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => $translation?->name ?? '',
+            'description' => $translation?->description ?? '',
             'category' => $this->category,
-            'description' => $this->description,
             'price' => $this->price,
             'default_spicy_level' => $this->default_spicy_level,
             'meats' =>$this->meats->map(fn ($meat) => [

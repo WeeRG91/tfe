@@ -45,7 +45,7 @@ export default {
     },
     dishCategories: {
         appetizer: 'Entrée',
-        main_course: 'Haaptplat',
+        mainCourse: 'Haaptplat',
         soup: 'Zopp',
         noodles: 'Nuddelen',
         dessert: 'Dessert',

@@ -67,16 +67,21 @@ class DishController extends Controller
      * @param CreateDish $command
      * @return RedirectResponse
      */
-    public function store(DishCreateRequest $request, CreateDish $command): RedirectResponse
+    public function store(
+        DishCreateRequest $request,
+        CreateDish $command
+    ): RedirectResponse
     {
         $this->authorize('create', Dish::class);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $request->validated(),
-                $request->file('images') ?? [],
-                $request->meats ?? [],
-                $request->ingredients ?? []
+                data: $validated,
+                files: $request->file('images', []),
+                meatIds: $validated['meats'] ?? [],
+                ingredientIds: $validated['ingredients'] ?? [],
             );
 
             return redirect()
@@ -116,12 +121,14 @@ class DishController extends Controller
         $this->authorize('update', $dish);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $dish,
-                $request->validated(),
-                $request->file('images') ?? [],
-                $request->meats,
-                $request->ingredients
+                dish: $dish,
+                data: $validated,
+                files: $request->file('images', []),
+                meatIds: $validated['meats'] ?? [],
+                ingredientIds: $validated['ingredients'] ?? [],
             );
 
             return redirect()

@@ -52,90 +52,93 @@ import {
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
+import { useI18n } from 'vue-i18n';
 
 const page = usePage();
 const currentUser = computed(() => page.props.auth?.user);
 
 const { can } = usePermission();
 
-const mainNavItems: NavItem[] = [
+const { t } = useI18n();
+
+const mainNavItems = computed<NavItem[]>(() => [
     {
-        title: 'Dashboard',
+        title: t('layout.navigation.dashboard'),
         href: dashboard(),
         icon: LayoutGrid,
         permission: AdminPermissionEnum.DASHBOARD_VIEW,
     },
     {
-        title: 'Users',
+        title: t('layout.navigation.users'),
         href: user.index().url,
         icon: UserRoundPlus,
         permission: UserPermissionEnum.USER_VIEW,
     },
     {
-        title: 'Roles & Permissions',
+        title: t('layout.navigation.rolesPermissions'),
         href: role.index().url,
         icon: UserRoundPen,
         permission: RolePermissionEnum.ROLE_VIEW,
     },
     {
-        title: 'Dishes',
+        title: t('layout.navigation.dishes'),
         href: dish.index(),
         icon: Salad,
         permission: DishPermissionEnum.DISH_VIEW,
     },
     {
-        title: 'Drinks',
+        title: t('layout.navigation.drinks'),
         href: drink.index(),
         icon: Wine,
         permission: DrinkPermissionEnum.DRINK_VIEW,
     },
     {
-        title: 'Ingredients',
+        title: t('layout.navigation.ingredients'),
         href: ingredient.index(),
         icon: Carrot,
         permission: IngredientPermissionEnum.INGREDIENT_VIEW,
     },
     {
-        title: 'Meats',
+        title: t('layout.navigation.meats'),
         href: meat.index(),
         icon: Beef,
         permission: MeatPermissionEnum.MEAT_VIEW,
     },
     {
-        title: 'Allergens',
+        title: t('layout.navigation.allergens'),
         href: allergen.index(),
         icon: BeanOff,
         permission: AllergenPermissionEnum.ALLERGEN_VIEW,
     },
     {
-        title: 'Orders',
+        title: t('layout.navigation.orders'),
         href: confirmedOrder.index(),
         icon: SquareMenu,
         permission: OrderPermissionEnum.ORDER_VIEW,
     },
     {
-        title: 'Messages',
+        title: t('layout.navigation.messages'),
         href: chat.chats().url,
         icon: MessageCircle,
         permission: ChatPermissionEnum.CHAT_VIEW,
     },
-];
+]);
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'My restaurant',
+        title: t('layout.navigation.myRestaurant'),
         href: 'http://127.0.0.1:8000',
         icon: BookOpen,
     },
     {
-        title: 'Documentation',
+        title: t('layout.navigation.documentation'),
         href: 'https://laravel.com/docs/starter-kits#vue',
         icon: Folder,
     },
 ];
 
 const visibleMainNavItems = computed(() =>
-    mainNavItems.filter((item) => !item.permission || can(item.permission)),
+    mainNavItems.value.filter((item) => !item.permission || can(item.permission)),
 );
 </script>
 

@@ -25,7 +25,7 @@ class MeatCreateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'extra_price' => ['required', 'numeric'],
+            'extra_price' => ['required', 'decimal:0,2', 'min:0', 'max:999999.99'],
             'images' => ['nullable', 'array', 'max:5'],
             'images.*' => [
                 'image',

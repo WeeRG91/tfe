@@ -26,7 +26,7 @@ class AllergenUpdateRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'ingredients' => ['nullable', 'array'],
-            'ingredients.*' => ['exists:ingredients,id'],
+            'ingredients.*' => ['integer', 'distinct', 'exists:ingredients,id'],
             'images' => ['nullable', 'array', 'max:5'],
             'images.*' => [
                 'image',

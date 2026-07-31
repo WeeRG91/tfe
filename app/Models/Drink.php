@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DrinkCategoryEnum;
+use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -10,7 +11,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Drink extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Translatable;
+
+    public array $translatedAttributes = [
+        'name',
+        'description',
+    ];
+
+    public bool $useTranslationFallback = true;
 
     protected $guarded = ['id'];
 

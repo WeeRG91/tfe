@@ -28,7 +28,8 @@ export type IngredientOptionType = {
 export type IngredientErrorType = {
     name: string;
     description: string;
-    allergen: string;
+    allergen_id: string;
+    images: string;
 };
 
 export type ShowIngredientType = {

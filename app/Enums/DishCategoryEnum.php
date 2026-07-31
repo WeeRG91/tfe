@@ -17,7 +17,7 @@ enum DishCategoryEnum: int
     {
         return match ($this) {
             self::APPETIZER => 'appetizer',
-            self::MAIN_COURSE => 'main_course',
+            self::MAIN_COURSE => 'mainCourse',
             self::SOUP => 'soup',
             self::NOODLES => 'noodles',
             self::DESSERT => 'dessert',

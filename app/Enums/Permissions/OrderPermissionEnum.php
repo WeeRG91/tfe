@@ -13,6 +13,7 @@ enum OrderPermissionEnum: string
         return match ($this) {
             self::ORDER_VIEW => 'View orders',
             self::ORDER_UPDATE => 'Update orders',
+            self::ORDER_CANCEL => 'Cancel orders',
         };
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\Allergen;
 
+use App\Models\Allergen;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -17,10 +18,20 @@ class AllergenEditResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /** @var Allergen $allergen */
+        $allergen = $this->resource;
+
+        $locale = app()->getLocale();
+
+        $translation = $allergen->translate(
+                $locale,
+                false
+            );
+
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
+            'name' => $translation?->name ?? '',
+            'description' => $translation?->description ?? '',
             'ingredients' => $this->ingredients->map(fn ($ingredient) => [
                 'id' => $ingredient->id,
             ]),

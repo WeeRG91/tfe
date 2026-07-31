@@ -1,11 +1,22 @@
 import { CategoryOptionType } from '@/types/category';
 import { ShowIngredientType } from '@/types/ingredient';
+import { LocaleType } from '@/types/locale';
+
+export type DishTranslationForm = {
+    name: string;
+    description: string;
+}
+
+export type DishTranslations = Record<
+    LocaleType,
+    DishTranslationForm
+>
 
 export type DishType = {
     id: number;
     name: string;
     main_image: string;
-    description: string | null;
+    description: string;
     price: number;
     default_spicy_level: number;
     category: CategoryOptionType;
@@ -18,8 +29,8 @@ export type DishType = {
 export type EditDishType = {
     id: number;
     name: string;
-    category: number;
     description: string;
+    category: number;
     price: number;
     default_spicy_level: number;
     meats: { id: number }[];

@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('allergens', function (Blueprint $table) {
-            $table->index('name');
             $table->index('updated_at');
             $table->index('deleted_at');
         });
@@ -24,7 +23,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('allergens', function (Blueprint $table) {
-            $table->dropIndex('name');
             $table->dropIndex('updated_at');
             $table->dropIndex('deleted_at');
         });

@@ -13,7 +13,10 @@ class GetMeatForEdit
      */
     public function execute(Meat $meat): MeatEditResource
     {
-        $meat->load('images');
+        $meat->load([
+            'translations',
+            'images',
+        ]);
 
         return new MeatEditResource($meat);
     }

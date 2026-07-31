@@ -67,6 +67,7 @@ class PermissionEnumResolver
 
             OrderPermissionEnum::ORDER_VIEW->value => OrderPermissionEnum::ORDER_VIEW->label(),
             OrderPermissionEnum::ORDER_UPDATE->value => OrderPermissionEnum::ORDER_UPDATE->label(),
+            OrderPermissionEnum::ORDER_CANCEL->value => OrderPermissionEnum::ORDER_CANCEL->label(),
 
             RolePermissionEnum::ROLE_VIEW->value => RolePermissionEnum::ROLE_VIEW->label(),
             RolePermissionEnum::ROLE_CREATE->value => RolePermissionEnum::ROLE_CREATE->label(),

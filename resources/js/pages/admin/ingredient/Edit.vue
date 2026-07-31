@@ -109,7 +109,7 @@ const submit = () => {
                             v-model="selectedAllergen"
                             :options="props.allergens"
                             label="Allergen"
-                            :error="props.errors.allergen"
+                            :error="props.errors.allergen_id"
                         />
                     </div>
                     <div

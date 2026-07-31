@@ -4,6 +4,7 @@ namespace App\Actions\Admin\Ingredient\Commands;
 
 use App\Models\Ingredient;
 use App\Services\ImageService;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -19,12 +20,35 @@ readonly class CreateIngredient
      * @return Ingredient
      * @throws Throwable
      */
-    public function execute(array $data, array $files = []): Ingredient
+    public function execute(
+        array $data,
+        array $files = []
+    ): Ingredient
     {
-        return DB::transaction(function () use ($data, $files) {
-            $ingredient = Ingredient::create($data);
+        return DB::transaction(function () use (
+            $data,
+            $files
+        ) {
+            $locale = app()->getLocale();
 
-            if (!empty($files)) {
+            $ingredientAttributes = Arr::only($data,
+                [
+                    'allergen_id',
+                ]
+            );
+
+            $ingredient = Ingredient::query()->create($ingredientAttributes);
+
+            $translation = $ingredient->translateOrNew($locale);
+
+            $translation->fill([
+                'name' => $data['name'],
+                'description' => $data['description'] ?? null,
+            ]);
+
+            $ingredient->save();
+
+            if ($files !== []) {
                 $this->imageService->upload($ingredient, $files);
 
                 $ingredient->update([
@@ -32,7 +56,7 @@ readonly class CreateIngredient
                 ]);
             }
 
-            return $ingredient;
+            return $ingredient->refresh();
         });
     }
 }

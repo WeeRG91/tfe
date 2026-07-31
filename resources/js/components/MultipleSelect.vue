@@ -121,7 +121,7 @@ onBeforeUnmount(() => {
                         v-if="selectedValues.length === 0"
                         :class="props.error ? 'text-red-500' : 'text-gray-400'"
                     >
-                        Select {{ label }}...
+                        {{ label }}...
                     </span>
                 </div>
             </button>

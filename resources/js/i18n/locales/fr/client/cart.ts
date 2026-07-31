@@ -46,7 +46,7 @@ export default {
     },
     dishCategories: {
         appetizer: 'Entrée',
-        main_course: 'Plat principal',
+        mainCourse: 'Plat principal',
         soup: 'Soupe',
         noodles: 'Nouilles',
         dessert: 'Dessert',

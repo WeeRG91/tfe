@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DishCategoryEnum;
+use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +13,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Dish extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Translatable;
+
+    public array $translatedAttributes = [
+        'name',
+        'description',
+    ];
+
+    public bool $useTranslationFallback = true;
 
     protected $guarded = ['id'];
 
@@ -20,7 +28,7 @@ class Dish extends Model
     {
         return [
             'category' => DishCategoryEnum::class,
-            'default_spicy_lavel' =>'integer',
+            'default_spicy_level' =>'integer',
         ];
     }
 

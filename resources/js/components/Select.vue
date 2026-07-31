@@ -92,7 +92,7 @@ onBeforeUnmount(() => {
                 <span
                     v-else
                     :class="props.error ? 'text-red-500' : 'text-gray-400'"
-                    >Select {{ label }}...</span
+                    >{{ label }}...</span
                 >
             </button>
             <label
@@ -123,7 +123,6 @@ onBeforeUnmount(() => {
             </div>
         </div>
 
-        <!-- Dropdown Menu -->
         <div
             v-if="isDropdownOpen"
             class="minimal-scrollbar absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-[#0a0a0a]"

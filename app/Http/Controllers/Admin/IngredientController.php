@@ -79,9 +79,11 @@ class IngredientController extends Controller
         $this->authorize('create', Ingredient::class);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $request->validated(),
-                $request->file('images') ?? []
+                data: $validated,
+                files: $request->file('images', []),
             );
 
             return redirect()
@@ -107,15 +109,22 @@ class IngredientController extends Controller
         $this->authorize('create', Ingredient::class);
 
         try {
+            $validated = $request->validated();
+
             $ingredient = $command->execute(
-                $request->validated(),
-                $request->file('images') ?? []
+                data: $validated,
+                files: $request->file('images', []),
+            );
+
+            $translation = $ingredient->translate(
+                app()->getLocale(),
+                false
             );
 
             return back()->with([
                 'createdIngredient' => [
                     'value' => $ingredient->id,
-                    'label' => $ingredient->name,
+                    'label' => $translation?->name ?? '',
                 ],
             ]);
         } catch (Throwable $e) {
@@ -161,10 +170,12 @@ class IngredientController extends Controller
         $this->authorize('update', $ingredient);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $ingredient,
-                $request->validated(),
-                $request->file('images') ?? []
+                ingredient: $ingredient,
+                data: $validated,
+                files: $request->file('images', []),
             );
 
             return redirect()

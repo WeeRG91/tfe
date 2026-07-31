@@ -6,7 +6,7 @@ export default {
     categories: {
         all: 'Tous',
         appetizer: 'Entrée',
-        main_course: 'Plat principal',
+        mainCourse: 'Plat principal',
         soup: 'Soupe',
         noodles: 'Nouilles',
         dessert: 'Dessert',

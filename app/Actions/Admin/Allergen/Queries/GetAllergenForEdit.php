@@ -13,7 +13,11 @@ class GetAllergenForEdit
      */
     public function execute(Allergen $allergen): AllergenEditResource
     {
-        $allergen->load(['ingredients', 'images']);
+        $allergen->load([
+            'translations',
+            'ingredients',
+            'images',
+        ]);
 
         return new AllergenEditResource($allergen);
     }

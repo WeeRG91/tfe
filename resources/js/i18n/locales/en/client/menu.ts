@@ -6,7 +6,7 @@ export default {
     categories: {
         all: 'All',
         appetizer: 'Appetizer',
-        main_course: 'Main course',
+        mainCourse: 'Main course',
         soup: 'Soup',
         noodles: 'Noodles',
         dessert: 'Dessert',

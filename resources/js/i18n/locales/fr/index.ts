@@ -1,3 +1,6 @@
+import dish from '@/i18n/locales/fr/admin/dish';
+import layout from '@/i18n/locales/fr/admin/layout';
+
 import cart from '@/i18n/locales/fr/client/cart';
 import common from '@/i18n/locales/fr/client/common';
 import drinks from '@/i18n/locales/fr/client/drinks';
@@ -11,6 +14,9 @@ import profile from '@/i18n/locales/fr/client/profile';
 import search from '@/i18n/locales/fr/client/search';
 
 export default {
+    dish,
+    layout,
+
     cart,
     common,
     drinks,

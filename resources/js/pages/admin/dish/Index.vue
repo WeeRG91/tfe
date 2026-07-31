@@ -41,14 +41,17 @@ import {
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { DishPermissionEnum } from '@/types/permission';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
 }>();
 
+const { t } = useI18n();
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dishes',
+        title: t('dish.title'),
         href: dish.index().url,
     },
 ];
@@ -63,7 +66,6 @@ const dishes = ref<DishType[]>([]);
 const nextCursor = ref<string>('');
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
-const scrollContainer = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 const filter = ref<FilterType>('all');
 const category = ref<number | null>(null);
@@ -86,7 +88,7 @@ const toggleAvailability = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to update dish availability');
+            toast.error(t('dish.errors.availabilityFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -105,7 +107,7 @@ const moveToBin = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to move dish to bin');
+            toast.error(t('dish.errors.binFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -124,7 +126,7 @@ const restoreDish = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to restore dish');
+            toast.error(t('dish.errors.restoreFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -143,7 +145,7 @@ const deleteDish = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to delete dish');
+            toast.error(t('dish.errors.deleteFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -197,7 +199,7 @@ const loadDishes = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more dishes.');
+        toast.error(t('dish.errors.loadFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -223,7 +225,7 @@ const changeFilter = (value: FilterType) => {
 
 const getCategoryLabel = (category: number) => {
     const filteredCategory = props.categories.find((c) => c.value === category);
-    return filteredCategory ? filteredCategory.label : null;
+    return filteredCategory ? t(`dish.categories.${filteredCategory.key}`) : null;
 };
 
 const resetAllFilters = () => {
@@ -271,7 +273,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Head title="Dishes" />
+    <Head :title="t('dish.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -300,7 +302,7 @@ onBeforeUnmount(() => {
                                     'hover:bg-gray-100 dark:hover:bg-gray-800'
                                 "
                             >
-                                All
+                                {{ t('dish.filters.all') }}
                             </Button>
 
                             <Button
@@ -318,7 +320,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                Available
+                                {{ t('dish.filters.available') }}
                             </Button>
 
                             <Button
@@ -336,7 +338,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                Unavailable
+                                {{ t('dish.filters.unavailable') }}
                             </Button>
 
                             <Button
@@ -352,7 +354,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                Deleted
+                                {{ t('dish.filters.deleted') }}
                             </Button>
                         </div>
 
@@ -366,7 +368,9 @@ onBeforeUnmount(() => {
                                 <input
                                     v-model="search"
                                     type="text"
-                                    placeholder="Search dishes..."
+                                    :placeholder="
+                                        t('dish.filters.searchPlaceholder')
+                                    "
                                     class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
                                     @keyup.enter="applyFilters"
                                 />
@@ -394,14 +398,18 @@ onBeforeUnmount(() => {
                                         class="h-8 w-full appearance-none rounded-md border border-gray-200 bg-white px-3 pr-8 text-sm text-gray-700 shadow-sm transition-all hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-600"
                                     >
                                         <option :value="null">
-                                            All categories
+                                            {{
+                                                t('dish.filters.allCategories')
+                                            }}
                                         </option>
                                         <option
                                             v-for="cat in props.categories"
                                             :key="cat.value"
                                             :value="cat.value"
                                         >
-                                            {{ cat.label }}
+                                            {{
+                                                t(`dish.categories.${cat.key}`)
+                                            }}
                                         </option>
                                     </select>
                                     <ChevronDownIcon
@@ -425,7 +433,7 @@ onBeforeUnmount(() => {
                                             <Plus
                                                 class="mr-2 h-5 w-5 transition-transform group-hover:scale-110"
                                             />
-                                            Add
+                                            {{ t('dish.buttons.add') }}
                                         </Button>
                                     </a>
                                 </div>
@@ -446,7 +454,7 @@ onBeforeUnmount(() => {
                                 <Plus
                                     class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                                 />
-                                Add
+                                {{ t('dish.buttons.add') }}
                             </Button>
                         </a>
                     </div>
@@ -458,13 +466,13 @@ onBeforeUnmount(() => {
                 >
                     <span
                         class="hidden text-gray-500 sm:inline-block dark:text-gray-400"
-                        >Active filters:</span
+                        >{{ t('dish.filters.activeFilters') }}:</span
                     >
                     <span
                         v-if="filter !== 'all'"
                         class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                     >
-                        {{ filter }}
+                        {{ t(`dish.filters.${filter}`) }}
                         <button
                             @click="changeFilter('all')"
                             class="ml-1 cursor-pointer hover:text-blue-600"
@@ -506,30 +514,36 @@ onBeforeUnmount(() => {
                         @click="resetAllFilters"
                         class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
-                        Clear all
+                        {{ t('dish.filters.clearAll') }}
                     </button>
                 </div>
 
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead class="text-nowrap">Name</TableHead>
-                            <TableHead class="text-nowrap">Category</TableHead>
-                            <TableHead class="hidden text-nowrap md:table-cell"
-                                >price</TableHead
-                            >
-                            <TableHead>Availability</TableHead>
-                            <TableHead class="hidden text-nowrap md:table-cell"
-                                >Created at</TableHead
-                            >
+                            <TableHead class="text-nowrap">
+                                {{ t('dish.table.name') }}
+                            </TableHead>
+                            <TableHead class="text-nowrap">
+                                {{ t('dish.table.category') }}
+                            </TableHead>
+                            <TableHead class="hidden text-nowrap md:table-cell">
+                                {{ t('dish.table.price') }}
+                            </TableHead>
+                            <TableHead>{{
+                                t('dish.table.availability')
+                            }}</TableHead>
+                            <TableHead class="hidden text-nowrap md:table-cell">
+                                {{ t('dish.table.createdAt') }}
+                            </TableHead>
                             <TableHead
                                 v-if="filter !== 'deleted'"
                                 class="text-nowrap"
-                                >Updated at</TableHead
+                                >{{ t('dish.table.updatedAt') }}</TableHead
                             >
-                            <TableHead v-else class="text-nowrap"
-                                >Deleted at</TableHead
-                            >
+                            <TableHead v-else class="text-nowrap">{{
+                                t('dish.table.deletedAt')
+                            }}</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -562,12 +576,20 @@ onBeforeUnmount(() => {
                             >
                             <TableCell>
                                 <Badge
-                                    v-if="dishData.is_available === 'Available'"
+                                    v-if="dishData.is_available === 'available'"
                                     class="bg-green-500 text-white"
-                                    >{{ dishData.is_available }}</Badge
+                                    >{{
+                                        t(
+                                            `dish.status.${dishData.is_available}`,
+                                        )
+                                    }}</Badge
                                 >
                                 <Badge v-else class="bg-red-500 text-white">
-                                    {{ dishData.is_available }}
+                                    {{
+                                        t(
+                                            `dish.status.${dishData.is_available}`,
+                                        )
+                                    }}
                                 </Badge>
                             </TableCell>
                             <TableCell class="hidden md:table-cell"
@@ -588,7 +610,9 @@ onBeforeUnmount(() => {
                             <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger
-                                        v-if="can(DishPermissionEnum.DISH_UPDATE)"
+                                        v-if="
+                                            can(DishPermissionEnum.DISH_UPDATE)
+                                        "
                                     >
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
@@ -596,10 +620,16 @@ onBeforeUnmount(() => {
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
-                                            v-if="can(DishPermissionEnum.DISH_RESTORE)"
+                                            v-if="
+                                                can(
+                                                    DishPermissionEnum.DISH_RESTORE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    `Are you sure you want to restore this dish?`,
+                                                    t(
+                                                        'dish.messages.confirmRestore',
+                                                    ),
                                                     'info',
                                                     () =>
                                                         restoreDish(
@@ -608,22 +638,28 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <RotateCcwIcon /> Restore
+                                            <RotateCcwIcon />
+                                            {{ t('dish.buttons.restore') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
-                                                can(DishPermissionEnum.DISH_DELETE)
+                                                can(
+                                                    DishPermissionEnum.DISH_DELETE,
+                                                )
                                             "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this dish?',
+                                                    t(
+                                                        'dish.messages.confirmDelete',
+                                                    ),
                                                     'destructive',
                                                     () =>
                                                         deleteDish(dishData.id),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon />
+                                            {{ t('dish.buttons.delete') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                     <DropdownMenuContent v-else>
@@ -634,23 +670,29 @@ onBeforeUnmount(() => {
                                                 "
                                                 class="flex gap-2"
                                             >
-                                                <SquarePenIcon /> Edit
+                                                <SquarePenIcon />
+                                                {{ t('dish.buttons.edit') }}
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
-                                                can(DishPermissionEnum.DISH_DELETE)
+                                                can(
+                                                    DishPermissionEnum.DISH_DELETE,
+                                                )
                                             "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to move this dish to bin?',
+                                                    t(
+                                                        'dish.messages.confirmBin',
+                                                    ),
                                                     'destructive',
                                                     () =>
                                                         moveToBin(dishData.id),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Move to bin
+                                            <TrashIcon />
+                                            {{ t('dish.buttons.moveToBin') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
@@ -659,7 +701,9 @@ onBeforeUnmount(() => {
                                             "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to mark this dish as unavailable?',
+                                                    t(
+                                                        'dish.messages.confirmAvailable',
+                                                    ),
                                                     'info',
                                                     () =>
                                                         toggleAvailability(
@@ -668,13 +712,16 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <CircleXIcon /> Unavailable
+                                            <CircleXIcon />
+                                            {{ t('dish.status.available') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-else
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to mark this dish as available?',
+                                                    t(
+                                                        'dish.messages.confirmUnavailable',
+                                                    ),
                                                     'info',
                                                     () =>
                                                         toggleAvailability(
@@ -683,7 +730,8 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <CircleCheckBigIcon /> Available
+                                            <CircleCheckBigIcon />
+                                            {{ t('dish.status.unavailable') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -716,7 +764,7 @@ onBeforeUnmount(() => {
                     v-if="dishes.length === 0 && !isLoading"
                     class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
                 >
-                    No dish yet
+                    {{ t('dish.messages.noDish') }}
                 </div>
 
                 <ConfirmModal

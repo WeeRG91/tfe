@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('meats', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
             $table->decimal('extra_price', 8, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();

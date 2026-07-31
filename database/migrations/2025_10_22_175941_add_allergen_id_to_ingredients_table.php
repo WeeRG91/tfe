@@ -11,7 +11,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('ingredients', function (Blueprint $table) {
-            $table->foreignId('allergen_id')->after('description')->nullable()->constrained('allergens')->nullOnDelete();
+            $table->foreignId('allergen_id')
+                ->nullable()
+                ->constrained('allergens')
+                ->nullOnDelete();
         });
     }
 

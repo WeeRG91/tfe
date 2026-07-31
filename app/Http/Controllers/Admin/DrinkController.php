@@ -72,9 +72,11 @@ class DrinkController extends Controller
         $this->authorize('create', Drink::class);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $request->validated(),
-                $request->file('images') ?? []
+                data: $validated,
+                files: $request->file('images', []),
             );
 
             return redirect()
@@ -119,10 +121,12 @@ class DrinkController extends Controller
         $this->authorize('update', $drink);
 
         try {
+            $validated = $request->validated();
+
             $command->execute(
-                $drink,
-                $request->validated(),
-                $request->file('images') ?? []
+                drink: $drink,
+                data: $validated,
+                files: $request->file('images', []),
             );
 
             return redirect()

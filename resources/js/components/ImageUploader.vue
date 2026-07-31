@@ -198,7 +198,6 @@ watch(
         </div>
 
         <div v-else class="grid w-full grid-cols-2 gap-3 md:grid-cols-3">
-            <!--existing images-->
             <div
                 v-for="(url, index) in existingImagesPreviewUrls"
                 :key="index"
@@ -232,7 +231,6 @@ watch(
                     />
                 </button>
             </div>
-            <!--new uploaded images-->
             <div
                 v-for="(url, index) in previewUrls"
                 :key="index"

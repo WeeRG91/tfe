@@ -25,7 +25,7 @@ class DishResource extends JsonResource
             'description' => $this->description,
             'price' => $this->price,
             'default_spicy_level' => $this->default_spicy_level,
-            'is_available' => $this->is_available ? 'Available' : 'Unavailable',
+            'is_available' => $this->is_available ? 'available' : 'unavailable',
             'category' => DishCategoryEnum::getCategory($this->category),
             'created_at' => $this->created_at?->toDateString(),
             'updated_at' => $this->updated_at?->toDateString(),

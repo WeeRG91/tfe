@@ -6,7 +6,7 @@ export default {
     categories: {
         all: 'All',
         appetizer: 'Entrée',
-        main_course: 'Haaptplat',
+        mainCourse: 'Haaptplat',
         soup: 'Zopp',
         noodles: 'Nuddelen',
         dessert: 'Dessert',

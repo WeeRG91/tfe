@@ -20,12 +20,28 @@ readonly class CreateAllergen
      * @return Allergen
      * @throws Throwable
      */
-    public function execute(array $data, array $files): Allergen
+    public function execute(
+        array $data,
+        array $files
+    ): Allergen
     {
-        return DB::transaction(function () use ($data, $files) {
-            $allergen = Allergen::create($data);
+        return DB::transaction(function () use (
+            $data, $files
+        ) {
+            $locale = app()->getLocale();
 
-            if (!empty($files)) {
+            $allergen = Allergen::query()->create();
+
+            $translation = $allergen->translateOrNew($locale);
+
+            $translation->fill([
+                'name' => $data['name'],
+                'description' => $data['description'] ?? null,
+            ]);
+
+            $allergen->save();
+
+            if ($files !== []) {
                 $this->imageService->upload($allergen, $files);
 
                 $allergen->update([
@@ -33,12 +49,17 @@ readonly class CreateAllergen
                 ]);
             }
 
-            if (!empty($data['ingredients'])) {
-                Ingredient::whereIn('id', $data['ingredients'])
-                    ->update(['allergen_id' => $allergen->id]);
+            $ingredientIds = $data['ingredients'] ?? [];
+
+            if ($ingredientIds !== []) {
+                Ingredient::query()
+                    ->whereIn('id', $ingredientIds)
+                    ->update([
+                        'allergen_id' => $allergen->id,
+                    ]);
             }
 
-            return $allergen;
+            return $allergen->refresh();
         });
     }
 }

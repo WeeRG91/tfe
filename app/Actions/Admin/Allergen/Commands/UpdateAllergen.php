@@ -21,12 +21,29 @@ readonly class UpdateAllergen
      * @return Allergen
      * @throws Throwable
      */
-    public function execute(Allergen $allergen, array $data, array $files = []): Allergen
+    public function execute(
+        Allergen $allergen,
+        array $data,
+        array $files = []
+    ): Allergen
     {
-        return DB::transaction(function () use ($allergen, $data, $files) {
-            $allergen->update($data);
+        return DB::transaction(function () use (
+            $allergen,
+            $data,
+            $files
+        ) {
+            $locale = app()->getLocale();
 
-            if (!empty($files)) {
+            $translation = $allergen->translateOrNew($locale);
+
+            $translation->fill([
+                'name' => $data['name'],
+                'description' => $data['description'] ?? null,
+            ]);
+
+            $allergen->save();
+
+            if ($files !== []) {
                 $this->imageService->upload($allergen, $files);
 
                 $allergen->update([
@@ -34,16 +51,21 @@ readonly class UpdateAllergen
                 ]);
             }
 
-            if (!empty($data['ingredients'])) {
-                Ingredient::query()
-                    ->where('allergen_id', $allergen->id)
-                    ->update(['allergen_id' => null]);
+            Ingredient::query()
+                ->where('allergen_id', $allergen->id)
+                ->update(['allergen_id' => null,]);
 
-                Ingredient::whereIn('id', $data['ingredients'])
-                    ->update(['allergen_id' => $allergen->id]);
+            $ingredientIds = $data['ingredients'] ?? [];
+
+            if ($ingredientIds !== []) {
+                Ingredient::query()
+                    ->whereIn('id', $ingredientIds)
+                    ->update([
+                        'allergen_id' => $allergen->id,
+                    ]);
             }
 
-            return $allergen;
+            return $allergen->refresh();
         });
     }
 }

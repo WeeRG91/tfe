@@ -25,7 +25,7 @@ class IngredientCreateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'allergen_id' => ['nullable', 'exists:allergens,id'],
+            'allergen_id' => ['nullable', 'integer', 'exists:allergens,id'],
             'images' => ['nullable', 'array', 'max:5'],
             'images.*' => [
                 'image',

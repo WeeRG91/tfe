@@ -65,7 +65,7 @@ const submit = () => {
         },
         onError: (error) => {
             if (error.message) {
-                toast.error(error.meessage);
+                toast.error(error.message);
             } else {
                 toast.error('Something went wrong. Please check the form.');
             }
@@ -78,7 +78,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create" />
+    <Head :title="`Edit drink: ${props.drinkToEdit.name}`" />
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
@@ -89,7 +89,7 @@ const submit = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Dish Information
+                            Drink Information
                         </h2>
 
                         <FormTextInput
