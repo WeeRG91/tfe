@@ -2,22 +2,16 @@
 
 namespace App\Enums\Permissions;
 
+use App\Enums\Permissions\Traits\HasTranslatablePermissionLabel;
+
 enum DrinkPermissionEnum: string
 {
+    use HasTranslatablePermissionLabel;
+
     case DRINK_VIEW = 'drink.view';
     case DRINK_CREATE = 'drink.create';
     case DRINK_UPDATE = 'drink.update';
     case DRINK_DELETE = 'drink.delete';
     case DRINK_RESTORE = 'drink.restore';
 
-    public function label(): string
-    {
-        return match ($this) {
-            self::DRINK_VIEW => 'View drinks',
-            self::DRINK_CREATE => 'Create drinks',
-            self::DRINK_UPDATE => 'Update drinks',
-            self::DRINK_DELETE => 'Delete drinks',
-            self::DRINK_RESTORE => 'Restore drinks',
-        };
-    }
 }

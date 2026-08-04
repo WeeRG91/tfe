@@ -15,8 +15,8 @@ import { CategoryOptionType } from '@/types/category';
 import { IngredientOptionType } from '@/types/ingredient';
 import { MeatOptionType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
-import { CirclePlus, Loader, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { Loader } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import dish from '@/routes/admin/dish';
 import SpicyLevelSelector from '@/components/admin/dish/SpicyLevelSelector.vue';
@@ -32,16 +32,16 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: t('dish.create.breadcrumbs.dishes'),
+        title: t('dish.form.breadcrumbs.dishes'),
         href: dish.index().url,
     },
     {
-        title: t('dish.create.breadcrumbs.create'),
+        title: t('dish.form.breadcrumbs.create'),
         href: dish.create().url,
     },
-];
+]);
 
 const showCreateMeatModal = ref<boolean>(false);
 const showCreateIngredientModal = ref<boolean>(false);
@@ -85,12 +85,12 @@ const submit = () => {
         errorBag: 'dishErrors',
         onSuccess: () => {
             dishForm.reset();
-            toast.success(t('dish.create.message.created'));
+            toast.success(t('dish.form.message.created'));
         },
         onError: (error) => {
             console.log(error);
             if (error) {
-                toast.error(t('dish.create.message.error'));
+                toast.error(t('dish.form.message.error'));
             }
         },
         onFinish: () => {
@@ -124,7 +124,7 @@ const closeCreateMeatModal = () => {
 </script>
 
 <template>
-    <Head :title="t('dish.create.title')" />
+    <Head :title="t('dish.form.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -136,19 +136,19 @@ const closeCreateMeatModal = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            {{ t('dish.create.sections.dishInformation') }}
+                            {{ t('dish.form.sections.information') }}
                         </h2>
 
                         <FormTextInput
                             id="name"
-                            :label="t('dish.create.fields.name')"
+                            :label="t('dish.form.fields.name')"
                             v-model="name"
                             :error="props.errors?.dishErrors?.name"
                         />
 
                         <FormTextarea
                             id="description"
-                            :label="t('dish.create.fields.description')"
+                            :label="t('dish.form.fields.description')"
                             v-model="description"
                             :rows="5"
                             :error="props.errors?.dishErrors?.description"
@@ -156,14 +156,14 @@ const closeCreateMeatModal = () => {
 
                         <FormNumberInput
                             id="price"
-                            :label="t('dish.create.fields.price')"
+                            :label="t('dish.form.fields.price')"
                             v-model="price"
                             :error="props.errors?.dishErrors?.price"
                         />
 
                         <SpicyLevelSelector
                             v-model="defaultSpicyLevel"
-                            :label="t('dish.create.fields.defaultSpicyLevel')"
+                            :label="t('dish.form.fields.defaultSpicyLevel')"
                             :error="
                                 props.errors?.dishErrors?.default_spicy_level
                             "
@@ -172,7 +172,7 @@ const closeCreateMeatModal = () => {
                         <MultipleSelect
                             v-model="selectedMeats"
                             :options="meats"
-                            :label="t('dish.create.fields.meatOptions')"
+                            :label="t('dish.form.fields.meatOptions')"
                             :error="props.errors?.dishErrors?.meats"
                             @create="showCreateMeatModal = true"
                         />
@@ -180,7 +180,7 @@ const closeCreateMeatModal = () => {
                         <MultipleSelect
                             v-model="selectedIngredients"
                             :options="ingredients"
-                            :label="t('dish.create.fields.ingredients')"
+                            :label="t('dish.form.fields.ingredients')"
                             :error="props.errors?.dishErrors?.ingredients"
                             @create="showCreateIngredientModal = true"
                         />
@@ -188,7 +188,7 @@ const closeCreateMeatModal = () => {
                         <Select
                             v-model="selectedCategory"
                             :options="props.categories"
-                            :label="t('dish.create.fields.category')"
+                            :label="t('dish.form.fields.category')"
                             :error="props.errors?.dishErrors?.category"
                         />
                     </div>
@@ -196,7 +196,7 @@ const closeCreateMeatModal = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            {{ t('dish.create.sections.photos') }}
+                            {{ t('dish.form.sections.photos') }}
                         </h2>
 
                         <ImageUploader v-model="imageFile" />
@@ -208,7 +208,7 @@ const closeCreateMeatModal = () => {
                             :href="dish.index().url"
                             class="flex items-center justify-center gap-2"
                         >
-                            <X /> {{ t('dish.create.buttons.cancel') }}
+                            {{ t('admin.buttons.cancel') }}
                         </a>
                     </Button>
                     <Button
@@ -227,8 +227,8 @@ const closeCreateMeatModal = () => {
                         <span
                             v-else
                             class="flex items-center justify-center gap-2"
-                            ><CirclePlus />
-                            {{ t('dish.create.buttons.create') }}</span
+                        >
+                            {{ t('admin.buttons.create') }}</span
                         >
                     </Button>
                 </div>

@@ -24,7 +24,7 @@ class DrinkResource extends JsonResource
                 : Storage::disk('public')->url('/images/picture.png'),
             'description' => $this->description,
             'price' => $this->price,
-            'is_available' => $this->is_available ? 'Available' : 'Unavailable',
+            'is_available' => $this->is_available ? 'available' : 'unavailable',
             'category' => DrinkCategoryEnum::getCategory($this->category),
             'created_at' => $this->created_at?->toDateString(),
             'updated_at' => $this->updated_at?->toDateString(),

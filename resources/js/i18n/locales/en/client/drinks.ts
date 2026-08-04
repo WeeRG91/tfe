@@ -9,7 +9,7 @@ export default {
         hotDrink: 'Hot drink',
         smoothie: 'Smoothie',
         beer: 'Beer',
-        wine: 'wine',
+        wine: 'Wine',
         cocktail: 'Cocktail',
         mocktail: 'Mocktail',
     },

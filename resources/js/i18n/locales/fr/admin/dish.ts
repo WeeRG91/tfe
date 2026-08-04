@@ -15,23 +15,6 @@ export default {
         spicy: 'Épicé',
         hot: 'Très épicé',
     },
-    filters: {
-        all: 'Tous',
-        available: 'Disponibles',
-        unavailable: 'Indisponibles',
-        deleted: 'Supprimés',
-        activeFilters: 'Filtres actifs :',
-        clearAll: 'Tout effacer',
-        allCategories: 'Toutes les catégories',
-        searchPlaceholder: 'Rechercher un plat...',
-    },
-    buttons: {
-        add: 'Ajouter',
-        edit: 'Modifier',
-        delete: 'Supprimer',
-        restore: 'Restaurer',
-        moveToBin: 'Mettre à la corbeille',
-    },
     table: {
         name: 'Nom',
         category: 'Catégorie',
@@ -40,10 +23,6 @@ export default {
         createdAt: 'Créé le',
         updatedAt: 'Mis à jour le',
         deletedAt: 'Supprimé le',
-    },
-    status: {
-        available: 'Disponible',
-        unavailable: 'Indisponible',
     },
     messages: {
         noDish: 'Aucun plat pour le moment',
@@ -62,14 +41,15 @@ export default {
         restoreFailed: 'Impossible de restaurer le plat.',
         deleteFailed: 'Impossible de supprimer le plat.',
     },
-    create: {
+    form: {
         title: 'Créer un plat',
         breadcrumbs: {
             dishes: 'Plats',
             create: 'Créer',
+            edit: 'Editer',
         },
         sections: {
-            dishInformation: 'Informations du plat',
+            information: 'Informations sur le plat',
             photos: 'Photos',
         },
         fields: {
@@ -82,12 +62,9 @@ export default {
             defaultSpicyLevel:
                 'Sélectionnez le niveau de piquant par défaut de ce plat',
         },
-        buttons: {
-            create: 'Créer',
-            cancel: 'Annuler',
-        },
         messages: {
             created: 'Le plat a été créé avec succès.',
+            edited: 'Le plat a été mis à jour avec succès.',
             error: 'Une erreur est survenue. Veuillez vérifier le formulaire.',
         },
     },

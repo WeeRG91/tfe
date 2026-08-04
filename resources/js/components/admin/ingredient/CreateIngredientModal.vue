@@ -19,6 +19,7 @@ import { AllergenOptionType } from '@/types/allergen';
 import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
 import { Loader } from 'lucide-vue-next';
 import ingredient from '@/routes/admin/ingredient';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     open: boolean;
@@ -32,6 +33,7 @@ const emit = defineEmits<{
 }>();
 
 const page = usePage();
+const { t } = useI18n();
 
 const selectedAllergen = ref<number | null>(null);
 const name = ref<string>('');
@@ -67,7 +69,7 @@ const submit = () => {
         onError: (error) => {
             if (error.message) toast.error(error.meessage);
 
-            toast.error('Something went wrong. Please check the form.');
+            toast.error(t('ingredient.createModal.error'));
         },
         onFinish: () => {
             isLoading.value = false;
@@ -80,23 +82,25 @@ const submit = () => {
     <Dialog :open="open" @update:open="props.onClose">
         <DialogContent class="sm:max-w-lg">
             <DialogHeader>
-                <DialogTitle>Create Ingredient</DialogTitle>
+                <DialogTitle>{{
+                    t('ingredient.createModal.title')
+                }}</DialogTitle>
                 <DialogDescription>
-                    Fill in the information below to create a new ingredient.
+                    {{ t('ingredient.createModal.description') }}
                 </DialogDescription>
             </DialogHeader>
 
             <div class="flex flex-col gap-4 py-4">
                 <FormTextInput
                     id="name"
-                    label="Name"
+                    :label="t('ingredient.createModal.fields.name')"
                     v-model="name"
                     :error="props.errors?.name"
                 />
 
                 <FormTextarea
                     id="description"
-                    label="Description"
+                    :label="t('ingredient.createModal.fields.description')"
                     v-model="description"
                     :rows="3"
                     :error="props.errors?.description"
@@ -105,8 +109,8 @@ const submit = () => {
                 <Select
                     v-model="selectedAllergen"
                     :options="props.allergens"
-                    label="Allergen"
-                    :error="props.errors?.allergen"
+                    :label="t('ingredient.createModal.fields.allergen')"
+                    :error="props.errors?.allergen_id"
                 />
 
                 <ImageUploader v-model="images" />
@@ -118,7 +122,7 @@ const submit = () => {
                     @click="props.onClose()"
                     class="sm:w-24"
                 >
-                    Cancel
+                    {{ t('admin.buttons.cancel') }}
                 </Button>
 
                 <Button
@@ -129,7 +133,7 @@ const submit = () => {
                     <span v-if="isLoading">
                         <Loader class="animate-spin text-muted-foreground" />
                     </span>
-                    <span v-else>Create</span>
+                    <span v-else>{{ t('admin.buttons.create') }}</span>
                 </Button>
             </DialogFooter>
         </DialogContent>

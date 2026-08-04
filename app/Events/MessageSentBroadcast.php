@@ -38,17 +38,12 @@ class MessageSentBroadcast implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
-        $name = $this->message->sender->id === $this->user->id ? 'You' : $this->message->sender->name;
-
         return [
             'id' => $this->message->id,
             'chat_id' => $this->message->chat_id,
+            'sender_name' => $this->message->sender->name,
             'is_from_restaurant' => $this->message->is_from_restaurant,
-            'content' => $this->message->unsent_at
-                ? $name . ' unsent message'
-                : ($this->message->deleted_at
-                    ? $name . ' deleted message'
-                    : $this->message->content),
+            'content' => $this->message->content,
             'read_at' => $this->message->read_at,
             'edited_at' => $this->message->edited_at,
             'unsent_at' => $this->message->unsent_at,

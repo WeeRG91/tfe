@@ -17,6 +17,8 @@ class DeleteMessage
     {
         $message->delete();
 
+        $message->refresh();
+
         $message->load('sender');
 
         event(new MessageSentBroadcast($message, $user));

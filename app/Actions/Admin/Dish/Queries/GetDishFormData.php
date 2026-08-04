@@ -15,15 +15,21 @@ class GetDishFormData
     public function execute(): array
     {
         return [
-            'ingredients' => Ingredient::all()->map(fn (Ingredient $ingredient) => [
+            'ingredients' => Ingredient::query()
+                ->get()
+                ->map(fn (Ingredient $ingredient) => [
                 'value' => $ingredient->id,
                 'label' => $ingredient->name,
             ]),
-            'meats' => Meat::all()->map(fn (Meat $meat) => [
+            'meats' => Meat::query()
+                ->get()
+                ->map(fn (Meat $meat) => [
                 'value' => $meat->id,
                 'label' => $meat->name,
             ]),
-            'allergens' => Allergen::all()->map(fn ($allergen) => [
+            'allergens' => Allergen::query()
+                ->get()
+                ->map(fn ($allergen) => [
                 'value' => $allergen->id,
                 'label' => $allergen->name,
             ]),

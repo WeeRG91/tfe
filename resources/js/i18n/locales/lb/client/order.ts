@@ -54,7 +54,6 @@ export default {
     orderDetailsPage: {
         pageTitle: 'Detailer vun der Bestellung',
         eyebrow: 'Meng Bestellung',
-        orderNumber: 'Bestellung #{number}',
         placedOn: 'Bestallt den {date}',
     },
     orderStatusTimeline: {

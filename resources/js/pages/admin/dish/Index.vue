@@ -38,10 +38,11 @@ import {
     TrashIcon,
     XIcon,
 } from 'lucide-vue-next';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { DishPermissionEnum } from '@/types/permission';
 import { useI18n } from 'vue-i18n';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -49,14 +50,15 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
         title: t('dish.title'),
         href: dish.index().url,
     },
-];
+]);
 
 const { can } = usePermission();
+const { formatDateOnly } = useDateFormatter();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -225,7 +227,9 @@ const changeFilter = (value: FilterType) => {
 
 const getCategoryLabel = (category: number) => {
     const filteredCategory = props.categories.find((c) => c.value === category);
-    return filteredCategory ? t(`dish.categories.${filteredCategory.key}`) : null;
+    return filteredCategory
+        ? t(`dish.categories.${filteredCategory.key}`)
+        : null;
 };
 
 const resetAllFilters = () => {
@@ -302,7 +306,7 @@ onBeforeUnmount(() => {
                                     'hover:bg-gray-100 dark:hover:bg-gray-800'
                                 "
                             >
-                                {{ t('dish.filters.all') }}
+                                {{ t('admin.filters.all') }}
                             </Button>
 
                             <Button
@@ -320,7 +324,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                {{ t('dish.filters.available') }}
+                                {{ t('admin.filters.available') }}
                             </Button>
 
                             <Button
@@ -338,7 +342,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                {{ t('dish.filters.unavailable') }}
+                                {{ t('admin.filters.unavailable') }}
                             </Button>
 
                             <Button
@@ -354,7 +358,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                {{ t('dish.filters.deleted') }}
+                                {{ t('admin.filters.deleted') }}
                             </Button>
                         </div>
 
@@ -369,7 +373,7 @@ onBeforeUnmount(() => {
                                     v-model="search"
                                     type="text"
                                     :placeholder="
-                                        t('dish.filters.searchPlaceholder')
+                                        t('admin.filters.searchPlaceholder')
                                     "
                                     class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
                                     @keyup.enter="applyFilters"
@@ -399,7 +403,7 @@ onBeforeUnmount(() => {
                                     >
                                         <option :value="null">
                                             {{
-                                                t('dish.filters.allCategories')
+                                                t('admin.filters.allCategories')
                                             }}
                                         </option>
                                         <option
@@ -433,7 +437,7 @@ onBeforeUnmount(() => {
                                             <Plus
                                                 class="mr-2 h-5 w-5 transition-transform group-hover:scale-110"
                                             />
-                                            {{ t('dish.buttons.add') }}
+                                            {{ t('admin.buttons.add') }}
                                         </Button>
                                     </a>
                                 </div>
@@ -454,7 +458,7 @@ onBeforeUnmount(() => {
                                 <Plus
                                     class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                                 />
-                                {{ t('dish.buttons.add') }}
+                                {{ t('admin.buttons.add') }}
                             </Button>
                         </a>
                     </div>
@@ -466,13 +470,13 @@ onBeforeUnmount(() => {
                 >
                     <span
                         class="hidden text-gray-500 sm:inline-block dark:text-gray-400"
-                        >{{ t('dish.filters.activeFilters') }}:</span
+                        >{{ t('admin.filters.activeFilters') }}</span
                     >
                     <span
                         v-if="filter !== 'all'"
                         class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                     >
-                        {{ t(`dish.filters.${filter}`) }}
+                        {{ t(`admin.filters.${filter}`) }}
                         <button
                             @click="changeFilter('all')"
                             class="ml-1 cursor-pointer hover:text-blue-600"
@@ -514,7 +518,7 @@ onBeforeUnmount(() => {
                         @click="resetAllFilters"
                         class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
-                        {{ t('dish.filters.clearAll') }}
+                        {{ t('admin.filters.clearAll') }}
                     </button>
                 </div>
 
@@ -568,7 +572,11 @@ onBeforeUnmount(() => {
                                 <Badge
                                     class="text-white/80"
                                     :class="dishData.category.color"
-                                    >{{ dishData.category.label }}</Badge
+                                    >{{
+                                        t(
+                                            `dish.categories.${dishData.category.key}`,
+                                        )
+                                    }}</Badge
                                 >
                             </TableCell>
                             <TableCell class="hidden text-nowrap md:table-cell"
@@ -580,31 +588,31 @@ onBeforeUnmount(() => {
                                     class="bg-green-500 text-white"
                                     >{{
                                         t(
-                                            `dish.status.${dishData.is_available}`,
+                                            `admin.status.${dishData.is_available}`,
                                         )
                                     }}</Badge
                                 >
                                 <Badge v-else class="bg-red-500 text-white">
                                     {{
                                         t(
-                                            `dish.status.${dishData.is_available}`,
+                                            `admin.status.${dishData.is_available}`,
                                         )
                                     }}
                                 </Badge>
                             </TableCell>
                             <TableCell class="hidden md:table-cell"
                                 ><span class="whitespace-nowrap">
-                                    {{ dishData.created_at }}
+                                    {{ formatDateOnly(dishData.created_at) }}
                                 </span>
                             </TableCell>
                             <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">
-                                    {{ dishData.updated_at }}
+                                    {{ formatDateOnly(dishData.updated_at) }}
                                 </span>
                             </TableCell>
                             <TableCell v-else
                                 ><span class="whitespace-nowrap">
-                                    {{ dishData.deleted_at }}
+                                    {{ formatDateOnly(dishData.deleted_at) }}
                                 </span>
                             </TableCell>
                             <TableCell>
@@ -639,7 +647,7 @@ onBeforeUnmount(() => {
                                             "
                                         >
                                             <RotateCcwIcon />
-                                            {{ t('dish.buttons.restore') }}
+                                            {{ t('admin.buttons.restore') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
@@ -659,7 +667,7 @@ onBeforeUnmount(() => {
                                             "
                                         >
                                             <TrashIcon />
-                                            {{ t('dish.buttons.delete') }}
+                                            {{ t('admin.buttons.delete') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                     <DropdownMenuContent v-else>
@@ -671,7 +679,7 @@ onBeforeUnmount(() => {
                                                 class="flex gap-2"
                                             >
                                                 <SquarePenIcon />
-                                                {{ t('dish.buttons.edit') }}
+                                                {{ t('admin.buttons.edit') }}
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
@@ -692,7 +700,7 @@ onBeforeUnmount(() => {
                                             "
                                         >
                                             <TrashIcon />
-                                            {{ t('dish.buttons.moveToBin') }}
+                                            {{ t('admin.buttons.moveToBin') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
@@ -713,7 +721,7 @@ onBeforeUnmount(() => {
                                             "
                                         >
                                             <CircleXIcon />
-                                            {{ t('dish.status.available') }}
+                                            {{ t('admin.status.available') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-else
@@ -731,7 +739,7 @@ onBeforeUnmount(() => {
                                             "
                                         >
                                             <CircleCheckBigIcon />
-                                            {{ t('dish.status.unavailable') }}
+                                            {{ t('admin.status.unavailable') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

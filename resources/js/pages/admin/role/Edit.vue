@@ -8,22 +8,25 @@ import { ChevronDown, ChevronUp } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import { RoleType } from '@/types/role';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     roleToEdit: RoleType;
     permissions: PermissionType[];
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Roles',
+        title: t('role.title'),
         href: role.index().url,
     },
     {
-        title: 'Edit',
+        title: t('admin.buttons.edit'),
         href: role.edit(props.roleToEdit.id).url,
     },
-];
+]);
 
 const roleForm = useForm({
     name: props.roleToEdit.name,
@@ -116,16 +119,16 @@ const submit = () => {
         preserveScroll: true,
         onSuccess: () => {
             roleForm.reset();
-            toast.success('Role successfully updated!');
+            toast.success(t('role.form.messages.edited'));
         },
         onError: (error) => {
             console.log(error);
             if (error.error) {
                 toast.error(error.error);
             } else if (error.name || error.permissions) {
-                toast.error('Invalid input.');
+                toast.error(t('role.form.messages.invalidInput'));
             } else {
-                toast.error('Something went wrong. Please check the form.');
+                toast.error(t('role.form.messages.error'));
             }
         },
     });
@@ -133,19 +136,18 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Edit Role" />
+    <Head :title="t('role.form.editTitle')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4"
         >
             <form @submit.prevent="submit" class="space-y-6">
-                <!-- Role Name Input -->
                 <div
                     class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
                 >
                     <h3 class="mb-4 text-lg font-semibold text-foreground">
-                        Role Information
+                        {{ t('role.form.sections.roleInformation') }}
                     </h3>
 
                     <div class="max-w-md">
@@ -153,14 +155,14 @@ const submit = () => {
                             for="role-name"
                             class="mb-2 block text-sm font-medium text-foreground"
                         >
-                            Role Name
+                            {{ t('role.form.fields.roleName') }}
                         </label>
                         <input
                             id="role-name"
                             v-model="roleForm.name"
                             type="text"
                             class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
-                            placeholder="Enter role name (e.g., Editor, Manager)"
+                            :placeholder="t('role.form.placeholders.roleName')"
                             required
                         />
                         <p
@@ -172,25 +174,27 @@ const submit = () => {
                     </div>
                 </div>
 
-                <!-- Permissions Section -->
                 <div
                     class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
                 >
                     <div class="mb-6 flex items-center justify-between">
                         <div>
                             <h3 class="text-lg font-semibold text-foreground">
-                                Permissions
+                                {{ t('role.form.sections.permissions') }}
                             </h3>
                             <p class="mt-1 text-sm text-muted-foreground">
-                                Select permissions for this role
+                                {{ t('role.form.descriptions.permissions') }}
                             </p>
                         </div>
                         <div class="text-sm text-muted-foreground">
-                            {{ roleForm.permissions.length }} selected
+                            {{
+                                t('role.form.labels.selected', {
+                                    count: roleForm.permissions.length,
+                                })
+                            }}
                         </div>
                     </div>
 
-                    <!-- Permission Groups -->
                     <div class="space-y-4">
                         <div
                             v-for="(
@@ -199,14 +203,12 @@ const submit = () => {
                             :key="category"
                             class="overflow-hidden rounded-lg border border-sidebar-border/50 transition-all duration-200 hover:border-sidebar-border/70 dark:border-sidebar-border"
                         >
-                            <!-- Category Header -->
                             <div
                                 @click="toggleCategory(category)"
                                 class="flex cursor-pointer items-center justify-between bg-muted/30 px-4 py-3 transition-colors hover:bg-muted/50"
                             >
                                 <div class="flex items-center gap-3">
                                     <div class="flex items-center gap-2">
-                                        <!-- Category Select All Checkbox -->
                                         <input
                                             type="checkbox"
                                             :checked="isAllSelected(category)"
@@ -243,7 +245,6 @@ const submit = () => {
                                 </div>
                             </div>
 
-                            <!-- Category Permissions -->
                             <div
                                 v-show="isExpanded(category)"
                                 class="grid gap-1.5 p-4 md:grid-cols-2 lg:grid-cols-3"
@@ -291,18 +292,18 @@ const submit = () => {
                         :href="role.index().url"
                         class="flex items-center justify-center rounded-lg border border-sidebar-border/70 px-6 py-2.5 text-foreground transition-all duration-200 hover:border-sidebar-border hover:bg-muted/50 sm:w-32 dark:border-sidebar-border"
                     >
-                        Cancel
+                        {{ t('admin.buttons.cancel') }}
                     </Link>
                     <button
                         type="submit"
                         :disabled="roleForm.processing"
-                        class="flex items-center justify-center sm:w-32 gap-2 rounded-lg bg-primary px-6 py-2.5 text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+                        class="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 sm:w-32"
                     >
                         <span
                             v-if="roleForm.processing"
                             class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                         ></span>
-                        <span v-else>Save</span>
+                        <span v-else>{{ t('admin.buttons.save') }}</span>
                     </button>
                 </div>
             </form>

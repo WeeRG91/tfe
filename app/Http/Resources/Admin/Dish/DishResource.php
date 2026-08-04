@@ -27,9 +27,9 @@ class DishResource extends JsonResource
             'default_spicy_level' => $this->default_spicy_level,
             'is_available' => $this->is_available ? 'available' : 'unavailable',
             'category' => DishCategoryEnum::getCategory($this->category),
-            'created_at' => $this->created_at?->toDateString(),
-            'updated_at' => $this->updated_at?->toDateString(),
-            'deleted_at' => $this->deleted_at?->toDateString(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
         ];
     }
 }

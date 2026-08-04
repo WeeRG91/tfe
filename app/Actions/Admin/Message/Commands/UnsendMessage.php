@@ -19,6 +19,8 @@ class UnsendMessage
             'unsent_at' => now(),
         ]);
 
+        $message->refresh();
+
         $message->load('sender');
 
         event(new MessageSentBroadcast($message, $user));

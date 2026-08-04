@@ -9,26 +9,29 @@ import type { BreadcrumbItem } from '@/types';
 import { AllergenOptionType } from '@/types/allergen';
 import { IngredientErrorType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
-import { CirclePlus, Loader, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { Loader } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import ingredient from '@/routes/admin/ingredient';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     allergens: AllergenOptionType[];
     errors: IngredientErrorType;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Ingredients',
+        title: t('ingredient.form.breadcrumbs.ingredients'),
         href: ingredient.index().url,
     },
     {
-        title: 'Create',
+        title: t('ingredient.form.breadcrumbs.create'),
         href: ingredient.create().url,
     },
-];
+]);
 
 const selectedAllergen = ref<number | null>(null);
 const name = ref<string>('');
@@ -55,13 +58,13 @@ const submit = () => {
         forceFormData: true,
         onSuccess: () => {
             ingredientForm.reset();
-            toast.success('Ingredient successfully created.');
+            toast.success(t('ingredient.form.messages.created'));
         },
         onError: (error) => {
             if (error.message) {
                 toast.error(error.meessage);
             } else {
-                toast.error('Something went wrong. Please check the form.');
+                toast.error(t('ingredient.form.messages.error'));
             }
         },
         onFinish: () => {
@@ -72,7 +75,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create an ingredient" />
+    <Head :title="t('ingredient.form.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -84,19 +87,19 @@ const submit = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Ingredient Information
+                            {{ t('ingredient.form.sections.information') }}
                         </h2>
 
                         <FormTextInput
                             id="name"
-                            label="Name"
+                            :label="t('ingredient.form.fields.name')"
                             v-model="name"
                             :error="props.errors.name"
                         />
 
                         <FormTextarea
                             id="description"
-                            label="Description"
+                            :label="t('ingredient.form.fields.description')"
                             v-model="description"
                             :rows="5"
                             :error="props.errors.description"
@@ -105,7 +108,7 @@ const submit = () => {
                         <Select
                             v-model="selectedAllergen"
                             :options="props.allergens"
-                            label="Allergen"
+                            :label="t('ingredient.form.fields.allergen')"
                             :error="props.errors.allergen_id"
                         />
                     </div>
@@ -113,7 +116,7 @@ const submit = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Photos
+                            {{ t('ingredient.form.sections.photos') }}
                         </h2>
 
                         <ImageUploader v-model="images" />
@@ -125,7 +128,7 @@ const submit = () => {
                             :href="ingredient.index().url"
                             class="flex items-center"
                         >
-                            <X /> Cancel
+                            {{ t('admin.buttons.cancel') }}
                         </a>
                     </Button>
                     <Button
@@ -144,7 +147,7 @@ const submit = () => {
                         <span
                             v-else
                             class="flex items-center justify-center gap-2"
-                            ><CirclePlus /> Create</span
+                            >{{ t('admin.buttons.create') }}</span
                         >
                     </Button>
                 </div>

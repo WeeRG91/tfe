@@ -13,12 +13,14 @@ import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     items: NavItem[];
 }>();
 
 const page = usePage();
+const { t } = useI18n();
 
 const orderStore = useOrderStore();
 const { confirmedOrders } = storeToRefs(orderStore);
@@ -61,7 +63,8 @@ const ordersConfirmed = computed(() =>
                         :href="item.href"
                         class="items-center"
                         :class="
-                            item.title === 'Orders' || item.title === 'Messages'
+                            item.title === t('layout.navigation.orders') ||
+                            item.title === t('layout.navigation.messages')
                                 ? 'flex justify-between'
                                 : 'flex'
                         "
@@ -73,7 +76,7 @@ const ordersConfirmed = computed(() =>
 
                         <span
                             v-if="
-                                item.title === 'Orders' &&
+                                item.title === t('layout.navigation.orders') &&
                                 ordersConfirmed.length > 0
                             "
                             class="rounded-full bg-red-600 px-2 py-1 text-[10px] text-white"
@@ -82,7 +85,11 @@ const ordersConfirmed = computed(() =>
                         </span>
 
                         <span
-                            v-if="item.title === 'Messages' && unreadCount > 0"
+                            v-if="
+                                item.title ===
+                                    t('layout.navigation.messages') &&
+                                unreadCount > 0
+                            "
                             class="rounded-full bg-red-600 px-2 py-1 text-[10px] text-white"
                         >
                             {{ unreadCount }}

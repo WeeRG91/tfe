@@ -2,22 +2,15 @@
 
 namespace App\Enums\Permissions;
 
+use App\Enums\Permissions\Traits\HasTranslatablePermissionLabel;
+
 enum AllergenPermissionEnum: string
 {
-    case ALLERGEN_VIEW ='allergen.view';
+    use HasTranslatablePermissionLabel;
+
+    case ALLERGEN_VIEW = 'allergen.view';
     case ALLERGEN_CREATE = 'allergen.create';
     case ALLERGEN_UPDATE = 'allergen.update';
     case ALLERGEN_DELETE = 'allergen.delete';
-     case ALLERGEN_RESTORE = 'allergen.restore';
-
-     public function label(): string
-     {
-         return match ($this) {
-             self::ALLERGEN_VIEW => 'View allergens',
-             self::ALLERGEN_CREATE => 'Create allergens',
-             self::ALLERGEN_UPDATE => 'Update allergens',
-             self::ALLERGEN_DELETE => 'Delete allergens',
-             self::ALLERGEN_RESTORE => 'Restore allergens',
-         };
-     }
+    case ALLERGEN_RESTORE = 'allergen.restore';
 }

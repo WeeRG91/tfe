@@ -20,6 +20,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import allergen from '@/routes/admin/allergen';
 import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { AllergenType } from '@/types/allergen';
+import { AllergenPermissionEnum } from '@/types/permission';
 import { Head, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
@@ -33,16 +34,20 @@ import {
     TrashIcon,
     XIcon,
 } from 'lucide-vue-next';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { AllergenPermissionEnum } from '@/types/permission';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+const { formatDateOnly } = useDateFormatter();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Allergens',
+        title: t('allergen.title'),
         href: allergen.index().url,
     },
-];
+]);
 
 const { can } = usePermission();
 
@@ -54,7 +59,6 @@ const allergens = ref<AllergenType[]>([]);
 const nextCursor = ref<string | null>(null);
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
-const scrollContainer = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 const filter = ref<FilterType>('all');
 const search = ref<string | null>(null);
@@ -70,7 +74,7 @@ const moveToBin = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to move allergen to bin');
+            toast.error(t('allergen.errors.binFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -89,7 +93,7 @@ const restoreAllergen = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to restore allergen');
+            toast.error(t('allergen.errors.restoreFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -108,7 +112,7 @@ const deleteAllergen = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to delete allergen');
+            toast.error(t('allergen.errors.deleteFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -158,7 +162,7 @@ const loadAllergens = async () => {
         nextCursor.value = newAllergen.next_cursor;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more allergens.');
+        toast.error(t('allergen.errors.loadFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -260,7 +264,7 @@ onBeforeUnmount(() => {
                                         'hover:bg-gray-100 dark:hover:bg-gray-800'
                                     "
                                 >
-                                    All
+                                    {{ t('admin.filters.all') }}
                                 </Button>
 
                                 <Button
@@ -278,7 +282,7 @@ onBeforeUnmount(() => {
                                             : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                     ]"
                                 >
-                                    Deleted
+                                    {{ t('admin.filters.deleted') }}
                                 </Button>
                             </div>
 
@@ -289,7 +293,9 @@ onBeforeUnmount(() => {
                                 <input
                                     v-model="search"
                                     type="text"
-                                    placeholder="Search dishes..."
+                                    :placeholder="
+                                        t('admin.filters.searchPlaceholder')
+                                    "
                                     class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
                                     @keyup.enter="applyFilters"
                                 />
@@ -307,7 +313,10 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div v-if="can(AllergenPermissionEnum.ALLERGEN_CREATE)" class="ml-auto flex">
+                    <div
+                        v-if="can(AllergenPermissionEnum.ALLERGEN_CREATE)"
+                        class="ml-auto flex"
+                    >
                         <a :href="allergen.create().url" class="inline-block">
                             <Button
                                 variant="outline"
@@ -317,7 +326,7 @@ onBeforeUnmount(() => {
                                 <SquarePlusIcon
                                     class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                                 />
-                                Add
+                                {{ t('admin.buttons.add') }}
                             </Button>
                         </a>
                     </div>
@@ -329,13 +338,13 @@ onBeforeUnmount(() => {
                 >
                     <span
                         class="hidden text-gray-500 sm:inline-block dark:text-gray-400"
-                        >Active filters:</span
+                        >{{ t('admin.filters.activeFilters') }}</span
                     >
                     <span
                         v-if="filter !== 'all'"
                         class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                     >
-                        {{ filter }}
+                        {{ t(`admin.filters.${filter}`) }}
                         <button
                             @click="changeFilter('all')"
                             class="ml-1 cursor-pointer hover:text-blue-600"
@@ -362,19 +371,25 @@ onBeforeUnmount(() => {
                         @click="resetAllFilters"
                         class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
-                        Clear all
+                        {{ t('admin.filters.clearAll') }}
                     </button>
                 </div>
 
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Created at</TableHead>
-                            <TableHead v-if="filter !== 'deleted'"
-                                >Updated at</TableHead
-                            >
-                            <TableHead v-else>Deleted at</TableHead>
+                            <TableHead>
+                                {{ t('allergen.table.name') }}
+                            </TableHead>
+                            <TableHead>
+                                {{ t('allergen.table.createdAt') }}
+                            </TableHead>
+                            <TableHead v-if="filter !== 'deleted'">
+                                {{ t('allergen.table.updatedAt') }}
+                            </TableHead>
+                            <TableHead v-else>
+                                {{ t('allergen.table.deletedAt') }}
+                            </TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -397,31 +412,43 @@ onBeforeUnmount(() => {
                             </TableCell>
                             <TableCell
                                 ><span class="whitespace-nowrap">{{
-                                    allergenData.created_at
+                                    formatDateOnly(allergenData.created_at)
                                 }}</span></TableCell
                             >
                             <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">{{
-                                    allergenData.updated_at
+                                    formatDateOnly(allergenData.updated_at)
                                 }}</span> </TableCell
                             ><TableCell v-else
                                 ><span class="whitespace-nowrap">{{
-                                    allergenData.deleted_at
+                                    formatDateOnly(allergenData.deleted_at)
                                 }}</span>
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger v-if="can(AllergenPermissionEnum.ALLERGEN_UPDATE)">
+                                    <DropdownMenuTrigger
+                                        v-if="
+                                            can(
+                                                AllergenPermissionEnum.ALLERGEN_UPDATE,
+                                            )
+                                        "
+                                    >
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
-                                            v-if="can(AllergenPermissionEnum.ALLERGEN_RESTORE)"
+                                            v-if="
+                                                can(
+                                                    AllergenPermissionEnum.ALLERGEN_RESTORE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    `Are you sure you want to restore this allergen?`,
+                                                    t(
+                                                        'allergen.messages.confirmRestore',
+                                                    ),
                                                     'info',
                                                     () =>
                                                         restoreAllergen(
@@ -430,13 +457,20 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <RotateCcwIcon /> Restore
+                                            <RotateCcwIcon />
+                                            {{ t('admin.buttons.restore') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            v-if="can(AllergenPermissionEnum.ALLERGEN_DELETE)"
+                                            v-if="
+                                                can(
+                                                    AllergenPermissionEnum.ALLERGEN_DELETE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this allergen?',
+                                                    t(
+                                                        'allergen.messages.confirmDelete',
+                                                    ),
                                                     'destructive',
                                                     () =>
                                                         deleteAllergen(
@@ -445,7 +479,8 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon />
+                                            {{ t('admin.buttons.delete') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                     <DropdownMenuContent v-else>
@@ -458,14 +493,21 @@ onBeforeUnmount(() => {
                                                 "
                                                 class="flex gap-2"
                                             >
-                                                <SquarePenIcon /> Edit
+                                                <SquarePenIcon />
+                                                {{ t('admin.buttons.edit') }}
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            v-if="can(AllergenPermissionEnum.ALLERGEN_DELETE)"
+                                            v-if="
+                                                can(
+                                                    AllergenPermissionEnum.ALLERGEN_DELETE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to move this allergen to bin?',
+                                                    t(
+                                                        'allergen.messages.confirmMoveToBin',
+                                                    ),
                                                     'destructive',
                                                     () =>
                                                         moveToBin(
@@ -474,7 +516,8 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Move to bin
+                                            <TrashIcon />
+                                            {{ t('admin.buttons.moveToBin') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -507,7 +550,7 @@ onBeforeUnmount(() => {
                     v-if="allergens.length === 0 && !isLoading"
                     class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
                 >
-                    No allergen yet
+                    {{ t('allergen.messages.noAllergen') }}
                 </div>
 
                 <ConfirmModal

@@ -35,10 +35,11 @@ const spicyLevel = ref<number>(props.dish.default_spicy_level ?? 0);
 const meats = computed(() => props.dish?.meats ?? []);
 const ingredients = computed(() => props.dish?.ingredients ?? []);
 const totalPrice = computed(() => {
-    const base = props.dish.price ?? 0;
+    const base = Number(props.dish.price ?? 0);
 
-    const meat = meats.value.find((m: any) => m.id === selectedMeat.value);
-    const extra = meat?.extra_price ?? 0;
+    const meat = meats.value.find((m) => m.id === selectedMeat.value);
+
+    const extra = Number(meat?.extra_price ?? 0);
 
     return (base + extra) * quantity.value;
 });

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ImagePlus, Star } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     modelValue: File[];
@@ -14,6 +15,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'update:modelValue', images: File[]): void;
 }>();
+
+const { t } = useI18n();
 
 const images = ref<File[]>(props.modelValue || []);
 const existingMainImage = ref<string | null>(props.mainImage || null);
@@ -27,8 +30,6 @@ const error = ref<string>();
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
 const MAX_IMAGES = 5;
-const MIN_WIDTH = 600;
-const MIN_HEIGHT = 600;
 const MAX_WIDTH = 4000;
 const MAX_HEIGHT = 4000;
 
@@ -47,34 +48,40 @@ const validateImages = async (images: File[]) => {
     error.value = '';
 
     if (images.length > MAX_IMAGES) {
-        error.value = `You can only upload up to ${MAX_IMAGES} images.`;
+        error.value = t('admin.imageUploader.errors.maxImages', {
+            max: MAX_IMAGES,
+        });
         return false;
     }
 
     for (const image of images) {
         if (!ALLOWED_TYPES.includes(image.type)) {
-            error.value = `${image.name} has an invalid file type.`;
+            error.value = t('admin.imageUploader.errors.invalidFileType', {
+                fileName: image.name,
+            });
             return false;
         }
 
         if (image.size > MAX_IMAGE_SIZE) {
-            error.value = `${image.name} exceeds the maximum size of 5 MB.`;
+            error.value = t('admin.imageUploader.errors.maxFileSize', {
+                fileName: image.name,
+            });
             return false;
         }
 
         const { width, height } = await getImageDimensions(image);
 
         if (
-            width < MIN_WIDTH ||
-            height < MIN_HEIGHT ||
             width > MAX_WIDTH ||
             height > MAX_HEIGHT
         ) {
-            error.value =
-                `${image.name} must have dimensions between ` +
-                `${MIN_WIDTH}×${MIN_HEIGHT}px and ` +
-                `${MAX_WIDTH}×${MAX_HEIGHT}px. ` +
-                `Current size: ${width}×${height}px.`;
+            error.value = t('admin.imageUploader.errors.invalidDimensions', {
+                fileName: image.name,
+                maxWidth: MAX_WIDTH,
+                maxHeight: MAX_HEIGHT,
+                width,
+                height,
+            });
 
             return false;
         }
@@ -129,7 +136,7 @@ const removeExistingImage = async (index: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Something went wrong. Please try again later.');
+            toast.error(t('admin.imageUploader.errors.requestFailed'));
         }
     }
 };
@@ -193,7 +200,7 @@ watch(
         >
             <ImagePlus :class="error ? 'text-red-500' : ''" />
             <p class="text-sm" :class="error ? 'text-red-500' : ''">
-                Drag and drop images here, or click to browse
+                {{ t('admin.imageUploader.dragAndDrop') }}
             </p>
         </div>
 
@@ -256,7 +263,7 @@ watch(
                 v-if="isDragging"
                 class="absolute inset-0 flex items-center justify-center rounded-2xl bg-blue-100/70 text-lg font-semibold text-blue-700"
             >
-                Drop your images here
+                {{ t('admin.imageUploader.dropImagesHere') }}
             </div>
         </transition>
     </div>

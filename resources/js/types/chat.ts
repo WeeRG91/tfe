@@ -9,6 +9,7 @@ export type ChatType = {
 export type MessageType = {
     id: number;
     chat_id: number;
+    sender_name: string;
     is_from_restaurant: boolean;
     content: string;
     read_at: string;

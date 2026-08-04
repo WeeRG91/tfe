@@ -33,16 +33,21 @@ import {
     TrashIcon,
     XIcon,
 } from 'lucide-vue-next';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { MeatPermissionEnum } from '@/types/permission';
+import { useI18n } from 'vue-i18n';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+const { formatDateOnly } = useDateFormatter();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Meats',
+        title: t('meat.title'),
         href: meat.index().url,
     },
-];
+]);
 
 const { can } = usePermission();
 
@@ -54,7 +59,6 @@ const meats = ref<MeatType[]>([]);
 const nextCursor = ref<string | null>(null);
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
-const scrollContainer = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 const filter = ref<FilterType>('all');
 const search = ref<string | null>(null);
@@ -70,7 +74,7 @@ const moveToBin = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to move meat to bin');
+            toast.error(t('meat.errors.binFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -89,7 +93,7 @@ const restoreMeat = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to restore meat');
+            toast.error(t('meat.errors.restoreFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -108,7 +112,7 @@ const deleteMeat = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to delete meat');
+            toast.error(t('meat.errors.deleteFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -158,7 +162,7 @@ const loadMeats = async () => {
         nextCursor.value = newMeats.next_cursor;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more meats.');
+        toast.error(t('meat.errors.loadFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -221,7 +225,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Meats" />
+    <Head :title="t('meat.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -255,7 +259,7 @@ onMounted(() => {
                                         'hover:bg-gray-100 dark:hover:bg-gray-800'
                                     "
                                 >
-                                    All
+                                    {{ t('admin.filters.all') }}
                                 </Button>
 
                                 <Button
@@ -273,7 +277,7 @@ onMounted(() => {
                                             : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                     ]"
                                 >
-                                    Deleted
+                                    {{ t('admin.filters.deleted') }}
                                 </Button>
                             </div>
 
@@ -284,7 +288,9 @@ onMounted(() => {
                                 <input
                                     v-model="search"
                                     type="text"
-                                    placeholder="Search dishes..."
+                                    :placeholder="
+                                        t('admin.filters.searchPlaceholder')
+                                    "
                                     class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
                                     @keyup.enter="applyFilters"
                                 />
@@ -302,7 +308,10 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <div v-if="can(MeatPermissionEnum.MEAT_CREATE)" class="ml-auto flex">
+                    <div
+                        v-if="can(MeatPermissionEnum.MEAT_CREATE)"
+                        class="ml-auto flex"
+                    >
                         <a :href="meat.create().url" class="inline-block">
                             <Button
                                 variant="outline"
@@ -312,7 +321,7 @@ onMounted(() => {
                                 <Plus
                                     class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                                 />
-                                Add
+                                {{ t('admin.buttons.add') }}
                             </Button>
                         </a>
                     </div>
@@ -324,13 +333,13 @@ onMounted(() => {
                 >
                     <span
                         class="hidden text-gray-500 sm:inline-block dark:text-gray-400"
-                        >Active filters:</span
+                        >{{ t('admin.filters.activeFilters') }}</span
                     >
                     <span
                         v-if="filter !== 'all'"
                         class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                     >
-                        {{ filter }}
+                        {{ t(`admin.filters.${filter}`) }}
                         <button
                             @click="changeFilter('all')"
                             class="ml-1 cursor-pointer hover:text-blue-600"
@@ -357,28 +366,31 @@ onMounted(() => {
                         @click="resetAllFilters"
                         class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
-                        Clear all
+                        {{ t('admin.filters.clearAll') }}
                     </button>
                 </div>
 
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead class="text-nowrap">Name</TableHead>
-                            <TableHead class="text-nowrap"
-                                >Extra price</TableHead
-                            >
-                            <TableHead class="text-nowrap"
-                                >Created at</TableHead
-                            >
+                            <TableHead class="text-nowrap">
+                                {{ t('meat.table.name') }}
+                            </TableHead>
+                            <TableHead class="text-nowrap">
+                                {{ t('meat.table.extraPrice') }}
+                            </TableHead>
+                            <TableHead class="text-nowrap">
+                                {{ t('meat.table.createdAt') }}
+                            </TableHead>
                             <TableHead
                                 v-if="filter !== 'deleted'"
                                 class="text-nowrap"
-                                >Updated at</TableHead
                             >
-                            <TableHead v-else class="text-nowrap"
-                                >Deleted at</TableHead
-                            >
+                                {{ t('meat.table.updatedAt') }}
+                            </TableHead>
+                            <TableHead v-else class="text-nowrap">
+                                {{ t('meat.table.deletedAt') }}
+                            </TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -406,32 +418,44 @@ onMounted(() => {
                             </TableCell>
                             <TableCell
                                 ><span class="whitespace-nowrap">
-                                    {{ meatData.created_at }}</span
+                                    {{
+                                        formatDateOnly(meatData.created_at)
+                                    }}</span
                                 >
                             </TableCell>
                             <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">
-                                    {{ meatData.updated_at }}
+                                    {{ formatDateOnly(meatData.updated_at) }}
                                 </span>
                             </TableCell>
                             <TableCell v-else
                                 ><span class="whitespace-nowrap">
-                                    {{ meatData.deleted_at }}
+                                    {{ formatDateOnly(meatData.deleted_at) }}
                                 </span>
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger v-if="can(MeatPermissionEnum.MEAT_UPDATE)">
+                                    <DropdownMenuTrigger
+                                        v-if="
+                                            can(MeatPermissionEnum.MEAT_UPDATE)
+                                        "
+                                    >
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
-                                            v-if="can(MeatPermissionEnum.MEAT_RESTORE)"
+                                            v-if="
+                                                can(
+                                                    MeatPermissionEnum.MEAT_RESTORE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    `Are you sure you want to restore this meat?`,
+                                                    t(
+                                                        'meat.messages.confirmRestore',
+                                                    ),
                                                     'info',
                                                     () =>
                                                         restoreMeat(
@@ -440,20 +464,28 @@ onMounted(() => {
                                                 )
                                             "
                                         >
-                                            <RotateCcwIcon /> Restore
+                                            <RotateCcwIcon />
+                                            {{ t('admin.buttons.restore') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            v-if="can(MeatPermissionEnum.MEAT_DELETE)"
+                                            v-if="
+                                                can(
+                                                    MeatPermissionEnum.MEAT_DELETE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this meat?',
+                                                    t(
+                                                        'meat.messages.confirmDelete',
+                                                    ),
                                                     'destructive',
                                                     () =>
                                                         deleteMeat(meatData.id),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon />
+                                            {{ t('admin.buttons.delete') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                     <DropdownMenuContent v-else>
@@ -464,21 +496,29 @@ onMounted(() => {
                                                 "
                                                 class="flex gap-2"
                                             >
-                                                <SquarePenIcon /> Edit
+                                                <SquarePenIcon />
+                                                {{ t('admin.buttons.edit') }}
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            v-if="can(MeatPermissionEnum.MEAT_DELETE)"
+                                            v-if="
+                                                can(
+                                                    MeatPermissionEnum.MEAT_DELETE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to move this meat to bin?',
+                                                    t(
+                                                        'meat.messages.confirmMoveToBin',
+                                                    ),
                                                     'destructive',
                                                     () =>
                                                         moveToBin(meatData.id),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Move to bin
+                                            <TrashIcon />
+                                            {{ t('admin.buttons.moveToBin') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -511,7 +551,7 @@ onMounted(() => {
                     v-if="meats.length === 0 && !isLoading"
                     class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
                 >
-                    No meat yet
+                    {{ t('meat.messages.noMeat') }}
                 </div>
 
                 <ConfirmModal

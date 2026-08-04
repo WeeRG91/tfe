@@ -2,22 +2,16 @@
 
 namespace App\Enums\Permissions;
 
+use App\Enums\Permissions\Traits\HasTranslatablePermissionLabel;
+
 enum MeatPermissionEnum: string
 {
+    use HasTranslatablePermissionLabel;
+
     case MEAT_VIEW = 'meat.view';
     case MEAT_CREATE = 'meat.create';
     case MEAT_UPDATE = 'meat.update';
     case MEAT_DELETE = 'meat.delete';
     case MEAT_RESTORE = 'meat.restore';
 
-    public function label(): string
-    {
-        return match ($this) {
-            self::MEAT_VIEW => 'View meats',
-            self::MEAT_CREATE => 'Create meats',
-            self::MEAT_UPDATE => 'Update meats',
-            self::MEAT_DELETE => 'Delete meats',
-            self::MEAT_RESTORE => 'Restore meats',
-        };
-    }
 }

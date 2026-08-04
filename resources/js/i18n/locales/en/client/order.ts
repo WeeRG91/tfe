@@ -51,7 +51,6 @@ export default {
     orderDetailsPage: {
         pageTitle: 'Order Details',
         eyebrow: 'My Order',
-        orderNumber: 'Order #{number}',
         placedOn: 'Placed on {date}',
     },
     orderStatusTimeline: {

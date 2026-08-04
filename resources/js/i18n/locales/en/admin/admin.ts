@@ -1,0 +1,44 @@
+export default {
+    buttons: {
+        add: 'Add',
+        edit: 'Edit',
+        delete: 'Delete',
+        restore: 'Restore',
+        moveToBin: 'Move to bin',
+        create: 'Create',
+        cancel: 'Cancel',
+        inactivate: 'Inactivate',
+        reactivate: 'Reactivate',
+        save: 'Save',
+        unsend: 'Unsend',
+        refresh: 'Refresh',
+    },
+    filters: {
+        all: 'All',
+        available: 'Available',
+        unavailable: 'Unavailable',
+        deleted: 'Deleted',
+        activeFilters: 'Active filters:',
+        clearAll: 'Clear all',
+        allCategories: 'All categories',
+        searchPlaceholder: 'Search...',
+        active: 'Active',
+        inactive: 'Inactive',
+    },
+    imageUploader: {
+        dragAndDrop: 'Drag and drop images here, or click to browse',
+        dropImagesHere: 'Drop your images here',
+        errors: {
+            maxImages: 'You can only upload up to {max} images.',
+            invalidFileType: '{fileName} has an invalid file type.',
+            maxFileSize: '{fileName} exceeds the maximum size of {maxSize} MB.',
+            invalidDimensions:
+                '{fileName} must have maximum dimension {maxWidth}×{maxHeight}px. Current size: {width}×{height}px.',
+            requestFailed: 'Something went wrong. Please try again later.',
+        },
+    },
+    status: {
+        available: 'Available',
+        unavailable: 'Unavailable',
+    },
+};

@@ -121,13 +121,10 @@ onUnmounted(() => {
                             [ {{ t('order.orderDetailsPage.eyebrow') }} ]
                         </p>
                         <h1
-                            class="text-4xl font-semibold uppercase md:text-5xl"
+                            class="text-[16px] font-semibold uppercase md:text-4xl"
                         >
-                            {{
-                                t('order.orderDetailsPage.orderNumber', {
-                                    number: currentOrder.order_number,
-                                })
-                            }}
+
+                            {{ currentOrder.order_number }}
                         </h1>
                         <p class="mt-2 text-gray-600">
                             {{

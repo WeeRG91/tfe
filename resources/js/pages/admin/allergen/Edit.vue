@@ -10,10 +10,11 @@ import type { BreadcrumbItem, ErrorType } from '@/types';
 import { AllergenOptionType, EditAllergenType } from '@/types/allergen';
 import { IngredientOptionType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
-import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { Loader } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import allergen from '@/routes/admin/allergen';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     allergenToEdit: EditAllergenType;
@@ -22,16 +23,18 @@ const props = defineProps<{
     errors: ErrorType;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Allergens',
+        title: t('allergen.form.breadcrumbs.allergens'),
         href: allergen.index().url,
     },
     {
-        title: 'Edit',
+        title: t('allergen.form.breadcrumbs.edit'),
         href: allergen.edit(props.allergenToEdit.id).url,
     },
-];
+]);
 
 const showCreateIngredientModal = ref<boolean>(false);
 const selectedIngredients = ref<number[]>(
@@ -63,13 +66,13 @@ const submit = () => {
         errorBag: 'allergenErrors',
         onSuccess: () => {
             allergenForm.reset();
-            toast.success('Allergen successfully edited.');
+            toast.success(t('allergen.form.messages.edited'));
         },
         onError: (error) => {
             if (error.message) {
                 toast.error(error.meessage);
             } else {
-                toast.error('Something went wrong. Please check the form.');
+                toast.error(t('allergen.form.messages.error'));
             }
         },
         onFinish: () => {
@@ -93,7 +96,11 @@ const closeCreateIngredientModal = () => {
 </script>
 
 <template>
-    <Head :title="`Edit the allergen '${props.allergenToEdit.name}'`" />
+    <Head
+        :title="
+            t('allergen.form.editTitle', { name: props.allergenToEdit.name })
+        "
+    />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -105,19 +112,19 @@ const closeCreateIngredientModal = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Allergen Information
+                            {{ t('allergen.form.sections.information') }}
                         </h2>
 
                         <FormTextInput
                             id="name"
-                            label="Name"
+                            :label="t('allergen.form.fields.name')"
                             v-model="name"
                             :error="props.errors.allergenErrors?.name"
                         />
 
                         <FormTextarea
                             id="description"
-                            label="Description"
+                            :label="t('allergen.form.fields.description')"
                             v-model="description"
                             :rows="5"
                             :error="props.errors.allergenErrors?.description"
@@ -126,7 +133,7 @@ const closeCreateIngredientModal = () => {
                         <MultipleSelect
                             v-model="selectedIngredients"
                             :options="ingredients"
-                            label="Ingredients"
+                            :label="t('allergen.form.fields.ingredients')"
                             :error="props.errors.allergenErrors?.ingredients"
                             @create="showCreateIngredientModal = true"
                         />
@@ -135,7 +142,7 @@ const closeCreateIngredientModal = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Photos
+                            {{ t('allergen.form.sections.photos') }}
                         </h2>
 
                         <ImageUploader
@@ -151,7 +158,7 @@ const closeCreateIngredientModal = () => {
                             :href="allergen.index().url"
                             class="flex items-center"
                         >
-                            <X /> Cancel
+                            {{ t('admin.buttons.cancel') }}
                         </a>
                     </Button>
                     <Button
@@ -171,7 +178,7 @@ const closeCreateIngredientModal = () => {
                             v-else
                             class="flex items-center justify-center gap-2"
                         >
-                            <SquarePenIcon /> Edit
+                            {{ t('admin.buttons.edit') }}
                         </span>
                     </Button>
                 </div>

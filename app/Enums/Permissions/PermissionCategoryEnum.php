@@ -19,19 +19,6 @@ enum PermissionCategoryEnum: int
 
     public function label(): string
     {
-        return match ($this) {
-            self::ADMIN => 'Admin',
-            self::ALLERGEN => 'Allergen',
-            self::CHAT => 'Chat',
-            self::DISH => 'Dish',
-            self::DRINK => 'Drink',
-            self::IMAGE => 'Image',
-            self::INGREDIENT => 'Ingredient',
-            self::MEAT => 'Meat',
-            self::MESSAGE => 'Message',
-            self::ORDER => 'Order',
-            self::ROLE => 'Role',
-            self::USER => 'User',
-        };
+        return __('permissions.categories.'.strtolower($this->name));
     }
 }

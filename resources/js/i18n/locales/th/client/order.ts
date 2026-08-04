@@ -51,7 +51,6 @@ export default {
     orderDetailsPage: {
         pageTitle: 'รายละเอียดคำสั่งซื้อ',
         eyebrow: 'คำสั่งซื้อของฉัน',
-        orderNumber: 'คำสั่งซื้อ #{number}',
         placedOn: 'สั่งซื้อเมื่อ {date}',
     },
     orderStatusTimeline: {

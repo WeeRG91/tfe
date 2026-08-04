@@ -2,16 +2,13 @@
 
 namespace App\Enums\Permissions;
 
+use App\Enums\Permissions\Traits\HasTranslatablePermissionLabel;
+
 enum ImagePermissionEnum: string
 {
+    use HasTranslatablePermissionLabel;
+
     case IMAGE_UPDATE = 'image.update';
     case IMAGE_DELETE = 'image.delete';
 
-    public function label(): string
-    {
-        return match ($this) {
-            self::IMAGE_UPDATE => 'Update images',
-            self::IMAGE_DELETE => 'Delete images',
-        };
-    }
 }

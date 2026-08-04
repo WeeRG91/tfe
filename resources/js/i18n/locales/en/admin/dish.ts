@@ -15,23 +15,6 @@ export default {
         spicy: 'Spicy',
         hot: 'Hot',
     },
-    filters: {
-        all: 'All',
-        available: 'Available',
-        unavailable: 'Unavailable',
-        deleted: 'Deleted',
-        activeFilters: 'Active filters:',
-        clearAll: 'Clear all',
-        allCategories: 'All categories',
-        searchPlaceholder: 'Search dishes...',
-    },
-    buttons: {
-        add: 'Add',
-        edit: 'Edit',
-        delete: 'Delete',
-        restore: 'Restore',
-        moveToBin: 'Move to bin',
-    },
     table: {
         name: 'Name',
         category: 'Category',
@@ -40,10 +23,6 @@ export default {
         createdAt: 'Created at',
         updatedAt: 'Updated at',
         deletedAt: 'Deleted at',
-    },
-    status: {
-        available: 'Available',
-        unavailable: 'Unavailable',
     },
     messages: {
         noDish: 'No dishes yet',
@@ -62,14 +41,16 @@ export default {
         restoreFailed: 'Failed to restore dish.',
         deleteFailed: 'Failed to delete dish.',
     },
-    create: {
-        title: 'Create a dish',
+    form: {
+        title: 'Create dish',
+        editTitle: "Edit the dish '{name}'",
         breadcrumbs: {
             dishes: 'Dishes',
             create: 'Create',
+            edit: 'Edit',
         },
         sections: {
-            dishInformation: 'Dish Information',
+            information: 'Dish Information',
             photos: 'Photos',
         },
         fields: {
@@ -82,12 +63,9 @@ export default {
             defaultSpicyLevel:
                 'Select the default spiciness level for this dish',
         },
-        buttons: {
-            create: 'Create',
-            cancel: 'Cancel',
-        },
         messages: {
             created: 'Dish successfully created.',
+            edited: 'Dish successfully edited.',
             error: 'Something went wrong. Please check the form.',
         },
     },

@@ -12,9 +12,10 @@ import { DishErrorType } from '@/types/dish';
 import { EditDrinkType } from '@/types/drink';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import drink from '@/routes/admin/drink';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     drinkToEdit: EditDrinkType;
@@ -22,16 +23,18 @@ const props = defineProps<{
     errors: DishErrorType;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Drinks',
+        title: t('drink.form.breadcrumbs.drinks'),
         href: drink.index().url,
     },
     {
-        title: 'Edit',
+        title: t('drink.form.breadcrumbs.edit'),
         href: drink.edit(props.drinkToEdit.id).url,
     },
-];
+]);
 
 const selectedCategory = ref<number | null>(props.drinkToEdit.category ?? null);
 const name = ref<string>(props.drinkToEdit.name ?? '');
@@ -61,13 +64,13 @@ const submit = () => {
         forceFormData: true,
         onSuccess: () => {
             drinkForm.reset();
-            toast.success('Drink successfully edited.');
+            toast.success(t('drink.form.messages.edited'));
         },
         onError: (error) => {
             if (error.message) {
                 toast.error(error.message);
             } else {
-                toast.error('Something went wrong. Please check the form.');
+                toast.error(t('drink.form.messages.error'));
             }
         },
         onFinish: () => {
@@ -78,7 +81,9 @@ const submit = () => {
 </script>
 
 <template>
-    <Head :title="`Edit drink: ${props.drinkToEdit.name}`" />
+    <Head
+        :title="t('drink.form.editTitle', { name: props.drinkToEdit.name })"
+    />
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
@@ -89,19 +94,19 @@ const submit = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Drink Information
+                            {{ t('drink.form.sections.information') }}
                         </h2>
 
                         <FormTextInput
                             id="name"
-                            label="Name"
+                            :label="t('drink.form.fields.name')"
                             v-model="name"
                             :error="props.errors.name"
                         />
 
                         <FormTextarea
                             id="description"
-                            label="Description"
+                            :label="t('drink.form.fields.description')"
                             v-model="description"
                             :rows="5"
                             :error="props.errors.description"
@@ -109,7 +114,7 @@ const submit = () => {
 
                         <FormNumberInput
                             id="price"
-                            label="Price (€)"
+                            :label="t('drink.form.fields.price')"
                             v-model="price"
                             :error="props.errors.price"
                         />
@@ -117,7 +122,7 @@ const submit = () => {
                         <Select
                             v-model="selectedCategory"
                             :options="props.categories"
-                            label="Category"
+                            :label="t('drink.form.fields.category')"
                             :error="props.errors.category"
                         />
                     </div>
@@ -125,7 +130,7 @@ const submit = () => {
                         class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
-                            Photos
+                            {{ t('drink.form.sections.photos') }}
                         </h2>
 
                         <ImageUploader
@@ -138,7 +143,7 @@ const submit = () => {
                 <div class="mt-4 flex items-center justify-end gap-4">
                     <Button type="button" variant="secondary" class="w-24">
                         <a :href="drink.index().url" class="flex items-center">
-                            <X /> Cancel
+                            <X /> {{ t('admin.buttons.cancel') }}
                         </a>
                     </Button>
                     <Button
@@ -158,7 +163,7 @@ const submit = () => {
                             v-else
                             class="flex items-center justify-center gap-2"
                         >
-                            <SquarePenIcon /> Edit
+                            <SquarePenIcon /> {{ t('admin.buttons.edit') }}
                         </span>
                     </Button>
                 </div>

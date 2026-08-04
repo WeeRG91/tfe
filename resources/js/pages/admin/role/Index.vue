@@ -2,7 +2,6 @@
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { useClickOutside } from '@/composables/useClickOutside';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import { formatDate } from '@/lib/utils';
 import role from '@/routes/admin/role';
 import type { BreadcrumbItem, CursorPaginated } from '@/types';
 import { PermissionType, RolePermissionEnum } from '@/types/permission';
@@ -20,16 +19,21 @@ import {
     Trash2,
     X,
 } from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import { usePermission } from '@/composables/usePermission';
+import { useI18n } from 'vue-i18n';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+const { formatDateOnly } = useDateFormatter();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Roles',
+        title: t('role.title'),
         href: role.index().url,
     },
-];
+]);
 
 const { can } = usePermission();
 
@@ -72,7 +76,7 @@ const loadRoles = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load roles');
+        toast.error(t('role.errors.loadFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -95,7 +99,7 @@ const deleteRole = async (roleId: number) => {
         toast.success(data.message);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to delete role');
+        toast.error(t('role.errors.deleteFailed'));
     } finally {
         isDeleting.value = false;
     }
@@ -163,7 +167,8 @@ useClickOutside(dropdownRef, () => {
 const getGroupedPermissions = (permissions: PermissionType[]) =>
     permissions.reduce(
         (acc, permission) => {
-            const category = permission.category ?? 'Uncategorized';
+            const category =
+                permission.category ?? t('role.permissions.uncategorized');
 
             (acc[category] ??= []).push(permission);
 
@@ -178,7 +183,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Roles" />
+    <Head :title="t('role.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -188,9 +193,11 @@ onMounted(() => {
                 class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
             >
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight">Roles</h1>
+                    <h1 class="text-2xl font-bold tracking-tight">
+                        {{ t('role.title') }}
+                    </h1>
                     <p class="text-sm text-muted-foreground">
-                        Manage roles and their permissions
+                        {{ t('role.subtitle') }}
                     </p>
                 </div>
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -204,7 +211,7 @@ onMounted(() => {
                             ref="searchInputRef"
                             v-model="searchQuery"
                             type="text"
-                            placeholder="Search roles..."
+                            :placeholder="t('admin.filters.searchPlaceholder')"
                             class="w-full rounded-md border border-sidebar-border/70 bg-background py-2 pr-8 pl-9 text-sm shadow-sm transition-colors outline-none placeholder:text-muted-foreground"
                         />
                         <button
@@ -223,7 +230,7 @@ onMounted(() => {
                         class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                     >
                         <Plus class="mr-2 h-4 w-4" />
-                        Add
+                        {{ t('admin.buttons.add') }}
                     </Link>
                 </div>
             </div>
@@ -240,10 +247,11 @@ onMounted(() => {
                 class="py-8 text-center"
             >
                 <p class="text-muted-foreground">
-                    No roles found matching "<span class="font-medium">{{
-                        searchQuery
-                    }}</span
-                    >"
+                    {{
+                        t('role.messages.noSearchResults', {
+                            query: searchQuery,
+                        })
+                    }}
                 </p>
             </div>
 
@@ -269,22 +277,32 @@ onMounted(() => {
                                     <div
                                         class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground sm:gap-4"
                                     >
-                                        <span
-                                            >{{
-                                                r.permissions?.length
+                                        <span>
+                                            {{
+                                                t('role.permissions.label', {
+                                                    count: r.permissions
+                                                        ?.length,
+                                                })
                                             }}
-                                            permissions</span
-                                        >
+                                        </span>
                                         <span class="hidden sm:inline">•</span>
-                                        <span
-                                            >Updated:
-                                            {{ formatDate(r.updated_at) }}</span
-                                        >
+                                        <span>
+                                            {{
+                                                t('role.dates.updated', {
+                                                    date: formatDateOnly(
+                                                        r.updated_at,
+                                                    ),
+                                                })
+                                            }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div v-if="can(RolePermissionEnum.ROLE_UPDATE)" class="relative">
+                            <div
+                                v-if="can(RolePermissionEnum.ROLE_UPDATE)"
+                                class="relative"
+                            >
                                 <button
                                     class="rounded-md p-1.5 transition-colors hover:bg-accent"
                                     @click.stop="toggleDropdown($event, r.id)"
@@ -308,7 +326,7 @@ onMounted(() => {
                                 <div
                                     class="mb-3 text-sm font-medium text-muted-foreground"
                                 >
-                                    Permissions
+                                    {{ t('role.permissions.title') }}
                                 </div>
 
                                 <div v-if="r.permissions?.length > 0">
@@ -349,7 +367,7 @@ onMounted(() => {
                                     v-else
                                     class="text-sm text-muted-foreground"
                                 >
-                                    No permissions assigned
+                                    {{ t('role.permissions.noPermissions') }}
                                 </span>
                             </div>
                         </div>
@@ -369,13 +387,13 @@ onMounted(() => {
                                 class="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-1.5 text-sm hover:bg-accent"
                             >
                                 <SquarePen class="h-4 w-4" />
-                                Edit
+                                {{ t('admin.buttons.edit') }}
                             </Link>
                             <button
                                 v-if="RolePermissionEnum.ROLE_DELETE"
                                 @click="
                                     openConfirmModal(
-                                        'Are you sure you want to delete this role?',
+                                        t('role.messages.confirmDelete'),
                                         'destructive',
                                         () => deleteRole(r.id),
                                     )
@@ -388,7 +406,7 @@ onMounted(() => {
                                 "
                             >
                                 <Trash2 class="h-4 w-4" />
-                                Delete
+                                {{ t('admin.buttons.delete') }}
                             </button>
                         </div>
                     </Teleport>

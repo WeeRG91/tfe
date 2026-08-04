@@ -2,7 +2,6 @@
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import {
-    formatDate,
     getInitials,
     getOrderStatusIcon,
     getOrderStatusVariant,
@@ -16,7 +15,6 @@ import { UserDetailType } from '@/types/user';
 import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import {
-    ArrowLeft,
     Award,
     Calendar,
     CircleAlert,
@@ -32,25 +30,30 @@ import {
     Trash2,
     Users,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import { PointTypeEnum } from '@/types/point';
 import { usePermission } from '@/composables/usePermission';
+import { useI18n } from 'vue-i18n';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     currentUser: UserDetailType;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+const { formatDateOnly } = useDateFormatter();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Users',
+        title: t('user.title'),
         href: user.index().url,
     },
     {
         title: props.currentUser.name,
         href: user.show(props.currentUser.id).url,
     },
-];
+])
 
 const { can } = usePermission();
 
@@ -65,7 +68,9 @@ const getGroupedPermissions = (permissions: PermissionType[]) => {
 
     return permissions.reduce(
         (acc, permission) => {
-            const category = permission.category ?? 'Uncategorized';
+            const category =
+                permission.category ??
+                t('user.details.permissions.uncategorized');
             if (!acc[category]) {
                 acc[category] = [];
             }
@@ -155,7 +160,7 @@ const inactivateUser = async (userId: number) => {
         router.visit(user.index().url);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to inactivate user');
+        toast.error(t('user.details.errors.inactivateFailed'));
     } finally {
         isPending.value = false;
     }
@@ -172,7 +177,7 @@ const reactivateUser = async (userId: number) => {
         toast.success(data.message);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to reactivate user');
+        toast.error(t('user.details.errors.reactivateFailed'));
     } finally {
         isPending.value = false;
     }
@@ -191,7 +196,7 @@ const deleteUser = async (userId: number) => {
         router.visit(user.index().url);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to delete user');
+        toast.error(t('user.details.errors.deleteFailed'));
     } finally {
         isPending.value = false;
     }
@@ -220,14 +225,6 @@ const closeConfirmModal = () => {
         <div
             class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4"
         >
-            <Link
-                :href="user.index().url"
-                class="inline-flex w-fit items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-                <ArrowLeft class="h-4 w-4" />
-                Back to Users
-            </Link>
-
             <div
                 class="flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-6 md:flex-row md:items-center md:justify-between"
             >
@@ -267,7 +264,13 @@ const closeConfirmModal = () => {
                             <span>•</span>
                             <span>
                                 <Calendar class="mr-1 inline h-3 w-3" />
-                                Joined {{ formatDate(currentUser.created_at) }}
+                                {{
+                                    t('user.details.joined', {
+                                        date: formatDateOnly(
+                                            currentUser.created_at,
+                                        ),
+                                    })
+                                }}
                             </span>
                         </div>
                     </div>
@@ -282,7 +285,7 @@ const closeConfirmModal = () => {
                         class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <SquarePen class="mr-2 h-4 w-4" />
-                        Edit
+                        {{ t('admin.buttons.edit') }}
                     </Link>
                     <button
                         v-if="
@@ -292,7 +295,7 @@ const closeConfirmModal = () => {
                         "
                         @click="
                             openConfirmModal(
-                                'Are you sure you want to inactivate this user?',
+                                t('user.details.messages.confirmInactivate'),
                                 'info',
                                 () => inactivateUser(currentUser.id),
                             )
@@ -300,7 +303,7 @@ const closeConfirmModal = () => {
                         class="inline-flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-red-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <ShieldX class="mr-2 h-4 w-4" />
-                        Inactivate
+                        {{ t('admin.buttons.inactivate') }}
                     </button>
                     <button
                         v-if="
@@ -310,7 +313,7 @@ const closeConfirmModal = () => {
                         "
                         @click="
                             openConfirmModal(
-                                'Are you sure you want to reactivate this user?',
+                                t('user.details.messages.confirmReactivate'),
                                 'info',
                                 () => reactivateUser(currentUser.id),
                             )
@@ -318,7 +321,7 @@ const closeConfirmModal = () => {
                         class="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-blue-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <ShieldCheck class="mr-2 h-4 w-4" />
-                        Reactivate
+                        {{ t('admin.buttons.reactivate') }}
                     </button>
                     <button
                         v-if="
@@ -328,7 +331,7 @@ const closeConfirmModal = () => {
                         "
                         @click="
                             openConfirmModal(
-                                'Are you sure you want to delete this user?',
+                                t('user.details.messages.confirmDelete'),
                                 'destructive',
                                 () => deleteUser(currentUser.id),
                             )
@@ -336,7 +339,7 @@ const closeConfirmModal = () => {
                         class="inline-flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-red-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <Trash2 class="mr-2 h-4 w-4" />
-                        Delete
+                        {{ t('admin.buttons.delete') }}
                     </button>
                 </div>
             </div>
@@ -356,7 +359,7 @@ const closeConfirmModal = () => {
                         class="flex items-center gap-2 text-sm text-muted-foreground"
                     >
                         <Users class="h-4 w-4" />
-                        Roles
+                        {{ t('user.details.stats.roles') }}
                     </div>
                     <p class="mt-2 text-2xl font-bold">
                         {{ currentUser.roles?.length || 0 }}
@@ -367,7 +370,7 @@ const closeConfirmModal = () => {
                         class="flex items-center gap-2 text-sm text-muted-foreground"
                     >
                         <Award class="h-4 w-4" />
-                        Total Points
+                        {{ t('user.details.stats.totalPoints') }}
                     </div>
                     <p class="mt-2 text-2xl font-bold">
                         {{ getTotalPoints(currentUser.loyalty_points) }}
@@ -378,7 +381,7 @@ const closeConfirmModal = () => {
                         class="flex items-center gap-2 text-sm text-muted-foreground"
                     >
                         <ShoppingBag class="h-4 w-4" />
-                        Orders
+                        {{ t('user.details.stats.orders') }}
                     </div>
                     <p class="mt-2 text-2xl font-bold">
                         {{ currentUser.orders?.length || 0 }}
@@ -395,7 +398,7 @@ const closeConfirmModal = () => {
                         class="flex items-center gap-2 text-sm text-muted-foreground"
                     >
                         <Shield class="h-4 w-4" />
-                        Permissions
+                        {{ t('user.details.stats.permissions') }}
                     </div>
                     <p class="mt-2 text-2xl font-bold">
                         {{ getTotalPermissionCount() }}
@@ -409,7 +412,7 @@ const closeConfirmModal = () => {
                         class="flex items-center gap-2 text-sm text-muted-foreground"
                     >
                         <Award class="h-4 w-4" />
-                        Total Points
+                        {{ t('user.details.stats.totalPoints') }}
                     </div>
                     <p class="mt-2 text-2xl font-bold">
                         {{ getTotalPoints(currentUser.loyalty_points) }}
@@ -420,7 +423,7 @@ const closeConfirmModal = () => {
                         class="flex items-center gap-2 text-sm text-muted-foreground"
                     >
                         <ShoppingBag class="h-4 w-4" />
-                        Orders
+                        {{ t('user.details.stats.orders') }}
                     </div>
                     <p class="mt-2 text-2xl font-bold">
                         {{ currentUser.orders?.length || 0 }}
@@ -435,7 +438,9 @@ const closeConfirmModal = () => {
                 "
                 class="rounded-xl border border-sidebar-border/70 p-6"
             >
-                <h2 class="mb-4 text-lg font-semibold">Roles & Permissions</h2>
+                <h2 class="mb-4 text-lg font-semibold">
+                    {{ t('user.details.permissions.title') }}
+                </h2>
 
                 <div
                     v-if="currentUser.roles && currentUser.roles.length > 0"
@@ -445,7 +450,7 @@ const closeConfirmModal = () => {
                         <h3
                             class="mb-2 text-sm font-medium text-muted-foreground"
                         >
-                            Assigned Roles
+                            {{ t('user.details.permissions.assignedRoles') }}
                         </h3>
                         <div class="flex flex-wrap gap-2">
                             <span
@@ -463,7 +468,7 @@ const closeConfirmModal = () => {
                         <h3
                             class="mb-2 text-sm font-medium text-muted-foreground"
                         >
-                            All Permissions
+                            {{ t('user.details.permissions.allPermissions') }}
                         </h3>
                         <div
                             v-if="getAllPermissionsWithSource().length > 0"
@@ -528,7 +533,11 @@ const closeConfirmModal = () => {
                                             class="ml-1 flex items-center gap-0.5 text-[8px] font-bold uppercase"
                                         >
                                             <PlusCircle class="h-2.5 w-2.5" />
-                                            extra
+                                            {{
+                                                t(
+                                                    'user.details.permissions.extra',
+                                                )
+                                            }}
                                         </span>
                                         <span
                                             v-if="
@@ -541,25 +550,31 @@ const closeConfirmModal = () => {
                                             class="ml-1 flex items-center gap-0.5 text-[8px] font-bold text-purple-500 uppercase"
                                         >
                                             <Star class="h-2.5 w-2.5" />
-                                            both
+                                            {{
+                                                t(
+                                                    'user.details.permissions.both',
+                                                )
+                                            }}
                                         </span>
                                     </span>
                                 </div>
                             </div>
                         </div>
                         <p v-else class="text-sm text-muted-foreground">
-                            No permissions assigned
+                            {{ t('user.details.permissions.noPermissions') }}
                         </p>
                     </div>
                 </div>
                 <p v-else class="text-sm text-muted-foreground">
-                    No roles assigned to this user
+                    {{ t('user.details.permissions.noRoles') }}
                 </p>
             </div>
 
             <div class="grid gap-6 lg:grid-cols-2">
                 <div class="rounded-xl border border-sidebar-border/70 p-6">
-                    <h2 class="mb-4 text-lg font-semibold">Order History</h2>
+                    <h2 class="mb-4 text-lg font-semibold">
+                        {{ t('user.details.orders.title') }}
+                    </h2>
 
                     <div
                         v-if="
@@ -584,7 +599,7 @@ const closeConfirmModal = () => {
                                         class="flex items-center gap-1.5 text-xs text-muted-foreground"
                                     >
                                         <Calendar class="h-3 w-3" />
-                                        {{ formatDate(order.created_at) }}
+                                        {{ formatDateOnly(order.created_at) }}
                                     </span>
                                 </div>
                                 <span
@@ -609,13 +624,13 @@ const closeConfirmModal = () => {
                         </div>
                     </div>
                     <p v-else class="text-sm text-muted-foreground">
-                        No orders found for this user
+                        {{ t('user.details.orders.noOrders') }}
                     </p>
                 </div>
 
                 <div class="rounded-xl border border-sidebar-border/70 p-6">
                     <h2 class="mb-4 text-lg font-semibold">
-                        Loyalty Points History
+                        {{ t('user.details.loyaltyPoints.title') }}
                     </h2>
 
                     <div
@@ -640,25 +655,29 @@ const closeConfirmModal = () => {
                                         class="flex items-center gap-1.5 text-xs text-muted-foreground"
                                     >
                                         <Calendar class="h-3 w-3" />
-                                        {{ formatDate(transaction.created_at) }}
+                                        {{
+                                            formatDateOnly(
+                                                transaction.created_at,
+                                            )
+                                        }}
                                     </span>
                                 </div>
                                 <span
                                     class="inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold sm:mt-0"
                                     :class="
-                                        transaction.type ===
+                                        transaction.type.label ===
                                         PointTypeEnum.EARNED
                                             ? 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400'
-                                            : transaction.type ===
+                                            : transaction.type.label ===
                                                 PointTypeEnum.REFUNDED
                                               ? 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400'
                                               : 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400'
                                     "
                                 >
                                     {{
-                                        transaction.type ===
+                                        transaction.type.label ===
                                             PointTypeEnum.EARNED ||
-                                        transaction.type ===
+                                        transaction.type.label ===
                                             PointTypeEnum.REFUNDED
                                             ? '+'
                                             : '-'
@@ -668,7 +687,7 @@ const closeConfirmModal = () => {
                         </div>
                     </div>
                     <p v-else class="text-sm text-muted-foreground">
-                        No loyalty points history
+                        {{ t('user.details.loyaltyPoints.noHistory') }}
                     </p>
                 </div>
             </div>
@@ -676,15 +695,19 @@ const closeConfirmModal = () => {
             <div class="rounded-xl border border-sidebar-border/70 p-6">
                 <div class="grid gap-2 text-sm sm:grid-cols-2">
                     <div>
-                        <span class="text-muted-foreground">Created at:</span>
+                        <span class="text-muted-foreground">
+                            {{ t('user.details.dates.createdAt') }}
+                        </span>
                         <span class="ml-2 font-medium">{{
-                            formatDate(currentUser.created_at)
+                            formatDateOnly(currentUser.created_at)
                         }}</span>
                     </div>
                     <div>
-                        <span class="text-muted-foreground">Last updated:</span>
+                        <span class="text-muted-foreground">
+                            {{ t('user.details.dates.lastUpdated') }}
+                        </span>
                         <span class="ml-2 font-medium">{{
-                            formatDate(currentUser.updated_at)
+                            formatDateOnly(currentUser.updated_at)
                         }}</span>
                     </div>
                 </div>

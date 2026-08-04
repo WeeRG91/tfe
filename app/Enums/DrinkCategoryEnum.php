@@ -27,6 +27,19 @@ enum DrinkCategoryEnum: int
         };
     }
 
+    public function translationKey(): string
+    {
+        return match ($this) {
+            self::SOFT_DRINK => 'drink.categories.softDrink',
+            self::HOT_DRINK => 'drink.categories.hotDrink',
+            self::SMOOTHIE => 'drink.categories.smoothie',
+            self::BEER => 'drink.categories.beer',
+            self::WINE => 'drink.categories.wine',
+            self::COCKTAIL=> 'drink.categories.cocktail',
+            self::MOCKTAIL=> 'drink.categories.mocktail',
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
@@ -58,6 +71,7 @@ enum DrinkCategoryEnum: int
         return array_map(fn ($case) => [
             'value' => $case->value,
             'key' => $case->key(),
+            'translationKey' => $case->translationKey(),
             'label' => $case->label(),
             'color' => self::getColor($case),
         ], self::cases());

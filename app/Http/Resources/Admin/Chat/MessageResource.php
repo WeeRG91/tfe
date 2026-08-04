@@ -14,17 +14,12 @@ class MessageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $name = $this->sender->id === auth()->user()->id ? 'You' : $this->sender->name;
-
         return [
             'id' => $this->id,
             'chat_id' => $this->chat_id,
+            'sender_name' => $this->sender->name,
             'is_from_restaurant' => $this->is_from_restaurant,
-            'content' => $this->unsent_at
-                ? $name . ' unsent message'
-                : ($this->deleted_at
-                    ? $name . ' deleted message'
-                    : $this->content),
+            'content' => $this->content,
             'read_at' => $this->read_at,
             'edited_at' => $this->edited_at,
             'unsent_at' => $this->unsent_at,

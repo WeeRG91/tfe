@@ -16,6 +16,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import drink from '@/routes/admin/drink';
@@ -23,6 +24,7 @@ import type { BreadcrumbItem, CursorPaginated, FilterType } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { DishType } from '@/types/dish';
 import { DrinkAvailabilityEnum, DrinkType } from '@/types/drink';
+import { DrinkPermissionEnum } from '@/types/permission';
 import { Head, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
@@ -39,22 +41,25 @@ import {
     TrashIcon,
     XIcon,
 } from 'lucide-vue-next';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { DrinkPermissionEnum } from '@/types/permission';
 
 const props = defineProps<{
     categories: CategoryOptionType[];
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Drinks',
+        title: t('drink.title'),
         href: drink.index().url,
     },
-];
+]);
 
 const { can } = usePermission();
+const { formatDateOnly } = useDateFormatter();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -64,7 +69,6 @@ const drinks = ref<DrinkType[]>([]);
 const nextCursor = ref<string | null>(null);
 const isLoading = ref<boolean>(false);
 const sentinel = ref<HTMLElement | null>(null);
-const scrollContainer = ref<HTMLElement | null>(null);
 const observer = ref<IntersectionObserver | null>(null);
 const filter = ref<FilterType>('all');
 const category = ref<number | null>(null);
@@ -87,7 +91,7 @@ const toggleAvailability = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to update drink availability');
+            toast.error(t('drink.errors.availabilityFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -106,7 +110,7 @@ const moveToBin = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to move dish to bin');
+            toast.error(t('drink.errors.binFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -125,7 +129,7 @@ const restoreDrink = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to restore drink');
+            toast.error(t('drink.errors.restoreFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -144,7 +148,7 @@ const deleteDrink = async (id: number) => {
         toast.success(response.data.message);
     } catch (error) {
         if (error) {
-            toast.error('Failed to delete drink');
+            toast.error(t('drink.errors.deleteFailed'));
         }
     } finally {
         isLoading.value = false;
@@ -195,7 +199,7 @@ const loadDrinks = async () => {
         nextCursor.value = newDrinks.next_cursor;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load more drinks.');
+        toast.error(t('drink.errors.loadFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -298,7 +302,7 @@ onBeforeUnmount(() => {
                                     'hover:bg-gray-100 dark:hover:bg-gray-800'
                                 "
                             >
-                                All
+                                {{ t('admin.filters.all') }}
                             </Button>
 
                             <Button
@@ -316,7 +320,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                Available
+                                {{ t('admin.filters.available') }}
                             </Button>
 
                             <Button
@@ -334,7 +338,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                Unavailable
+                                {{ t('admin.filters.unavailable') }}
                             </Button>
 
                             <Button
@@ -350,7 +354,7 @@ onBeforeUnmount(() => {
                                         : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                                 ]"
                             >
-                                Deleted
+                                {{ t('admin.filters.deleted') }}
                             </Button>
                         </div>
 
@@ -364,7 +368,9 @@ onBeforeUnmount(() => {
                                 <input
                                     v-model="search"
                                     type="text"
-                                    placeholder="Search dishes..."
+                                    :placeholder="
+                                        t('admin.filters.searchPlaceholder')
+                                    "
                                     class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
                                     @keyup.enter="applyFilters"
                                 />
@@ -392,14 +398,18 @@ onBeforeUnmount(() => {
                                         class="h-8 w-full appearance-none rounded-md border border-gray-200 bg-white px-3 pr-8 text-sm text-gray-700 shadow-sm transition-all hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-600"
                                     >
                                         <option :value="null">
-                                            All categories
+                                            {{
+                                                t('admin.filters.allCategories')
+                                            }}
                                         </option>
                                         <option
                                             v-for="cat in props.categories"
                                             :key="cat.value"
                                             :value="cat.value"
                                         >
-                                            {{ cat.label }}
+                                            {{
+                                                t(`drink.categories.${cat.key}`)
+                                            }}
                                         </option>
                                     </select>
                                     <ChevronDownIcon
@@ -423,7 +433,7 @@ onBeforeUnmount(() => {
                                             <Plus
                                                 class="mr-2 h-5 w-5 transition-transform group-hover:scale-110"
                                             />
-                                            Add
+                                            {{ t('admin.buttons.add') }}
                                         </Button>
                                     </a>
                                 </div>
@@ -431,7 +441,10 @@ onBeforeUnmount(() => {
                         </div>
                     </div>
 
-                    <div v-if="can(DrinkPermissionEnum.DRINK_CREATE)" class="hidden sm:ml-auto sm:flex">
+                    <div
+                        v-if="can(DrinkPermissionEnum.DRINK_CREATE)"
+                        class="hidden sm:ml-auto sm:flex"
+                    >
                         <a :href="drink.create().url" class="inline-block">
                             <Button
                                 variant="outline"
@@ -441,7 +454,7 @@ onBeforeUnmount(() => {
                                 <Plus
                                     class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110"
                                 />
-                                Add
+                                {{ t('admin.buttons.add') }}
                             </Button>
                         </a>
                     </div>
@@ -453,13 +466,13 @@ onBeforeUnmount(() => {
                 >
                     <span
                         class="hidden text-gray-500 sm:inline-block dark:text-gray-400"
-                        >Active filters:</span
+                        >{{ t('admin.buttons.activeFilters') }}</span
                     >
                     <span
                         v-if="filter !== 'all'"
                         class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
                     >
-                        {{ filter }}
+                        {{ t(`admin.filters.${filter}`) }}
                         <button
                             @click="changeFilter('all')"
                             class="ml-1 cursor-pointer hover:text-blue-600"
@@ -501,30 +514,37 @@ onBeforeUnmount(() => {
                         @click="resetAllFilters"
                         class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
                     >
-                        Clear all
+                        {{ t('admin.buttons.clearAll') }}
                     </button>
                 </div>
 
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead class="text-nowrap">Name</TableHead>
-                            <TableHead class="text-nowrap">Category</TableHead>
-                            <TableHead class="hidden text-nowrap md:table-cell"
-                                >price</TableHead
-                            >
-                            <TableHead>Availability</TableHead>
-                            <TableHead class="hidden text-nowrap md:table-cell"
-                                >Created at</TableHead
-                            >
+                            <TableHead class="text-nowrap">
+                                {{ t('drink.table.name') }}
+                            </TableHead>
+                            <TableHead class="text-nowrap">
+                                {{ t('drink.table.category') }}
+                            </TableHead>
+                            <TableHead class="hidden text-nowrap md:table-cell">
+                                {{ t('drink.table.price') }}
+                            </TableHead>
+                            <TableHead>
+                                {{ t('drink.table.availability') }}
+                            </TableHead>
+                            <TableHead class="hidden text-nowrap md:table-cell">
+                                {{ t('drink.table.createdAt') }}
+                            </TableHead>
                             <TableHead
                                 v-if="filter !== 'deleted'"
                                 class="text-nowrap"
-                                >Updated at</TableHead
                             >
-                            <TableHead v-else class="text-nowrap"
-                                >Deleted at</TableHead
-                            >
+                                {{ t('drink.table.updatedAt') }}
+                            </TableHead>
+                            <TableHead v-else class="text-nowrap">
+                                {{ t('drink.table.deletedAt') }}
+                            </TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -549,7 +569,11 @@ onBeforeUnmount(() => {
                                 <Badge
                                     class="text-white/80"
                                     :class="drinkData.category.color"
-                                    >{{ drinkData.category.label }}</Badge
+                                    >{{
+                                        t(
+                                            `drink.categories.${drinkData.category.key}`,
+                                        )
+                                    }}</Badge
                                 >
                             </TableCell>
                             <TableCell class="hidden md:table-cell"
@@ -558,43 +582,63 @@ onBeforeUnmount(() => {
                             <TableCell>
                                 <Badge
                                     v-if="
-                                        drinkData.is_available === 'Available'
+                                        drinkData.is_available === 'available'
                                     "
                                     class="bg-green-500 text-white"
-                                    >{{ drinkData.is_available }}</Badge
+                                    >{{
+                                        t(
+                                            `admin.status.${drinkData.is_available}`,
+                                        )
+                                    }}</Badge
                                 >
                                 <Badge v-else class="bg-red-500 text-white">
-                                    {{ drinkData.is_available }}
+                                    {{
+                                        t(
+                                            `admin.status.${drinkData.is_available}`,
+                                        )
+                                    }}
                                 </Badge>
                             </TableCell>
                             <TableCell class="hidden md:table-cell"
                                 ><span class="whitespace-nowrap">
-                                    {{ drinkData.created_at }}
+                                    {{ formatDateOnly(drinkData.created_at) }}
                                 </span>
                             </TableCell>
                             <TableCell v-if="filter !== 'deleted'"
                                 ><span class="whitespace-nowrap">
-                                    {{ drinkData.updated_at }}
+                                    {{ formatDateOnly(drinkData.updated_at) }}
                                 </span>
                             </TableCell>
                             <TableCell v-else
                                 ><span class="whitespace-nowrap">
-                                    {{ drinkData.deleted_at }}
+                                    {{ formatDateOnly(drinkData.deleted_at) }}
                                 </span>
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger v-if="can(DrinkPermissionEnum.DRINK_UPDATE)">
+                                    <DropdownMenuTrigger
+                                        v-if="
+                                            can(
+                                                DrinkPermissionEnum.DRINK_UPDATE,
+                                            )
+                                        "
+                                    >
                                         <EllipsisVerticalIcon />
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         v-if="filter === 'deleted'"
                                     >
                                         <DropdownMenuItem
-                                            v-if="can(DrinkPermissionEnum.DRINK_RESTORE)"
+                                            v-if="
+                                                can(
+                                                    DrinkPermissionEnum.DRINK_RESTORE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    `Are you sure you want to restore this drink?`,
+                                                    t(
+                                                        'drink.messages.confirmRestore',
+                                                    ),
                                                     'info',
                                                     () =>
                                                         restoreDrink(
@@ -603,13 +647,20 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <RotateCcwIcon /> Restore
+                                            <RotateCcwIcon />
+                                            {{ t('admin.buttons.restore') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            v-if="can(DrinkPermissionEnum.DRINK_DELETE)"
+                                            v-if="
+                                                can(
+                                                    DrinkPermissionEnum.DRINK_DELETE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to delete this drink?',
+                                                    t(
+                                                        'drink.messages.confirmDelete',
+                                                    ),
                                                     'destructive',
                                                     () =>
                                                         deleteDrink(
@@ -618,7 +669,8 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Delete
+                                            <TrashIcon />
+                                            {{ t('admin.buttons.delete') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                     <DropdownMenuContent v-else>
@@ -633,17 +685,24 @@ onBeforeUnmount(() => {
                                             </a>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            v-if="can(DrinkPermissionEnum.DRINK_DELETE)"
+                                            v-if="
+                                                can(
+                                                    DrinkPermissionEnum.DRINK_DELETE,
+                                                )
+                                            "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to move this dish to bin?',
+                                                    t(
+                                                        'drink.messages.confirmMoveToBin',
+                                                    ),
                                                     'destructive',
                                                     () =>
                                                         moveToBin(drinkData.id),
                                                 )
                                             "
                                         >
-                                            <TrashIcon /> Move to bin
+                                            <TrashIcon />
+                                            {{ t('admin.buttons.moveToBin') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-if="
@@ -652,7 +711,9 @@ onBeforeUnmount(() => {
                                             "
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to mark this drink as unavailable?',
+                                                    t(
+                                                        'drink.messages.confirmAvailable',
+                                                    ),
                                                     'info',
                                                     () =>
                                                         toggleAvailability(
@@ -661,13 +722,16 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <CircleXIcon /> Unavailable
+                                            <CircleXIcon />
+                                            {{ t('admin.status.unavailable') }}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
                                             v-else
                                             @click="
                                                 openConfirmModal(
-                                                    'Are you sure you want to mark this drink as available?',
+                                                    t(
+                                                        'drink.messages.confirmUnavailable',
+                                                    ),
                                                     'info',
                                                     () =>
                                                         toggleAvailability(
@@ -676,7 +740,8 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <CircleCheckBigIcon /> Available
+                                            <CircleCheckBigIcon />
+                                            {{ t('admin.status.available') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -709,7 +774,7 @@ onBeforeUnmount(() => {
                     v-if="drinks.length === 0 && !isLoading"
                     class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
                 >
-                    No drink yet
+                    {{ t('drink.messages.noDrink') }}
                 </div>
 
                 <ConfirmModal

@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { useClickOutside } from '@/composables/useClickOutside';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import {
-    formatTime,
-    getInitials,
-    getUserAvatarColor,
-} from '@/lib/utils';
+import { formatTime, getInitials, getUserAvatarColor } from '@/lib/utils';
 import chat from '@/routes/admin/chat';
 import message from '@/routes/admin/message';
 import user from '@/routes/admin/user';
@@ -32,13 +28,17 @@ import { storeToRefs } from 'pinia';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { useDateFormatter } from '@/composables/useDateFormatter';
+import { useI18n } from 'vue-i18n';
+import { locales } from '@/lib/const';
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t, locale } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Chats',
+        title: t('chat.title'),
         href: chat.chats().url,
     },
-];
+]);
 
 const chatStore = useChatStore();
 const { chats } = storeToRefs(chatStore);
@@ -71,6 +71,22 @@ const visibleChats = computed(() => {
     return chats.value.filter((c) => c.latest_message && c.last_message_at);
 });
 
+const messageContent = (msg: MessageType) => {
+    if (msg.unsent_at) {
+        return msg.is_from_restaurant
+            ? t('chat.messages.youUnsent')
+            : t('chat.messages.userUnsent', { name: msg.sender_name });
+    }
+
+    if (msg.deleted_at) {
+        return msg.is_from_restaurant
+            ? t('chat.messages.youDeleted')
+            : t('chat.messages.userDeleted', { name: msg.sender_name });
+    }
+
+    return msg.content;
+};
+
 const loadUsers = async () => {
     isUserLoading.value = true;
 
@@ -92,7 +108,7 @@ const loadUsers = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load users');
+        toast.error(t('chat.messages.failedToLoadUsers'));
     } finally {
         isUserLoading.value = false;
     }
@@ -278,15 +294,13 @@ const selectUser = async (userId: number) => {
         try {
             const { data } = await axios.post(chat.create(userId).url);
 
-            console.log(data);
-
             if (data) {
                 await chatStore.fetchChats();
                 await selectChat(data.id);
             }
         } catch (error) {
             console.error('Failed to create chat:', error);
-            toast.error('Failed to start conversation');
+            toast.error(t('chat.messages.failedToStartConversation'));
         }
     }
 
@@ -350,6 +364,8 @@ const scrollToBottom = async () => {
 };
 
 const getDateSeparator = (currentDate: string) => {
+    const currentLocale = locales[locale.value] ?? 'en-GB';
+
     const date = new Date(currentDate);
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -357,11 +373,11 @@ const getDateSeparator = (currentDate: string) => {
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (date >= today) {
-        return 'Today';
+        return t('chat.labels.today');
     } else if (date >= yesterday) {
-        return 'Yesterday';
+        return t('chat.labels.yesterday');
     } else {
-        return date.toLocaleDateString('en-Us', {
+        return date.toLocaleDateString(currentLocale, {
             month: 'short',
             day: 'numeric',
         });
@@ -484,7 +500,7 @@ watchDebounced(
 </script>
 
 <template>
-    <Head title="Chats" />
+    <Head :title="t('chat.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -507,8 +523,8 @@ watchDebounced(
                             >
                                 {{
                                     isSearchFocused
-                                        ? 'Search Users'
-                                        : 'Conversations'
+                                        ? t('chat.searchUsers')
+                                        : t('chat.conversations')
                                 }}
                             </h2>
                             <button
@@ -525,7 +541,9 @@ watchDebounced(
                                 v-model="searchQuery"
                                 @focus="handleSearchFocus"
                                 type="text"
-                                placeholder="Search for users..."
+                                :placeholder="
+                                    t('chat.placeholders.searchUsers')
+                                "
                                 class="w-full rounded-lg border border-border bg-background px-3 py-2 pl-9 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/50 focus:outline-none sm:px-4 sm:pl-10"
                             />
                             <svg
@@ -566,8 +584,8 @@ watchDebounced(
                                 <p class="text-sm text-muted-foreground">
                                     {{
                                         searchQuery
-                                            ? 'No users found'
-                                            : 'Start typing to search for users...'
+                                            ? t('chat.emptyStates.noUsers')
+                                            : t('chat.emptyStates.startTyping')
                                     }}
                                 </p>
                             </div>
@@ -627,7 +645,7 @@ watchDebounced(
                                 <span
                                     class="flex items-center justify-center gap-1.5"
                                 >
-                                    Load more
+                                    {{ t('chat.messages.loadMore') }}
                                     <span
                                         class="transition-transform duration-200 group-hover:translate-y-0.5"
                                         >↓</span
@@ -655,7 +673,7 @@ watchDebounced(
                                     />
                                 </svg>
                                 <p class="text-sm text-muted-foreground">
-                                    No conversations found
+                                    {{ t('chat.emptyStates.noConversations') }}
                                 </p>
                             </div>
                             <div
@@ -714,7 +732,7 @@ watchDebounced(
                                             >
                                                 {{
                                                     chat.user?.name ||
-                                                    'Unknown User'
+                                                    t('chat.labels.unknownUser')
                                                 }}
                                             </h3>
                                             <span
@@ -736,7 +754,11 @@ watchDebounced(
                                                     !isMessageUnread(chat),
                                             }"
                                         >
-                                            {{ chat.latest_message.content }}
+                                            {{
+                                                messageContent(
+                                                    chat.latest_message,
+                                                )
+                                            }}
                                         </p>
                                     </div>
                                 </div>
@@ -790,7 +812,7 @@ watchDebounced(
                                         >
                                             {{
                                                 selectedChat.user?.name ||
-                                                'Unknown User'
+                                                t('chat.labels.unknownUser')
                                             }}
                                         </h3>
                                         <p
@@ -824,12 +846,16 @@ watchDebounced(
                                         />
                                     </svg>
                                     <p class="text-sm text-muted-foreground">
-                                        No messages yet
+                                        {{ t('chat.emptyStates.noMessages') }}
                                     </p>
                                     <p
                                         class="mt-1 text-xs text-muted-foreground"
                                     >
-                                        Start the conversation!
+                                        {{
+                                            t(
+                                                'chat.emptyStates.startConversation',
+                                            )
+                                        }}
                                     </p>
                                 </div>
                                 <div
@@ -882,7 +908,9 @@ watchDebounced(
                                                 "
                                                 class="mb-1 text-[10px] text-muted-foreground sm:text-xs"
                                             >
-                                                Modified at
+                                                {{
+                                                    t('chat.labels.modifiedAt')
+                                                }}
                                                 {{ formatTime(msg.edited_at) }}
                                             </div>
 
@@ -939,7 +967,7 @@ watchDebounced(
                                                 <p
                                                     class="text-sm break-words whitespace-pre-wrap"
                                                 >
-                                                    {{ msg.content }}
+                                                    {{ messageContent(msg) }}
                                                 </p>
 
                                                 <div
@@ -976,7 +1004,7 @@ watchDebounced(
                                     "
                                     class="flex justify-end text-[10px] text-gray-400 sm:text-xs"
                                 >
-                                    read at
+                                    {{ t('chat.labels.readAt') }}
                                     {{
                                         formatTime(
                                             selectedChat.latest_message.read_at,
@@ -997,14 +1025,14 @@ watchDebounced(
                                             @click.stop="cancelEditing()"
                                             class="text-xs text-gray-400 hover:text-gray-600"
                                         >
-                                            Cancel
+                                            {{ t('admin.buttons.cancel') }}
                                         </button>
                                     </div>
                                     <span
                                         class="text-[10px] text-gray-400 sm:text-xs"
-                                        >Press Enter to save, Escape to
-                                        cancel</span
                                     >
+                                        {{ t('chat.labels.pressEnterToSave') }}
+                                    </span>
                                 </div>
 
                                 <div class="flex items-end gap-2 sm:gap-3">
@@ -1012,7 +1040,9 @@ watchDebounced(
                                         v-model="newMessage"
                                         @keydown="handleKeyDown"
                                         rows="1"
-                                        placeholder="Type a message..."
+                                        :placeholder="
+                                            t('chat.placeholders.message')
+                                        "
                                         class="max-h-32 min-h-[40px] flex-1 resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/50 focus:outline-none sm:min-h-[44px] sm:px-4"
                                         :disabled="isSending"
                                     />
@@ -1065,13 +1095,16 @@ watchDebounced(
                             <h3
                                 class="mb-2 text-base font-semibold text-foreground sm:text-lg"
                             >
-                                Select a Conversation
+                                {{ t('chat.emptyStates.selectConversation') }}
                             </h3>
                             <p
                                 class="max-w-md text-xs text-muted-foreground sm:text-sm"
                             >
-                                Choose a chat from the sidebar to start
-                                messaging with your customers
+                                {{
+                                    t(
+                                        'chat.emptyStates.selectConversationDescription',
+                                    )
+                                }}
                             </p>
                         </div>
                     </template>
@@ -1093,7 +1126,7 @@ watchDebounced(
                     class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                     <SquarePen class="mr-2 h-4 w-4" />
-                    Edit
+                    {{ t('admin.buttons.edit') }}
                 </button>
                 <button
                     v-if="!isUnsentOrRemoved"
@@ -1101,7 +1134,7 @@ watchDebounced(
                     class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                     <MessageCircleOff class="mr-2 h-4 w-4" />
-                    Unsend
+                    {{ t('admin.buttons.unsend') }}
                 </button>
                 <button
                     v-if="!isUnsentOrRemoved"
@@ -1109,7 +1142,7 @@ watchDebounced(
                     class="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                 >
                     <CircleX class="mr-2 h-4 w-4" />
-                    Delete
+                    {{ t('admin.buttons.delete') }}
                 </button>
             </div>
         </Teleport>

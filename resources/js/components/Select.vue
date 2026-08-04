@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface Option {
     value: number;
+    key?: string;
+    translationKey?: string;
     label: string;
     color?: string;
 }
@@ -18,6 +21,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'update:modelValue', value: number | null): void;
 }>();
+
+const { t } = useI18n();
 
 const selectedValue = ref<number | null>(props.modelValue ?? null);
 const selectedColor = ref<string | null>(
@@ -48,10 +53,13 @@ const selectOption = (value: number | null) => {
 };
 
 const selectedLabel = () => {
-    return (
-        props.options.find((option) => option.value === selectedValue.value)
-            ?.label || ''
+    const option = props.options.find(
+        (option) => option.value === selectedValue.value,
     );
+
+    return option?.translationKey
+        ? t(option.translationKey)
+        : option?.label || '';
 };
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -137,10 +145,16 @@ onBeforeUnmount(() => {
                         selectedValue === option.value,
                 }"
             >
-                {{ option.label }}
+                {{
+                    option.translationKey
+                        ? t(option.translationKey)
+                        : option.label
+                }}
             </div>
         </div>
-        <span v-if="props.error" class="text-sm text-red-500">{{props.error}}</span>
+        <span v-if="props.error" class="text-sm text-red-500">{{
+            props.error
+        }}</span>
     </div>
 </template>
 

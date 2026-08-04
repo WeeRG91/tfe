@@ -20,13 +20,19 @@ import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import confirmedOrder from '@/routes/admin/confirmed-order';
+import { useI18n } from 'vue-i18n';
 
 const orderStore = useOrderStore();
 const { confirmedOrders } = storeToRefs(orderStore);
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Confirmed Orders', href: confirmedOrder.index().url },
-];
+const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+    {
+        title: t('confirmedOrder.title'),
+        href: confirmedOrder.index().url,
+    },
+]);
 
 const updatedStatusOrderId = ref<number | null>(null);
 const expandedColumns = ref<Set<string>>(new Set(['confirmed']));
@@ -36,7 +42,7 @@ const showCancelledModal = ref(false);
 const columns = computed(() => [
     {
         key: 'confirmed',
-        title: 'Confirmed (Waiting)',
+        title: t('confirmedOrder.columns.confirmed'),
         icon: Clock,
         color: 'blue',
         orders: (confirmedOrders.value ?? []).filter(
@@ -48,21 +54,21 @@ const columns = computed(() => [
                 !o.completed_at &&
                 !o.cancelled_at,
         ),
-        emptyText: 'No confirmed orders',
+        emptyText: t('confirmedOrder.emptyStates.confirmed'),
     },
     {
         key: 'preparing',
-        title: 'Preparing',
+        title: t('confirmedOrder.columns.preparing'),
         icon: Package,
         color: 'yellow',
         orders: (confirmedOrders.value ?? []).filter(
             (o) => o.prepare_at && !o.ready_at,
         ),
-        emptyText: 'No orders being prepared',
+        emptyText: t('confirmedOrder.emptyStates.preparing'),
     },
     {
         key: 'ready',
-        title: 'Ready',
+        title: t('confirmedOrder.columns.ready'),
         icon: Truck,
         color: 'purple',
         orders: (confirmedOrders.value ?? []).filter(
@@ -71,7 +77,7 @@ const columns = computed(() => [
                 !o.completed_at &&
                 !o.cancelled_at,
         ),
-        emptyText: 'No orders ready for delivery',
+        emptyText: t('confirmedOrder.emptyStates.ready'),
     },
 ]);
 
@@ -91,10 +97,10 @@ const handleStatusUpdate = async (
 
     try {
         await orderStore.updateOrderStatus(orderId, newStatus);
-        toast.success('Updated status order successfully!');
+        toast.success(t('confirmedOrder.messages.updated'));
     } catch (error) {
         console.log(error);
-        toast.error('Failed to update order status');
+        toast.error(t('confirmedOrder.errors.updateFailed'));
     } finally {
         updatedStatusOrderId.value = null;
     }
@@ -138,7 +144,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <Head title="Confirmed Orders" />
+    <Head :title="t('confirmedOrder.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -149,10 +155,10 @@ onMounted(async () => {
             >
                 <div>
                     <h1 class="text-xl font-bold tracking-tight md:text-2xl">
-                        Confirmed Orders
+                        {{ t('confirmedOrder.title') }}
                     </h1>
                     <p class="text-xs text-muted-foreground md:text-sm">
-                        Manage and track orders by status
+                        {{ t('confirmedOrder.subtitle') }}
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -164,25 +170,33 @@ onMounted(async () => {
                             class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 sm:w-auto"
                         >
                             <CheckCircle :size="16" />
-                            <span class="whitespace-nowrap"
-                                >Completed ({{ completedOrders.length }})</span
-                            >
+                            <span class="whitespace-nowrap">
+                                {{
+                                    t('confirmedOrder.buttons.completed', {
+                                        count: completedOrders.length,
+                                    })
+                                }}
+                            </span>
                         </button>
                         <button
                             @click="openCancelledModal"
                             class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 sm:w-auto"
                         >
                             <CircleX :size="16" />
-                            <span class="whitespace-nowrap"
-                                >Cancelled ({{ cancelledOrders.length }})</span
-                            >
+                            <span class="whitespace-nowrap">
+                                {{
+                                    t('confirmedOrder.buttons.cancelled', {
+                                        count: cancelledOrders.length,
+                                    })
+                                }}
+                            </span>
                         </button>
                         <button
                             @click="refreshOrders"
                             class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sidebar-border/70 px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent sm:w-auto"
                         >
                             <RefreshCw :size="16" />
-                            Refresh
+                            {{ t('confirmedOrder.buttons.refresh') }}
                         </button>
                     </div>
                 </div>
@@ -322,21 +336,17 @@ onMounted(async () => {
                             <h2
                                 class="text-xl font-semibold text-gray-900 dark:text-white"
                             >
-                                Completed Orders
+                                {{ t('confirmedOrder.modals.completedTitle') }}
                             </h2>
                             <p
                                 class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
                             >
                                 <span>
-                                    {{ completedOrders.length }} order{{
-                                        completedOrders.length !== 1 ? 's' : ''
+                                    {{
+                                        t('confirmedOrder.modals.orderCount', {
+                                            count: completedOrders.length,
+                                        })
                                     }}
-                                </span>
-                                <span
-                                    class="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-100"
-                                >
-                                    <CheckCircle :size="14" />
-                                    Completed
                                 </span>
                             </p>
                         </div>
@@ -365,7 +375,7 @@ onMounted(async () => {
                             class="rounded-lg border border-dashed border-sidebar-border/70 p-8 text-center"
                         >
                             <p class="text-sm text-muted-foreground">
-                                No completed orders
+                                {{ t('confirmedOrder.emptyStates.completed') }}
                             </p>
                         </div>
                     </div>
@@ -385,26 +395,22 @@ onMounted(async () => {
                     class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
                 >
                     <div class="flex items-center gap-3">
-                        <CheckCircle :size="24" class="text-green-600" />
+                        <CircleX :size="24" class="text-red-600" />
                         <div>
                             <h2
                                 class="text-xl font-semibold text-gray-900 dark:text-white"
                             >
-                                Completed Orders
+                                {{ t('confirmedOrder.modals.cancelledTitle') }}
                             </h2>
                             <p
                                 class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
                             >
                                 <span>
-                                    {{ cancelledOrders.length }} order{{
-                                        cancelledOrders.length !== 1 ? 's' : ''
+                                    {{
+                                        t('confirmedOrder.modals.orderCount', {
+                                            count: cancelledOrders.length,
+                                        })
                                     }}
-                                </span>
-                                <span
-                                    class="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-100"
-                                >
-                                    <CheckCircle :size="14" />
-                                    Completed
                                 </span>
                             </p>
                         </div>
@@ -433,7 +439,7 @@ onMounted(async () => {
                             class="rounded-lg border border-dashed border-sidebar-border/70 p-8 text-center"
                         >
                             <p class="text-sm text-muted-foreground">
-                                No completed orders
+                                {{ t('confirmedOrder.emptyStates.cancelled') }}
                             </p>
                         </div>
                     </div>

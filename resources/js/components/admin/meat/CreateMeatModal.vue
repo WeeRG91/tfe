@@ -12,12 +12,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import meat from '@/routes/admin/meat';
 import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { toast } from 'vue-sonner';
 import { Loader } from 'lucide-vue-next';
-import meat from '@/routes/admin/meat';
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     open: boolean;
@@ -30,6 +31,7 @@ const emit = defineEmits<{
 }>();
 
 const page = usePage();
+const { t } = useI18n();
 
 const name = ref<string>('');
 const description = ref<string>('');
@@ -64,7 +66,7 @@ const submit = () => {
         onError: (error) => {
             if (error.message) toast.error(error.meessage);
 
-            toast.error('Something went wrong. Please check the form.');
+            toast.error(t('meat.createModal.error'));
         },
         onFinish: () => {
             isLoading.value = false;
@@ -77,23 +79,23 @@ const submit = () => {
     <Dialog :open="open" @update:open="props.onClose">
         <DialogContent class="sm:max-w-lg">
             <DialogHeader>
-                <DialogTitle>Create Meat Option</DialogTitle>
+                <DialogTitle>{{ t('meat.createModal.title') }}</DialogTitle>
                 <DialogDescription>
-                    Fill in the information below to create a new meat option.
+                    {{ t('meat.createModal.description') }}
                 </DialogDescription>
             </DialogHeader>
 
             <div class="flex flex-col gap-4 py-4">
                 <FormTextInput
                     id="name"
-                    label="Name"
+                    :label="t('meat.createModal.fields.name')"
                     v-model="name"
                     :error="props.errors?.name"
                 />
 
                 <FormTextarea
                     id="description"
-                    label="Description"
+                    :label="t('meat.createModal.fields.description')"
                     v-model="description"
                     :rows="3"
                     :error="props.errors?.description"
@@ -101,7 +103,7 @@ const submit = () => {
 
                 <FormNumberInput
                     id="extra_price"
-                    label="Extra price"
+                    :label="t('meat.createModal.fields.extraPrice')"
                     v-model="extra_price"
                     :error="props.errors?.extra_price"
                 />
@@ -110,15 +112,23 @@ const submit = () => {
             </div>
 
             <DialogFooter>
-                <Button variant="secondary" @click="props.onClose()" class="sm:w-24">
-                    Cancel
+                <Button
+                    variant="secondary"
+                    @click="props.onClose()"
+                    class="sm:w-24"
+                >
+                    {{ t('admin.buttons.cancel') }}
                 </Button>
 
-                <Button :disabled="meatForm.processing" @click="submit" class="sm:w-24">
+                <Button
+                    :disabled="meatForm.processing"
+                    @click="submit"
+                    class="sm:w-24"
+                >
                     <span v-if="isLoading">
                         <Loader class="animate-spin text-muted-foreground" />
                     </span>
-                    <span v-else>Create</span>
+                    <span v-else>{{ t('admin.buttons.create') }}</span>
                 </Button>
             </DialogFooter>
         </DialogContent>

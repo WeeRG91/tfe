@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useClickOutside } from '@/composables/useClickOutside';
 import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import { formatDate, getInitials, getUserAvatarColor } from '@/lib/utils';
+import { getInitials, getUserAvatarColor } from '@/lib/utils';
 import user from '@/routes/admin/user';
 import type { BreadcrumbItem, CursorPaginated } from '@/types';
 import { UserPermissionEnum } from '@/types/permission';
@@ -26,15 +26,20 @@ import {
     Trash2,
     X,
 } from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+const { formatDateOnly } = useDateFormatter();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Users',
+        title: t('user.title'),
         href: user.index().url,
     },
-];
+]);
 
 const { can } = usePermission();
 
@@ -79,7 +84,7 @@ const loadUsers = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load users');
+        toast.error(t('user.errors.loadFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -102,7 +107,7 @@ const inactivateUser = async (userId: number) => {
         toast.success(data.message);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to inactivate user');
+        toast.error(t('user.errors.inactivateFailed'));
     } finally {
         isPending.value = false;
     }
@@ -119,7 +124,7 @@ const reactivateUser = async (userId: number) => {
         toast.success(data.message);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to reactivate user');
+        toast.error(t('user.errors.reactivateFailed'));
     } finally {
         isPending.value = false;
     }
@@ -138,7 +143,7 @@ const deleteUser = async (userId: number) => {
         toast.success(data.message);
     } catch (error) {
         console.log(error);
-        toast.error('Failed to delete user');
+        toast.error(t('user.errors.deleteFailed'));
     } finally {
         isPending.value = false;
     }
@@ -219,7 +224,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Users" />
+    <Head :title="t('user.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -229,9 +234,11 @@ onMounted(() => {
                 class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
             >
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight">Users</h1>
+                    <h1 class="text-2xl font-bold tracking-tight">
+                        {{ t('user.title') }}
+                    </h1>
                     <p class="text-sm text-muted-foreground">
-                        Manage users and their roles
+                        {{ t('user.subtitle') }}
                     </p>
                 </div>
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -250,7 +257,7 @@ onMounted(() => {
                                 'hover:bg-gray-100 dark:hover:bg-gray-800'
                             "
                         >
-                            Active
+                            {{ t('admin.filters.active') }}
                         </Button>
 
                         <Button
@@ -268,7 +275,7 @@ onMounted(() => {
                                     : 'hover:bg-gray-100 dark:hover:bg-gray-800',
                             ]"
                         >
-                            Inactive
+                            {{ t('admin.filters.inactive') }}
                         </Button>
                     </div>
 
@@ -282,7 +289,7 @@ onMounted(() => {
                             ref="searchInputRef"
                             v-model="searchQuery"
                             type="text"
-                            placeholder="Search users..."
+                            :placeholder="t('admin.filters.searchPlaceholder')"
                             class="w-full rounded-md border border-sidebar-border/70 bg-background py-2 pr-8 pl-9 text-sm shadow-sm transition-colors outline-none placeholder:text-muted-foreground"
                         />
                         <button
@@ -301,7 +308,7 @@ onMounted(() => {
                         class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                     >
                         <Plus class="mr-2 h-4 w-4" />
-                        Add
+                        {{ t('admin.buttons.add') }}
                     </Link>
                 </div>
             </div>
@@ -318,10 +325,11 @@ onMounted(() => {
                 class="py-8 text-center"
             >
                 <p class="text-muted-foreground">
-                    No users found matching "<span class="font-medium">{{
-                        searchQuery
-                    }}</span
-                    >"
+                    {{
+                        t('user.messages.noSearchResults', {
+                            query: searchQuery,
+                        })
+                    }}
                 </p>
             </div>
 
@@ -329,7 +337,9 @@ onMounted(() => {
                 v-else-if="!isLoading && !searchQuery && users.length === 0"
                 class="py-8 text-center"
             >
-                <p class="text-muted-foreground">No users found</p>
+                <p class="text-muted-foreground">
+                    {{ t('user.messages.noUsers') }}
+                </p>
             </div>
 
             <div v-else-if="users.length > 0">
@@ -384,7 +394,11 @@ onMounted(() => {
                                 class="flex flex-shrink-0 items-center gap-3 text-sm text-muted-foreground"
                             >
                                 <span class="hidden md:inline">
-                                    Joined: {{ formatDate(u.created_at) }}
+                                    {{
+                                        t('user.messages.joined', {
+                                            date: formatDateOnly(u.created_at),
+                                        })
+                                    }}
                                 </span>
                             </div>
                         </div>
@@ -420,7 +434,7 @@ onMounted(() => {
                         @click="loadMoreUsers"
                         class="group flex items-center gap-2 text-sm font-medium text-muted-foreground transition-all hover:text-foreground"
                     >
-                        <span>Load more roles</span>
+                        <span>{{ t('user.messages.loadMore') }}</span>
                         <ChevronRight
                             class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
                         />
@@ -441,13 +455,13 @@ onMounted(() => {
                         class="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-1.5 text-sm hover:bg-accent"
                     >
                         <SquarePen class="h-4 w-4" />
-                        Edit
+                        {{ t('admin.buttons.edit') }}
                     </Link>
                     <button
                         v-if="!currentUser?.deleted_at"
                         @click="
                             openConfirmModal(
-                                `Are you sure you want to inactivate this user?`,
+                                t('user.messages.confirmInactivate'),
                                 'info',
                                 () => inactivateUser(dropdownOpenId!),
                             )
@@ -460,13 +474,13 @@ onMounted(() => {
                         "
                     >
                         <ShieldX class="h-4 w-4" />
-                        Inactivate
+                        {{ t('admin.buttons.inactivate') }}
                     </button>
                     <button
                         v-if="currentUser?.deleted_at"
                         @click="
                             openConfirmModal(
-                                `Are you sure you want to reactivate this user?`,
+                                t('user.messages.confirmReactivate'),
                                 'info',
                                 () => reactivateUser(dropdownOpenId!),
                             )
@@ -479,7 +493,7 @@ onMounted(() => {
                         "
                     >
                         <ShieldCheck class="h-4 w-4" />
-                        Reactivate
+                        {{ t('admin.buttons.reactivate') }}
                     </button>
                     <button
                         v-if="
@@ -488,7 +502,7 @@ onMounted(() => {
                         "
                         @click="
                             openConfirmModal(
-                                'Are you sure you want to delete this user?',
+                                t('user.messages.confirmDelete'),
                                 'destructive',
                                 () => deleteUser(dropdownOpenId!),
                             )
@@ -501,7 +515,7 @@ onMounted(() => {
                         "
                     >
                         <Trash2 class="h-4 w-4" />
-                        Delete
+                        {{ t('admin.buttons.delete') }}
                     </button>
                 </div>
             </Teleport>

@@ -24,6 +24,17 @@ enum DishCategoryEnum: int
             self::VEGETARIAN => 'vegetarian',
         };
     }
+    public function translationKey(): string
+    {
+        return match ($this) {
+            self::APPETIZER => 'dish.categories.appetizer',
+            self::MAIN_COURSE => 'dish.categories.mainCourse',
+            self::SOUP => 'dish.categories.soup',
+            self::NOODLES => 'dish.categories.noodles',
+            self::DESSERT => 'dish.categories.dessert',
+            self::VEGETARIAN => 'dish.categories.vegetarian',
+        };
+    }
 
     public function label(): string
     {
@@ -54,6 +65,7 @@ enum DishCategoryEnum: int
         return array_map(fn ($case) => [
             'value' => $case->value,
             'key' => $case->key(),
+            'translationKey' => $case->translationKey(),
             'label' => $case->label(),
             'color' => self::getColor($case),
         ], self::cases());

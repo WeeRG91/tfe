@@ -24,7 +24,7 @@ function formatLuxembourgishDate(
     const month = luxembourgishMonths[date.getMonth()];
     const year = date.getFullYear();
 
-    const formattedDate = `${day}. ${month} ${year}`;
+    const formattedDate = `${day} ${month} ${year}`;
 
     if (!includeTime) {
         return formattedDate;
@@ -71,7 +71,13 @@ export function useDateFormatter() {
         }).format(date);
     };
 
-    const formatDateOnly = (date: Date): string => {
+    const formatDateOnly = (value: string | null): string => {
+        if (!value) {
+            return t('common.notSet');
+        }
+
+        const date = new Date(value);
+
         if (isLuxembourgish()) {
             return formatLuxembourgishDate(date, false);
         }
@@ -133,7 +139,7 @@ export function useDateFormatter() {
             );
         }
 
-        return formatDateOnly(date);
+        return formatDateOnly(value);
     };
 
     return {

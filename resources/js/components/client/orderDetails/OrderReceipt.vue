@@ -40,9 +40,7 @@ defineProps<{
                     &nbsp;• {{ ['No spicy', 'Mild', 'Spicy', 'Hot'][item.spicy_level] }}
                 </div>
                 <div v-if="item.meat">
-                    &nbsp;+ {{ item.meat.name }} (€{{
-                        formatPrice(item.meat.extra_price)
-                    }})
+                    &nbsp;+ {{ item.meat.name }} (€{{ item.meat.extra_price }})
                 </div>
                 <div v-for="ing in item.removed_ingredients" :key="ing.id">
                     &nbsp;- {{ ing.name }}

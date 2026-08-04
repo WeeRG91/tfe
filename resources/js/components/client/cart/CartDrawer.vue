@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getSpicyLevelLabels } from '@/lib/const';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart';
 import { ItemTypeEnum } from '@/types/cart';
@@ -15,7 +16,6 @@ import {
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getSpicyLevelLabels } from '@/lib/const';
 
 const props = defineProps<{
     open: boolean;
@@ -349,12 +349,7 @@ watch(
                                                     <span
                                                         class="text-xs font-medium text-amber-600"
                                                     >
-                                                        +€{{
-                                                            formatPrice(
-                                                                item.meat
-                                                                    .extra_price,
-                                                            )
-                                                        }}
+                                                        +€{{ item.meat.extra_price }}
                                                     </span>
                                                 </div>
                                             </div>

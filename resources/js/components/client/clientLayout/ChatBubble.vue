@@ -6,16 +6,19 @@ import message from '@/routes/message';
 import { ChatType, MessageType } from '@/types/chat';
 import axios from 'axios';
 import {
-    MoreHorizontal,
-    Send,
     Check,
-    SquarePen,
-    MessageCircleOff,
     CircleX,
     Loader,
     MessageCircleMore,
+    MessageCircleOff,
+    MoreHorizontal,
+    Send,
+    SquarePen,
 } from 'lucide-vue-next';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const isOpen = ref<boolean>(false);
 const messageInput = ref<string>('');
@@ -35,6 +38,24 @@ const isUnsentOrRemoved = computed(() => {
 
     return !!(message?.unsent_at || message?.deleted_at);
 });
+
+const messageContent = (msg: MessageType) => {
+    const isOwnMessage = !msg.is_from_restaurant;
+
+    if (msg.unsent_at) {
+        return isOwnMessage
+            ? t('chat.messages.youUnsent')
+            : t('chat.messages.userUnsent', { name: msg.sender_name });
+    }
+
+    if (msg.deleted_at) {
+        return isOwnMessage
+            ? t('chat.messages.youDeleted')
+            : t('chat.messages.userDeleted', { name: msg.sender_name });
+    }
+
+    return msg.content;
+};
 
 const startEditing = (messageId: number) => {
     const message = messages.value.find((m) => m.id === messageId);
@@ -555,7 +576,7 @@ watch(messageMenuId, (id) => {
                                     </div>
 
                                     <p class="break-words whitespace-pre-wrap">
-                                        {{ msg.content }}
+                                        {{ messageContent(msg) }}
                                     </p>
 
                                     <p

@@ -15,23 +15,6 @@ export default {
         spicy: 'Schaarf',
         hot: 'Ganz schaarf',
     },
-    filters: {
-        all: 'All',
-        available: 'Disponibel',
-        unavailable: 'Net disponibel',
-        deleted: 'Geläscht',
-        activeFilters: 'Aktiv Filter:',
-        clearAll: 'Alles läschen',
-        allCategories: 'All Kategorien',
-        searchPlaceholder: 'Platen sichen...',
-    },
-    buttons: {
-        add: 'Dobäisetzen',
-        edit: 'Änneren',
-        delete: 'Läschen',
-        restore: 'Restauréieren',
-        moveToBin: 'An den Dreckskuerf',
-    },
     table: {
         name: 'Numm',
         category: 'Kategorie',
@@ -40,10 +23,6 @@ export default {
         createdAt: 'Erstallt den',
         updatedAt: 'Aktualiséiert den',
         deletedAt: 'Geläscht den',
-    },
-    status: {
-        available: 'Disponibel',
-        unavailable: 'Net disponibel',
     },
     messages: {
         noDish: 'Nach keng Platen',
@@ -65,14 +44,16 @@ export default {
         restoreFailed: 'De Plat konnt net restauréiert ginn.',
         deleteFailed: 'De Plat konnt net geläscht ginn.',
     },
-    create: {
+    form: {
         title: 'E Plat uleeën',
+        editTitle: 'Plat änneren: {name}',
         breadcrumbs: {
             dishes: 'Platen',
             create: 'Uleeën',
+            edit: 'Änneren',
         },
         sections: {
-            dishInformation: 'Informatiounen zum Plat',
+            information: 'Informatiounen zum Plat',
             photos: 'Fotoen',
         },
         fields: {
@@ -84,12 +65,9 @@ export default {
             meatOptions: 'Fleeschzorten',
             defaultSpicyLevel: 'Wielt de Standard-Schäerftgrad fir dëse Plat',
         },
-        buttons: {
-            create: 'Uleeën',
-            cancel: 'Ofbriechen',
-        },
         messages: {
             created: 'De Plat gouf erfollegräich ugeluecht.',
+            edited: 'De Plat gouf erfollegräich geännert.',
             error: 'E Feeler ass opgetrueden. Kontrolléiert w.e.g. de Formulaire.',
         },
     },

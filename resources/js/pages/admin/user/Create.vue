@@ -9,22 +9,25 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ChevronDown, ChevronUp } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     roles: RoleType[];
     permissions: PermissionType[];
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Users',
+        title: t('user.title'),
         href: user.index().url,
     },
     {
-        title: 'Create',
+        title: t('admin.buttons.create'),
         href: user.create().url,
     },
-];
+]);
 
 const { can } = usePermission();
 
@@ -51,6 +54,11 @@ const groupedPermissions = computed(() => {
         groups[permission.category].push(permission);
     });
     return groups;
+});
+
+const totalSelectedPermissions = computed(() => {
+    return new Set([...rolePermissions.value, ...selectedPermissions.value])
+        .size;
 });
 
 watch(
@@ -153,7 +161,7 @@ const submit = () => {
         preserveScroll: true,
         onSuccess: () => {
             userForm.reset();
-            toast.success('User successfully created!');
+            toast.success(t('user.form.messages.created'));
         },
         onError: (errors) => {
             console.log(errors);
@@ -162,7 +170,7 @@ const submit = () => {
             } else if (errors.name || errors.email) {
                 toast.error('Invalid input.');
             } else {
-                toast.error('Something went wrong. Please check the form.');
+                toast.error(t('user.form.messages.error'));
             }
         },
     });
@@ -170,7 +178,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create User" />
+    <Head :title="t('user.form.createTitle')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
@@ -181,7 +189,7 @@ const submit = () => {
                     class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
                 >
                     <h3 class="mb-4 text-lg font-semibold text-foreground">
-                        User Information
+                        {{ t('user.form.sections.userInformation') }}
                     </h3>
 
                     <div class="grid gap-6 md:grid-cols-2">
@@ -190,14 +198,16 @@ const submit = () => {
                                 for="user-name"
                                 class="mb-2 block text-sm font-medium text-foreground"
                             >
-                                Full Name
+                                {{ t('user.form.fields.fullName') }}
                             </label>
                             <input
                                 id="user-name"
                                 v-model="userForm.name"
                                 type="text"
                                 class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
-                                placeholder="Enter full name"
+                                :placeholder="
+                                    t('user.form.placeholders.fullName')
+                                "
                                 required
                             />
                             <p
@@ -213,14 +223,16 @@ const submit = () => {
                                 for="user-email"
                                 class="mb-2 block text-sm font-medium text-foreground"
                             >
-                                Email Address
+                                {{ t('user.form.fields.emailAddress') }}
                             </label>
                             <input
                                 id="user-email"
                                 v-model="userForm.email"
                                 type="email"
                                 class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
-                                placeholder="Enter email address"
+                                :placeholder="
+                                    t('user.form.placeholders.emailAddress')
+                                "
                                 required
                             />
                             <p
@@ -239,11 +251,10 @@ const submit = () => {
                 >
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold text-foreground">
-                            Role Assignment
+                            {{ t('user.form.sections.roleAssignment') }}
                         </h3>
                         <p class="mt-1 text-sm text-muted-foreground">
-                            Select a role for this user. Permissions will be
-                            automatically assigned based on the role.
+                            {{ t('user.form.descriptions.roleAssignment') }}
                         </p>
                     </div>
 
@@ -252,7 +263,7 @@ const submit = () => {
                             for="user-role"
                             class="mb-2 block text-sm font-medium text-foreground"
                         >
-                            Role
+                            {{ t('user.form.fields.role') }}
                         </label>
                         <select
                             id="user-role"
@@ -260,7 +271,9 @@ const submit = () => {
                             class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
                             required
                         >
-                            <option :value="null">Select a role</option>
+                            <option :value="null">
+                                {{ t('user.form.placeholders.selectRole') }}
+                            </option>
                             <option
                                 v-for="role in roles"
                                 :key="role.id"
@@ -285,14 +298,18 @@ const submit = () => {
                     <div class="mb-6 flex items-center justify-between">
                         <div>
                             <h3 class="text-lg font-semibold text-foreground">
-                                Permissions
+                                {{ t('user.form.sections.permissions') }}
                             </h3>
                             <p class="mt-1 text-sm text-muted-foreground">
-                                Fine-tune permissions for this user
+                                {{ t('user.form.descriptions.permissions') }}
                             </p>
                         </div>
                         <div class="text-sm text-muted-foreground">
-                            {{ userForm.permissions.length }} selected
+                            {{
+                                t('user.form.labels.selected', {
+                                    count: totalSelectedPermissions,
+                                })
+                            }}
                         </div>
                     </div>
 
@@ -399,7 +416,7 @@ const submit = () => {
                         :href="user.index().url"
                         class="flex items-center justify-center rounded-lg border border-sidebar-border/70 px-6 py-2.5 text-foreground transition-all duration-200 hover:border-sidebar-border hover:bg-muted/50 sm:w-32 dark:border-sidebar-border"
                     >
-                        Cancel
+                        {{ t('admin.buttons.cancel') }}
                     </Link>
                     <button
                         type="submit"
@@ -410,7 +427,7 @@ const submit = () => {
                             v-if="userForm.processing"
                             class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                         ></span>
-                        <span v-else>Create</span>
+                        <span v-else>{{ t('admin.buttons.create') }}</span>
                     </button>
                 </div>
             </form>
