@@ -116,4 +116,22 @@ export default {
         needHelp: 'Need Help?',
         contactSupport: 'Contact our customer support',
     },
+    receipt: {
+        date: 'Date',
+        type: 'Type',
+        table: 'Table',
+        delivery: 'Delivery',
+        subtotal: 'Subtotal',
+        discount: 'Discount',
+        vat: 'VAT',
+        vatNumber: 'VAT Number',
+        totalVat: 'Total VAT',
+        total: 'Total',
+        paidBy: {
+            card: 'Paid by card',
+            cash: 'Paid by cash',
+        },
+        thankYou: 'Thank you for your visit',
+        telephone: 'Tel.',
+    },
 };

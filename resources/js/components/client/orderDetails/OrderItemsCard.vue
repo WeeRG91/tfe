@@ -34,7 +34,7 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                         <div class="font-medium">
                             {{ item.quantity }}x {{ item.item?.name }}
                         </div>
-                        <div class="mt-1 text-xs text-gray-500">
+                        <div v-if="item.spicy_level" class="mt-1 text-xs text-gray-500">
                             {{ t('common.spicyLevel.title') }}:
                             {{ spicyLevelLabels[item.spicy_level] }}
                         </div>

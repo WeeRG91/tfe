@@ -119,4 +119,22 @@ export default {
         needHelp: 'Braucht Dir Hëllef?',
         contactSupport: 'Kontaktéiert eise Clientsservice',
     },
+    receipt: {
+        date: 'Datum',
+        type: 'Typ',
+        table: 'Dësch',
+        delivery: 'Liwwerung',
+        subtotal: 'Zwëschentotal',
+        discount: 'Remise',
+        vat: 'TVA',
+        vatNumber: 'TVA-Nummer',
+        totalVat: 'Total TVA',
+        total: 'Total',
+        paidBy: {
+            card: 'Mat Kaart bezuelt',
+            cash: 'A boer bezuelt',
+        },
+        thankYou: 'Merci fir Äre Besuch',
+        telephone: 'Tel.',
+    },
 };

@@ -208,6 +208,7 @@ watch(
                                             </div>
 
                                             <div
+                                                v-if="item.spicy_level"
                                                 class="mt-1 text-xs text-gray-500 dark:text-gray-400"
                                             >
                                                 {{
