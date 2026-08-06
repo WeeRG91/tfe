@@ -7,6 +7,7 @@ import { Search } from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { usePermission } from '@/composables/usePermission';
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
+import { useI18n } from 'vue-i18n';
 
 withDefaults(
     defineProps<{
@@ -18,6 +19,7 @@ withDefaults(
 );
 
 const { canSearch } = usePermission();
+const { t } = useI18n();
 
 const openSearch = ref<boolean>(false);
 
@@ -62,12 +64,12 @@ onUnmounted(() => {
             <button
                 v-if="canSearch()"
                 @click="openModal"
-                class="flex h-11 w-11 items-center justify-center gap-2 rounded-md sm:border px-3 py-2 text-sm text-muted-foreground sm:shadow-sm transition hover:bg-muted sm:w-44 sm:justify-start"
+                class="flex h-11 w-11 items-center justify-center gap-1 rounded-md px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted sm:w-44 sm:justify-start sm:border sm:shadow-sm"
             >
                 <Search class="h-4 w-4" />
-                <span class="hidden sm:inline">Search</span>
+                <span class="hidden text-sm sm:inline">{{ t('layout.search') }}</span>
                 <kbd
-                    class="ml-4 hidden rounded border bg-muted px-1.5 py-0.5 text-xs sm:inline-block"
+                    class="ml-1 hidden rounded border bg-muted px-1.5 py-0.5 text-xs sm:inline-block text-nowrap"
                 >
                     Ctrl K
                 </kbd>

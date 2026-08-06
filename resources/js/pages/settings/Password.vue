@@ -5,7 +5,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/password';
 import { Form, Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
@@ -13,16 +13,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { usePasswordStrength } from '@/composables/usePasswordStrength';
 import { type BreadcrumbItem } from '@/types';
+import { useI18n } from 'vue-i18n';
 
-const breadcrumbItems: BreadcrumbItem[] = [
+const { t } = useI18n();
+
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Password settings',
+        title: t('setting.password.title'),
         href: edit().url,
     },
-];
-
-const passwordInput = ref<HTMLInputElement | null>(null);
-const currentPasswordInput = ref<HTMLInputElement | null>(null);
+]);
 
 const password = ref<string>('');
 
@@ -36,13 +36,13 @@ const handlePasswordInput = (event: Event) => {
 
 <template>
     <AdminLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Password settings" />
+        <Head :title="t('setting.password.title')" />
 
         <SettingsLayout>
             <div class="space-y-6">
                 <HeadingSmall
-                    title="Update password"
-                    description="Ensure your account is using a long, random password to stay secure"
+                    :title="t('setting.password.heading.title')"
+                    :description="t('setting.password.heading.description')"
                 />
 
                 <Form
@@ -61,27 +61,37 @@ const handlePasswordInput = (event: Event) => {
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div class="grid gap-2">
-                        <Label for="current_password">Current password</Label>
+                        <Label for="current_password">
+                            {{ t('setting.password.fields.currentPassword') }}
+                        </Label>
                         <Input
                             id="current_password"
                             ref="currentPasswordInput"
                             name="current_password"
                             type="password"
                             class="mt-1 block w-full"
-                            placeholder="Current password"
+                            :placeholder="
+                                t(
+                                    'setting.password.placeholders.currentPassword',
+                                )
+                            "
                         />
                         <InputError :message="errors.current_password" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password">New password</Label>
+                        <Label for="password">
+                            {{ t('setting.password.fields.newPassword') }}
+                        </Label>
                         <Input
                             id="password"
                             ref="passwordInput"
                             name="password"
                             type="password"
                             class="mt-1 block w-full"
-                            placeholder="New password"
+                            :placeholder="
+                                t('setting.password.placeholders.newPassword')
+                            "
                             @input="handlePasswordInput"
                         />
                         <InputError :message="errors.password" />
@@ -105,8 +115,12 @@ const handlePasswordInput = (event: Event) => {
                                 }"
                                 class="transition-colors duration-200"
                             >
-                                {{ passwordChecks.length ? '✓' : '○' }} 8+
-                                characters
+                                {{ passwordChecks.length ? '✓' : '○' }}
+                                {{
+                                    t(
+                                        'setting.password.passwordRequirements.characters',
+                                    )
+                                }}
                             </span>
                             <span
                                 :class="{
@@ -115,10 +129,12 @@ const handlePasswordInput = (event: Event) => {
                                 }"
                                 class="transition-colors duration-200"
                             >
+                                {{ passwordChecks.uppercase ? '✓' : '○' }}
                                 {{
-                                    passwordChecks.uppercase ? '✓' : '○'
+                                    t(
+                                        'setting.password.passwordRequirements.uppercase',
+                                    )
                                 }}
-                                Uppercase
                             </span>
                             <span
                                 :class="{
@@ -127,10 +143,12 @@ const handlePasswordInput = (event: Event) => {
                                 }"
                                 class="transition-colors duration-200"
                             >
+                                {{ passwordChecks.lowercase ? '✓' : '○' }}
                                 {{
-                                    passwordChecks.lowercase ? '✓' : '○'
+                                    t(
+                                        'setting.password.passwordRequirements.lowercase',
+                                    )
                                 }}
-                                Lowercase
                             </span>
                             <span
                                 :class="{
@@ -138,7 +156,12 @@ const handlePasswordInput = (event: Event) => {
                                 }"
                                 class="transition-colors duration-200"
                             >
-                                {{ passwordChecks.number ? '✓' : '○' }} Number
+                                {{ passwordChecks.number ? '✓' : '○' }}
+                                {{
+                                    t(
+                                        'setting.password.passwordRequirements.number',
+                                    )
+                                }}
                             </span>
                             <span
                                 :class="{
@@ -146,21 +169,28 @@ const handlePasswordInput = (event: Event) => {
                                 }"
                                 class="transition-colors duration-200"
                             >
-                                {{ passwordChecks.symbol ? '✓' : '○' }} Symbol
+                                {{ passwordChecks.symbol ? '✓' : '○' }}
+                                {{
+                                    t(
+                                        'setting.password.passwordRequirements.symbol',
+                                    )
+                                }}
                             </span>
                         </div>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation"
-                            >Confirm password</Label
-                        >
+                        <Label for="password_confirmation">
+                            {{ t('setting.password.fields.confirmPassword') }}
+                        </Label>
                         <Input
                             id="password_confirmation"
                             name="password_confirmation"
                             type="password"
                             class="mt-1 block w-full"
-                            placeholder="Confirm password"
+                            :placeholder="
+                                t('setting.password.placeholders.confirmPassword')
+                            "
                         />
                         <InputError :message="errors.password_confirmation" />
                     </div>
@@ -169,8 +199,9 @@ const handlePasswordInput = (event: Event) => {
                         <Button
                             :disabled="processing"
                             data-test="update-password-button"
-                            >Save password</Button
                         >
+                            {{t('admin.buttons.save')}}
+                        </Button>
 
                         <Transition
                             enter-active-class="transition ease-in-out"
@@ -182,7 +213,7 @@ const handlePasswordInput = (event: Event) => {
                                 v-show="recentlySuccessful"
                                 class="text-sm text-neutral-600"
                             >
-                                Saved.
+                                {{t('setting.password.messages.saved')}}
                             </p>
                         </Transition>
                     </div>

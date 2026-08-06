@@ -40,6 +40,7 @@ import {
     ref,
     watch,
 } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     open: boolean;
@@ -47,44 +48,45 @@ const props = defineProps<{
 }>();
 
 const { can } = usePermission();
+const { t } = useI18n();
 
-const resultTypes: SearchResultType[] = [
+const resultTypes = computed<SearchResultType[]>(() => [
     {
         key: SearchResultEnum.DISH,
-        label: 'Dishes',
+        label: t('globalSearch.resultTypes.dishes'),
         permission: DishPermissionEnum.DISH_UPDATE,
     },
     {
         key: SearchResultEnum.DRINK,
-        label: 'Drinks',
+        label: t('globalSearch.resultTypes.drinks'),
         permission: DrinkPermissionEnum.DRINK_UPDATE,
     },
     {
         key: SearchResultEnum.INGREDIENT,
-        label: 'Ingredients',
+        label: t('globalSearch.resultTypes.ingredients'),
         permission: IngredientPermissionEnum.INGREDIENT_UPDATE,
     },
     {
         key: SearchResultEnum.MEAT,
-        label: 'Meats',
+        label: t('globalSearch.resultTypes.meats'),
         permission: MeatPermissionEnum.MEAT_UPDATE,
     },
     {
         key: SearchResultEnum.ALLERGEN,
-        label: 'Allergens',
+        label: t('globalSearch.resultTypes.allergens'),
         permission: AllergenPermissionEnum.ALLERGEN_UPDATE,
     },
     {
         key: SearchResultEnum.ROLE,
-        label: 'Roles',
+        label: t('globalSearch.resultTypes.roles'),
         permission: RolePermissionEnum.ROLE_UPDATE,
     },
     {
         key: SearchResultEnum.USER,
-        label: 'Users',
+        label: t('globalSearch.resultTypes.users'),
         permission: UserPermissionEnum.USER_VIEW,
     },
-];
+]);
 
 const query = ref<string>('');
 const results = ref<GlobalSearchType | null>(null);
@@ -111,7 +113,7 @@ const flatResults = computed(() => {
 });
 
 const filteredResultTypes = computed(() => {
-    return resultTypes.filter(
+    return resultTypes.value.filter(
         (type) => can(type.permission!) && results.value?.[type.key]?.length,
     );
 });
@@ -273,10 +275,10 @@ watch(flatResults, () => {
         <DialogContent class="gap-0 overflow-hidden p-0 sm:max-w-2xl">
             <DialogHeader class="border-b px-6 py-4">
                 <DialogTitle class="text-lg font-semibold">
-                    Global Search
+                    {{ t('globalSearch.title') }}
                 </DialogTitle>
                 <DialogDescription>
-                    What are you looking for?
+                    {{ t('globalSearch.description') }}
                 </DialogDescription>
             </DialogHeader>
 
@@ -288,7 +290,7 @@ watch(flatResults, () => {
                     <Input
                         ref="inputRef"
                         v-model="query"
-                        placeholder="Search dishes, drinks, ingredients..."
+                        :placeholder="t('globalSearch.placeholders.search')"
                         class="h-12 rounded-xl border-gray-200 pr-10 pl-10 transition-all duration-200 focus:ring-0"
                     />
                     <button
@@ -317,14 +319,14 @@ watch(flatResults, () => {
                     v-if="!query && !isLoading"
                     class="py-10 text-center text-sm text-muted-foreground"
                 >
-                    Start typing to search…
+                    {{ t('globalSearch.messages.startTyping') }}
                 </div>
 
                 <div
                     v-else-if="hasNoResults && !isLoading"
                     class="py-10 text-center text-sm text-muted-foreground"
                 >
-                    Not found what you are looking for !
+                    {{ t('globalSearch.messages.noResults') }}
                 </div>
 
                 <div
@@ -332,8 +334,10 @@ watch(flatResults, () => {
                     class="bg-gray-50/50"
                 >
                     <p class="text-xs text-gray-500">
-                        Found {{ totalResultsCount }} result{{
-                            totalResultsCount !== 1 ? 's' : ''
+                        {{
+                            t('globalSearch.messages.resultsFound', {
+                                count: totalResultsCount,
+                            })
                         }}
                     </p>
                 </div>
@@ -370,7 +374,10 @@ watch(flatResults, () => {
                     >
                         <div class="flex items-center justify-center gap-3">
                             <img
-                                v-if="item.main_image && item.type !== SearchResultEnum.ROLE"
+                                v-if="
+                                    item.main_image &&
+                                    item.type !== SearchResultEnum.ROLE
+                                "
                                 :src="item.main_image"
                                 :alt="item.name"
                                 class="h-9 w-9 rounded object-cover"
@@ -406,14 +413,14 @@ watch(flatResults, () => {
                             class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
                             >↓</kbd
                         >
-                        <span>to navigate</span>
+                        <span>{{ t('globalSearch.keyboard.navigate') }}</span>
                     </div>
                     <div class="flex items-center gap-1">
                         <kbd
                             class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
                             >Enter</kbd
                         >
-                        <span>to select</span>
+                        <span>{{ t('globalSearch.keyboard.select') }}</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-1">
@@ -421,7 +428,7 @@ watch(flatResults, () => {
                         class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
                         >Esc</kbd
                     >
-                    <span>to close</span>
+                    <span>{{ t('globalSearch.keyboard.close') }}</span>
                 </div>
             </div>
         </DialogContent>

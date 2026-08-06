@@ -12,6 +12,8 @@ export default {
         save: 'Save',
         unsend: 'Unsend',
         refresh: 'Refresh',
+        back: 'Back',
+        confirm: 'Confirm',
     },
     filters: {
         all: 'All',

@@ -12,6 +12,8 @@ export default {
         save: 'Späicheren',
         unsend: 'Net méi verschécken',
         refresh: 'Aktualiséieren',
+        back: 'Zréck',
+        confirm: 'Confirméieren',
     },
     filters: {
         all: 'All',

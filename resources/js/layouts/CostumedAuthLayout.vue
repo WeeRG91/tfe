@@ -1,6 +1,6 @@
 <script setup lang="ts">
-
 import { router } from '@inertiajs/vue3';
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 
 defineProps<{
     title: string;
@@ -9,7 +9,7 @@ defineProps<{
 }>();
 
 const goToHome = () => {
-    router.visit('/')
+    router.visit('/');
 };
 </script>
 
@@ -17,18 +17,22 @@ const goToHome = () => {
     <div
         class="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 p-6"
     >
+        <div class="fixed top-1 right-4 z-50 sm:top-6 sm:right-32">
+            <LanguageSwitcher />
+        </div>
+
         <div
-            class="fixed top-0 left-12 sm:left-24 h-full w-0.5 bg-gradient-to-b from-red-500/80 via-red-300/50 to-red-500/80"
+            class="fixed top-0 left-12 h-full w-0.5 bg-gradient-to-b from-red-500/80 via-red-300/50 to-red-500/80 sm:left-24"
         ></div>
 
         <div
-            class="fixed top-12 sm:top-24 left-0 h-0.5 w-full bg-gradient-to-r from-red-500/80 via-red-300/50 to-red-500/80"
+            class="fixed top-12 left-0 h-0.5 w-full bg-gradient-to-r from-red-500/80 via-red-300/50 to-red-500/80 sm:top-24"
         ></div>
 
-        <div class="fixed top-8 sm:top-19 left-20 sm:left-36 z-10">
+        <div class="fixed top-8 left-20 z-10 sm:top-19 sm:left-36">
             <span
                 @click="goToHome"
-                class="inline-block cursor-pointer rounded-lg bg-red-500 px-4 py-1.5 text-sm sm:text-lg font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-red-600 hover:shadow-lg active:scale-95"
+                class="inline-block cursor-pointer rounded-lg bg-red-500 px-4 py-1.5 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-red-600 hover:shadow-lg active:scale-95 sm:text-lg"
             >
                 Restaurant
             </span>
@@ -44,7 +48,7 @@ const goToHome = () => {
                     [ {{ badge }} ]
                 </p>
                 <h1
-                    class="mt-2 text-2xl font-semibold tracking-tight text-gray-900 uppercase sm:text-3xl"
+                    class="mt-2 text-xl font-semibold tracking-tight text-gray-900 uppercase sm:text-2xl"
                 >
                     {{ title }}
                 </h1>

@@ -235,7 +235,7 @@ const dropdownStyle = ref<{ top: string; left: string }>({
 
 const openMenu = (event: MouseEvent, messageId: number) => {
     if (messageMenuId.value === messageId) {
-        messageMenuId.value = null;
+        closeMenu();
         return;
     }
 
@@ -249,6 +249,10 @@ const openMenu = (event: MouseEvent, messageId: number) => {
         top: `${rect.bottom + 8}px`,
         left: `${rect.left + rect.width / 2 - dropdownWidth / 2}px`,
     };
+};
+
+const closeMenu = () => {
+    messageMenuId.value = null;
 };
 
 useClickOutside(messageMenuDropdownRef, () => {
@@ -429,6 +433,7 @@ const channel = ref<EchoChannel | null>(null);
 onMounted(async () => {
     document.addEventListener('keydown', handleEscape);
     window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', closeMenu, true);
 
     await loadUsers();
     await chatStore.fetchChats();
@@ -460,6 +465,7 @@ onMounted(async () => {
 onUnmounted(async () => {
     document.removeEventListener('keydown', handleEscape);
     window.removeEventListener('resize', handleResize);
+    window.removeEventListener('scroll', closeMenu, true);
 
     if (channel.value && selectedChatId.value) {
         window.Echo.leave(`private-chat.${selectedChatId.value}`);

@@ -5,41 +5,41 @@ import { MoveLeft, MoveRight } from 'lucide-vue-next';
 import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
 import { toast } from 'vue-sonner';
 import verification from '@/routes/verification';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     status?: string;
 }>();
+
+const { t } = useI18n();
 
 const verifyForm = useForm({});
 
 const submit = () => {
     verifyForm.post(verification.send().url, {
         onSuccess: () => {
-            toast.success('Verification email sent successfully!');
+            toast.success(t('verifyEmail.messages.verificationEmailSent'));
         },
         onError: () => {
-            toast.error(
-                'Unable to send the verification email. Please try again.',
-            );
+            toast.error(t('verifyEmail.messages.error'));
         },
     });
 };
 </script>
 
 <template>
-    <Head title="Email verification" />
+    <Head :title="t('verifyEmail.title')" />
 
     <CostumedAuthLayout
-        title="Verify email address"
-        description="Please verify your email address by clicking on the link we just emailed to you."
-        badge="Email Address"
+        :title="t('verifyEmail.heading')"
+        :description="t('verifyEmail.description')"
+        :badge="t('verifyEmail.badge')"
     >
         <div
             v-if="status === 'verification-link-sent'"
             class="mb-4 text-center text-sm font-medium text-green-600"
         >
-            A new verification link has been sent to the email address you
-            provided during registration.
+            {{ t('verifyEmail.messages.verificationLinkSent') }}
         </div>
 
         <form @submit.prevent="submit" class="space-y-6">
@@ -53,7 +53,9 @@ const submit = () => {
                         v-if="verifyForm.processing"
                         class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                     ></span>
-                    <span v-else>Resend verification email</span>
+                    <span v-else>
+                        {{ t('auth.buttons.resendVerificationEmail') }}
+                    </span>
                 </span>
             </button>
         </form>
@@ -64,12 +66,12 @@ const submit = () => {
                     class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
                 >
                     <p class="text-center text-sm text-gray-500">
-                        Need help?
+                        {{ t('auth.links.needHelp') }}
                         <Link
                             href="/contact"
                             class="font-medium text-gray-900 transition-colors hover:text-gray-600"
                         >
-                            Contact support
+                            {{ t('auth.links.contactSupport') }}
                         </Link>
                     </p>
                 </div>
@@ -82,7 +84,7 @@ const submit = () => {
                         <MoveLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
                         />
-                        Back to Sign In
+                        {{ t('auth.links.backToSignIn') }}
                     </Link>
 
                     <div class="h-4 w-px bg-gray-200"></div>
@@ -91,7 +93,7 @@ const submit = () => {
                         href="/"
                         class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
                     >
-                        Go to Home
+                        {{ t('auth.links.goToHome') }}
                         <MoveRight
                             class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                         />

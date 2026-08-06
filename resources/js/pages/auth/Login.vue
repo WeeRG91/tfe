@@ -8,11 +8,14 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, MoveLeft, MoveRight } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     status?: string;
     canResetPassword: boolean;
 }>();
+
+const { t } = useI18n();
 
 const loginForm = useForm({
     email: '',
@@ -24,9 +27,6 @@ const showPassword = ref<boolean>(false);
 
 const submit = () => {
     loginForm.post(login().url, {
-        onSuccess: () => {
-            toast.success('Logged in successfully!');
-        },
         onError: (errors) => {
             console.log(errors);
             if (errors.email) {
@@ -34,7 +34,7 @@ const submit = () => {
             } else if (errors.password) {
                 toast.error(errors.password);
             } else {
-                toast.error('Login failed. Please try again.');
+                toast.error(t('login.errors.loginFailed'));
             }
         },
     });
@@ -42,12 +42,12 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Log in" />
+    <Head :title="t('login.title')" />
 
     <CostumedAuthLayout
-        title="Log in to your account"
-        subtitle="Enter your email and password below to log in"
-        badge="Welcome Back"
+        :title="t('login.heading')"
+        :subtitle="t('login.subtitle')"
+        :badge="t('login.badge')"
     >
         <div
             v-if="status"
@@ -62,7 +62,7 @@ const submit = () => {
                     for="email"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Email address
+                    {{ t('login.fields.email') }}
                 </label>
                 <input
                     id="email"
@@ -89,14 +89,14 @@ const submit = () => {
                     for="password"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Password
+                    {{ t('login.fields.password') }}
                 </label>
                 <div class="group relative">
                     <input
                         id="password"
                         v-model="loginForm.password"
                         :type="showPassword ? 'text' : 'password'"
-                        placeholder="Enter your password"
+                        :placeholder="t('login.placeholders.password')"
                         class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         :class="{
                             'border-red-300 focus:border-red-400':
@@ -133,7 +133,9 @@ const submit = () => {
                         :tabindex="3"
                         class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-0 focus:ring-offset-0"
                     />
-                    <span class="text-sm text-gray-600">Remember me</span>
+                    <span class="text-sm text-gray-600">
+                        {{ t('login.fields.rememberMe') }}
+                    </span>
                 </Label>
             </div>
 
@@ -147,7 +149,7 @@ const submit = () => {
                         v-if="loginForm.processing"
                         class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                     ></span>
-                    <span v-else>Log in</span>
+                    <span v-else>{{ t('auth.buttons.login') }}</span>
                 </span>
             </button>
         </form>
@@ -158,12 +160,12 @@ const submit = () => {
                     class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
                 >
                     <p class="text-center text-sm text-gray-500">
-                        Need help?
+                        {{ t('auth.links.needHelp') }}
                         <Link
                             href="/contact"
                             class="font-medium text-gray-900 transition-colors hover:text-gray-600"
                         >
-                            Contact support
+                            {{ t('auth.links.contactSupport') }}
                         </Link>
                     </p>
                 </div>
@@ -177,7 +179,7 @@ const submit = () => {
                         <MoveLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
                         />
-                        Forgot password?
+                        {{ t('auth.links.forgotPassword') }}
                     </Link>
 
                     <div
@@ -189,7 +191,7 @@ const submit = () => {
                         :href="register()"
                         class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
                     >
-                        Create new account
+                        {{ t('auth.links.createAccount') }}
                         <MoveRight
                             class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                         />

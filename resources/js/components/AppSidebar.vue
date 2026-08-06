@@ -51,8 +51,8 @@ import {
     Wine,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
-import AppLogo from './AppLogo.vue';
 import { useI18n } from 'vue-i18n';
+import AppLogo from './AppLogo.vue';
 
 const page = usePage();
 const currentUser = computed(() => page.props.auth?.user);
@@ -124,7 +124,7 @@ const mainNavItems = computed<NavItem[]>(() => [
     },
 ]);
 
-const footerNavItems: NavItem[] = [
+const footerNavItems = computed<NavItem[]>(() => [
     {
         title: t('layout.navigation.myRestaurant'),
         href: 'http://127.0.0.1:8000',
@@ -135,10 +135,12 @@ const footerNavItems: NavItem[] = [
         href: 'https://laravel.com/docs/starter-kits#vue',
         icon: Folder,
     },
-];
+]);
 
 const visibleMainNavItems = computed(() =>
-    mainNavItems.value.filter((item) => !item.permission || can(item.permission)),
+    mainNavItems.value.filter(
+        (item) => !item.permission || can(item.permission),
+    ),
 );
 </script>
 

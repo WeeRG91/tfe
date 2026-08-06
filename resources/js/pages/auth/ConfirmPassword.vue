@@ -5,6 +5,9 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, MoveLeft } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const showPassword = ref(false);
 
@@ -24,7 +27,7 @@ const submit = () => {
             if (errors.password) {
                 toast.error(errors.password);
             } else {
-                toast.error('Unable to confirm your password.');
+                toast.error(t('confirmPassword.messages.confirmFailed'));
             }
         },
     });
@@ -36,12 +39,12 @@ const goBack = () => {
 </script>
 
 <template>
-    <Head title="Confirm password" />
+    <Head :title="t('confirmPassword.title')" />
 
     <CostumedAuthLayout
-        title="Confirm your password"
-        subtitle="This is a secure area of the application. Please confirm your password before continuing."
-        badge="Password"
+        :title="t('confirmPassword.heading')"
+        :subtitle="t('confirmPassword.subtitle')"
+        :badge="t('confirmPassword.badge')"
     >
         <form @submit.prevent="submit" class="space-y-6">
             <div>
@@ -49,7 +52,7 @@ const goBack = () => {
                     for="password"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Password
+                    {{ t('confirmPassword.fields.password') }}
                 </label>
 
                 <div class="group relative">
@@ -57,7 +60,9 @@ const goBack = () => {
                         id="password"
                         v-model="form.password"
                         :type="showPassword ? 'text' : 'password'"
-                        placeholder="Enter your password"
+                        :placeholder="
+                            t('confirmPassword.placeholders.password')
+                        "
                         class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         :class="{
                             'border-red-300 focus:border-red-400':
@@ -96,24 +101,22 @@ const goBack = () => {
                         class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                     ></span>
 
-                    <span v-else>Confirm Password</span>
+                    <span v-else>{{ t('auth.buttons.confirmPassword') }}</span>
                 </span>
             </button>
         </form>
 
         <template #footer>
-            <div
-                class="rounded-2xl backdrop-blur-sm transition-all "
-            >
+            <div class="rounded-2xl backdrop-blur-sm transition-all">
                 <div class="flex items-center justify-center gap-2">
                     <button
                         @click="goBack"
-                        class="group inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:text-gray-900 focus:outline-none active:scale-95 cursor-pointer"
+                        class="group inline-flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:text-gray-900 focus:outline-none active:scale-95"
                     >
                         <MoveLeft
                             class="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1"
                         />
-                        <span>Go Back</span>
+                        <span>{{ t('auth.buttons.goBack') }}</span>
                     </button>
                 </div>
             </div>

@@ -12,6 +12,8 @@ export default {
         save: 'บันทึก',
         unsend: 'ยกเลิกการส่ง',
         refresh: 'รีเฟรช',
+        back: 'ย้อนกลับ',
+        confirm: 'ยืนยัน',
     },
     filters: {
         all: 'ทั้งหมด',

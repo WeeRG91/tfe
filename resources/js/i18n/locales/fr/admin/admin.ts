@@ -12,6 +12,8 @@ export default {
         save: 'Enregistrer',
         unsend: 'Annuler l’envoi',
         refresh: 'Actualiser',
+        back: 'Retour',
+        confirm: 'Confirmer',
     },
     filters: {
         all: 'Tous',

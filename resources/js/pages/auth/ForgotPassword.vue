@@ -5,6 +5,7 @@ import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
 import { toast } from 'vue-sonner';
 import { request } from '@/routes/password';
 import { MoveLeft, MoveRight } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     status?: string;
@@ -14,17 +15,19 @@ const forgotForm = useForm({
     email: '',
 });
 
+const { t } = useI18n();
+
 const submit = () => {
     forgotForm.post(request().url, {
         onSuccess: () => {
-            toast.success('Password reset link sent successfully');
+            toast.success(t('forgotPassword.messages.resetLinkSent'));
         },
         onError: (errors) => {
             console.log(errors);
             if (errors.email) {
                 toast.error(errors.email);
             } else {
-                toast.error('Something went wrong. Please try again.');
+                toast.error(t('forgotPassword.messages.error'));
             }
         },
     });
@@ -32,12 +35,12 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Forgot password" />
+    <Head :title="t('forgotPassword.title')" />
 
     <CostumedAuthLayout
-        title="Forgot password"
-        subtitle="Enter your email to receive a password reset link"
-        badge="Password"
+        :title="t('forgotPassword.heading')"
+        :subtitle="t('forgotPassword.subtitle')"
+        :badge="t('forgotPassword.badge')"
     >
         <div
             v-if="status"
@@ -52,7 +55,7 @@ const submit = () => {
                     for="email"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Email address
+                    {{ t('forgotPassword.fields.email') }}
                 </label>
                 <input
                     id="email"
@@ -84,7 +87,7 @@ const submit = () => {
                         v-if="forgotForm.processing"
                         class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                     ></span>
-                    <span v-else>Password reset link send</span>
+                    <span v-else>{{ t('auth.buttons.sendResetLink') }}</span>
                 </span>
             </button>
         </form>
@@ -95,12 +98,12 @@ const submit = () => {
                     class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
                 >
                     <p class="text-center text-sm text-gray-500">
-                        Need help?
+                        {{ t('auth.links.needHelp') }}
                         <Link
                             href="/contact"
                             class="font-medium text-gray-900 transition-colors hover:text-gray-600"
                         >
-                            Contact support
+                            {{ t('auth.links.contactSupport') }}
                         </Link>
                     </p>
                 </div>
@@ -113,18 +116,16 @@ const submit = () => {
                         <MoveLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
                         />
-                        Back to Sign In
+                        {{ t('auth.links.backToSignIn') }}
                     </Link>
 
-                    <div
-                        class="h-4 w-px bg-gray-200"
-                    ></div>
+                    <div class="h-4 w-px bg-gray-200"></div>
 
                     <Link
                         :href="register()"
                         class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
                     >
-                        Create new account
+                        {{ t('auth.links.createAccount') }}
                         <MoveRight
                             class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                         />

@@ -1,26 +1,23 @@
 <script setup lang="ts">
 import OrderDetailsModal from '@/components/admin/order/OrderDetailsModal.vue';
 import { useOrderStatusActionFlow } from '@/composables/useOrderStatusActionFlow';
-import {
-    formatAddress,
-    formatDate,
-    getOrderStatusVariant,
-    getOrderTypeIcon,
-} from '@/lib/utils';
+import { usePermission } from '@/composables/usePermission';
+import { formatAddress, getOrderStatusVariant } from '@/lib/utils';
 import { useOrderStore } from '@/stores/order';
 import { OrderStatusEnum, OrderType, OrderTypeEnum } from '@/types/order';
+import { OrderPermissionEnum } from '@/types/permission';
 import {
     ChevronDown,
     ChevronUp,
     Coffee,
+    LoaderCircle,
     MapPin,
     User,
-    LoaderCircle,
 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { usePermission } from '@/composables/usePermission';
-import { OrderPermissionEnum } from '@/types/permission';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     order: OrderType;
@@ -28,6 +25,9 @@ const props = defineProps<{
 }>();
 
 const { can } = usePermission();
+
+const { t } = useI18n();
+const { formatDate } = useDateFormatter();
 
 const emit = defineEmits<{
     'update-status': [orderId: number, newStatus: OrderStatusEnum];
@@ -68,10 +68,10 @@ const handleUpdateStatus = async (
 ) => {
     try {
         await orderStore.updateOrderStatus(orderId, newStatus);
-        toast.success('Updated status order successfully!');
+        toast.success(t('confirmedOrder.orderCard.updateStatusSuccess'));
     } catch (error) {
         console.log(error);
-        toast.error('Failed to update order status');
+        toast.error(t('confirmedOrder.orderCard.updateStatusFailed'));
     } finally {
         closeModal();
     }
@@ -99,13 +99,10 @@ watch(
         <div class="flex items-start justify-between gap-2">
             <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-1">
-                    <component
-                        :is="getOrderTypeIcon(order.type.value)"
-                        :size="14"
-                        class="flex-shrink-0 md:h-4 md:w-4"
-                    />
                     <h4 class="truncate text-sm font-semibold md:text-base">
-                        <span>Order #{{ order.order_number }}</span>
+                        <span>
+                            {{ order.order_number }}
+                        </span>
                     </h4>
                 </div>
                 <p class="text-xs text-muted-foreground">
@@ -117,7 +114,7 @@ watch(
                     class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap"
                     :class="getOrderStatusVariant(order.status.value)"
                 >
-                    {{ order.status.label }}
+                    {{ t(`confirmedOrder.status.${order.status.key}`) }}
                 </span>
                 <button
                     class="rounded-md p-1 transition-colors hover:bg-sidebar-accent md:hidden"
@@ -173,7 +170,13 @@ watch(
                         :size="14"
                         class="flex-shrink-0 text-muted-foreground"
                     />
-                    <span class="text-xs">Table {{ order.table_number }}</span>
+                    <span class="text-xs">
+                        {{
+                            t('confirmedOrder.orderCard.table', {
+                                number: order.table_number,
+                            })
+                        }}
+                    </span>
                 </div>
             </div>
 
@@ -195,7 +198,11 @@ watch(
                         v-if="order.items.length > 2"
                         class="text-xs text-muted-foreground"
                     >
-                        +{{ order.items.length - 2 }} more items
+                        {{
+                            t('confirmedOrder.orderCard.moreItems', {
+                                count: order.items.length - 2,
+                            })
+                        }}
                     </div>
                 </div>
             </div>
@@ -203,7 +210,9 @@ watch(
             <div
                 class="mb-3 flex items-center justify-between border-t border-sidebar-border/50 pt-2"
             >
-                <span class="text-sm font-medium">Total:</span>
+                <span class="text-sm font-medium">
+                    {{ t('confirmedOrder.orderCard.total') }}
+                </span>
                 <span class="text-lg font-bold"
                     >€{{ order.total_inc_vat.toFixed(2) }}</span
                 >
@@ -241,7 +250,7 @@ watch(
                     @click="openOrderDetails(order)"
                     class="rounded-md border border-sidebar-border/70 px-2 py-1.5 text-xs font-medium whitespace-nowrap transition-colors hover:bg-sidebar-accent md:px-3"
                 >
-                    Details
+                    {{ t('confirmedOrder.orderCard.details') }}
                 </button>
             </div>
         </div>
@@ -288,7 +297,13 @@ watch(
                         :size="14"
                         class="flex-shrink-0 text-muted-foreground"
                     />
-                    <span class="text-sm">Table {{ order.table_number }}</span>
+                    <span class="text-sm">
+                        {{
+                            t('confirmedOrder.orderCard.table', {
+                                number: order.table_number,
+                            })
+                        }}
+                    </span>
                 </div>
             </div>
 
@@ -312,7 +327,9 @@ watch(
             <div
                 class="mb-3 flex items-center justify-between border-t border-sidebar-border/50 pt-2"
             >
-                <span class="text-base font-medium">Total:</span>
+                <span class="text-base font-medium">
+                    {{ t('confirmedOrder.orderCard.total') }}
+                </span>
                 <span class="text-xl font-bold"
                     >€{{ order.total_inc_vat.toFixed(2) }}</span
                 >
@@ -348,7 +365,7 @@ watch(
                     @click="openOrderDetails(order)"
                     class="w-full rounded-md border border-sidebar-border/70 px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent"
                 >
-                    View Full Details
+                    {{ t('confirmedOrder.orderCard.viewFullDetails') }}
                 </button>
             </div>
         </div>

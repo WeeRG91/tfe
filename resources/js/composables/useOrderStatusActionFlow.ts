@@ -1,4 +1,5 @@
 import { OrderStatusEnum, OrderTypeEnum } from '@/types/order';
+import { useI18n } from 'vue-i18n';
 
 enum ActionEnum {
     STARTPREPARING = 'start-preparing',
@@ -11,6 +12,8 @@ enum ActionEnum {
 export function useOrderStatusActionFlow(
     updateStatus: (orderStatus: OrderStatusEnum, actionId: string) => void,
 ) {
+    const {t} = useI18n();
+
     const getPreviousStatus = (status: OrderStatusEnum) => {
         const PREVIOUS_STATUS: Record<OrderStatusEnum, OrderStatusEnum | null> =
             {
@@ -58,7 +61,7 @@ export function useOrderStatusActionFlow(
         if (status === OrderStatusEnum.CONFIRMED) {
             actions.push({
                 id: ActionEnum.STARTPREPARING,
-                label: 'Start Preparing',
+                label: t('confirmedOrder.orderCard.actions.startPreparing'),
                 action: () =>
                     updateStatus(nextStatus!, ActionEnum.STARTPREPARING),
                 class: 'bg-blue-500 hover:bg-blue-700',
@@ -68,14 +71,14 @@ export function useOrderStatusActionFlow(
         if (status === OrderStatusEnum.PREPARING) {
             actions.push({
                 id: ActionEnum.MARKASREADY,
-                label: 'Mark as Ready',
+                label: t('confirmedOrder.orderCard.actions.markAsReady'),
                 action: () => updateStatus(nextStatus!, ActionEnum.MARKASREADY),
                 class: 'bg-yellow-500 hover:bg-yellow-700',
             });
 
             actions.push({
                 id: ActionEnum.UNDO,
-                label: 'Undo',
+                label: t('confirmedOrder.orderCard.actions.undo'),
                 action: () => updateStatus(previousStatus!, ActionEnum.UNDO),
                 class: 'bg-gray-500 hover:bg-gray-600',
             });
@@ -85,7 +88,7 @@ export function useOrderStatusActionFlow(
             if (type === OrderTypeEnum.DELIVERY) {
                 actions.push({
                     id: ActionEnum.STARTDELIVERING,
-                    label: 'Start Delivering',
+                    label: t('confirmedOrder.orderCard.actions.startDelivering'),
                     action: () =>
                         updateStatus(nextStatus!, ActionEnum.STARTDELIVERING),
                     class: 'bg-purple-500 hover:bg-purple-700',
@@ -93,7 +96,7 @@ export function useOrderStatusActionFlow(
             } else {
                 actions.push({
                     id: ActionEnum.COMPLETEORDER,
-                    label: 'Complete Order',
+                    label: t('confirmedOrder.orderCard.actions.completeOrder'),
                     action: () =>
                         updateStatus(nextStatus!, ActionEnum.COMPLETEORDER),
                     class: 'bg-purple-500 hover:bg-purple-700',
@@ -102,7 +105,7 @@ export function useOrderStatusActionFlow(
 
             actions.push({
                 id: ActionEnum.UNDO,
-                label: 'Undo',
+                label: t('confirmedOrder.orderCard.actions.undo'),
                 action: () => updateStatus(previousStatus!, ActionEnum.UNDO),
                 class: 'bg-gray-500 hover:bg-gray-600',
             });
@@ -111,7 +114,7 @@ export function useOrderStatusActionFlow(
         if (status === OrderStatusEnum.DELIVERING) {
             actions.push({
                 id: ActionEnum.COMPLETEORDER,
-                label: 'Complete Order',
+                label: t('confirmedOrder.orderCard.actions.completeOrder'),
                 action: () =>
                     updateStatus(nextStatus!, ActionEnum.COMPLETEORDER),
                 class: 'bg-purple-500 hover:bg-purple-700',
@@ -119,7 +122,7 @@ export function useOrderStatusActionFlow(
 
             actions.push({
                 id: ActionEnum.UNDO,
-                label: 'Undo',
+                label: t('confirmedOrder.orderCard.actions.undo'),
                 action: () => updateStatus(previousStatus!, ActionEnum.UNDO),
                 class: 'bg-gray-500 hover:bg-gray-600',
             });

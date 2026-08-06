@@ -4,29 +4,38 @@ import { home } from '@/routes';
 import { dashboard } from '@/routes/admin';
 import { Head, Link } from '@inertiajs/vue3';
 import { HandPlatter, LayoutDashboard } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
 
-const navigationItems = [
+const { t } = useI18n();
+
+const navigationItems = computed(() => [
     {
-        label: 'Administration Panel',
+        label: t('adminGateway.navigation.administrationPanel.label'),
         route: dashboard,
         icon: LayoutDashboard,
         iconClass: 'group-hover:-translate-x-0.5',
-        description: 'Manage system settings and users',
+        description: t(
+            'adminGateway.navigation.administrationPanel.description',
+        ),
     },
     {
-        label: 'Restaurant',
+        label: t('adminGateway.navigation.restaurant.label'),
         route: home,
         icon: HandPlatter,
         iconClass: 'group-hover:translate-x-0.5',
-        description: 'View restaurant interface',
+        description: t('adminGateway.navigation.restaurant.description'),
     },
-] as const;
+]);
 </script>
 
 <template>
-    <Head title="Admin gateway" />
+    <Head :title="t('adminGateway.title')" />
 
-    <CostumedAuthLayout title="Admin gateway" badge="Administration">
+    <CostumedAuthLayout
+        :title="t('adminGateway.title')"
+        :badge="t('adminGateway.badge')"
+    >
         <div class="flex flex-col gap-4">
             <Link
                 v-for="item in navigationItems"
@@ -61,10 +70,11 @@ const navigationItems = [
 
         <template #footer>
             <div class="text-sm text-gray-500">
-                <p class="font-medium text-gray-700">Admin Gateway</p>
+                <p class="font-medium text-gray-700">
+                    {{ t('adminGateway.footer.title') }}
+                </p>
                 <p class="mt-1">
-                    Select an option above to access the administrative
-                    dashboard or return to the restaurant interface.
+                    {{ t('adminGateway.footer.description') }}
                 </p>
             </div>
         </template>

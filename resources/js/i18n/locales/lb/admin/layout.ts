@@ -13,4 +13,5 @@ export default {
         myRestaurant: 'Mäi Restaurant',
         documentation: 'Dokumentatioun',
     },
+    search: 'Sichen',
 };

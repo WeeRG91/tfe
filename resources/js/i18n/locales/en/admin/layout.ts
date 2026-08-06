@@ -13,4 +13,5 @@ export default {
         myRestaurant: 'My Restaurant',
         documentation: 'Documentation',
     },
+    search: 'Search',
 };

@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import { useOrderStatusActionFlow } from '@/composables/useOrderStatusActionFlow';
+import { getSpicyLevelLabels } from '@/lib/const';
 import {
     formatAddress,
-    formatDate,
-    formatDateShort,
     formatTime,
     getOrderStatusIcon,
     getOrderStatusVariant,
@@ -22,6 +22,7 @@ import {
     X,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     order: OrderType | null;
@@ -32,6 +33,10 @@ const emit = defineEmits<{
     close: [];
     'update-status': [orderId: number, newStatus: OrderStatusEnum];
 }>();
+
+const { t } = useI18n();
+const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
+const { formatDate } = useDateFormatter();
 
 const orderStatusActionId = ref<string>('');
 
@@ -105,14 +110,16 @@ watch(
                         <h2
                             class="text-xl font-semibold text-gray-900 dark:text-white"
                         >
-                            Order #{{ order.order_number }}
+                            {{ order.order_number }}
                         </h2>
                         <p
                             class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
                         >
                             <span>
-                                {{ order.type.label }} •
-                                {{ formatDateShort(order.created_at) }}
+                                {{
+                                    t(`confirmedOrder.types.${order.type.key}`)
+                                }}
+                                • {{ formatDate(order.created_at) }}
                             </span>
 
                             <span
@@ -125,7 +132,11 @@ watch(
                                     :is="getOrderStatusIcon(order.status.value)"
                                     :size="14"
                                 />
-                                {{ order.status.label }}
+                                {{
+                                    t(
+                                        `confirmedOrder.status.${order.status.key}`,
+                                    )
+                                }}
                             </span>
                         </p>
                     </div>
@@ -150,7 +161,7 @@ watch(
                                 <h3
                                     class="font-semibold text-gray-900 dark:text-white"
                                 >
-                                    Order Items
+                                    {{ t('confirmedOrder.details.items') }}
                                 </h3>
                             </div>
                             <div
@@ -177,7 +188,12 @@ watch(
                                                         v-if="item.notes"
                                                         class="mt-1 text-sm text-gray-500 dark:text-gray-400"
                                                     >
-                                                        Note: {{ item.notes }}
+                                                        {{
+                                                            t(
+                                                                'confirmedOrder.details.item.note',
+                                                            )
+                                                        }}:
+                                                        {{ item.notes }}
                                                     </p>
                                                 </div>
                                                 <span
@@ -194,14 +210,27 @@ watch(
                                             <div
                                                 class="mt-1 text-xs text-gray-500 dark:text-gray-400"
                                             >
-                                                Spicy level: {{ ['No spicy', 'Mild', 'Spicy', 'Hot'][item.spicy_level] }}
+                                                {{
+                                                    t(
+                                                        'confirmedOrder.spicyLevel.title',
+                                                    )
+                                                }}:
+                                                {{
+                                                    spicyLevelLabels[
+                                                        item.spicy_level
+                                                    ]
+                                                }}
                                             </div>
 
                                             <div
                                                 v-if="item.meat"
                                                 class="mt-1 text-xs text-gray-500 dark:text-gray-400"
                                             >
-                                                Meat: {{ item.meat.name }}
+                                                {{
+                                                    t(
+                                                        'confirmedOrder.details.item.meat',
+                                                    )
+                                                }}: {{ item.meat.name }}
                                             </div>
 
                                             <div
@@ -211,7 +240,11 @@ watch(
                                                 "
                                                 class="mt-1 text-xs text-gray-500 dark:text-gray-400"
                                             >
-                                                Removed:
+                                                {{
+                                                    t(
+                                                        'confirmedOrder.details.item.removed',
+                                                    )
+                                                }}:
                                                 {{
                                                     item.removed_ingredients
                                                         .map((i) => i.name)
@@ -233,7 +266,7 @@ watch(
                                 <h3
                                     class="font-semibold text-gray-900 dark:text-white"
                                 >
-                                    Order Timeline
+                                    {{ t('confirmedOrder.details.timeline') }}
                                 </h3>
                             </div>
                             <div class="space-y-3 p-4">
@@ -247,7 +280,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Order Created
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.timelineStatus.created',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ formatDate(order.created_at) }}
@@ -267,7 +304,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Order Confirmed
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.timelineStatus.confirmed',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ formatDate(order.confirmed_at) }}
@@ -287,7 +328,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Preparation Started
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.timelineStatus.preparationStarted',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ formatDate(order.prepare_at) }}
@@ -307,7 +352,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Order Ready
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.timelineStatus.ready',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ formatDate(order.ready_at) }}
@@ -327,7 +376,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Delivering
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.timelineStatus.delivering',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ formatDate(order.delivered_at) }}
@@ -347,7 +400,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Order Completed
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.timelineStatus.completed',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ formatDate(order.completed_at) }}
@@ -367,7 +424,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Order Cancelled
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.timelineStatus.cancelled',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ formatDate(order.cancelled_at) }}
@@ -388,7 +449,11 @@ watch(
                                 <h3
                                     class="font-semibold text-gray-900 dark:text-white"
                                 >
-                                    Customer Information
+                                    {{
+                                        t(
+                                            'confirmedOrder.details.customer.information',
+                                        )
+                                    }}
                                 </h3>
                             </div>
                             <div class="space-y-3 p-4">
@@ -421,7 +486,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Delivery Address
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.customer.deliveryAddress',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{
@@ -445,7 +514,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Pickup Details
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.customer.pickupDetails',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ order.pickup_name }}
@@ -457,7 +530,11 @@ watch(
                                             v-if="order.pickup_time"
                                             class="text-xs text-gray-500"
                                         >
-                                            Pickup by:
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.customer.pickupBy',
+                                                )
+                                            }}:
                                             {{ formatTime(order.pickup_time) }}
                                         </p>
                                     </div>
@@ -475,10 +552,19 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Table Number
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.customer.tableNumber',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
-                                            Table {{ order.table_number }}
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.customer.table',
+                                                )
+                                            }}
+                                            {{ order.table_number }}
                                         </p>
                                     </div>
                                 </div>
@@ -495,7 +581,11 @@ watch(
                                         <p
                                             class="text-sm text-gray-900 dark:text-white"
                                         >
-                                            Order Notes
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.notes',
+                                                )
+                                            }}
                                         </p>
                                         <p class="text-xs text-gray-500">
                                             {{ order.notes }}
@@ -514,15 +604,24 @@ watch(
                                 <h3
                                     class="font-semibold text-gray-900 dark:text-white"
                                 >
-                                    Payment Information
+                                    {{
+                                        t(
+                                            'confirmedOrder.details.payment.information',
+                                        )
+                                    }}
                                 </h3>
                             </div>
                             <div class="space-y-3 p-4">
                                 <div class="flex items-center justify-between">
                                     <span
                                         class="text-sm text-gray-600 dark:text-gray-400"
-                                        >Payment Method</span
                                     >
+                                        {{
+                                            t(
+                                                'confirmedOrder.details.payment.method',
+                                            )
+                                        }}
+                                    </span>
                                     <span
                                         class="flex items-center gap-1 text-sm font-medium text-gray-900 dark:text-white"
                                     >
@@ -534,16 +633,24 @@ watch(
                                             "
                                             :size="14"
                                         />
-
-                                        {{ order.payment_method.label }}
+                                        {{
+                                            t(
+                                                `confirmedOrder.paymentMethod.${order.payment_method.key}`,
+                                            )
+                                        }}
                                     </span>
                                 </div>
 
                                 <div class="flex items-center justify-between">
                                     <span
                                         class="text-sm text-gray-600 dark:text-gray-400"
-                                        >Payment Status</span
                                     >
+                                        {{
+                                            t(
+                                                'confirmedOrder.details.payment.status',
+                                            )
+                                        }}
+                                    </span>
                                     <span
                                         class="inline-flex gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
                                         :class="
@@ -561,7 +668,9 @@ watch(
                                             :size="14"
                                         />
                                         {{
-                                            order.payment_status.label.toUpperCase()
+                                            t(
+                                                `confirmedOrder.paymentStatus.${order.payment_status.key}`,
+                                            )
                                         }}
                                     </span>
                                 </div>
@@ -572,8 +681,13 @@ watch(
                                 >
                                     <span
                                         class="text-sm text-gray-600 dark:text-gray-400"
-                                        >Paid At</span
                                     >
+                                        {{
+                                            t(
+                                                'confirmedOrder.details.payment.paidAt',
+                                            )
+                                        }}
+                                    </span>
                                     <span
                                         class="text-sm text-gray-900 dark:text-white"
                                         >{{ formatDate(order.paid_at) }}</span
@@ -591,15 +705,20 @@ watch(
                                 <h3
                                     class="font-semibold text-gray-900 dark:text-white"
                                 >
-                                    Order Summary
+                                    {{ t('confirmedOrder.details.summary') }}
                                 </h3>
                             </div>
                             <div class="space-y-2 p-4">
                                 <div class="flex justify-between text-sm">
                                     <span
                                         class="text-gray-600 dark:text-gray-400"
-                                        >Subtotal</span
                                     >
+                                        {{
+                                            t(
+                                                'confirmedOrder.details.price.subtotal',
+                                            )
+                                        }}
+                                    </span>
                                     <span class="text-gray-900 dark:text-white"
                                         >€{{ order.subtotal.toFixed(2) }}</span
                                     >
@@ -611,8 +730,13 @@ watch(
                                 >
                                     <span
                                         class="text-gray-600 dark:text-gray-400"
-                                        >Delivery Fee</span
                                     >
+                                        {{
+                                            t(
+                                                'confirmedOrder.details.price.deliveryFee',
+                                            )
+                                        }}
+                                    </span>
                                     <span class="text-red-600 dark:text-white"
                                         >€{{
                                             order.delivery_fee.toFixed(2)
@@ -626,23 +750,31 @@ watch(
                                 >
                                     <span
                                         class="text-gray-600 dark:text-gray-400"
-                                        >Discount</span
                                     >
-                                    <span class="text-green-600"
-                                        >-€{{
-                                            order.discount_total.toFixed(2)
-                                        }}</span
-                                    >
+                                        {{
+                                            t(
+                                                'confirmedOrder.details.price.discount',
+                                            )
+                                        }}
+                                    </span>
+                                    <span class="text-green-600">
+                                        -€{{ order.discount_total.toFixed(2) }}
+                                    </span>
                                 </div>
 
                                 <div class="flex justify-between text-sm">
                                     <span
                                         class="text-gray-600 dark:text-gray-400"
-                                        >VAT</span
                                     >
-                                    <span class="text-gray-900 dark:text-white"
-                                        >€{{ order.vat_total.toFixed(2) }}</span
-                                    >
+                                        {{
+                                            t(
+                                                'confirmedOrder.details.price.vat',
+                                            )
+                                        }}
+                                    </span>
+                                    <span class="text-gray-900 dark:text-white">
+                                        €{{ order.vat_total.toFixed(2) }}
+                                    </span>
                                 </div>
 
                                 <div
@@ -654,14 +786,17 @@ watch(
                                         :key="vat.vat_rate"
                                         class="flex justify-between text-xs"
                                     >
-                                        <span class="text-gray-500"
-                                            >VAT {{ vat.vat_rate }}%</span
-                                        >
-                                        <span class="text-gray-600"
-                                            >€{{
-                                                vat.vat_total.toFixed(2)
-                                            }}</span
-                                        >
+                                        <span class="text-gray-500">
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.price.vat',
+                                                )
+                                            }}
+                                            {{ vat.vat_rate }}%
+                                        </span>
+                                        <span class="text-gray-600">
+                                            €{{ vat.vat_total.toFixed(2) }}
+                                        </span>
                                     </div>
                                 </div>
 
@@ -671,8 +806,13 @@ watch(
                                     <div class="flex justify-between">
                                         <span
                                             class="font-semibold text-gray-900 dark:text-white"
-                                            >Total</span
                                         >
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.price.total',
+                                                )
+                                            }}
+                                        </span>
                                         <span
                                             class="text-xl font-bold text-gray-900 dark:text-white"
                                         >

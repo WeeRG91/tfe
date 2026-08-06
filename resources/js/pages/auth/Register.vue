@@ -6,9 +6,12 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, MoveLeft, MoveRight } from 'lucide-vue-next';
 import { ref, toRef } from 'vue';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
 
 const showPassword = ref(false);
 const showPasswordConfirmation = ref(false);
+
+const { t } = useI18n();
 
 const registerForm = useForm({
     name: '',
@@ -24,7 +27,7 @@ const { passwordChecks, getPasswordStrengthColor } = usePasswordStrength(
 const submit = () => {
     registerForm.post(register().url, {
         onSuccess: () => {
-            toast.success('Account created successfully!');
+            toast.success(t('register.messages.created'));
         },
         onError: (errors) => {
             console.log(errors);
@@ -36,9 +39,9 @@ const submit = () => {
                 errors.password ||
                 errors.password_confirmation
             ) {
-                toast.error('Invalid input. Please check the form.');
+                toast.error(t('register.messages.invalidInput'));
             } else {
-                toast.error('Something went wrong. Please check the form.');
+                toast.error(t('register.messages.error'));
             }
         },
     });
@@ -46,12 +49,12 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head :title="t('register.title')" />
 
     <CostumedAuthLayout
-        title="Create an account"
-        subtitle="Enter your details below to create your account"
-        badge="Welcome"
+        :title="t('register.heading')"
+        :subtitle="t('register.subtitle')"
+        :badge="t('register.badge')"
     >
         <form @submit.prevent="submit" class="space-y-6">
             <div>
@@ -59,13 +62,13 @@ const submit = () => {
                     for="name"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Name
+                    {{ t('register.fields.name') }}
                 </label>
                 <input
                     id="name"
                     v-model="registerForm.name"
                     type="text"
-                    placeholder="Full name"
+                    :placeholder="t('register.placeholders.name')"
                     class="w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-2.5 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                     :class="{
                         'border-red-300 focus:border-red-400':
@@ -87,7 +90,7 @@ const submit = () => {
                     for="email"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Email address
+                    {{ t('register.fields.email') }}
                 </label>
                 <input
                     id="email"
@@ -114,14 +117,14 @@ const submit = () => {
                     for="password"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Password
+                    {{ t('register.fields.password') }}
                 </label>
                 <div class="group relative">
                     <input
                         id="password"
                         v-model="registerForm.password"
                         :type="showPassword ? 'text' : 'password'"
-                        placeholder="Create a strong password"
+                        :placeholder="t('register.placeholders.password')"
                         class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         :class="{
                             'border-red-300 focus:border-red-400':
@@ -167,8 +170,8 @@ const submit = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.length ? '✓' : '○' }} 8+
-                            characters
+                            {{ passwordChecks.length ? '✓' : '○' }}
+                            {{ t('register.passwordRequirements.length') }}
                         </span>
                         <span
                             :class="{
@@ -176,7 +179,8 @@ const submit = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.uppercase ? '✓' : '○' }} Uppercase
+                            {{ passwordChecks.uppercase ? '✓' : '○' }}
+                            {{ t('register.passwordRequirements.uppercase') }}
                         </span>
                         <span
                             :class="{
@@ -184,7 +188,8 @@ const submit = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.lowercase ? '✓' : '○' }} Lowercase
+                            {{ passwordChecks.lowercase ? '✓' : '○' }}
+                            {{ t('register.passwordRequirements.lowercase') }}
                         </span>
                         <span
                             :class="{
@@ -192,7 +197,8 @@ const submit = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.number ? '✓' : '○' }} Number
+                            {{ passwordChecks.number ? '✓' : '○' }}
+                            {{ t('register.passwordRequirements.number') }}
                         </span>
                         <span
                             :class="{
@@ -200,7 +206,8 @@ const submit = () => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.symbol ? '✓' : '○' }} Symbol
+                            {{ passwordChecks.symbol ? '✓' : '○' }}
+                            {{ t('register.passwordRequirements.symbol') }}
                         </span>
                     </div>
                 </div>
@@ -211,14 +218,16 @@ const submit = () => {
                     for="password_confirmation"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Confirm Password
+                    {{ t('register.fields.confirmPassword') }}
                 </label>
                 <div class="group relative">
                     <input
                         id="password_confirmation"
                         v-model="registerForm.password_confirmation"
                         :type="showPasswordConfirmation ? 'text' : 'password'"
-                        placeholder="Confirm your password"
+                        :placeholder="
+                            t('register.placeholders.confirmPassword')
+                        "
                         class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         :class="{
                             'border-red-300 focus:border-red-400':
@@ -256,7 +265,7 @@ const submit = () => {
                         v-if="registerForm.processing"
                         class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                     ></span>
-                    <span v-else>Create account</span>
+                    <span v-else>{{ t('auth.buttons.createAccount') }}</span>
                 </span>
             </button>
         </form>
@@ -267,12 +276,12 @@ const submit = () => {
                     class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
                 >
                     <p class="text-center text-sm text-gray-500">
-                        Need help?
+                        {{ t('auth.links.needHelp') }}
                         <Link
                             href="/contact"
                             class="font-medium text-gray-900 transition-colors hover:text-gray-600"
                         >
-                            Contact support
+                            {{ t('auth.links.contactSupport') }}
                         </Link>
                     </p>
                 </div>
@@ -285,7 +294,7 @@ const submit = () => {
                         <MoveLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
                         />
-                        Back to Sign In
+                        {{ t('auth.links.backToSignIn') }}
                     </Link>
 
                     <div class="h-4 w-px bg-gray-200"></div>
@@ -294,7 +303,7 @@ const submit = () => {
                         href="/"
                         class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
                     >
-                        Go to Home
+                        {{ t('auth.links.goToHome') }}
                         <MoveRight
                             class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                         />

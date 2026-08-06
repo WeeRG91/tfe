@@ -13,4 +13,5 @@ export default {
         myRestaurant: 'ร้านอาหารของฉัน',
         documentation: 'เอกสาร',
     },
+    search: 'ค้นหา',
 };

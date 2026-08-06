@@ -12,9 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { type BreadcrumbItem } from '@/types';
 import { getInitials, getUserAvatarColor } from '@/lib/utils';
-import { ref } from 'vue';
+import { type BreadcrumbItem } from '@/types';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 
 interface Props {
@@ -24,12 +25,14 @@ interface Props {
 
 defineProps<Props>();
 
-const breadcrumbItems: BreadcrumbItem[] = [
+const { t } = useI18n();
+
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Profile settings',
+        title: t('setting.profile.title'),
         href: edit().url,
     },
-];
+]);
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -42,7 +45,7 @@ const handlePhotoSelect = (event: Event) => {
         const file = input.files[0];
 
         if (file.size > 2 * 1024 * 1024) {
-            toast.error('Photo size must be less than 2MB');
+            toast.error(t('setting.profile.errors.photoTooLarge'));
             input.value = '';
             return;
         }
@@ -54,9 +57,7 @@ const handlePhotoSelect = (event: Event) => {
             'image/webp',
         ];
         if (!validTypes.includes(file.type)) {
-            toast.error(
-                'Please upload a valid image (JPG, JPEG, PNG, GIF, or WEBP)',
-            );
+            toast.error(t('setting.profile.errors.invalidPhoto'));
             input.value = '';
             return;
         }
@@ -72,13 +73,13 @@ const handlePhotoSelect = (event: Event) => {
 
 <template>
     <AdminLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Profile settings" />
+        <Head :title="t('setting.profile.title')" />
 
         <SettingsLayout>
             <div class="flex flex-col space-y-6">
                 <HeadingSmall
-                    title="Profile information"
-                    description="Update your name and email address"
+                    :title="t('setting.profile.heading.title')"
+                    :description="t('setting.profile.heading.description')"
                 />
 
                 <Form
@@ -87,7 +88,7 @@ const handlePhotoSelect = (event: Event) => {
                     v-slot="{ errors, processing, recentlySuccessful }"
                 >
                     <div class="grid gap-2">
-                        <Label>Avatar</Label>
+                        <Label>{{ t('setting.profile.fields.avatar') }}</Label>
                         <div class="flex items-center gap-4">
                             <div class="relative">
                                 <div
@@ -142,10 +143,12 @@ const handlePhotoSelect = (event: Event) => {
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm text-muted-foreground">
-                                    Click the camera icon to upload a new photo
+                                    {{ t('setting.profile.avatar.uploadHint') }}
                                 </p>
                                 <p class="text-xs text-muted-foreground">
-                                    JPG, JPEG, PNG, GIF, WEBP. Max: 2MB
+                                    {{
+                                        t('setting.profile.avatar.requirements')
+                                    }}
                                 </p>
                             </div>
                         </div>
@@ -153,11 +156,13 @@ const handlePhotoSelect = (event: Event) => {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="name">Name</Label>
+                        <Label for="name">
+                            {{ t('setting.profile.fields.name') }}
+                        </Label>
                         <Input
                             id="name"
                             class="mt-1 block w-full"
-                            name="name"
+                            :name="t('setting.profile.placeholders.name')"
                             :default-value="user.name"
                             required
                             placeholder="Full name"
@@ -166,10 +171,12 @@ const handlePhotoSelect = (event: Event) => {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="email">Email address</Label>
+                        <Label for="email">
+                            {{ t('setting.profile.fields.email') }}
+                        </Label>
                         <Input
                             id="email"
-                            type="email"
+                            :type="t('setting.profile.placeholders.email')"
                             class="mt-1 block w-full"
                             name="email"
                             :default-value="user.email"
@@ -181,13 +188,13 @@ const handlePhotoSelect = (event: Event) => {
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">
                         <p class="-mt-4 text-sm text-muted-foreground">
-                            Your email address is unverified.
+                            {{ t('setting.profile.verification.unverified') }}
                             <Link
                                 :href="send()"
                                 as="button"
                                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                             >
-                                Click here to resend the verification email.
+                                {{ t('setting.profile.verification.resend') }}
                             </Link>
                         </p>
 
@@ -195,8 +202,7 @@ const handlePhotoSelect = (event: Event) => {
                             v-if="status === 'verification-link-sent'"
                             class="mt-2 text-sm font-medium text-green-600"
                         >
-                            A new verification link has been sent to your email
-                            address.
+                            {{ t('setting.profile.verification.linkSent') }}
                         </div>
                     </div>
 
@@ -204,8 +210,9 @@ const handlePhotoSelect = (event: Event) => {
                         <Button
                             :disabled="processing"
                             data-test="update-profile-button"
-                            >Save</Button
                         >
+                            {{ t('admin.buttons.save') }}
+                        </Button>
 
                         <Transition
                             enter-active-class="transition ease-in-out"
@@ -217,7 +224,7 @@ const handlePhotoSelect = (event: Event) => {
                                 v-show="recentlySuccessful"
                                 class="text-sm text-neutral-600"
                             >
-                                Saved.
+                                {{ t('setting.profile.messages.saved') }}
                             </p>
                         </Transition>
                     </div>

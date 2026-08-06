@@ -17,8 +17,9 @@ import {
 } from 'lucide-vue-next';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { locales } from '@/lib/const';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const isOpen = ref<boolean>(false);
 const messageInput = ref<string>('');
@@ -44,14 +45,14 @@ const messageContent = (msg: MessageType) => {
 
     if (msg.unsent_at) {
         return isOwnMessage
-            ? t('chat.messages.youUnsent')
-            : t('chat.messages.userUnsent', { name: msg.sender_name });
+            ? t('chatBubble.messages.youUnsent')
+            : t('chatBubble.messages.userUnsent', { name: msg.sender_name });
     }
 
     if (msg.deleted_at) {
         return isOwnMessage
-            ? t('chat.messages.youDeleted')
-            : t('chat.messages.userDeleted', { name: msg.sender_name });
+            ? t('chatBubble.messages.youDeleted')
+            : t('chatBubble.messages.userDeleted', { name: msg.sender_name });
     }
 
     return msg.content;
@@ -170,7 +171,7 @@ const dropdownStyle = ref<{ top: string; left: string }>({
 
 const openMenu = (event: MouseEvent, messageId: number) => {
     if (messageMenuId.value === messageId) {
-        messageMenuId.value = null;
+        closeMenu();
         return;
     }
 
@@ -182,6 +183,10 @@ const openMenu = (event: MouseEvent, messageId: number) => {
         top: `${rect.bottom + 8}px`,
         left: `${rect.left - 80}px`,
     };
+};
+
+const closeMenu = () => {
+    messageMenuId.value = null;
 };
 
 const loadChat = async () => {
@@ -273,17 +278,19 @@ const scrollToBottom = async () => {
 };
 
 const formatDate = (date: string) => {
+    const currentLocale = locales[locale.value] ?? 'en-GB';
+
     const now = new Date();
     const messageDate = new Date(date);
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (messageDate.toDateString() === now.toDateString()) {
-        return 'Today';
+        return t('chatBubble.date.today');
     } else if (messageDate.toDateString() === yesterday.toDateString()) {
-        return 'Yesterday';
+        return t('chatBubble.date.yesterday');
     } else {
-        return messageDate.toLocaleDateString('en-US', {
+        return messageDate.toLocaleDateString(currentLocale, {
             month: 'short',
             day: 'numeric',
         });
@@ -330,6 +337,7 @@ const channel = ref<EchoChannel | null>(null);
 
 onMounted(async () => {
     document.addEventListener('keydown', handleEscape);
+    window.addEventListener('scroll', closeMenu, true);
 
     await loadChat();
 
@@ -363,6 +371,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
     document.removeEventListener('keydown', handleEscape);
+    window.removeEventListener('scroll', closeMenu, true);
 
     if (channel.value && currentChat.value) {
         window.Echo.leave(`private-chat.${currentChat.value.id}`);
@@ -448,8 +457,12 @@ watch(messageMenuId, (id) => {
                         </div>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-white">Support Chat</h3>
-                        <p class="text-xs text-red-100">We're here to help</p>
+                        <h3 class="font-semibold text-white">
+                            {{ t('chatBubble.title') }}
+                        </h3>
+                        <p class="text-xs text-red-100">
+                            {{ t('chatBubble.subtitle') }}
+                        </p>
                     </div>
                 </div>
                 <button
@@ -484,8 +497,12 @@ watch(messageMenuId, (id) => {
                         <MessageCircleMore
                             class="mx-auto h-12 w-12 text-gray-400"
                         />
-                        <p class="mt-2">No messages yet</p>
-                        <p class="text-sm">Start a conversation with us!</p>
+                        <p class="mt-2">
+                            {{ t('chatBubble.emptyStates.noMessages') }}
+                        </p>
+                        <p class="text-sm">
+                            {{ t('chatBubble.emptyStates.startConversation') }}
+                        </p>
                     </div>
                 </div>
 
@@ -529,7 +546,11 @@ watch(messageMenuId, (id) => {
                                     "
                                     class="mb-1 text-xs text-gray-400"
                                 >
-                                    Modified at {{ formatTime(msg.edited_at) }}
+                                    {{
+                                        t('chatBubble.labels.modifiedAt', {
+                                            time: formatTime(msg.edited_at),
+                                        })
+                                    }}
                                 </div>
 
                                 <div
@@ -605,8 +626,13 @@ watch(messageMenuId, (id) => {
                         "
                         class="mt-1 flex justify-end text-xs text-gray-400"
                     >
-                        read at
-                        {{ formatTime(currentChat.latest_message.read_at) }}
+                        {{
+                            t('chatBubble.labels.readAt', {
+                                time: formatTime(
+                                    currentChat.latest_message.read_at,
+                                ),
+                            })
+                        }}
                     </div>
                 </div>
             </div>
@@ -623,17 +649,17 @@ watch(messageMenuId, (id) => {
                                     @click.stop="cancelEditing()"
                                     class="text-xs text-gray-400 hover:text-gray-600"
                                 >
-                                    Cancel
+                                    {{ t('chatBubble.actions.cancel') }}
                                 </button>
                             </div>
-                            <span class="text-xs text-gray-400"
-                                >Press Enter to save, Escape to cancel</span
-                            >
+                            <span class="text-xs text-gray-400">
+                                {{ t('chatBubble.labels.editingInstructions') }}
+                            </span>
                         </div>
                         <textarea
                             v-model="messageInput"
                             @keydown="handleKeyDown"
-                            placeholder="Type your message..."
+                            :placeholder="t('chatBubble.placeholders.message')"
                             rows="1"
                             class="block w-full resize-none rounded-lg border border-gray-200 px-4 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
                             style="min-height: 42px; max-height: 120px"
@@ -676,7 +702,7 @@ watch(messageMenuId, (id) => {
                 class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             >
                 <SquarePen class="mr-2 h-4 w-4" />
-                Edit
+                {{ t('chatBubble.actions.edit') }}
             </button>
             <button
                 v-if="!isUnsentOrRemoved"
@@ -684,7 +710,7 @@ watch(messageMenuId, (id) => {
                 class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             >
                 <MessageCircleOff class="mr-2 h-4 w-4" />
-                Unsend
+                {{ t('chatBubble.actions.unsend') }}
             </button>
             <button
                 v-if="!isUnsentOrRemoved"
@@ -692,7 +718,7 @@ watch(messageMenuId, (id) => {
                 class="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
             >
                 <CircleX class="mr-2 h-4 w-4" />
-                Remove
+                {{ t('chatBubble.actions.remove') }}
             </button>
         </div>
     </Teleport>

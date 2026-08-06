@@ -4,13 +4,25 @@ import chat from '@/i18n/locales/th/admin/chat';
 import confirmedOrder from '@/i18n/locales/th/admin/confirmedOrder';
 import dish from '@/i18n/locales/th/admin/dish';
 import drink from '@/i18n/locales/th/admin/drink';
+import globalSearch from '@/i18n/locales/th/admin/globalSearch';
 import ingredient from '@/i18n/locales/th/admin/ingredient';
 import layout from '@/i18n/locales/th/admin/layout';
 import meat from '@/i18n/locales/th/admin/meat';
 import role from '@/i18n/locales/th/admin/role';
+import setting from '@/i18n/locales/th/admin/setting';
 import user from '@/i18n/locales/th/admin/user';
 
+import adminGateway from '@/i18n/locales/th/auth/adminGateway';
+import auth from '@/i18n/locales/th/auth/auth';
+import confirmPassword from '@/i18n/locales/th/auth/confirmPassword';
+import forgotPassword from '@/i18n/locales/th/auth/forgotPassword';
+import login from '@/i18n/locales/th/auth/login';
+import register from '@/i18n/locales/th/auth/register';
+import resetPassword from '@/i18n/locales/th/auth/resetPassword';
+import verifyEmail from '@/i18n/locales/th/auth/verifyEmail';
+
 import cart from '@/i18n/locales/th/client/cart';
+import chatBubble from '@/i18n/locales/th/client/chatBubble';
 import common from '@/i18n/locales/th/client/common';
 import drinks from '@/i18n/locales/th/client/drinks';
 import home from '@/i18n/locales/th/client/home';
@@ -29,13 +41,25 @@ export default {
     confirmedOrder,
     dish,
     drink,
+    globalSearch,
     ingredient,
     layout,
     meat,
     role,
+    setting,
     user,
 
+    adminGateway,
+    auth,
+    confirmPassword,
+    forgotPassword,
+    login,
+    register,
+    resetPassword,
+    verifyEmail,
+
     cart,
+    chatBubble,
     common,
     drinks,
     home,
