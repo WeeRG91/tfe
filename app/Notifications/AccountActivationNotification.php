@@ -33,13 +33,22 @@ class AccountActivationNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Activate your account')
-            ->greeting("Hello {$notifiable->name}")
-            ->line('An account has been created for you.')
-            ->line('Click below to activate your account.')
-            ->action('Activate Account', $this->url)
-            ->line('This link expires in 1 days.')
-            ->line('Thank you for using our application!');
+            ->subject(__('messages.emails.activation.subject'))
+            ->greeting(__('messages.emails.common.greeting', [
+                'name' => $notifiable->name,
+            ]))
+            ->line(__('messages.emails.activation.account_created'))
+            ->line(__('messages.emails.activation.instruction'))
+            ->action(
+                __('messages.emails.activation.action'),
+                $this->url
+            )
+            ->line(trans_choice(
+                'messages.emails.common.expires',
+                1,
+                ['count' => 1]
+            ))
+            ->line(__('messages.emails.common.thank_you'));
     }
 
     /**

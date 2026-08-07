@@ -84,7 +84,7 @@ class AllergenController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while creating the allergen']);
+                ->withErrors(['message' => __('messages.resources.allergen.create_failed')]);
         }
     }
 
@@ -137,7 +137,7 @@ class AllergenController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while updating the allergen']);
+                ->withErrors(['message' => __('messages.resources.allergen.update_failed')]);
         }
     }
 
@@ -153,7 +153,7 @@ class AllergenController extends Controller
         $command->execute($allergen->id);
 
         return response()->json([
-            'message' => 'Allergen successfully restored.',
+            'message' => __('messages.resources.allergen.restored'),
         ]);
     }
 
@@ -169,7 +169,7 @@ class AllergenController extends Controller
         $command->execute($allergen->id);
 
         return response()->json([
-            'message' => 'Allergen successfully moved to bin',
+            'message' => __('messages.resources.allergen.moved_to_bin'),
         ]);
     }
 
@@ -185,7 +185,7 @@ class AllergenController extends Controller
         $command->execute($allergen->id);
 
         return response()->json([
-            'message' => 'Allergen successfully deleted.',
+            'message' => __('messages.resources.allergen.deleted'),
         ]);
     }
 }

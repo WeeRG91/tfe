@@ -25,6 +25,11 @@ enum PaymentMethodEnum: int
         };
     }
 
+    public function translatedLabel(): string
+    {
+        return __('messages.enums.payment_method.' . $this->key());
+    }
+
     public static function values(): array
     {
         return array_column(self::cases(), 'value');

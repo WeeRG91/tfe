@@ -23,7 +23,8 @@ class SendActivationLink
         );
 
         $user->notify(
-            new AccountActivationNotification($url)
+            (new AccountActivationNotification($url))
+                ->locale($user->preferredLocale())
         );
     }
 }

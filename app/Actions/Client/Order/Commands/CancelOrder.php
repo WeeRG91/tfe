@@ -35,7 +35,7 @@ readonly class CancelOrder
             OrderStatusEnum::CONFIRMED
         ], true)) {
             throw ValidationException::withMessages([
-                'order' => 'This order can no longer be cancelled.',
+                'order' => __('messages.orders.cannot_cancel'),
             ]);
         }
 
@@ -50,8 +50,7 @@ readonly class CancelOrder
 
             if ($order->stripe_refund_status !== 'succeeded') {
                 throw ValidationException::withMessages([
-                    'order' =>
-                        'The refund is being processed. The order cannot be finalized yet.',
+                    'order' => __('messages.orders.refund_processing'),
                 ]);
             }
         }

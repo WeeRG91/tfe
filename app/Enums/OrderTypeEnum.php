@@ -33,6 +33,11 @@ enum OrderTypeEnum: int
         };
     }
 
+    public function translatedLabel(): string
+    {
+        return __('messages.enums.order_type.' . $this->key());
+    }
+
     public static function getTypes(): array
     {
         return array_map(fn ($case) => [

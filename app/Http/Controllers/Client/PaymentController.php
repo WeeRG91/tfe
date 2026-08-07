@@ -26,7 +26,7 @@ class PaymentController extends Controller
     {
         if ($order->user_id !== auth()->user()->id) {
             return response()->json([
-                'message' => 'Unauthorized',
+                'message' => __('messages.payment.unauthorized'),
             ]);
         }
 
@@ -78,7 +78,7 @@ class PaymentController extends Controller
     {
         if ($order->user_id !== auth()->user()->id) {
             return response()->json([
-                'message' => 'Unauthorized',
+                'message' => __('messages.payment.unauthorized'),
             ]);
         }
 

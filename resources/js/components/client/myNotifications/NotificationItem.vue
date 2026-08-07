@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { useDateFormatter } from '@/composables/useDateFormatter';
+import { useNotificationTranslator } from '@/composables/useNotificationTranslator';
 import {
     getNotificationIcon,
     getNotificationIconBgColor,
@@ -23,6 +24,8 @@ const emit = defineEmits(['mark-read', 'delete']);
 const { t } = useI18n();
 
 const { formatDateForHumans } = useDateFormatter();
+const { getNotificationTitle, getNotificationMessage } =
+    useNotificationTranslator();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -103,7 +106,7 @@ const deleteNotification = () => {
         <div class="flex-1 space-y-1">
             <div class="flex flex-wrap items-start justify-between gap-2">
                 <h4 class="font-medium text-gray-900">
-                    {{ notification.title }}
+                    {{ getNotificationTitle(notification) }}
                 </h4>
                 <span class="text-xs text-gray-400">
                     {{ formatDateForHumans(notification.created_at) }}
@@ -112,7 +115,7 @@ const deleteNotification = () => {
 
             <div class="flex flex-wrap items-start justify-between gap-2">
                 <p class="text-sm text-gray-600">
-                    {{ notification.message }}
+                    {{ getNotificationMessage(notification) }}
                 </p>
                 <div
                     class="flex shrink-0 items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
@@ -132,7 +135,9 @@ const deleteNotification = () => {
                     <button
                         @click.stop="
                             openConfirmModal(
-                                'Are you sure you want to delete notification?',
+                                t(
+                                    'notification.notificationItem.confirmDelete',
+                                ),
                                 'destructive',
                                 () => deleteNotification(),
                             )

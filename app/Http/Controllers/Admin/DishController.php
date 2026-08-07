@@ -90,7 +90,7 @@ class DishController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while creating the dish']);
+                ->withErrors(['message' => __('messages.resources.dish.create_failed')]);
         }
     }
 
@@ -137,7 +137,7 @@ class DishController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while updating the dish']);
+                ->withErrors(['message' => __('messages.resources.dish.update_failed')]);
         }
     }
 
@@ -153,7 +153,7 @@ class DishController extends Controller
         $dish = $command->execute($dish->id);
 
         return response()->json([
-            'message' => 'Dish availability successfully updated',
+            'message' => __('messages.resources.dish.availability_updated'),
             'dish' => $dish,
         ]);
     }
@@ -170,7 +170,7 @@ class DishController extends Controller
         $command->execute($dish->id);
 
         return response()->json([
-            'message' => 'Dish successfully restored',
+            'message' => __('messages.resources.dish.restored'),
         ]);
     }
 
@@ -186,7 +186,7 @@ class DishController extends Controller
         $command->execute($dish->id);
 
         return response()->json([
-            'message' => 'Dish successfully moved to bin',
+            'message' => __('messages.resources.dish.moved_to_bin'),
         ]);
     }
 
@@ -202,7 +202,7 @@ class DishController extends Controller
         $command->execute($dish->id);
 
         return response()->json([
-            'message' => 'Dish successfully deleted',
+            'message' => __('messages.resources.dish.deleted'),
         ]);
     }
 }

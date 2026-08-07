@@ -33,7 +33,7 @@ readonly class Reorder
 
         if (!$order || $order->items->isEmpty()) {
             return [
-                'message' => 'Order is empty',
+                'message' => __('messages.orders.order_empty'),
                 'order' => null,
             ];
         }
@@ -71,7 +71,7 @@ readonly class Reorder
             }
 
             return [
-                'message' => 'Order placed successfully',
+                'message' => __('messages.orders.placed'),
                 'order' => $newOrder,
             ];
         });

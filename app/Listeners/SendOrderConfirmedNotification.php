@@ -30,17 +30,23 @@ class SendOrderConfirmedNotification
             'notifiable_id' => $order->id,
             'notifiable_type' => Order::class,
             'type' => NotificationTypeEnum::ORDER_CONFIRMED,
-            'title' => 'Order Confirmed',
-            'message' => "Your order #$order->order_number has been confirmed.",
+            'title' => 'order_confirmed',
+            'message' => '',
             'data' => json_encode([
                 'order_id' => $order->id,
                 'order_number' => $order->order_number,
+                'order_type' => $order->type->key(),
             ]),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        Mail::to($order->user->email)->queue(new OrderUpdatedMail($order, OrderStatusEnum::CONFIRMED->label()));
+        Mail::to($order->user->email)
+            ->locale($order->user->preferredLocale())
+            ->queue(new OrderUpdatedMail(
+                $order,
+                OrderStatusEnum::CONFIRMED,
+            ));
 
         event(new StatusOrderUpdatedBroadcast($order));
     }

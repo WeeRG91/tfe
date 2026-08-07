@@ -53,6 +53,11 @@ enum DrinkCategoryEnum: int
         };
     }
 
+    public function translatedLabel(): string
+    {
+        return __('messages.enums.drink_category.' . $this->key());
+    }
+
     public static function getColor(self $case): string
     {
         return match ($case) {

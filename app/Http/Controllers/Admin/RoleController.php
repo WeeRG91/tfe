@@ -87,7 +87,9 @@ class RoleController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'message' => __('messages.resources.role.create_failed'),
+            ]);
         }
     }
 
@@ -132,7 +134,9 @@ class RoleController extends Controller
        } catch (Throwable $e) {
            report($e);
 
-           return back()->withErrors($e->getMessage());
+           return back()->withErrors([
+               'message' => __('messages.resources.role.update_failed'),
+           ]);
        }
     }
 
@@ -149,12 +153,14 @@ class RoleController extends Controller
             $deleteRole->execute($role);
 
            return response()->json([
-               'message' => "Role deleted successfully",
+               'message' => __('messages.resources.role.deleted'),
            ]);
        } catch (Throwable $e) {
            report($e);
 
-           return back()->withErrors($e->getMessage());
+           return back()->withErrors([
+               'message' => __('messages.resources.role.delete_failed'),
+           ]);
        }
     }
 }

@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ $title ?? 'Order Update' }} - #{{ $order->order_number }}</title>
+    <title>{{ $title ?? __('messages.emails.order_update') }} - #{{ $order->order_number }}</title>
     <style>
         * {
             margin: 0;
@@ -386,7 +386,9 @@
         <div class="content">
             <div class="section" style="border-bottom: none; padding-bottom: 0;">
                 <div class="badge {{ $badgeClass }}">
-                    Order #{{ $order->order_number }} • {{ $order->status->label() }}
+                    {{ __('messages.emails.order', ['number' => $order->order_number]) }}
+                    •
+                    {{ $order->status->translatedLabel() }}
                 </div>
             </div>
 
@@ -394,14 +396,20 @@
 
             <div class="action-button">
                 <a href="{{ route('order.order-details', $order) }}" class="btn">
-                    View Order Details
+                    {{ __('messages.emails.view_order') }}
                 </a>
             </div>
         </div>
 
         <div class="footer">
             @yield('footer-message')
-            <p style="margin-top: 8px; font-size: 10px;">© {{ date('Y') }} Your Restaurant • <a href="mailto:hello@yourrestaurant.com" style="color: #999;">Contact Us</a></p>
+            <p style="margin-top: 8px; font-size: 10px;">
+                © {{ date('Y') }} {{ __('messages.emails.restaurant_name') }}
+                •
+                <a href="mailto:hello@yourrestaurant.com" style="color: #999;">
+                    {{ __('messages.emails.contact_us') }}
+                </a>
+            </p>
         </div>
     </div>
 </body>

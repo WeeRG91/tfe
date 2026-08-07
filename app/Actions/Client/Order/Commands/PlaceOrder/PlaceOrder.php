@@ -38,7 +38,7 @@ readonly class PlaceOrder
 
             if (!$cart || $cart->items->isEmpty()) {
                 return [
-                    'message' => 'Cart is empty',
+                    'message' => __('messages.orders.cart_empty'),
                     'order' => null,
                 ];
             }
@@ -77,7 +77,7 @@ readonly class PlaceOrder
             }
 
             return [
-                'message' => 'Order placed successfully',
+                'message' => __('messages.orders.placed'),
                 'order' => $order,
             ];
         });

@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -35,12 +34,21 @@ class ReactivateAccountNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Reactivate Your Account')
-            ->greeting("Hello {$notifiable->name}")
-            ->line('Click below to reactivate your account.')
-            ->action('Reactivate Account', $this->url)
-            ->line('This link expires in 1 days.')
-            ->line('Thank you for using our application!');
+            ->subject(__('messages.emails.reactivation.subject'))
+            ->greeting(__('messages.emails.common.greeting', [
+                'name' => $notifiable->name,
+            ]))
+            ->line(__('messages.emails.reactivation.instruction'))
+            ->action(
+                __('messages.emails.reactivation.action'),
+                $this->url
+            )
+            ->line(trans_choice(
+                'messages.emails.common.expires',
+                1,
+                ['count' => 1]
+            ))
+            ->line(__('messages.emails.common.thank_you'));
     }
 
     /**

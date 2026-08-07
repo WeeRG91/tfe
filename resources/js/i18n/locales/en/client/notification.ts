@@ -28,6 +28,31 @@ export default {
     notificationItem: {
         markAsRead: 'Mark as read',
         delete: 'Delete',
+        confirmDelete: 'Are you sure you want to delete this notification?',
+    },
+    stored: {
+        orderConfirmed: {
+            title: 'Order confirmed',
+            message: 'Your order #{number} has been confirmed.',
+        },
+        orderReady: {
+            title: 'Order ready',
+            pickup: 'Your order #{number} is ready for pickup.',
+            delivery: 'Your order #{number} is ready for delivery.',
+            serving: 'Your order #{number} is ready to be served.',
+        },
+        orderDelivering: {
+            title: 'Order out for delivery',
+            message: 'Your order #{number} is out for delivery.',
+        },
+        orderCompleted: {
+            title: 'Order completed',
+            message: 'Your order #{number} has been completed.',
+        },
+        orderCancelled: {
+            title: 'Order cancelled',
+            message: 'Your order #{number} has been cancelled.',
+        },
     },
     notificationDrawer: {
         title: 'Notifications',

@@ -111,7 +111,9 @@ class UserController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'message' => __('messages.resources.user.create_failed'),
+            ]);
         }
     }
 
@@ -157,7 +159,9 @@ class UserController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'message' => __('messages.resources.user.update_failed'),
+            ]);
         }
     }
 
@@ -174,12 +178,14 @@ class UserController extends Controller
             $inactivateUser->execute($user);
 
             return response()->json([
-                'message' => "User inactivated successfully",
+                'message' => __('messages.resources.user.inactivated'),
             ]);
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'message' => __('messages.errors.unexpected'),
+            ]);
         }
     }
 
@@ -196,12 +202,14 @@ class UserController extends Controller
             $reactivateUser->execute($user);
 
             return response()->json([
-                'message' => "Reactivation link sent successfully",
+                'message' => __('messages.resources.user.reactivation_link_sent'),
             ]);
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'message' => __('messages.errors.unexpected'),
+            ]);
         }
     }
 
@@ -218,12 +226,14 @@ class UserController extends Controller
             $deleteUser->execute($user);
 
             return response()->json([
-                'message' => "User deleted permanently",
+                'message' => __('messages.resources.user.deleted'),
             ]);
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'message' => __('messages.resources.user.delete_failed'),
+            ]);
         }
     }
 }

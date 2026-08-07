@@ -46,7 +46,7 @@ class RatingController extends Controller
 
         if ($existingRating) {
             return response()->json([
-                'message' => 'You have already rated this dish.',
+                'message' => __('messages.ratings.already_rated'),
             ], 403);
         }
 

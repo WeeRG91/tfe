@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Client\Notification;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,6 +15,17 @@ class NotificationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $data = $this->data ?? [];
+
+        if (
+            $this->notifiable instanceof Order
+            && !isset($data['order_type'])
+        ) {
+            $data['order_id'] ??= $this->notifiable->id;
+            $data['order_number'] ??= $this->notifiable->order_number;
+            $data['order_type'] = $this->notifiable->type->key();
+        }
+
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
@@ -24,7 +36,7 @@ class NotificationResource extends JsonResource
             'type' => $this->type->value,
             'title' => $this->title,
             'message' => $this->message,
-            'data' => $this->data,
+            'data' => $data,
             'read_at' => $this->read_at,
             'created_at' => $this->created_at,
         ];

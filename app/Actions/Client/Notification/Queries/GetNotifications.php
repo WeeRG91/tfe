@@ -16,6 +16,7 @@ class GetNotifications
     public function execute(User $user, string $filter = 'all'): CursorPaginator
     {
         return Notification::query()
+            ->with('notifiable')
             ->where('user_id', $user->id)
             ->when($filter !== 'all', function ($query) use ($filter) {
                 match ($filter) {

@@ -21,7 +21,7 @@ class CreateAddress
         }
 
         return [
-            'message' => 'Address added successfully',
+            'message' => __('messages.addresses.added'),
             'address' => $user->addresses()->create($data),
         ];
     }

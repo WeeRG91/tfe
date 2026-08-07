@@ -16,7 +16,7 @@ class GetUser
             'roles',
             'roles.permissions',
             'permissions',
-            'loyaltyPointTransactions',
+            'loyaltyPointTransactions.order:id,order_number',
             'orders',
         ]);
     }

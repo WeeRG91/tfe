@@ -16,6 +16,7 @@ class GetLoyaltyPointTransactions
     public function execute(int $userId, string $filter = 'all'): CursorPaginator
     {
         return LoyaltyPointTransaction::query()
+            ->with('order:id,order_number')
             ->where('user_id', $userId)
             ->when($filter !== 'all', function ($query) use ($filter) {
                 match ($filter) {

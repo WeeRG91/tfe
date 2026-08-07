@@ -85,7 +85,7 @@ class DrinkController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while creating the drink']);
+                ->withErrors(['message' => __('messages.resources.drink.create_failed')]);
         }
 
     }
@@ -135,7 +135,7 @@ class DrinkController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while updating the drink']);
+                ->withErrors(['message' => __('messages.resources.drink.update_failed')]);
         }
     }
 
@@ -151,7 +151,7 @@ class DrinkController extends Controller
         $drink = $command->execute($drink->id);
 
         return response()->json([
-            'message' => 'Drink availability successfully updated',
+            'message' => __('messages.resources.drink.availability_updated'),
             'drink' => $drink,
         ]);
     }
@@ -168,7 +168,7 @@ class DrinkController extends Controller
         $command->execute($drink->id);
 
         return response()->json([
-            'message' => 'Drink successfully restored',
+            'message' => __('messages.resources.drink.restored'),
         ]);
     }
 
@@ -184,7 +184,7 @@ class DrinkController extends Controller
         $command->execute($drink->id);
 
         return response()->json([
-            'message' => 'Drink successfully moved to bin',
+            'message' => __('messages.resources.drink.moved_to_bin'),
         ]);
     }
 
@@ -200,7 +200,7 @@ class DrinkController extends Controller
         $command->execute($drink->id);
 
         return response()->json([
-            'message' => 'Drink successfully deleted',
+            'message' => __('messages.resources.drink.deleted'),
         ]);
     }
 }

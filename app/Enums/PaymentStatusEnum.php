@@ -37,6 +37,11 @@ enum PaymentStatusEnum: int
         };
     }
 
+    public function translatedLabel(): string
+    {
+        return __('messages.enums.payment_status.' . $this->key());
+    }
+
     public static function getPaymentStatuses(): array
     {
         return array_map(fn ($case) => [

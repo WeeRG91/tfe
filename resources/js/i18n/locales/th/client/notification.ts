@@ -28,6 +28,31 @@ export default {
     notificationItem: {
         markAsRead: 'อ่าน',
         delete: 'ลบ',
+        confirmDelete: 'คุณแน่ใจหรือไม่ว่าต้องการลบการแจ้งเตือนนี้?',
+    },
+    stored: {
+        orderConfirmed: {
+            title: 'ยืนยันคำสั่งซื้อแล้ว',
+            message: 'คำสั่งซื้อ #{number} ของคุณได้รับการยืนยันแล้ว',
+        },
+        orderReady: {
+            title: 'คำสั่งซื้อพร้อมแล้ว',
+            pickup: 'คำสั่งซื้อ #{number} ของคุณพร้อมให้มารับแล้ว',
+            delivery: 'คำสั่งซื้อ #{number} ของคุณพร้อมจัดส่งแล้ว',
+            serving: 'คำสั่งซื้อ #{number} ของคุณพร้อมเสิร์ฟแล้ว',
+        },
+        orderDelivering: {
+            title: 'คำสั่งซื้อกำลังจัดส่ง',
+            message: 'คำสั่งซื้อ #{number} ของคุณกำลังจัดส่ง',
+        },
+        orderCompleted: {
+            title: 'คำสั่งซื้อเสร็จสิ้นแล้ว',
+            message: 'คำสั่งซื้อ #{number} ของคุณเสร็จสิ้นแล้ว',
+        },
+        orderCancelled: {
+            title: 'ยกเลิกคำสั่งซื้อแล้ว',
+            message: 'คำสั่งซื้อ #{number} ของคุณถูกยกเลิกแล้ว',
+        },
     },
     notificationDrawer: {
         title: 'การแจ้งเตือน',

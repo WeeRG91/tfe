@@ -22,6 +22,7 @@ class LoyaltyPointTransactionResource extends JsonResource
             'type' => LoyaltyPointTransactionTypeEnum::getStatus($this->type),
             'points' => $this->points,
             'description' => $this->description,
+            'order_number' => $this->order?->order_number,
             'created_at' => $this->created_at,
         ];
     }

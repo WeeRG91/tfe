@@ -9,6 +9,12 @@ export default {
     errors: {
         loadFailed: 'Failed to load loyalty points',
     },
+    transactions: {
+        earned: 'Points earned from order #{orderNumber}',
+        redeemed: 'Points used for order #{orderNumber}',
+        refunded: 'Points refunded for order #{orderNumber}',
+        reversed: 'Points reversed for refunded order #{orderNumber}',
+    },
     emptyPoint: {
         title: 'No points yet',
         description:

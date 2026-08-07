@@ -35,13 +35,22 @@ class ChangedEmailVerificationNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Verify New Email Address')
-            ->greeting("Hello {$notifiable->name}")
-            ->line('Your email address has been changed.')
-            ->line('Click below to verify your new email address.')
-            ->action('Verify Email', $this->url)
-            ->line('This link expires in 1 days.')
-            ->line('Thank you for using our application!');
+            ->subject(__('messages.emails.changed_email.subject'))
+            ->greeting(__('messages.emails.common.greeting', [
+                'name' => $notifiable->name,
+            ]))
+            ->line(__('messages.emails.changed_email.changed'))
+            ->line(__('messages.emails.changed_email.instruction'))
+            ->action(
+                __('messages.emails.changed_email.action'),
+                $this->url
+            )
+            ->line(trans_choice(
+                'messages.emails.common.expires',
+                1,
+                ['count' => 1]
+            ))
+            ->line(__('messages.emails.common.thank_you'));
     }
 
     /**

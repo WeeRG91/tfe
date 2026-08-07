@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { usePermission } from '@/composables/usePermission';
+import { usePointTransactionTranslator } from '@/composables/usePointTransactionTranslator';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import {
     getInitials,
@@ -11,6 +14,7 @@ import {
 import user from '@/routes/admin/user';
 import type { BreadcrumbItem } from '@/types';
 import { PermissionType, UserPermissionEnum } from '@/types/permission';
+import { PointTypeEnum } from '@/types/point';
 import { UserDetailType } from '@/types/user';
 import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
@@ -31,11 +35,8 @@ import {
     Users,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { toast } from 'vue-sonner';
-import { PointTypeEnum } from '@/types/point';
-import { usePermission } from '@/composables/usePermission';
 import { useI18n } from 'vue-i18n';
-import { useDateFormatter } from '@/composables/useDateFormatter';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     currentUser: UserDetailType;
@@ -43,6 +44,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const { formatDateOnly } = useDateFormatter();
+const { translatePointTransaction } = usePointTransactionTranslator();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
@@ -53,7 +55,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
         title: props.currentUser.name,
         href: user.show(props.currentUser.id).url,
     },
-])
+]);
 
 const { can } = usePermission();
 
@@ -649,7 +651,7 @@ const closeConfirmModal = () => {
                             >
                                 <div class="flex flex-col gap-1">
                                     <span class="text-sm font-medium">{{
-                                        transaction.description
+                                        translatePointTransaction(transaction)
                                     }}</span>
                                     <span
                                         class="flex items-center gap-1.5 text-xs text-muted-foreground"

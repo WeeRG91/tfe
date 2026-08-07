@@ -33,7 +33,9 @@ readonly class HandleStripeWebhook
         $signature = $request->header('stripe-signature');
 
         if (!$signature) {
-            return ['message' => 'Missing signature'];
+            return [
+                'message' => __('messages.payment.missing_signature'),
+            ];
         }
 
         try {
@@ -44,7 +46,9 @@ readonly class HandleStripeWebhook
             );
         } catch (SignatureVerificationException $e) {
             return [
-                'message' => 'Invalid signature: ' . $e->getMessage(),
+                'message' => __('messages.payment.invalid_signature', [
+                    'message' => $e->getMessage(),
+                ]),
             ];
         }
 
@@ -72,7 +76,7 @@ readonly class HandleStripeWebhook
         };
 
         return [
-            'message' => 'Payment confirmed',
+            'message' => __('messages.payment.confirmed'),
         ];
     }
 

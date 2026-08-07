@@ -22,6 +22,9 @@ class ResendChangedEmailVerificationLink
             ]
         );
 
-        $user->notify(new ChangedEmailVerificationNotification($url));
+        $user->notify(
+            (new ChangedEmailVerificationNotification($url))
+                ->locale($user->preferredLocale())
+        );
     }
 }

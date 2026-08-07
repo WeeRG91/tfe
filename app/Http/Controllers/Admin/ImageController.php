@@ -21,7 +21,7 @@ class ImageController extends Controller
         $imageService->setMainImage($image);
 
         return response()->json([
-            'message' => 'Main image successfully set',
+            'message' => __('messages.resources.image.main_set'),
         ]);
     }
 
@@ -37,7 +37,7 @@ class ImageController extends Controller
         $imageService->delete($image);
 
         return response()->json([
-            'message' => 'Image successfully deleted',
+            'message' => __('messages.resources.image.deleted'),
         ]);
     }
 }

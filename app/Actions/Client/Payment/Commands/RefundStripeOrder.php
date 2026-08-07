@@ -22,13 +22,13 @@ class RefundStripeOrder
     {
         if ($order->payment_status !== PaymentStatusEnum::PAID) {
             throw ValidationException::withMessages([
-                'order' => 'Only a paid order can be refunded.',
+                'order' => __('messages.orders.only_paid_can_be_refunded'),
             ]);
         }
 
         if (!$order->stripe_payment_intent_id) {
             throw ValidationException::withMessages([
-                'order' => 'The Stripe payment could not be found.',
+                'order' => __('messages.orders.stripe_payment_not_found'),
             ]);
         }
 
@@ -75,7 +75,7 @@ class RefundStripeOrder
             ]);
 
             throw new RuntimeException(
-                'The refund request is being verified.',
+                __('messages.payment.refund_verification'),
                 previous: $e,
             );
         }

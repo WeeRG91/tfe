@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { useClickOutside } from '@/composables/useClickOutside';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { useNotificationTranslator } from '@/composables/useNotificationTranslator';
 import {
     getNotificationIcon,
     getNotificationIconBgColor,
@@ -20,7 +22,6 @@ import {
     X,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
@@ -39,6 +40,8 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const { formatDateForHumans } = useDateFormatter();
+const { getNotificationTitle, getNotificationMessage } =
+    useNotificationTranslator();
 
 const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
@@ -301,7 +304,11 @@ watch(
                                             <p
                                                 class="flex-1 text-sm font-medium text-gray-900"
                                             >
-                                                {{ notification.title }}
+                                                {{
+                                                    getNotificationTitle(
+                                                        notification,
+                                                    )
+                                                }}
                                             </p>
                                             <span
                                                 class="flex-shrink-0 text-xs text-gray-400"
@@ -315,7 +322,11 @@ watch(
                                         </div>
 
                                         <p class="mt-1 text-sm text-gray-600">
-                                            {{ notification.message }}
+                                            {{
+                                                getNotificationMessage(
+                                                    notification,
+                                                )
+                                            }}
                                         </p>
 
                                         <div

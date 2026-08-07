@@ -48,6 +48,11 @@ enum DishCategoryEnum: int
         };
     }
 
+    public function translatedLabel(): string
+    {
+        return __('messages.enums.dish_category.' . $this->key());
+    }
+
     public static function getColor(self $case): string
     {
         return match ($case) {
@@ -79,4 +84,3 @@ enum DishCategoryEnum: int
         );
     }
 }
-

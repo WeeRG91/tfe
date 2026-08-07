@@ -22,6 +22,9 @@ class ResendReactivationLink
             ]
         );
 
-        $user->notify(new ReactivateAccountNotification($url));
+        $user->notify(
+            (new ReactivateAccountNotification($url))
+                ->locale($user->preferredLocale())
+        );
     }
 }

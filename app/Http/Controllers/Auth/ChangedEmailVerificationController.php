@@ -37,23 +37,29 @@ class ChangedEmailVerificationController extends Controller
                 ->first();
 
             if (!$user) {
-                return back()->withErrors(['error' => 'User not found. Please try to sign up to create an account.']);
+                return back()->withErrors([
+                    'error' => __('messages.account.not_found'),
+                ]);
             }
 
             if ($user->hasVerifiedEmail()) {
-                return back()->withErrors(['error' => 'Email already verified. Please try to login your account.']);
+                return back()->withErrors([
+                    'error' => __('messages.account.email_already_verified'),
+                ]);
             }
 
             $resendChangedEmailVerificationLink->execute($user);
 
             return back()->with(
                 'message',
-                'A new verification link has been sent.'
+                __('messages.account.verification_link_sent')
             );
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'error' => __('messages.errors.unexpected'),
+            ]);
         }
     }
 }

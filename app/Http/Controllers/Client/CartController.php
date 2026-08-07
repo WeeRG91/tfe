@@ -61,6 +61,7 @@ class CartController extends Controller
             ->get();
 
         $loyaltyPointTransactions = loyaltyPointTransaction::query()
+            ->with('order:id,order_number')
             ->where('user_id', auth()->user()->id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -88,7 +89,9 @@ class CartController extends Controller
         $item = $addDishToCart->execute($request, $validated);
 
         return response()->json([
-            'message' => ($item->item->name ?? 'Item') . ' added successfully to cart'
+            'message' => __('messages.cart.added', [
+                'item' => $item->item->name ?? __('messages.cart.item'),
+            ]),
         ]);
     }
 
@@ -107,7 +110,9 @@ class CartController extends Controller
         $item = $addDrinkToCart->execute($request, $validated);
 
         return response()->json([
-            'message' => ($item->item->name ?? 'Item') . ' added successfully to cart'
+            'message' => __('messages.cart.added', [
+                'item' => $item->item->name ?? __('messages.cart.item'),
+            ]),
         ]);
     }
 
@@ -126,7 +131,9 @@ class CartController extends Controller
         $itemName = $removeCartItem->execute($request, $cartItemId);
 
         return response()->json([
-            'message' => "$itemName removed successfully from cart",
+            'message' => __('messages.cart.removed', [
+                'item' => $itemName,
+            ]),
         ]);
     }
 
@@ -171,7 +178,9 @@ class CartController extends Controller
 
         if ($result === 'deleted') {
             return response()->json([
-                'message' => "Item removed from cart",
+                'message' => __('messages.cart.removed', [
+                    'item' => __('messages.cart.item'),
+                ]),
             ]);
         }
 

@@ -28,6 +28,12 @@ Route::post('/locale', function (Request $request) {
 
     $request->session()->put('locale', $validated['locale']);
 
+    if ($request->user()) {
+        $request->user()->update([
+            'locale' => $validated['locale'],
+        ]);
+    }
+
     return back();
 })->name('locale.update');
 

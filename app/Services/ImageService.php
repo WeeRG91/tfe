@@ -25,7 +25,7 @@ class ImageService
                 'image/png' => 'png',
                 'image/webp' => 'webp',
                 default => throw ValidationException::withMessages([
-                    'images' => 'Unsupported image format.',
+                    'images' => __('messages.resources.image.unsupported_format'),
                 ]),
             };
 

@@ -92,7 +92,7 @@ class IngredientController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while creating the ingredient']);
+                ->withErrors(['message' => __('messages.resources.ingredient.create_failed')]);
         }
     }
 
@@ -131,7 +131,7 @@ class IngredientController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while creating the ingredient']);
+                ->withErrors(['message' => __('messages.resources.ingredient.create_failed')]);
         }
     }
 
@@ -184,7 +184,7 @@ class IngredientController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while updating the ingredient']);
+                ->withErrors(['message' => __('messages.resources.ingredient.update_failed')]);
         }
     }
 
@@ -200,7 +200,7 @@ class IngredientController extends Controller
         $command->execute($ingredient->id);
 
         return response()->json([
-            'message' => 'Ingredient successfully restored',
+            'message' => __('messages.resources.ingredient.restored'),
         ]);
     }
 
@@ -216,7 +216,7 @@ class IngredientController extends Controller
         $command->execute($ingredient->id);
 
         return response()->json([
-            'message' => 'Ingredient successfully moved to bin',
+            'message' => __('messages.resources.ingredient.moved_to_bin'),
         ]);
     }
 
@@ -232,7 +232,7 @@ class IngredientController extends Controller
         $command->execute($ingredient->id);
 
         return response()->json([
-            'message' => 'Ingredient successfully deleted',
+            'message' => __('messages.resources.ingredient.deleted'),
         ]);
     }
 }

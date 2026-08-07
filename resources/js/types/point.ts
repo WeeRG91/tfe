@@ -3,14 +3,15 @@ export type LoyaltyPointTransactionType = {
     type: PointTypeType;
     points: number;
     description: string;
+    order_number: string | null;
     created_at: string;
 };
 
-export type PointTypeType ={
+export type PointTypeType = {
     value: number;
     key: string;
     label: string;
-}
+};
 
 export enum PointTypeEnum {
     EARNED = 'Earned',

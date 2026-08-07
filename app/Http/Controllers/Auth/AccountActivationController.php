@@ -59,7 +59,9 @@ class AccountActivationController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'error' => __('messages.errors.unexpected'),
+            ]);
         }
     }
 
@@ -88,23 +90,29 @@ class AccountActivationController extends Controller
                 ->first();
 
             if (!$user) {
-                return back()->withErrors(['error' => 'User not found. Please try to sign up to create an account.']);
+                return back()->withErrors([
+                    'error' => __('messages.account.not_found'),
+                ]);
             }
 
             if ($user->hasVerifiedEmail()) {
-                return back()->withErrors(['error' => 'User already activated. Please try to login your account.']);
+                return back()->withErrors([
+                    'error' => __('messages.account.already_activated'),
+                ]);
             }
 
            $sendActivationLink->execute($user);
 
             return back()->with(
                 'message',
-                'A new activation link has been sent.'
+                __('messages.account.activation_link_sent')
             );
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'error' => __('messages.errors.unexpected'),
+            ]);
         }
     }
 
@@ -130,7 +138,9 @@ class AccountActivationController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'error' => __('messages.errors.unexpected'),
+            ]);
         }
     }
 
@@ -160,19 +170,23 @@ class AccountActivationController extends Controller
                 ->first();
 
             if (!$user) {
-                return back()->withErrors(['error' => 'User not found. Please try to sign up to create an account.']);
+                return back()->withErrors([
+                    'error' => __('messages.account.not_found'),
+                ]);
             }
 
             $resendReactivationLink->execute($user);
 
             return back()->with(
                 'message',
-                'A new activation link has been sent.'
+                __('messages.account.reactivation_link_sent')
             );
         } catch (Throwable $e) {
             report($e);
 
-            return back()->withErrors($e->getMessage());
+            return back()->withErrors([
+                'error' => __('messages.errors.unexpected'),
+            ]);
         }
     }
 }

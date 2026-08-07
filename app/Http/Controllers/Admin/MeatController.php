@@ -79,7 +79,7 @@ class MeatController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while creating the meat']);
+                ->withErrors(['message' => __('messages.resources.meat.create_failed')]);
         }
     }
 
@@ -118,7 +118,7 @@ class MeatController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while creating the meat']);
+                ->withErrors(['message' => __('messages.resources.meat.create_failed')]);
         }
     }
 
@@ -165,7 +165,7 @@ class MeatController extends Controller
             report($e);
 
             return back()
-                ->withErrors(['message' => 'Something went wrong while updating the meat']);
+                ->withErrors(['message' => __('messages.resources.meat.update_failed')]);
         }
     }
 
@@ -181,7 +181,7 @@ class MeatController extends Controller
         $command->execute($meat->id);
 
         return response()->json([
-            'message' => 'Meat successfully restored',
+            'message' => __('messages.resources.meat.restored'),
         ]);
     }
 
@@ -197,7 +197,7 @@ class MeatController extends Controller
         $command->execute($meat->id);
 
         return response()->json([
-            'message' => 'Meat successfully moved to bin',
+            'message' => __('messages.resources.meat.moved_to_bin'),
         ]);
     }
 
@@ -213,7 +213,7 @@ class MeatController extends Controller
         $command->execute($meat->id);
 
         return response()->json([
-            'message' => 'Meat successfully deleted',
+            'message' => __('messages.resources.meat.deleted'),
         ]);
     }
 }

@@ -19,14 +19,14 @@ class UpdateAddress
 
         if (empty($existingAddress)) {
             return [
-                'message' => 'Address not found',
+                'message' => __('messages.addresses.not_found'),
                 'address' => null,
             ];
         }
 
         if ($existingAddress->user_id !== $user->id) {
             return [
-                'message' => 'You cannot edit this address',
+                'message' => __('messages.addresses.cannot_edit'),
                 'address' => null,
             ];
         }
@@ -41,7 +41,7 @@ class UpdateAddress
         $existingAddress->update($data);
 
         return [
-            'message' => 'Address updated',
+            'message' => __('messages.addresses.updated'),
             'address' => new AddressResource($existingAddress),
         ];
     }

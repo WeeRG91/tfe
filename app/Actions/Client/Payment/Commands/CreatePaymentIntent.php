@@ -23,11 +23,11 @@ class CreatePaymentIntent
         abort_unless(
             $user && $order->user_id === $user->id,
             403,
-            'You are not allowed to pay this order.',
+            __('messages.payment.not_allowed'),
         );
 
         if ($order->payment_status === PaymentStatusEnum::PAID) {
-            abort(409, 'This order has already been paid.');
+            abort(409, __('messages.payment.already_paid'));
         }
 
         Stripe::setApiKey(config('services.stripe.secret_key'));
@@ -77,13 +77,13 @@ class CreatePaymentIntent
             ]);
 
             throw new RuntimeException(
-                'Unable to initialize payment.',
+                __('messages.payment.initialization_failed'),
                 previous: $e,
             );
         }
 
         return [
-            'message' => 'Payment success',
+            'message' => __('messages.payment.success'),
             'client_secret' => $paymentIntent->client_secret,
         ];
     }

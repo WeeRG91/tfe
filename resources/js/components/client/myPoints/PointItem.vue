@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { usePointTransactionTranslator } from '@/composables/usePointTransactionTranslator';
 import { LoyaltyPointTransactionType, PointTypeEnum } from '@/types/point';
-import { Clock, LucideProps, Minus, Plus, X, RefreshCw } from 'lucide-vue-next';
+import { Clock, LucideProps, Minus, Plus, RefreshCw, X } from 'lucide-vue-next';
 import { FunctionalComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 
 defineProps<{
     transaction: LoyaltyPointTransactionType;
@@ -12,6 +13,7 @@ defineProps<{
 const { t } = useI18n();
 
 const { formatDate } = useDateFormatter();
+const { translatePointTransaction } = usePointTransactionTranslator();
 
 const getPointIcon = (type: PointTypeEnum) => {
     const icon: Record<PointTypeEnum, FunctionalComponent<LucideProps>> = {
@@ -79,7 +81,7 @@ const getPointPrefix = (type: PointTypeEnum) => {
                 <p
                     class="truncate text-sm font-medium text-gray-900 md:text-base"
                 >
-                    {{ transaction.description }}
+                    {{ translatePointTransaction(transaction) }}
                 </p>
                 <div
                     class="flex items-center gap-1.5 text-xs text-gray-500 md:gap-2"

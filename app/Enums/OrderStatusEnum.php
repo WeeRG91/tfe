@@ -45,6 +45,11 @@ enum OrderStatusEnum: int
         };
     }
 
+    public function translatedLabel(): string
+    {
+        return __('messages.enums.order_status.' . $this->key());
+    }
+
     public static function finalStatuses(): array
     {
         return [

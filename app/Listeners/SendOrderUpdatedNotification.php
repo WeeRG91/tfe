@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use App\Enums\NotificationTypeEnum;
 use App\Enums\OrderStatusEnum;
-use App\Enums\OrderTypeEnum;
 use App\Events\StatusOrderUpdated;
 use App\Events\StatusOrderUpdatedBroadcast;
 use App\Mail\OrderUpdatedMail;
@@ -28,28 +27,28 @@ class SendOrderUpdatedNotification
 
         switch ($order->status) {
             case OrderStatusEnum::READY:
-                $message = "Your order #$order->order_number is ready for " .
-                    match ($order->type) {
-                        OrderTypeEnum::TAKEAWAY => 'pickup',
-                        OrderTypeEnum::DELIVERY => 'delivery',
-                        default => 'serving',
-                    } . ".";
-
                 DB::table('notifications')->insert([
                     'user_id' => $order->user_id,
                     'notifiable_id' => $order->id,
                     'notifiable_type' => Order::class,
                     'type' => NotificationTypeEnum::ORDER_READY,
-                    'title' => 'Order Ready',
-                    'message' => $message,
+                    'title' => 'order_ready',
+                    'message' => '',
                     'data' => json_encode([
+                        'order_id' => $order->id,
                         'order_number' => $order->order_number,
+                        'order_type' => $order->type->key(),
                     ]),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
-                Mail::to($order->user->email)->queue(new OrderUpdatedMail($order, OrderStatusEnum::READY->label()));
+                Mail::to($order->user->email)
+                    ->locale($order->user->preferredLocale())
+                    ->queue(new OrderUpdatedMail(
+                        $order,
+                        OrderStatusEnum::READY,
+                    ));
                 break;
             case OrderStatusEnum::DELIVERING:
                 DB::table('notifications')->insert([
@@ -57,16 +56,23 @@ class SendOrderUpdatedNotification
                     'notifiable_id' => $order->id,
                     'notifiable_type' => Order::class,
                     'type' => NotificationTypeEnum::ORDER_DELIVERING,
-                    'title' => 'Order Delivering',
-                    'message' => "Your order #$order->order_number is out for delivery.",
+                    'title' => 'order_delivering',
+                    'message' => '',
                     'data' => json_encode([
+                        'order_id' => $order->id,
                         'order_number' => $order->order_number,
+                        'order_type' => $order->type->key(),
                     ]),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
-                Mail::to($order->user->email)->queue(new OrderUpdatedMail($order, OrderStatusEnum::DELIVERING->label()));
+                Mail::to($order->user->email)
+                    ->locale($order->user->preferredLocale())
+                    ->queue(new OrderUpdatedMail(
+                        $order,
+                        OrderStatusEnum::DELIVERING,
+                    ));
                 break;
             case OrderStatusEnum::COMPLETED:
                 DB::table('notifications')->insert([
@@ -74,16 +80,23 @@ class SendOrderUpdatedNotification
                     'notifiable_id' => $order->id,
                     'notifiable_type' => Order::class,
                     'type' => NotificationTypeEnum::ORDER_COMPLETED,
-                    'title' => 'Order Completed',
-                    'message' => "Your order #$order->order_number has been completed.",
+                    'title' => 'order_completed',
+                    'message' => '',
                     'data' => json_encode([
+                        'order_id' => $order->id,
                         'order_number' => $order->order_number,
+                        'order_type' => $order->type->key(),
                     ]),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
-                Mail::to($order->user->email)->queue(new OrderUpdatedMail($order, OrderStatusEnum::COMPLETED->label()));
+                Mail::to($order->user->email)
+                    ->locale($order->user->preferredLocale())
+                    ->queue(new OrderUpdatedMail(
+                        $order,
+                        OrderStatusEnum::COMPLETED,
+                    ));
                 break;
             case OrderStatusEnum::CANCELLED:
                 DB::table('notifications')->insert([
@@ -91,16 +104,23 @@ class SendOrderUpdatedNotification
                     'notifiable_id' => $order->id,
                     'notifiable_type' => Order::class,
                     'type' => NotificationTypeEnum::ORDER_CANCELLED,
-                    'title' => 'Order Cancelled',
-                    'message' => "Your order #$order->order_number has been cancelled.",
+                    'title' => 'order_cancelled',
+                    'message' => '',
                     'data' => json_encode([
+                        'order_id' => $order->id,
                         'order_number' => $order->order_number,
+                        'order_type' => $order->type->key(),
                     ]),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
-                Mail::to($order->user->email)->queue(new OrderUpdatedMail($order, OrderStatusEnum::CANCELLED->label()));
+                Mail::to($order->user->email)
+                    ->locale($order->user->preferredLocale())
+                    ->queue(new OrderUpdatedMail(
+                        $order,
+                        OrderStatusEnum::CANCELLED,
+                    ));
                 break;
         }
 

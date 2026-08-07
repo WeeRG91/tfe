@@ -17,7 +17,7 @@ class DeleteAddress
 
         if ($address->user_id !== $user->id) {
             return [
-                'message' => 'You cannot delete this address',
+                'message' => __('messages.addresses.cannot_delete'),
                 'address' => null,
             ];
         }
@@ -34,13 +34,13 @@ class DeleteAddress
             $newDefaultAddress?->update(['is_default' => true]);
 
             return [
-                'message' => 'Address deleted',
+                'message' => __('messages.addresses.deleted'),
                 'address' => $newDefaultAddress,
             ];
         }
 
         return [
-            'message' => 'Address deleted',
+            'message' => __('messages.addresses.deleted'),
             'address' => null,
         ];
     }

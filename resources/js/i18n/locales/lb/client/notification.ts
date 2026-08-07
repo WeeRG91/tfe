@@ -28,6 +28,33 @@ export default {
     notificationItem: {
         markAsRead: 'Als gelies markéieren',
         delete: 'Läschen',
+        confirmDelete:
+            'Sidd Dir sécher, datt Dir dës Notifikatioun läsche wëllt?',
+    },
+    stored: {
+        orderConfirmed: {
+            title: 'Bestellung bestätegt',
+            message: 'Är Bestellung #{number} gouf bestätegt.',
+        },
+        orderReady: {
+            title: 'Bestellung prett',
+            pickup: 'Är Bestellung #{number} ass prett fir ofgeholl ze ginn.',
+            delivery:
+                'Är Bestellung #{number} ass prett fir geliwwert ze ginn.',
+            serving: 'Är Bestellung #{number} ass prett fir zerwéiert ze ginn.',
+        },
+        orderDelivering: {
+            title: 'Bestellung ënnerwee',
+            message: 'Är Bestellung #{number} ass ënnerwee.',
+        },
+        orderCompleted: {
+            title: 'Bestellung ofgeschloss',
+            message: 'Är Bestellung #{number} gouf ofgeschloss.',
+        },
+        orderCancelled: {
+            title: 'Bestellung annuléiert',
+            message: 'Är Bestellung #{number} gouf annuléiert.',
+        },
     },
     notificationDrawer: {
         title: 'Notifikatiounen',

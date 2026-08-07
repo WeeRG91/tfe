@@ -7,14 +7,16 @@ export type NotificationType = {
     title: string;
     message: string;
     data: NotificationDataType;
-    read_at: string;
+    read_at: string | null;
     created_at: string;
 };
 
-export type NotificationDataType =
-    | { order_number: string }
-    | { dish_name: string }
-    | object;
+export type NotificationDataType = {
+    order_id?: number;
+    order_number?: string;
+    order_type?: 'dinein' | 'takeaway' | 'delivery';
+    dish_name?: string;
+};
 
 export enum NotifiableTypeEnum {
     DISH = 'dish',

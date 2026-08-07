@@ -19,6 +19,7 @@ class LoyaltyPointTransactionController extends Controller
     public function myPoints(): InertiaResponse
     {
         $availablePoints = LoyaltyPointTransaction::query()
+            ->with('order:id,order_number')
             ->where('user_id', auth()->user()->id)
             ->orderBy('created_at', 'desc')
             ->get();

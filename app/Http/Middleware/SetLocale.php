@@ -12,14 +12,14 @@ class SetLocale
     {
         $supportedLocales = array_keys(config('locales.supported'));
 
-        $locale = $request->session()->get(
-            'locale',
-            config('app.locale')
-        );
+        $locale = $request->user()?->locale
+            ?? $request->session()->get('locale', config('app.locale'));
 
         if (!in_array($locale, $supportedLocales, true)) {
             $locale = config('app.fallback_locale');
         }
+
+        $request->session()->put('locale', $locale);
 
         app()->setLocale($locale);
 

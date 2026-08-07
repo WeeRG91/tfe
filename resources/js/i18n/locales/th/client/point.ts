@@ -9,6 +9,12 @@ export default {
     errors: {
         loadFailed: 'ไม่สามารถโหลดคะแนนสะสมได้',
     },
+    transactions: {
+        earned: 'ได้รับคะแนนจากคำสั่งซื้อ #{orderNumber}',
+        redeemed: 'ใช้คะแนนสำหรับคำสั่งซื้อ #{orderNumber}',
+        refunded: 'คืนคะแนนสำหรับคำสั่งซื้อ #{orderNumber}',
+        reversed: 'ยกเลิกคะแนนจากคำสั่งซื้อที่คืนเงิน #{orderNumber}',
+    },
     emptyPoint: {
         title: 'ยังไม่มีคะแนน',
         description:

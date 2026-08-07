@@ -56,7 +56,7 @@ class ConfirmedOrderController extends Controller
         $updateOrderStatus->execute($order, $validated['newStatus']);
 
         return response()->json([
-            'message' => 'Updated order status successfully',
+            'message' => __('messages.orders.status_updated'),
         ]);
     }
 }

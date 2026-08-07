@@ -36,7 +36,7 @@ class HandleLoyaltyPoints
 
         if ($usedPoints > $pointBalance) {
             throw ValidationException::withMessages([
-                'used_points' => 'You do not have enough loyalty points.',
+                'used_points' => __('messages.orders.insufficient_points'),
             ]);
         }
 
