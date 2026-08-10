@@ -36,6 +36,8 @@ import point from '@/i18n/locales/en/client/point';
 import profile from '@/i18n/locales/en/client/profile';
 import search from '@/i18n/locales/en/client/search';
 
+import errors from '@/i18n/locales/en/errors';
+
 export default {
     admin,
     allergen,
@@ -74,4 +76,6 @@ export default {
     point,
     profile,
     search,
+
+    errors,
 }

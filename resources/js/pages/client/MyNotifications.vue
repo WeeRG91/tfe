@@ -3,6 +3,7 @@ import EmptyNotification from '@/components/client/myNotifications/EmptyNotifica
 import NotificationItem from '@/components/client/myNotifications/NotificationItem.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { useClickOutside } from '@/composables/useClickOutside';
+import { useLocale } from '@/composables/useLocale';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import notification from '@/routes/notification';
 import { useNotificationStore } from '@/stores/notification';
@@ -14,9 +15,9 @@ import { CheckCheck, Loader, MoreHorizontal, Trash2 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { locales } from '@/lib/const';
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
+const { getIntlLocale } = useLocale();
 
 const notificationStore = useNotificationStore();
 
@@ -65,7 +66,7 @@ const closeConfirmModal = () => {
 
 const groupedNotifications = computed(() => {
     const groups: Record<string, NotificationType[]> = {};
-    const currentLocale = locales[locale.value] ?? 'en-GB';
+    const currentLocale = getIntlLocale();
 
     notifications.value.forEach((notification) => {
         const date = new Date(notification.created_at);
@@ -304,7 +305,9 @@ watch(activeFilter, () => {
                                 class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                             >
                                 <Trash2 class="h-4 w-4" />
-                                <span>{{ t('notification.menu.deleteAll') }}</span>
+                                <span>{{
+                                    t('notification.menu.deleteAll')
+                                }}</span>
                             </button>
                         </div>
                     </Transition>

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Inertia\Inertia;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
@@ -41,6 +42,11 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        $middleware->prependToPriorityList(
+            SubstituteBindings::class,
+            SetLocale::class,
+        );
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
@@ -49,7 +55,7 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if ($response->getStatusCode() === 419) {
-                return back()->with('message', 'The page expired, please refresh the page and try again.');
+                return back()->with('message', __('messages.errors.page_expired'));
             }
 
             if (
@@ -98,6 +104,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return Inertia::render($errorPage, [
                 'status' => $response->getStatusCode(),
+                'locale' => app()->getLocale(),
+                'fallbackLocale' => config('app.fallback_locale'),
+                'availableLocales' => config('locales.supported'),
             ])->toResponse($request)->setStatusCode($response->getStatusCode());
         });
     })->create();

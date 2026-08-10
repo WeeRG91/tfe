@@ -1,6 +1,7 @@
-import './bootstrap.ts';
 import '../css/app.css';
+import './bootstrap.ts';
 
+import { createI18nInstance } from '@/i18n';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createPinia } from 'pinia';
@@ -9,7 +10,6 @@ import { createApp, Fragment, h } from 'vue';
 import { Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css';
 import { initializeTheme } from './composables/useAppearance';
-import { createI18nInstance } from '@/i18n';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -25,7 +25,8 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         const i18n = createI18nInstance(
             props.initialPage.props.locale,
-        )
+            props.initialPage.props.fallbackLocale,
+        );
 
         createApp({
             render: () =>

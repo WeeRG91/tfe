@@ -144,6 +144,9 @@ return [
     'errors' => [
         'page_expired' => 'D’Säit ass ofgelaf. Luet se nei a probéiert nach eng Kéier.',
         'unexpected' => 'Eppes ass schifgaangen. Probéiert w.e.g. nach eng Kéier.',
+        'user_already_active' => 'De Benotzer ass schonn aktiv.',
+        'user_already_inactive' => 'De Benotzer ass schonn inaktiv.',
+        'cannot_inactivate_super_admin' => 'Dir kënnt de Super Admin net desaktivéieren.',
     ],
     'enums' => [
         'order_status' => [

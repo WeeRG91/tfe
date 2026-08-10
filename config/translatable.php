@@ -12,12 +12,7 @@ return [
     | Contains an array with the applications available locales.
     |
     */
-    'locales' => [
-        'en',
-        'fr',
-        'lb',
-        'th',
-    ],
+    'locales' => array_keys(config('locales.supported')),
 
     /*
     |--------------------------------------------------------------------------
@@ -84,7 +79,7 @@ return [
     | is used first. So "es" will be checked before "es_MX".
     |
     */
-    'fallback_locale' => 'en',
+    'fallback_locale' => config('app.fallback_locale'),
 
     /*
     |--------------------------------------------------------------------------

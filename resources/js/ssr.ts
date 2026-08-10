@@ -1,9 +1,9 @@
+import { createI18nInstance } from '@/i18n';
 import { createInertiaApp } from '@inertiajs/vue3';
 import createServer from '@inertiajs/vue3/server';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createSSRApp, DefineComponent, h } from 'vue';
 import { renderToString } from 'vue/server-renderer';
-import { createI18nInstance } from '@/i18n';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -19,7 +19,10 @@ createServer(
                     import.meta.glob<DefineComponent>('./pages/**/*.vue'),
                 ),
             setup: ({ App, props, plugin }) => {
-                const i18n = createI18nInstance(props.initialPage.props.locale);
+                const i18n = createI18nInstance(
+                    props.initialPage.props.locale,
+                    props.initialPage.props.fallbackLocale,
+                );
 
                 return createSSRApp({
                     render: () => h(App, props),

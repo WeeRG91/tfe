@@ -15,13 +15,13 @@ class InactivateUser
     {
         if ($user->hasRole('Super Admin')) {
             throw ValidationException::withMessages([
-                'user' => "You can't inactivate Super Admin."
+                'user' => __('messages.errors.cannot_inactivate_super_admin'),
             ]);
         }
 
         if ($user->trashed()) {
             throw ValidationException::withMessages([
-                'user' => 'User is already inactive.'
+                'user' => __('messages.errors.user_already_inactive'),
             ]);
         }
 

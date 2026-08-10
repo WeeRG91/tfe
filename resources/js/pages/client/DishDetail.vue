@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AnimatedButton from '@/components/AnimatedButton.vue';
 import AddDishToCartModal from '@/components/client/cart/AddDishToCartModal.vue';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { getInitials, getUserAvatarColor } from '@/lib/utils';
 import rating from '@/routes/rating';
@@ -9,20 +10,19 @@ import { ClientDishType } from '@/types/dish';
 import { ReviewResultType, ReviewType } from '@/types/rating';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
-import { X, Flame } from 'lucide-vue-next';
+import { Flame, X } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     dish: ClientDishType;
 }>();
 
+const { t } = useI18n();
 const { formatDateForHumans } = useDateFormatter();
-
 const page = usePage();
 const user = computed(() => page.props.auth?.user || null);
-
 const dishStore = useDishStore();
 
 const ratingAverage = ref<number>(props.dish.rating_average ?? 0);
@@ -71,7 +71,7 @@ const loadReviews = async () => {
         reviews.value = data;
     } catch (error) {
         console.log(error);
-        toast.error('Failed to load reviews');
+        toast.error(t('menu.dishDetail.messages.loadReviewsFailed'));
     } finally {
         isLoading.value = false;
     }
@@ -126,7 +126,7 @@ const submitReview = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to save review');
+        toast.error(t('menu.dishDetail.messages.saveReviewFailed'));
     } finally {
         isSubmitting.value = false;
     }
@@ -148,7 +148,7 @@ const updateReview = async () => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to update review');
+        toast.error(t('menu.dishDetail.messages.updateReviewFailed'));
     } finally {
         isSubmitting.value = false;
     }
@@ -165,7 +165,7 @@ const deleteReview = async (review: ReviewType) => {
         }
     } catch (error) {
         console.log(error);
-        toast.error('Failed to delete review');
+        toast.error(t('menu.dishDetail.messages.deleteReviewFailed'));
     }
 };
 
@@ -269,7 +269,7 @@ onUnmounted(() => {
                     @click="$inertia.visit('/menu/dishes')"
                     class="cursor-pointer transition-colors hover:text-red-500"
                 >
-                    Menu
+                    {{ t('menu.dishDetail.menu') }}
                 </button>
                 <span>/</span>
                 <span class="font-medium text-gray-900">
@@ -349,7 +349,8 @@ onUnmounted(() => {
                             </div>
 
                             <span class="text-sm text-gray-400">
-                                ({{ ratingCount ?? 0 }} reviews)
+                                ({{ ratingCount ?? 0 }}
+                                {{ t('menu.dishDetail.reviews') }})
                             </span>
                         </div>
                     </div>
@@ -371,15 +372,18 @@ onUnmounted(() => {
                             class="text-3xl font-bold text-red-600 sm:text-4xl"
                             >€ {{ props.dish.price.toFixed(2) }}</span
                         >
-                        <span class="text-sm text-gray-400">incl. VAT</span>
+                        <span class="text-sm text-gray-400">
+                            {{ t('menu.dishDetail.includesVat') }}
+                        </span>
                     </div>
 
                     <div v-if="props.dish.ingredients.length" class="mb-8">
                         <div class="mb-4 flex items-center gap-2">
                             <span
                                 class="text-sm font-semibold tracking-wide text-gray-400 uppercase"
-                                >Ingredients</span
                             >
+                                {{ t('menu.dishDetail.ingredients') }}
+                            </span>
                             <div
                                 class="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"
                             ></div>
@@ -421,12 +425,16 @@ onUnmounted(() => {
                                                     "
                                                     class="h-5 w-5 rounded-full object-cover"
                                                 />
-                                                <span class="whitespace-nowrap"
-                                                    >Contains:
+                                                <span class="whitespace-nowrap">
+                                                    {{
+                                                        t(
+                                                            'menu.dishDetail.contains',
+                                                        )
+                                                    }}
                                                     {{
                                                         ingredient.allergen.name
-                                                    }}</span
-                                                >
+                                                    }}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -445,14 +453,14 @@ onUnmounted(() => {
                     <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
                         <AnimatedButton
                             @click="openAddModal"
-                            text="Add to cart"
+                            :text="t('menu.dishDetail.addToCart')"
                         />
 
                         <button
                             class="inline-flex cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md active:scale-95"
                             @click="$inertia.visit('/menu/dishes')"
                         >
-                            Back to menu
+                            {{ t('menu.dishDetail.backToMenu') }}
                         </button>
                     </div>
                 </div>
@@ -466,7 +474,7 @@ onUnmounted(() => {
                         <h2
                             class="flex items-center gap-2 text-2xl font-bold text-gray-900"
                         >
-                            Reviews
+                            {{ t('menu.dishDetail.reviewSection.title') }}
                             <span
                                 class="inline-flex items-center justify-center rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-semibold text-red-600"
                             >
@@ -504,13 +512,13 @@ onUnmounted(() => {
                         @click="toggleReviewForm"
                         class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-red-200 transition-all hover:shadow-xl hover:shadow-red-300 active:scale-95"
                     >
-                        Write a Review
+                        {{ t('menu.dishDetail.reviewSection.writeReview') }}
                     </button>
                     <div
                         v-else-if="user && hasUserReviewed"
                         class="flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm font-medium text-green-700"
                     >
-                        You've reviewed this dish
+                        {{ t('menu.dishDetail.reviewSection.alreadyReviewed') }}
                     </div>
                 </div>
 
@@ -522,7 +530,11 @@ onUnmounted(() => {
                         <h3
                             class="flex items-center gap-2 text-base font-semibold text-gray-900"
                         >
-                            Write Your Review
+                            {{
+                                t(
+                                    'menu.dishDetail.reviewSection.writeYourReview',
+                                )
+                            }}
                         </h3>
                         <button
                             @click="toggleReviewForm"
@@ -537,7 +549,11 @@ onUnmounted(() => {
                             <label
                                 class="mb-1.5 block text-xs font-medium text-gray-700"
                             >
-                                Your Rating
+                                {{
+                                    t(
+                                        'menu.dishDetail.reviewSection.yourRating',
+                                    )
+                                }}
                             </label>
                             <div class="flex gap-1">
                                 <button
@@ -565,14 +581,22 @@ onUnmounted(() => {
                                 for="review"
                                 class="mb-1.5 block text-xs font-medium text-gray-700"
                             >
-                                Your Review
+                                {{
+                                    t(
+                                        'menu.dishDetail.reviewSection.yourReview',
+                                    )
+                                }}
                             </label>
                             <textarea
                                 id="review"
                                 v-model="reviewForm.review"
                                 rows="3"
                                 class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm transition-all focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none"
-                                placeholder="Share your experience with this dish..."
+                                :placeholder="
+                                    t(
+                                        'menu.dishDetail.reviewSection.reviewPlaceholder',
+                                    )
+                                "
                             ></textarea>
                         </div>
 
@@ -586,16 +610,26 @@ onUnmounted(() => {
                                     v-if="isSubmitting"
                                     class="flex items-center gap-2"
                                 >
-                                    Submitting...
+                                    {{
+                                        t(
+                                            'menu.dishDetail.reviewSection.submitting',
+                                        )
+                                    }}
                                 </span>
-                                <span v-else>Submit</span>
+                                <span v-else>
+                                    {{
+                                        t(
+                                            'menu.dishDetail.reviewSection.submit',
+                                        )
+                                    }}
+                                </span>
                             </button>
                             <button
                                 type="button"
                                 @click="toggleReviewForm"
                                 class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-800 active:scale-95"
                             >
-                                Cancel
+                                {{ t('menu.dishDetail.reviewSection.cancel') }}
                             </button>
                         </div>
                     </form>
@@ -609,7 +643,11 @@ onUnmounted(() => {
                         <h3
                             class="flex items-center gap-2 text-base font-semibold text-gray-900"
                         >
-                            Edit Your Review
+                            {{
+                                t(
+                                    'menu.dishDetail.reviewSection.editYourReview',
+                                )
+                            }}
                         </h3>
                         <button
                             @click="cancelEdit"
@@ -624,7 +662,11 @@ onUnmounted(() => {
                             <label
                                 class="mb-1.5 block text-xs font-medium text-gray-700"
                             >
-                                Your Rating
+                                {{
+                                    t(
+                                        'menu.dishDetail.reviewSection.yourRating',
+                                    )
+                                }}
                             </label>
                             <div class="flex gap-1">
                                 <button
@@ -652,14 +694,22 @@ onUnmounted(() => {
                                 for="edit-review"
                                 class="mb-1.5 block text-xs font-medium text-gray-700"
                             >
-                                Your Review
+                                {{
+                                    t(
+                                        'menu.dishDetail.reviewSection.yourReview',
+                                    )
+                                }}
                             </label>
                             <textarea
                                 id="edit-review"
                                 v-model="editForm.review"
                                 rows="3"
                                 class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm transition-all focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none"
-                                placeholder="Update your review..."
+                                :placeholder="
+                                    t(
+                                        'menu.dishDetail.reviewSection.editReviewPlaceholder',
+                                    )
+                                "
                             ></textarea>
                         </div>
 
@@ -673,16 +723,26 @@ onUnmounted(() => {
                                     v-if="isSubmitting"
                                     class="flex items-center gap-2"
                                 >
-                                    Updating...
+                                    {{
+                                        t(
+                                            'menu.dishDetail.reviewSection.updating',
+                                        )
+                                    }}
                                 </span>
-                                <span v-else>Update</span>
+                                <span v-else>
+                                    {{
+                                        t(
+                                            'menu.dishDetail.reviewSection.update',
+                                        )
+                                    }}
+                                </span>
                             </button>
                             <button
                                 type="button"
                                 @click="cancelEdit"
                                 class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-800 active:scale-95"
                             >
-                                Cancel
+                                {{ t('menu.dishDetail.reviewSection.cancel') }}
                             </button>
                         </div>
                     </form>
@@ -734,7 +794,11 @@ onUnmounted(() => {
                                                 "
                                                 class="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600"
                                             >
-                                                You
+                                                {{
+                                                    t(
+                                                        'menu.dishDetail.reviewSection.you',
+                                                    )
+                                                }}
                                             </span>
                                         </div>
                                         <div
@@ -797,7 +861,11 @@ onUnmounted(() => {
                                                     "
                                                     class="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
                                                 >
-                                                    Edit
+                                                    {{
+                                                        t(
+                                                            'menu.dishDetail.reviewSection.edit',
+                                                        )
+                                                    }}
                                                 </button>
                                                 <button
                                                     @click="
@@ -806,7 +874,11 @@ onUnmounted(() => {
                                                     :disabled="isDeleting"
                                                     class="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
                                                 >
-                                                    Delete
+                                                    {{
+                                                        t(
+                                                            'menu.dishDetail.reviewSection.delete',
+                                                        )
+                                                    }}
                                                 </button>
                                             </div>
                                             <div
@@ -836,7 +908,11 @@ onUnmounted(() => {
                                             review.created_at
                                         "
                                     >
-                                        Edited
+                                        {{
+                                            t(
+                                                'menu.dishDetail.reviewSection.edited',
+                                            )
+                                        }}
                                     </span>
                                 </div>
                             </div>
@@ -849,10 +925,12 @@ onUnmounted(() => {
                     >
                         <div class="mb-4 text-7xl">🍽️</div>
                         <h3 class="text-lg font-semibold text-gray-900">
-                            No reviews yet
+                            {{
+                                t('menu.dishDetail.reviewSection.noReviewsYet')
+                            }}
                         </h3>
                         <p class="mt-1 text-sm text-gray-500">
-                            Be the first to review this dish!
+                            {{ t('menu.dishDetail.reviewSection.firstReview') }}
                         </p>
                     </div>
                 </div>

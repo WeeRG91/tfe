@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { supportedLocales, type SupportedLocale } from '@/i18n';
+import type { LocaleMetadata } from '@/types/locale';
 import { router, usePage } from '@inertiajs/vue3';
 import { Check } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
@@ -15,22 +16,9 @@ const dropdownRef = ref<HTMLElement | null>(null);
 const currentLocale = computed(() => page.props.locale as SupportedLocale);
 
 const availableLocales = computed(
-    () => page.props.availableLocales as Record<SupportedLocale, string>,
+    () =>
+        page.props.availableLocales as Record<SupportedLocale, LocaleMetadata>,
 );
-
-const localeFlags: Record<SupportedLocale, string> = {
-    en: '/images/flags/gb.svg',
-    fr: '/images/flags/fr.svg',
-    lb: '/images/flags/lb.svg',
-    th: '/images/flags/th.svg',
-};
-
-const localeNames: Record<SupportedLocale, string> = {
-    en: 'English',
-    fr: 'Français',
-    lb: 'Lëtzebuergesch',
-    th: 'ไทย',
-};
 
 watch(
     currentLocale,
@@ -115,8 +103,8 @@ onBeforeUnmount(() => {
             @click="toggleDropdown"
         >
             <img
-                :src="localeFlags[currentLocale]"
-                :alt="localeNames[currentLocale]"
+                :src="availableLocales[currentLocale].flag"
+                :alt="availableLocales[currentLocale].label"
                 class="h-5 w-7 shrink-0 rounded-sm object-cover shadow-sm"
             />
         </button>
@@ -130,7 +118,7 @@ onBeforeUnmount(() => {
             >
                 <div class="p-1.5 sm:p-2">
                     <button
-                        v-for="(label, locale) in availableLocales"
+                        v-for="(metadata, locale) in availableLocales"
                         :key="locale"
                         type="button"
                         role="menuitemradio"
@@ -145,13 +133,13 @@ onBeforeUnmount(() => {
                         @click="changeLocale(locale)"
                     >
                         <img
-                            :src="localeFlags[locale]"
-                            :alt="label"
+                            :src="metadata.flag"
+                            :alt="metadata.label"
                             class="h-5 w-7 shrink-0 rounded-sm object-cover shadow-sm"
                         />
 
                         <span class="min-w-0 flex-1 truncate text-sm">
-                            {{ label }}
+                            {{ metadata.label }}
                         </span>
 
                         <Check

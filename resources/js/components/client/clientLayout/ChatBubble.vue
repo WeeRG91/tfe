@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useClickOutside } from '@/composables/useClickOutside';
+import { useLocale } from '@/composables/useLocale';
 import { formatTime } from '@/lib/utils';
 import chat from '@/routes/chat';
 import message from '@/routes/message';
@@ -17,9 +18,9 @@ import {
 } from 'lucide-vue-next';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { locales } from '@/lib/const';
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
+const { getIntlLocale } = useLocale();
 
 const isOpen = ref<boolean>(false);
 const messageInput = ref<string>('');
@@ -278,7 +279,7 @@ const scrollToBottom = async () => {
 };
 
 const formatDate = (date: string) => {
-    const currentLocale = locales[locale.value] ?? 'en-GB';
+    const currentLocale = getIntlLocale();
 
     const now = new Date();
     const messageDate = new Date(date);

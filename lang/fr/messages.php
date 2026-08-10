@@ -144,6 +144,9 @@ return [
     'errors' => [
         'page_expired' => 'La page a expiré. Veuillez l’actualiser et réessayer.',
         'unexpected' => 'Une erreur est survenue. Veuillez réessayer.',
+        'user_already_active' => 'L’utilisateur est déjà actif.',
+        'user_already_inactive' => 'L’utilisateur est déjà inactif.',
+        'cannot_inactivate_super_admin' => 'Vous ne pouvez pas désactiver le super administrateur.',
     ],
     'enums' => [
         'order_status' => [

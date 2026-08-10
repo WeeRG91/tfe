@@ -46,7 +46,11 @@ class ClientGlobalSearch
 
         foreach ($this->models as $type => $model) {
             $items = $model::query()
-                ->where('name', 'LIKE', "%$query%")
+                ->whereTranslationLike(
+                    'name',
+                    '%' . $query . '%',
+                    app()->getLocale(),
+                )
                 ->limit(5)
                 ->get();
 

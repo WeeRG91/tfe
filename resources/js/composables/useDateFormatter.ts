@@ -1,4 +1,4 @@
-import { locales } from '@/lib/const';
+import { useLocale } from '@/composables/useLocale';
 import { useI18n } from 'vue-i18n';
 
 const luxembourgishMonths = [
@@ -16,10 +16,7 @@ const luxembourgishMonths = [
     'Dezember',
 ];
 
-function formatLuxembourgishDate(
-    date: Date,
-    includeTime: boolean,
-): string {
+function formatLuxembourgishDate(date: Date, includeTime: boolean): string {
     const day = date.getDate();
     const month = luxembourgishMonths[date.getMonth()];
     const year = date.getFullYear();
@@ -38,10 +35,7 @@ function formatLuxembourgishDate(
 
 export function useDateFormatter() {
     const { t, locale } = useI18n();
-
-    const getLocale = (): string => {
-        return locales[locale.value] ?? 'en-GB';
-    };
+    const { getIntlLocale } = useLocale();
 
     const isLuxembourgish = (): boolean => {
         return locale.value === 'lb';
@@ -62,7 +56,7 @@ export function useDateFormatter() {
             return formatLuxembourgishDate(date, true);
         }
 
-        return new Intl.DateTimeFormat(getLocale(), {
+        return new Intl.DateTimeFormat(getIntlLocale(), {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -82,16 +76,14 @@ export function useDateFormatter() {
             return formatLuxembourgishDate(date, false);
         }
 
-        return new Intl.DateTimeFormat(getLocale(), {
+        return new Intl.DateTimeFormat(getIntlLocale(), {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
         }).format(date);
     };
 
-    const formatDateForHumans = (
-        value: string | null,
-    ): string => {
+    const formatDateForHumans = (value: string | null): string => {
         if (!value) {
             return t('common.notSet');
         }
@@ -123,18 +115,14 @@ export function useDateFormatter() {
 
         if (hours < 24) {
             return t(
-                hours === 1
-                    ? 'common.timeAgo.hour'
-                    : 'common.timeAgo.hours',
+                hours === 1 ? 'common.timeAgo.hour' : 'common.timeAgo.hours',
                 { count: hours },
             );
         }
 
         if (days < 7) {
             return t(
-                days === 1
-                    ? 'common.timeAgo.day'
-                    : 'common.timeAgo.days',
+                days === 1 ? 'common.timeAgo.day' : 'common.timeAgo.days',
                 { count: days },
             );
         }

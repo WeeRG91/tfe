@@ -2,6 +2,7 @@ import { AllergenErrorType } from '@/types/allergen';
 import { CategoryOptionType } from '@/types/category';
 import { DishErrorType } from '@/types/dish';
 import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
+import type { LocaleMetadata, LocaleType } from '@/types/locale';
 import { MeatErrorType, MeatOptionType } from '@/types/meat';
 import {
     AllergenPermissionEnum,
@@ -35,17 +36,19 @@ export interface NavItem {
     permission?: string;
 }
 
-export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> =
-    T & {
-        name: string;
-        quote: { message: string; author: string };
-        auth: Auth;
-        locale: string;
-        availableLocales: Record<string, string>;
-        sidebarOpen: boolean;
-        flash: FlashProps;
-        [key: string]: unknown;
-    };
+export type AppPageProps<
+    T extends Record<string, unknown> = Record<string, unknown>,
+> = T & {
+    name: string;
+    quote: { message: string; author: string };
+    auth: Auth;
+    locale: LocaleType;
+    fallbackLocale: LocaleType;
+    availableLocales: Record<LocaleType, LocaleMetadata>;
+    sidebarOpen: boolean;
+    flash: FlashProps;
+    [key: string]: unknown;
+};
 
 export interface User {
     id: number;

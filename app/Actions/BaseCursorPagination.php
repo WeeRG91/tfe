@@ -20,28 +20,32 @@ abstract class BaseCursorPagination
             $query->withoutTrashed();
         }
 
-        $query->when($request->filter === 'available', fn ($q) =>
+        $query->when($request->filter === 'available', fn (Builder $q) =>
             $q->where('is_available', true)->withoutTrashed()
         );
 
-        $query->when($request->filter === 'unavailable', fn ($q) =>
+        $query->when($request->filter === 'unavailable', fn (Builder $q) =>
             $q->where('is_available', false)->withoutTrashed()
         );
 
-        $query->when($request->filter === 'deleted', fn ($q) =>
+        $query->when($request->filter === 'deleted', fn (Builder $q) =>
             $q->onlyTrashed()
         );
 
-        $query->when($request->category, fn ($q) =>
+        $query->when($request->category, fn (Builder $q) =>
             $q->where('category', $request->category)
         );
 
-        $query->when($request->allergen, fn ($q) =>
+        $query->when($request->allergen, fn (Builder $q) =>
             $q->where('allergen_id', $request->allergen)
         );
 
-        $query->when($request->search, fn ($q) =>
-            $q->where('name', 'LIKE', "%$request->search%")
+        $query->when($request->search, fn (Builder $q) =>
+            $q->whereTranslationLike(
+                'name',
+                '%' . $request->string('search')->trim() . '%',
+                app()->getLocale(),
+            )
         );
 
         return $query;

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import EmptyPoint from '@/components/client/myPoints/EmptyPoint.vue';
 import PointItem from '@/components/client/myPoints/PointItem.vue';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { useLocale } from '@/composables/useLocale';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { getTotalPoints } from '@/lib/utils';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
@@ -12,14 +14,13 @@ import { Award, ClockArrowUp, Loader } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { locales } from '@/lib/const';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     availablePoints: LoyaltyPointTransactionType[];
 }>();
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
+const { getIntlLocale } = useLocale();
 
 const { formatDate } = useDateFormatter();
 
@@ -89,7 +90,7 @@ const loadLoyaltyPointTransactions = async () => {
 
 const groupedTransactions = computed(() => {
     const groups: Record<string, LoyaltyPointTransactionType[]> = {};
-    const currentLocale = locales[locale.value] ?? 'en-GB';
+    const currentLocale = getIntlLocale();
 
     loyaltyPointTransactions.value.forEach((transaction) => {
         const date = new Date(transaction.created_at);

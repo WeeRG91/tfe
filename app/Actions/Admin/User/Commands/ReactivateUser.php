@@ -17,7 +17,7 @@ class ReactivateUser
     {
         if (!$user->trashed()) {
             throw ValidationException::withMessages([
-                'user' => 'User is already active.'
+                'user' => __('messages.errors.user_already_active'),
             ]);
         }
 

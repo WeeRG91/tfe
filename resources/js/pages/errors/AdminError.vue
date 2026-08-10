@@ -1,59 +1,85 @@
 <script setup lang="ts">
+import type { SupportedLocale } from '@/i18n';
 import { Head, Link } from '@inertiajs/vue3';
 import {
     AlertTriangle,
     ArrowLeft,
+    HelpCircle,
     Home,
     RefreshCcw,
     SearchX,
-    HelpCircle,
 } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     status: 403 | 404 | 429 | 500 | 503;
+    locale: SupportedLocale;
+    fallbackLocale: SupportedLocale;
 }>();
+
+const {
+    t,
+    locale: i18nLocale,
+    fallbackLocale: i18nFallbackLocale,
+} = useI18n({ useScope: 'global' });
+
+watch(
+    () => props.locale,
+    (value) => {
+        i18nLocale.value = value;
+
+        if (typeof document !== 'undefined') {
+            document.documentElement.lang = value;
+        }
+    },
+    { immediate: true },
+);
+
+watch(
+    () => props.fallbackLocale,
+    (value) => {
+        i18nFallbackLocale.value = value;
+    },
+    { immediate: true },
+);
 
 const errorContent = computed(() => {
     const pages = {
         403: {
-            title: 'Access denied',
-            eyebrow: 'Forbidden',
-            description: 'You do not have permission to open this page.',
+            title: t('errors.403.title'),
+            eyebrow: t('errors.403.eyebrow'),
+            description: t('errors.403.description'),
             icon: AlertTriangle,
         },
         404: {
-            title: 'Page not found',
-            eyebrow: 'Not found',
-            description:
-                'The page you are looking for does not exist or has been moved.',
+            title: t('errors.404.title'),
+            eyebrow: t('errors.404.eyebrow'),
+            description: t('errors.404.description'),
             icon: SearchX,
         },
         419: {
-            title: 'Session expired',
-            eyebrow: 'Expired',
-            description:
-                'Your session timed out. Refresh the page and try again.',
+            title: t('errors.419.title'),
+            eyebrow: t('errors.419.eyebrow'),
+            description: t('errors.419.description'),
             icon: RefreshCcw,
         },
         429: {
-            title: 'Too many requests',
-            eyebrow: 'Slow down',
-            description: 'Please wait a moment before trying again.',
+            title: t('errors.429.title'),
+            eyebrow: t('errors.429.eyebrow'),
+            description: t('errors.429.description'),
             icon: AlertTriangle,
         },
         500: {
-            title: 'Server error',
-            eyebrow: 'Something went wrong',
-            description:
-                'The server could not complete your request. Please try again later.',
+            title: t('errors.500.title'),
+            eyebrow: t('errors.500.eyebrow'),
+            description: t('errors.500.description'),
             icon: AlertTriangle,
         },
         503: {
-            title: 'Service unavailable',
-            eyebrow: 'Temporarily unavailable',
-            description:
-                'The service is currently unavailable. Please come back in a few minutes.',
+            title: t('errors.503.title'),
+            eyebrow: t('errors.503.eyebrow'),
+            description: t('errors.503.description'),
             icon: RefreshCcw,
         },
     };
@@ -72,17 +98,14 @@ const goBack = () => {
     <section
         class="relative flex h-screen w-full items-center justify-center overflow-hidden px-6 py-16 md:px-8"
     >
-        <!-- Grid pattern overlay (subtle red) -->
         <div
             class="animate-pulse-grid absolute inset-0 bg-[linear-gradient(to_right,#6b72801a_1px,transparent_1px),linear-gradient(to_bottom,#6b72801a_1px,transparent_1px)] bg-[size:24px_24px]"
         ></div>
 
         <div
-            class="grid w-full max-w-7xl items-center gap-3 lg:grid-cols-[1fr_28rem] z-10"
+            class="z-10 grid w-full max-w-7xl items-center gap-3 lg:grid-cols-[1fr_28rem]"
         >
-            <!-- Content -->
             <div class="order-2 text-center lg:order-1 lg:text-left">
-                <!-- Status badge -->
                 <div
                     class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-gray-200 bg-gray-50 px-5 py-2.5 text-sm font-semibold lg:mb-8"
                 >
@@ -92,28 +115,24 @@ const goBack = () => {
                     </span>
                 </div>
 
-                <!-- Status number -->
                 <p
                     class="text-8xl leading-none font-black sm:text-9xl md:text-[8rem]"
                 >
                     {{ status }}
                 </p>
 
-                <!-- Title -->
                 <h1
                     class="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-5xl lg:mx-0 lg:mt-6"
                 >
                     {{ errorContent.title }}
                 </h1>
 
-                <!-- Description -->
                 <p
                     class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-gray-600 sm:text-lg lg:mx-0 lg:mt-5"
                 >
                     {{ errorContent.description }}
                 </p>
 
-                <!-- Action buttons -->
                 <div
                     class="mt-9 flex flex-wrap justify-center gap-4 lg:mt-12 lg:justify-start"
                 >
@@ -124,7 +143,7 @@ const goBack = () => {
                         <Home
                             class="h-4 w-4 transition-transform group-hover:-translate-x-1"
                         />
-                        <span>Back to Home</span>
+                        <span>{{ t('errors.backToHome') }}</span>
                     </Link>
                     <button
                         type="button"
@@ -134,52 +153,45 @@ const goBack = () => {
                         <ArrowLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-1.5"
                         />
-                        <span>Go Back</span>
+                        <span>{{ t('errors.goBack') }}</span>
                     </button>
                 </div>
 
-                <!-- Help text -->
                 <div
                     class="mt-8 flex items-center justify-center gap-2 text-sm text-gray-400 lg:mt-10 lg:justify-start"
                 >
                     <HelpCircle class="h-4 w-4" />
                     <span>
-                        Need assistance?
+                        {{ t('errors.needAssistance') }}
                         <a
                             href="/support"
                             class="font-medium text-gray-800 transition-colors hover:text-gray-950"
                         >
-                            Contact support
+                            {{ t('errors.contactSupport') }}
                         </a>
                     </span>
                 </div>
             </div>
 
-            <!-- Visual decoration - Minimal circle -->
             <div class="order-1 hidden lg:order-2 lg:block">
                 <div
                     class="relative mx-auto aspect-square max-w-sm lg:max-w-md"
                 >
-                    <!-- Subtle background glow -->
                     <div
                         class="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/5 to-amber-500/5"
                     ></div>
 
-                    <!-- Minimal outer ring -->
                     <div
                         class="absolute inset-0 rounded-full border border-red-200"
                     ></div>
 
-                    <!-- Inner ring -->
                     <div
                         class="absolute inset-8 rounded-full border border-red-100"
                     ></div>
 
-                    <!-- Core circle -->
                     <div
                         class="absolute inset-0 flex items-center justify-center rounded-full bg-white shadow-lg"
                     >
-                        <!-- Status number in circle -->
                         <span
                             class="text-8xl font-black md:text-9xl lg:text-[10rem]"
                         >

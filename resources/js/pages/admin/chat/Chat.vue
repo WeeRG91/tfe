@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useClickOutside } from '@/composables/useClickOutside';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { useLocale } from '@/composables/useLocale';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { formatTime, getInitials, getUserAvatarColor } from '@/lib/utils';
 import chat from '@/routes/admin/chat';
@@ -26,12 +28,11 @@ import {
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 import { useI18n } from 'vue-i18n';
-import { locales } from '@/lib/const';
+import { toast } from 'vue-sonner';
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
+const { getIntlLocale } = useLocale();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
@@ -368,7 +369,7 @@ const scrollToBottom = async () => {
 };
 
 const getDateSeparator = (currentDate: string) => {
-    const currentLocale = locales[locale.value] ?? 'en-GB';
+    const currentLocale = getIntlLocale();
 
     const date = new Date(currentDate);
     const now = new Date();

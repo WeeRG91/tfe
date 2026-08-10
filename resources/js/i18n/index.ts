@@ -4,16 +4,16 @@ import lb from '@/i18n/locales/lb/index';
 import th from '@/i18n/locales/th/index';
 import { createI18n } from 'vue-i18n';
 
-export const supportedLocales = ['en', 'fr', 'lb', 'th'] as const;
-
-export type SupportedLocale = (typeof supportedLocales)[number];
-
 const messages = {
     en,
     fr,
     lb,
     th,
 };
+
+export type SupportedLocale = keyof typeof messages;
+
+export const supportedLocales = Object.keys(messages) as SupportedLocale[];
 
 function isSupportedLocale(locale: unknown): locale is SupportedLocale {
     return (
@@ -22,16 +22,22 @@ function isSupportedLocale(locale: unknown): locale is SupportedLocale {
     );
 }
 
-export function createI18nInstance(locale: unknown) {
+export function createI18nInstance(locale: unknown, fallbackLocale: unknown) {
     const selectedLocale: SupportedLocale = isSupportedLocale(locale)
         ? locale
+        : 'en';
+
+    const selectedFallbackLocale: SupportedLocale = isSupportedLocale(
+        fallbackLocale,
+    )
+        ? fallbackLocale
         : 'en';
 
     return createI18n({
         legacy: false,
         globalInjection: true,
         locale: selectedLocale,
-        fallbackLocale: 'en',
+        fallbackLocale: selectedFallbackLocale,
         messages,
     });
 }

@@ -14,12 +14,15 @@ use Spatie\Permission\Models\Role;
 
 class GlobalSearch
 {
-    private array $models = [
+    private array $translatedModels = [
         'dish' => Dish::class,
         'drink' => Drink::class,
         'ingredient' => Ingredient::class,
         'meat' => Meat::class,
         'allergen' => Allergen::class,
+    ];
+
+    private array $regularModels = [
         'user' => User::class,
         'role' => Role::class,
     ];
@@ -64,9 +67,22 @@ class GlobalSearch
     {
         $results = [];
 
-        foreach ($this->models as $type => $model) {
+        foreach ($this->translatedModels as $type => $model) {
             $items = $model::query()
-                ->where('name', 'LIKE', "%$query%")
+                ->whereTranslationLike(
+                    'name',
+                    '%' . $query . '%',
+                    app()->getLocale(),
+                )
+                ->limit(5)
+                ->get();
+
+            $results[$type] = $this->formatItems($type, $items);
+        }
+
+        foreach ($this->regularModels as $type => $model) {
+            $items = $model::query()
+                ->where('name', 'LIKE', '%' . $query . '%')
                 ->limit(5)
                 ->get();
 

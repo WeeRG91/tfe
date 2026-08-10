@@ -15,8 +15,14 @@ class SetLocale
         $locale = $request->user()?->locale
             ?? $request->session()->get('locale', config('app.locale'));
 
+        $fallback = config('app.fallback_locale');
+
+        if (!in_array($fallback, $supportedLocales, true)) {
+            $fallback = config('app.locale', 'en');
+        }
+
         if (!in_array($locale, $supportedLocales, true)) {
-            $locale = config('app.fallback_locale');
+            $locale = $fallback;
         }
 
         $request->session()->put('locale', $locale);

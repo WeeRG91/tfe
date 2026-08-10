@@ -144,6 +144,9 @@ return [
     'errors' => [
         'page_expired' => 'หน้านี้หมดอายุแล้ว โปรดรีเฟรชและลองอีกครั้ง',
         'unexpected' => 'เกิดข้อผิดพลาด โปรดลองอีกครั้ง',
+        'user_already_active' => 'ผู้ใช้นี้เปิดใช้งานอยู่แล้ว',
+        'user_already_inactive' => 'ผู้ใช้นี้ถูกปิดใช้งานอยู่แล้ว',
+        'cannot_inactivate_super_admin' => 'ไม่สามารถปิดใช้งานผู้ดูแลระบบสูงสุดได้',
     ],
     'enums' => [
         'order_status' => [
