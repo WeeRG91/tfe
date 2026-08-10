@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { PointsOptions } from '@/composables/useLoyaltyPoints';
+import { PointOption } from '@/composables/useLoyaltyPoints';
 import { Gift, Sparkles } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     loyaltyPoints: number;
     earnedPoints: number;
-    pointsOptions: PointsOptions[];
+    pointsOptions: PointOption[];
     selectedPoints: number | null;
     discountAmount: number;
     canUseOption: (points: number) => boolean;
