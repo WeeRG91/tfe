@@ -10,6 +10,7 @@ import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
 import { store } from '@/routes/two-factor/login';
 import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface AuthConfigContent {
     title: string;
@@ -17,21 +18,21 @@ interface AuthConfigContent {
     toggleText: string;
 }
 
+const { t } = useI18n();
+
 const authConfigContent = computed<AuthConfigContent>(() => {
     if (showRecoveryInput.value) {
         return {
-            title: 'Recovery Code',
-            description:
-                'Please confirm access to your account by entering one of your emergency recovery codes.',
-            toggleText: 'login using an authentication code',
+            title: t('twoFactorChallenge.recoveryCode.title'),
+            description: t('twoFactorChallenge.recoveryCode.description'),
+            toggleText: t('twoFactorChallenge.recoveryCode.toggleText'),
         };
     }
 
     return {
-        title: 'Authentication Code',
-        description:
-            'Enter the authentication code provided by your authenticator application.',
-        toggleText: 'login using a recovery code',
+        title: t('twoFactorChallenge.authenticationCode.title'),
+        description: t('twoFactorChallenge.authenticationCode.description'),
+        toggleText: t('twoFactorChallenge.authenticationCode.toggleText'),
     };
 });
 
@@ -47,12 +48,12 @@ const codeValue = computed<string>(() => code.value.join(''));
 </script>
 
 <template>
-    <Head title="Two-Factor Authentication" />
+    <Head :title="t('twoFactorChallenge.title')" />
 
     <CostumedAuthLayout
         :title="authConfigContent.title"
         :subtitle="authConfigContent.description"
-        badge="Code"
+        :badge="t('twoFactorChallenge.badge')"
     >
         <div class="space-y-6">
             <template v-if="!showRecoveryInput">
@@ -98,7 +99,9 @@ const codeValue = computed<string>(() => code.value.join(''));
                                 v-if="processing"
                                 class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                             ></span>
-                            <span v-else>Continue</span>
+                            <span v-else>
+                                {{ t('twoFactorChallenge.continue') }}
+                            </span>
                         </span>
                     </button>
                 </Form>
@@ -114,7 +117,9 @@ const codeValue = computed<string>(() => code.value.join(''));
                     <Input
                         name="recovery_code"
                         type="text"
-                        placeholder="Enter recovery code"
+                        :placeholder="
+                            t('twoFactorChallenge.recoveryCode.placeholder')
+                        "
                         :autofocus="showRecoveryInput"
                         required
                     />
@@ -129,7 +134,9 @@ const codeValue = computed<string>(() => code.value.join(''));
                                 v-if="processing"
                                 class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                             ></span>
-                            <span v-else>Continue</span>
+                            <span v-else>
+                                {{ t('twoFactorChallenge.continue') }}
+                            </span>
                         </span>
                     </button>
                 </Form>
@@ -137,7 +144,7 @@ const codeValue = computed<string>(() => code.value.join(''));
         </div>
         <template #footer>
             <div class="text-center text-sm text-muted-foreground">
-                <span>or you can </span>
+                <span> {{ t('twoFactorChallenge.orYouCan') }}&nbsp; </span>
                 <button
                     type="button"
                     class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

@@ -12,6 +12,7 @@ import role from '@/i18n/locales/th/admin/role';
 import setting from '@/i18n/locales/th/admin/setting';
 import user from '@/i18n/locales/th/admin/user';
 
+import activateAccount from '@/i18n/locales/th/auth/activateAccount';
 import adminGateway from '@/i18n/locales/th/auth/adminGateway';
 import auth from '@/i18n/locales/th/auth/auth';
 import confirmPassword from '@/i18n/locales/th/auth/confirmPassword';
@@ -19,6 +20,7 @@ import forgotPassword from '@/i18n/locales/th/auth/forgotPassword';
 import login from '@/i18n/locales/th/auth/login';
 import register from '@/i18n/locales/th/auth/register';
 import resetPassword from '@/i18n/locales/th/auth/resetPassword';
+import twoFactorChallenge from '@/i18n/locales/th/auth/twoFactorChallenge';
 import verifyEmail from '@/i18n/locales/th/auth/verifyEmail';
 
 import cart from '@/i18n/locales/th/client/cart';
@@ -49,6 +51,7 @@ export default {
     setting,
     user,
 
+    activateAccount,
     adminGateway,
     auth,
     confirmPassword,
@@ -56,6 +59,7 @@ export default {
     login,
     register,
     resetPassword,
+    twoFactorChallenge,
     verifyEmail,
 
     cart,

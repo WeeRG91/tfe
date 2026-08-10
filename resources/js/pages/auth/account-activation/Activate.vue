@@ -6,10 +6,13 @@ import { toast } from 'vue-sonner';
 import { login, register } from '@/routes';
 import { MoveLeft, MoveRight, Eye, EyeOff } from 'lucide-vue-next';
 import { ActivateUserType } from '@/types/user';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     user: ActivateUserType;
 }>();
+
+const { t } = useI18n();
 
 const activateForm = useForm({
     password: '',
@@ -24,16 +27,16 @@ const submit = () => {
 
     activateForm.post(activationUrl, {
         onSuccess: () => {
-            toast.success('Account activated successfully!');
+            toast.success(t('activateAccount.messages.success'));
         },
         onError: (errors) => {
             console.log(errors);
             if (errors.error) {
                 toast.error(errors.error);
             } else if (errors.name || errors.email || errors.password) {
-                toast.error('Invalid input.');
+                toast.error(t('activateAccount.messages.invalidInput'));
             } else {
-                toast.error('Something went wrong. Please check the form.');
+                toast.error(t('activateAccount.messages.error'));
             }
         },
     });
@@ -62,11 +65,11 @@ const getStrengthColor = (index: number) => {
 </script>
 
 <template>
-    <Head title="Activate Account" />
+    <Head :title="t('activateAccount.title')" />
     <CostumedAuthLayout
-        title="Set your password"
-        subtitle="Create a secure password to complete your account setup"
-        badge="Welcome"
+        :title="t('activateAccount.heading.title')"
+        :subtitle="t('activateAccount.heading.subtitle')"
+        :badge="t('activateAccount.heading.badge')"
     >
         <form @submit.prevent="submit" class="space-y-6">
             <div
@@ -74,16 +77,20 @@ const getStrengthColor = (index: number) => {
             >
                 <div class="space-y-1.5 text-sm">
                     <div class="flex items-center justify-between">
-                        <span class="font-medium text-gray-400">Name</span>
-                        <span class="font-medium text-gray-700">{{
-                            user.name
-                        }}</span>
+                        <span class="font-medium text-gray-400">
+                            {{ t('activateAccount.fields.name') }}
+                        </span>
+                        <span class="font-medium text-gray-700">
+                            {{ user.name }}
+                        </span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="font-medium text-gray-400">Email</span>
-                        <span class="font-medium text-gray-700">{{
-                            user.email
-                        }}</span>
+                        <span class="font-medium text-gray-400">
+                            {{ t('activateAccount.fields.email') }}
+                        </span>
+                        <span class="font-medium text-gray-700">
+                            {{ user.email }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -93,14 +100,16 @@ const getStrengthColor = (index: number) => {
                     for="password"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Password
+                    {{ t('activateAccount.fields.password') }}
                 </label>
                 <div class="group relative">
                     <input
                         id="password"
                         v-model="activateForm.password"
                         :type="showPassword ? 'text' : 'password'"
-                        placeholder="Create a strong password"
+                        :placeholder="
+                            t('activateAccount.fields.passwordPlaceholder')
+                        "
                         class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         :class="{
                             'border-red-300 focus:border-red-400':
@@ -146,8 +155,12 @@ const getStrengthColor = (index: number) => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.length ? '✓' : '○' }} 8+
-                            characters
+                            {{ passwordChecks.length ? '✓' : '○' }}
+                            {{
+                                t(
+                                    'activateAccount.passwordRequirements.characters',
+                                )
+                            }}
                         </span>
                         <span
                             :class="{
@@ -155,7 +168,12 @@ const getStrengthColor = (index: number) => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.uppercase ? '✓' : '○' }} Uppercase
+                            {{ passwordChecks.uppercase ? '✓' : '○' }}
+                            {{
+                                t(
+                                    'activateAccount.passwordRequirements.uppercase',
+                                )
+                            }}
                         </span>
                         <span
                             :class="{
@@ -163,7 +181,12 @@ const getStrengthColor = (index: number) => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.lowercase ? '✓' : '○' }} Lowercase
+                            {{ passwordChecks.lowercase ? '✓' : '○' }}
+                            {{
+                                t(
+                                    'activateAccount.passwordRequirements.lowercase',
+                                )
+                            }}
                         </span>
                         <span
                             :class="{
@@ -171,7 +194,10 @@ const getStrengthColor = (index: number) => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.number ? '✓' : '○' }} Number
+                            {{ passwordChecks.number ? '✓' : '○' }}
+                            {{
+                                t('activateAccount.passwordRequirements.number')
+                            }}
                         </span>
                         <span
                             :class="{
@@ -179,7 +205,10 @@ const getStrengthColor = (index: number) => {
                             }"
                             class="transition-colors duration-200"
                         >
-                            {{ passwordChecks.symbol ? '✓' : '○' }} Symbol
+                            {{ passwordChecks.symbol ? '✓' : '○' }}
+                            {{
+                                t('activateAccount.passwordRequirements.symbol')
+                            }}
                         </span>
                     </div>
                 </div>
@@ -190,15 +219,19 @@ const getStrengthColor = (index: number) => {
                     for="password_confirmation"
                     class="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                    Confirm Password
+                    {{ t('activateAccount.fields.confirmPassword') }}
                 </label>
                 <div class="group relative">
                     <input
                         id="password_confirmation"
                         v-model="activateForm.password_confirmation"
                         :type="showPasswordConfirmation ? 'text' : 'password'"
-                        placeholder="Confirm your password"
-                        class="w-full rounded-xl text-sm border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                        :placeholder="
+                            t(
+                                'activateAccount.fields.confirmPasswordPlaceholder',
+                            )
+                        "
+                        class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         :class="{
                             'border-red-300 focus:border-red-400':
                                 activateForm.errors.password_confirmation,
@@ -235,7 +268,9 @@ const getStrengthColor = (index: number) => {
                         v-if="activateForm.processing"
                         class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
                     ></span>
-                    <span v-else>Activate Account</span>
+                    <span v-else>
+                        {{ t('activateAccount.activate') }}
+                    </span>
                 </span>
             </button>
         </form>
@@ -246,12 +281,12 @@ const getStrengthColor = (index: number) => {
                     class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
                 >
                     <p class="text-center text-sm text-gray-500">
-                        Need help?
+                        {{ t('auth.links.needHelp') }}
                         <Link
                             href="/contact"
                             class="font-medium text-gray-900 transition-colors hover:text-gray-600"
                         >
-                            Contact support
+                            {{ t('auth.links.contactSupport') }}
                         </Link>
                     </p>
                 </div>
@@ -264,7 +299,7 @@ const getStrengthColor = (index: number) => {
                         <MoveLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
                         />
-                        Back to Sign In
+                        {{ t('auth.links.backToSignIn') }}
                     </Link>
 
                     <div class="h-4 w-px bg-gray-200"></div>
@@ -273,7 +308,7 @@ const getStrengthColor = (index: number) => {
                         :href="register()"
                         class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
                     >
-                        Create new account
+                        {{ t('auth.links.createAccount') }}
                         <MoveRight
                             class="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                         />
