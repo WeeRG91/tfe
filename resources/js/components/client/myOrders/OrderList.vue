@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import OrderCard from './OrderCard.vue';
+import { useOrderStore } from '@/stores/order';
 import { OrderType } from '@/types/order';
 import { ref } from 'vue';
-import { useOrderStore } from '@/stores/order';
-import { toast } from 'vue-sonner';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
+import OrderCard from './OrderCard.vue';
 
 const orderStore = useOrderStore();
 
@@ -15,10 +15,15 @@ const props = defineProps<{
     orders: OrderType[];
 }>();
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 const ordersToShow = ref<OrderType[]>(props.orders ?? []);
 const isConfirmLoading = ref<boolean>(false);
+const expandedOrderId = ref<number | null>(null);
+
+const toggleOrder = (orderId: number) => {
+    expandedOrderId.value = expandedOrderId.value === orderId ? null : orderId;
+};
 
 const cancelOrder = async (orderId: number) => {
     isConfirmLoading.value = true;
@@ -80,6 +85,8 @@ const removeOrder = async (orderId: number) => {
                 :key="order.id"
                 :order-to-show="order"
                 :is-confirm-loading="isConfirmLoading"
+                :is-expanded="expandedOrderId === order.id"
+                @toggle="toggleOrder"
                 @cancel="cancelOrder"
                 @remove="removeOrder"
             />

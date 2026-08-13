@@ -16,12 +16,30 @@ const luxembourgishMonths = [
     'Dezember',
 ];
 
-function formatLuxembourgishDate(date: Date, includeTime: boolean): string {
+const luxembourgishWeekdays = [
+    'Sonndeg',
+    'Méindeg',
+    'Dënschdeg',
+    'Mëttwoch',
+    'Donneschdeg',
+    'Freideg',
+    'Samschdeg',
+];
+
+function formatLuxembourgishDate(
+    date: Date,
+    includeTime: boolean,
+    includeWeekday = false,
+): string {
     const day = date.getDate();
     const month = luxembourgishMonths[date.getMonth()];
     const year = date.getFullYear();
 
-    const formattedDate = `${day} ${month} ${year}`;
+    const weekday = includeWeekday
+        ? `${luxembourgishWeekdays[date.getDay()]}`
+        : '';
+
+    const formattedDate = `${weekday} ${day} ${month} ${year}`;
 
     if (!includeTime) {
         return formattedDate;
@@ -41,6 +59,10 @@ export function useDateFormatter() {
         return locale.value === 'lb';
     };
 
+    const isInvalidDate = (date: Date): boolean => {
+        return Number.isNaN(date.getTime());
+    };
+
     const formatDate = (value: string | null): string => {
         if (!value) {
             return t('common.notSet');
@@ -48,7 +70,7 @@ export function useDateFormatter() {
 
         const date = new Date(value);
 
-        if (Number.isNaN(date.getTime())) {
+        if (isInvalidDate(date)) {
             return t('common.invalidDate');
         }
 
@@ -72,6 +94,10 @@ export function useDateFormatter() {
 
         const date = new Date(value);
 
+        if (isInvalidDate(date)) {
+            return t('common.invalidDate');
+        }
+
         if (isLuxembourgish()) {
             return formatLuxembourgishDate(date, false);
         }
@@ -83,6 +109,29 @@ export function useDateFormatter() {
         }).format(date);
     };
 
+    const formatDateWithDay = (value: string | null): string => {
+        if (!value) {
+            return t('common.notSet');
+        }
+
+        const date = new Date(value);
+
+        if (isInvalidDate(date)) {
+            return t('common.invalidDate');
+        }
+
+        if (isLuxembourgish()) {
+            return formatLuxembourgishDate(date, false, true);
+        }
+
+        return new Intl.DateTimeFormat(getIntlLocale(), {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(date);
+    };
+
     const formatDateForHumans = (value: string | null): string => {
         if (!value) {
             return t('common.notSet');
@@ -90,7 +139,7 @@ export function useDateFormatter() {
 
         const date = new Date(value);
 
-        if (Number.isNaN(date.getTime())) {
+        if (isInvalidDate(date)) {
             return t('common.invalidDate');
         }
 
@@ -133,6 +182,7 @@ export function useDateFormatter() {
     return {
         formatDate,
         formatDateOnly,
+        formatDateWithDay,
         formatDateForHumans,
     };
 }

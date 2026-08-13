@@ -26,7 +26,7 @@ import {
     Trash2,
     X,
 } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 import { useDateFormatter } from '@/composables/useDateFormatter';
@@ -154,6 +154,8 @@ const openConfirmModal = (
     type: 'destructive' | 'info',
     action: () => void,
 ) => {
+    closeDropdown();
+
     confirmModalMessage.value = message;
     confirmModalType.value = type;
     confirmModalAction.value = action;
@@ -166,8 +168,7 @@ const closeConfirmModal = () => {
 
 const toggleDropdown = (event: MouseEvent, userId: number) => {
     if (dropdownOpenId.value === userId) {
-        dropdownOpenId.value = null;
-        currentUser.value = null;
+        closeDropdown();
         return;
     }
 
@@ -181,6 +182,11 @@ const toggleDropdown = (event: MouseEvent, userId: number) => {
     };
 
     dropdownOpenId.value = userId;
+};
+
+const closeDropdown = () => {
+    dropdownOpenId.value = null;
+    currentUser.value = null;
 };
 
 const applyFilters = () => {
@@ -220,6 +226,11 @@ useClickOutside(dropdownRef, () => {
 
 onMounted(() => {
     loadUsers();
+    window.addEventListener('scroll', closeDropdown, true);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', closeDropdown, true);
 });
 </script>
 

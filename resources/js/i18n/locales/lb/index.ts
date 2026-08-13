@@ -32,10 +32,12 @@ import menu from '@/i18n/locales/lb/client/menu';
 import navigation from '@/i18n/locales/lb/client/navigation';
 import notification from '@/i18n/locales/lb/client/notification';
 import order from '@/i18n/locales/lb/client/order';
+import payment from '@/i18n/locales/lb/client/payment';
 import point from '@/i18n/locales/lb/client/point';
 import profile from '@/i18n/locales/lb/client/profile';
 import search from '@/i18n/locales/lb/client/search';
 
+import confirmModal from '@/i18n/locales/lb/confirmModal';
 import errors from '@/i18n/locales/lb/errors';
 
 export default {
@@ -73,9 +75,11 @@ export default {
     navigation,
     notification,
     order,
+    payment,
     point,
     profile,
     search,
 
+    confirmModal,
     errors,
 }

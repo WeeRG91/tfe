@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
-    DialogDescription,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 
 export type ModalType = 'destructive' | 'info';
 
@@ -25,18 +26,26 @@ const emit = defineEmits<{ (e: 'confirm'): void }>();
 const confirm = () => {
     emit('confirm');
 };
+
+const { t } = useI18n();
 </script>
 
 <template>
     <Dialog :open="props.open" @update:open="props.onClose">
         <DialogContent class="max-w-2xl">
             <DialogHeader>
-                <DialogTitle>Confirmation</DialogTitle>
+                <DialogTitle>
+                    {{ t('confirmModal.title') }}
+                </DialogTitle>
                 <DialogDescription>{{ props.message }}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
-                <Button variant="secondary" @click="props.onClose()" class="w-24">
-                    Cancel
+                <Button
+                    variant="secondary"
+                    @click="props.onClose()"
+                    class="w-24"
+                >
+                    {{ t('confirmModal.cancel') }}
                 </Button>
                 <Button
                     v-if="type === 'destructive'"
@@ -50,7 +59,9 @@ const confirm = () => {
                     >
                         <Loader class="animate-spin text-muted-foreground" />
                     </span>
-                    <span v-else>Confirm</span>
+                    <span v-else>
+                        {{ t('confirmModal.confirm') }}
+                    </span>
                 </Button>
                 <Button v-if="type === 'info'" @click="confirm" class="w-24">
                     <span
@@ -59,7 +70,9 @@ const confirm = () => {
                     >
                         <Loader class="animate-spin text-muted-foreground" />
                     </span>
-                    <span v-else>Confirm</span>
+                    <span v-else>
+                        {{ t('confirmModal.confirm') }}
+                    </span>
                 </Button>
             </DialogFooter>
         </DialogContent>

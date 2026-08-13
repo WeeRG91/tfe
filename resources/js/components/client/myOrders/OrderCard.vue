@@ -32,11 +32,13 @@ import { useDateFormatter } from '@/composables/useDateFormatter';
 const props = defineProps<{
     orderToShow: OrderType;
     isConfirmLoading: boolean;
+    isExpanded: boolean;
 }>();
 
 const emit = defineEmits<{
     cancel: [orderId: number];
     remove: [orderId: number];
+    toggle: [orderId: number];
 }>();
 
 const { t } = useI18n();
@@ -47,7 +49,6 @@ const confirmModalOpen = ref<boolean>(false);
 const confirmModalMessage = ref<string>('');
 const confirmModalType = ref<'destructive' | 'info'>('info');
 const confirmModalAction = ref<() => void>(() => {});
-const expandedOrderId = ref<number | null>(null);
 
 const cancellationDescription = computed(() => {
     if (
@@ -62,10 +63,6 @@ const cancellationDescription = computed(() => {
 
     return t('order.orderCard.cancelConfirmation');
 });
-
-const isExpanded = computed(
-    () => expandedOrderId.value === props.orderToShow.id,
-);
 
 const openConfirmModal = (
     message: string,
@@ -83,11 +80,7 @@ const closeConfirmModal = () => {
 };
 
 const toggleDetails = () => {
-    if (isExpanded.value) {
-        expandedOrderId.value = null;
-    } else {
-        expandedOrderId.value = props.orderToShow.id;
-    }
+    emit('toggle', props.orderToShow.id);
 };
 
 const cancelOrder = () => {

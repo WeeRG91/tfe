@@ -19,7 +19,7 @@ import {
     Trash2,
     X,
 } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import { usePermission } from '@/composables/usePermission';
 import { useI18n } from 'vue-i18n';
@@ -110,6 +110,8 @@ const openConfirmModal = (
     type: 'destructive' | 'info',
     action: () => void,
 ) => {
+    closeDropdown();
+
     confirmModalMessage.value = message;
     confirmModalType.value = type;
     confirmModalAction.value = action;
@@ -126,7 +128,7 @@ const toggleExpansion = (roleId: number) => {
 
 const toggleDropdown = (event: MouseEvent, roleId: number) => {
     if (dropdownOpenId.value === roleId) {
-        dropdownOpenId.value = null;
+        closeDropdown();
         return;
     }
 
@@ -138,6 +140,10 @@ const toggleDropdown = (event: MouseEvent, roleId: number) => {
     };
 
     dropdownOpenId.value = roleId;
+};
+
+const closeDropdown = () => {
+    dropdownOpenId.value = null;
 };
 
 const applySearch = () => {
@@ -179,6 +185,11 @@ const getGroupedPermissions = (permissions: PermissionType[]) =>
 
 onMounted(() => {
     loadRoles();
+    window.addEventListener('scroll', closeDropdown, true);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', closeDropdown, true);
 });
 </script>
 

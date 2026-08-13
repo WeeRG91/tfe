@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { Printer, Trash, ShoppingBag } from 'lucide-vue-next';
+import {
+    Printer,
+    Trash,
+    ShoppingBag,
+    CreditCard,
+    XCircle,
+} from 'lucide-vue-next';
 import menu from '@/routes/menu';
 import { OrderStatusEnum, OrderType } from '@/types/order';
 import { useI18n } from 'vue-i18n';
@@ -20,7 +26,12 @@ const { t } = useI18n();
     <div class="rounded-lg border bg-white p-6">
         <div class="space-y-3">
             <button
-                v-if="orderToShow.status.value !== OrderStatusEnum.CANCELLED"
+                v-if="
+                    ![
+                        OrderStatusEnum.CANCELLED,
+                        OrderStatusEnum.PENDING,
+                    ].includes(orderToShow.status.value)
+                "
                 @click="emit('print')"
                 class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
             >
@@ -34,6 +45,25 @@ const { t } = useI18n();
             >
                 <Trash class="h-4 w-4" />
                 {{ t('order.quickActionsCard.removeOrder') }}
+            </button>
+            <button
+                v-if="orderToShow.status.value === OrderStatusEnum.PENDING"
+                @click="emit('remove', orderToShow.id)"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
+            >
+                <CreditCard class="h-4 w-4" />
+                <span>{{ t('order.orderCard.completeOrder') }}</span>
+            </button>
+            <button
+                v-if="
+                    orderToShow.status?.value === OrderStatusEnum.PENDING ||
+                    orderToShow.status.value === OrderStatusEnum.CONFIRMED
+                "
+                @click="emit('remove', orderToShow.id)"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
+            >
+                <XCircle class="h-4 w-4" />
+                <span>{{ t('order.orderCard.cancelOrder') }}</span>
             </button>
 
             <a

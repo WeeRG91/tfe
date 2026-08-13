@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ClientLayout from '@/layouts/ClientLayout.vue';
+import { getSpicyLevelLabels } from '@/lib/const';
 import {
     formatPrice,
     getOrderStatusVariant,
@@ -11,11 +12,15 @@ import { Head } from '@inertiajs/vue3';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { CreditCard, HandCoins, MapPin, Soup, User } from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     order: OrderType;
 }>();
+
+const { t } = useI18n();
+const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
 
 const stripe = ref<any>(null);
 const elements = ref<any>(null);
@@ -33,14 +38,14 @@ const initPayment = async () => {
         );
 
         if (!data.client_secret) {
-            paymentError.value = 'Payment could not be initialized.';
+            paymentError.value = t('payment.errors.initializationFailed');
             return;
         }
 
         stripe.value = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
         if (!stripe.value) {
-            paymentError.value = 'Stripe could not be loaded.';
+            paymentError.value = t('payment.errors.stripeLoadFailed');
             return;
         }
 
@@ -54,7 +59,7 @@ const initPayment = async () => {
         paymentError.value =
             error.response?.data?.message ??
             error.message ??
-            'Unable to initialize payment. Please try again.';
+            t('payment.errors.unableToInitialize');
     } finally {
         isInitializing.value = false;
     }
@@ -80,13 +85,12 @@ const pay = async () => {
 
         if (error) {
             paymentError.value =
-                error.message ??
-                'Your payment could not be completed. Please try again.';
+                error.message ?? t('payment.errors.paymentFailed');
 
             isLoading.value = false;
         }
     } catch {
-        paymentError.value = 'An unexpected error occurred. Please try again.';
+        paymentError.value = t('payment.errors.unexpected');
 
         isLoading.value = false;
     }
@@ -98,19 +102,19 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Payment" />
+    <Head :title="t('payment.title')" />
 
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
                 <p class="text-sm tracking-widest text-red-500 uppercase">
-                    [ Secure Checkout ]
+                    [ {{ t('payment.secureCheckout') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
-                    Complete Payment
+                    {{ t('payment.completePayment') }}
                 </h1>
                 <p class="mt-1 text-sm text-gray-600">
-                    Secure payment powered by Stripe
+                    {{ t('payment.stripePowered') }}
                 </p>
             </div>
 
@@ -123,7 +127,7 @@ onMounted(() => {
                             >
                                 <div>
                                     <p class="text-sm text-gray-500">
-                                        Order Number
+                                        {{ t('payment.order.orderNumber') }}
                                     </p>
                                     <p
                                         class="text-xl font-semibold text-gray-800"
@@ -132,7 +136,9 @@ onMounted(() => {
                                     </p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-sm text-gray-500">Status</p>
+                                    <p class="text-sm text-gray-500">
+                                        {{ t('payment.order.status') }}
+                                    </p>
                                     <span
                                         :class="
                                             getOrderStatusVariant(
@@ -141,7 +147,11 @@ onMounted(() => {
                                         "
                                         class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                                     >
-                                        {{ props.order.status.label }}
+                                        {{
+                                            t(
+                                                `common.orderStatus.${props.order.status.key}`,
+                                            )
+                                        }}
                                     </span>
                                 </div>
                             </div>
@@ -157,7 +167,7 @@ onMounted(() => {
                                     "
                                     class="h-5 w-5 text-red-500"
                                 />
-                                Order Details
+                                {{ t('payment.order.orderDetails') }}
                             </h2>
 
                             <div class="space-y-4">
@@ -176,12 +186,16 @@ onMounted(() => {
                                     </div>
                                     <div>
                                         <p class="text-sm text-gray-500">
-                                            Order Type
+                                            {{ t('payment.order.orderType') }}
                                         </p>
                                         <p
                                             class="font-medium text-gray-800 capitalize"
                                         >
-                                            {{ props.order.type.label }}
+                                            {{
+                                                t(
+                                                    `common.orderTypes.${props.order.type.key}`,
+                                                )
+                                            }}
                                         </p>
                                         <p
                                             v-if="
@@ -190,7 +204,7 @@ onMounted(() => {
                                             "
                                             class="mt-1 text-sm text-gray-600"
                                         >
-                                            Table:
+                                            {{ t('payment.order.table') }}:
                                             {{ props.order.table_number }}
                                         </p>
                                         <p
@@ -200,7 +214,7 @@ onMounted(() => {
                                             "
                                             class="mt-1 text-sm text-gray-600"
                                         >
-                                            Pickup:
+                                            {{ t('payment.order.pickup') }}:
                                             {{ props.order.pickup_time }}
                                         </p>
                                     </div>
@@ -217,7 +231,7 @@ onMounted(() => {
                                     </div>
                                     <div>
                                         <p class="text-sm text-gray-500">
-                                            Customer
+                                            {{ t('payment.order.customer') }}
                                         </p>
                                         <p class="font-medium text-gray-800">
                                             {{
@@ -244,7 +258,11 @@ onMounted(() => {
                                     </div>
                                     <div>
                                         <p class="text-sm text-gray-500">
-                                            Delivery Address
+                                            {{
+                                                t(
+                                                    'payment.order.deliveryAddress',
+                                                )
+                                            }}
                                         </p>
                                         <p class="font-medium text-gray-800">
                                             {{
@@ -292,7 +310,7 @@ onMounted(() => {
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
                                 <Soup class="h-5 w-5 text-red-500" />
-                                Order Items
+                                {{ t('payment.order.orderItems') }}
                             </h2>
 
                             <div class="space-y-3">
@@ -310,21 +328,23 @@ onMounted(() => {
                                             <div
                                                 class="mt-1 text-xs text-gray-500"
                                             >
-                                                Spicy level:
                                                 {{
-                                                    [
-                                                        'No spicy',
-                                                        'Mild',
-                                                        'Spicy',
-                                                        'Hot',
-                                                    ][item.spicy_level]
+                                                    t(
+                                                        'payment.item.spicyLevel',
+                                                    )
+                                                }}:
+                                                {{
+                                                    spicyLevelLabels[
+                                                        item.spicy_level
+                                                    ]
                                                 }}
                                             </div>
                                             <div
                                                 v-if="item.meat"
                                                 class="mt-1 text-xs text-gray-500"
                                             >
-                                                Meat: {{ item.meat.name }}
+                                                {{ t('payment.item.meat') }}:
+                                                {{ item.meat.name }}
                                                 <span
                                                     v-if="
                                                         item.meat.extra_price >
@@ -348,7 +368,7 @@ onMounted(() => {
                                                 "
                                                 class="mt-1 text-xs text-gray-500"
                                             >
-                                                Without:
+                                                {{ t('payment.item.without') }}:
                                                 {{
                                                     item.removed_ingredients
                                                         .map((ing) => ing.name)
@@ -359,7 +379,8 @@ onMounted(() => {
                                                 v-if="item.notes"
                                                 class="mt-1 text-xs text-gray-500"
                                             >
-                                                Notes: {{ item.notes }}
+                                                {{ t('payment.item.notes') }}:
+                                                {{ item.notes }}
                                             </div>
                                         </div>
                                         <div
@@ -378,7 +399,7 @@ onMounted(() => {
                                 class="mt-4 rounded-md bg-yellow-50 p-3"
                             >
                                 <p class="text-xs font-medium text-yellow-700">
-                                    Notes
+                                    {{ t('payment.item.notes') }}
                                 </p>
                                 <p class="text-sm text-yellow-800">
                                     {{ props.order.notes }}
@@ -395,7 +416,7 @@ onMounted(() => {
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
                                 <HandCoins class="h-5 w-5 text-red-500" />
-                                Payment Summary
+                                {{ t('payment.summary.paymentSummary') }}
                             </h2>
 
                             <div
@@ -406,9 +427,13 @@ onMounted(() => {
                                     :key="vat.vat_rate"
                                     class="flex justify-between text-sm text-gray-600"
                                 >
-                                    <span
-                                        >VAT ({{ vat.vat_rate }}% - Food)</span
-                                    >
+                                    <span>
+                                        {{
+                                            t('payment.summary.vat', {
+                                                rate: vat.vat_rate,
+                                            })
+                                        }}
+                                    </span>
                                     <span
                                         >€{{ formatPrice(vat.vat_total) }}</span
                                     >
@@ -416,17 +441,21 @@ onMounted(() => {
                                 <div
                                     class="flex justify-between text-sm text-gray-600"
                                 >
-                                    <span>Total VAT</span>
-                                    <span
-                                        >€{{
+                                    <span>
+                                        {{ t('payment.summary.totalVat') }}
+                                    </span>
+                                    <span>
+                                        €{{
                                             formatPrice(props.order.vat_total)
-                                        }}</span
-                                    >
+                                        }}
+                                    </span>
                                 </div>
                                 <div
                                     class="flex justify-between text-sm text-gray-600"
                                 >
-                                    <span>Subtotal</span>
+                                    <span>
+                                        {{ t('payment.summary.subtotal') }}
+                                    </span>
                                     <span
                                         >€{{
                                             formatPrice(props.order.subtotal)
@@ -440,7 +469,9 @@ onMounted(() => {
                                     "
                                     class="flex justify-between text-sm text-red-600"
                                 >
-                                    <span>Delivery fee</span>
+                                    <span>
+                                        {{ t('payment.summary.deliveryFee') }}
+                                    </span>
                                     <span
                                         >+€{{
                                             formatPrice(
@@ -453,7 +484,9 @@ onMounted(() => {
                                     v-if="props.order.discount_total"
                                     class="flex justify-between text-sm text-green-600"
                                 >
-                                    <span>Discount</span>
+                                    <span>
+                                        {{ t('payment.summary.discount') }}
+                                    </span>
                                     <span
                                         >-€{{
                                             formatPrice(
@@ -467,7 +500,9 @@ onMounted(() => {
                             <div
                                 class="mt-4 flex justify-between text-lg font-semibold"
                             >
-                                <span>Total Amount</span>
+                                <span>
+                                    {{ t('payment.summary.totalAmount') }}
+                                </span>
                                 <span class="text-red-500"
                                     >€{{
                                         formatPrice(props.order.total_inc_vat)
@@ -481,7 +516,7 @@ onMounted(() => {
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
                                 <CreditCard class="h-5 w-5 text-red-500" />
-                                Payment Details
+                                {{ t('payment.payment.paymentDetails') }}
                             </h2>
 
                             <div
@@ -495,14 +530,15 @@ onMounted(() => {
                                 class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4"
                             >
                                 <p class="font-medium text-red-800">
-                                    Payment unsuccessful
+                                    {{
+                                        t('payment.payment.paymentUnsuccessful')
+                                    }}
                                 </p>
                                 <p class="mt-1 text-sm text-red-700">
                                     {{ paymentError }}
                                 </p>
                                 <p class="mt-2 text-xs text-red-600">
-                                    Your order has not been charged. You can
-                                    correct your payment details and try again.
+                                    {{ t('payment.payment.notCharged') }}
                                 </p>
                             </div>
 
@@ -523,14 +559,20 @@ onMounted(() => {
                                     ></span>
                                     <CreditCard v-else class="h-4 w-4" />
 
-                                    <span v-if="isInitializing"
-                                        >Loading payment form…</span
-                                    >
-                                    <span v-else>
-                                        Pay €{{
-                                            formatPrice(
-                                                props.order.total_inc_vat,
+                                    <span v-if="isInitializing">
+                                        {{
+                                            t(
+                                                'payment.payment.loadingPaymentForm',
                                             )
+                                        }}
+                                    </span>
+                                    <span v-else>
+                                        {{
+                                            t('payment.payment.pay', {
+                                                amount: formatPrice(
+                                                    props.order.total_inc_vat,
+                                                ),
+                                            })
                                         }}
                                     </span>
                                 </span>
@@ -540,10 +582,9 @@ onMounted(() => {
                             </button>
 
                             <div class="mt-4 text-center text-xs text-gray-500">
-                                <p>Secure payment powered by Stripe</p>
+                                <p>{{ t('payment.stripePowered') }}</p>
                                 <p class="mt-1">
-                                    By completing payment, you agree to our
-                                    Terms of Service
+                                    {{ t('payment.payment.termsAgreement') }}
                                 </p>
                             </div>
                         </div>
