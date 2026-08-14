@@ -20,6 +20,14 @@ class DishController extends Controller
 
     public function show(Dish $dish): DishResource
     {
+        $dish
+            ->load([
+                'ingredients.allergen',
+                'meats',
+            ])
+            ->loadAvg('ratings', 'rating')
+            ->loadCount('ratings');
+
         return new DishResource($dish);
     }
 }

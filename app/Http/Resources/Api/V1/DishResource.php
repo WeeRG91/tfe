@@ -16,6 +16,11 @@ class DishResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $hasRatingSummary = array_key_exists(
+            'ratings_count',
+            $this->resource->getAttributes(),
+        );
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -27,6 +32,22 @@ class DishResource extends JsonResource
                 'key' => $this->category->key(),
             ],
             'default_spicy_level' => (int) $this->default_spicy_level,
+            'ingredients' => IngredientResource::collection(
+                $this->whenLoaded('ingredients'),
+            ),
+            'meats' => MeatResource::collection(
+                $this->whenLoaded('meats'),
+            ),
+            'rating' => $this->when(
+                $hasRatingSummary,
+                fn () => [
+                    'average' => round(
+                        (float) ($this->ratings_avg_rating ?? 0),
+                        1,
+                    ),
+                    'count' => (int) $this->ratings_count,
+                ],
+            ),
         ];
     }
 }
