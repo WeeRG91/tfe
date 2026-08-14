@@ -96,7 +96,9 @@ export const useOrderStore = defineStore('order', {
             this.isLoading = true;
 
             try {
-                await axios.patch(order.cancel(orderId).url);
+                const {data} = await axios.patch(order.cancel(orderId).url);
+
+                return data;
             } catch (error) {
                 console.error('Failed to cancel order: ', error);
                 throw error;
@@ -109,7 +111,9 @@ export const useOrderStore = defineStore('order', {
             this.isLoading = true;
 
             try {
-                await axios.delete(order.destroy(orderId).url);
+                const {data} = await axios.delete(order.destroy(orderId).url);
+
+                return data;
             } catch (error) {
                 console.error('Failed to delete order: ', error);
                 throw error;
@@ -129,6 +133,21 @@ export const useOrderStore = defineStore('order', {
                 this.confirmedOrders = data as OrderType[];
             } catch (error) {
                 console.error('Failed to fetch confirmed orders: ', error);
+                throw error;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async cancelConfirmedOrder(orderId: number) {
+            this.isLoading = true;
+
+            try {
+                const {data} = await axios.patch(confirmedOrder.cancel(orderId).url);
+
+                return data;
+            } catch (error) {
+                console.error('Failed to cancel order: ', error);
                 throw error;
             } finally {
                 this.isLoading = false;

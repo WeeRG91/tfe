@@ -18,10 +18,12 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 import { useDateFormatter } from '@/composables/useDateFormatter';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const props = defineProps<{
     order: OrderType;
     updateStatusOrderId: number | null;
+    isCancelling?: boolean;
 }>();
 
 const { can } = usePermission();
@@ -30,11 +32,35 @@ const { t } = useI18n();
 const { formatDate } = useDateFormatter();
 
 const emit = defineEmits<{
+    'cancel-order': [orderId: number];
     'update-status': [orderId: number, newStatus: OrderStatusEnum];
 }>();
 
 const orderStatusActionId = ref<string>('');
 const isExpanded = ref(false);
+const confirmModalOpen = ref<boolean>(false);
+const confirmModalMessage = ref<string>('');
+const confirmModalType = ref<'destructive' | 'info'>('info');
+const confirmModalAction = ref<() => void>(() => {});
+
+const openConfirmModal = (
+    message: string,
+    type: 'destructive' | 'info',
+    action: () => void,
+) => {
+    confirmModalMessage.value = message;
+    confirmModalType.value = type;
+    confirmModalAction.value = action;
+    confirmModalOpen.value = true;
+};
+
+const closeConfirmModal = () => {
+    confirmModalOpen.value = false;
+};
+
+const cancelOrder = () => {
+    emit('cancel-order', props.order.id);
+};
 
 const updateStatus = (newStatus: OrderStatusEnum, actionId: string) => {
     orderStatusActionId.value = actionId;
@@ -243,6 +269,28 @@ watch(
                         </span>
                         <span v-else>{{ btn.label }}</span>
                     </button>
+
+                    <button
+                        v-if="order.status.value === OrderStatusEnum.CONFIRMED"
+                        @click="
+                            openConfirmModal(
+                                t(
+                                    'confirmedOrder.orderCard.cancelConfirmation',
+                                ),
+                                'destructive',
+                                () => cancelOrder(),
+                            )
+                        "
+                        class="flex-1 rounded-md bg-red-500 px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white transition-colors hover:bg-red-700 md:px-3"
+                    >
+                        <span>
+                            {{
+                                t(
+                                    'confirmedOrder.orderCard.actions.cancelOrder',
+                                )
+                            }}
+                        </span>
+                    </button>
                 </div>
 
                 <button
@@ -375,6 +423,15 @@ watch(
             :is-open="isModalOpen"
             @close="closeModal"
             @update-status="handleUpdateStatus"
+        />
+
+        <ConfirmModal
+            :open="confirmModalOpen"
+            :onClose="closeConfirmModal"
+            :message="confirmModalMessage"
+            :type="confirmModalType"
+            :isLoading="isCancelling"
+            @confirm="confirmModalAction"
         />
     </div>
 </template>

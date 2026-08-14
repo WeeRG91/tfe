@@ -26,10 +26,12 @@ export default {
     messages: {
         updated:
             'De Status vun der Bestellung gouf erfollegräich aktualiséiert.',
+        cancelled: 'Bestellung gouf erfollegräich annuléiert!',
     },
     errors: {
         updateFailed:
             'De Status vun der Bestellung konnt net aktualiséiert ginn.',
+        cancelFailed: "D'Bestellung konnt net annuléiert ginn.",
     },
     status: {
         pending: 'Waart op Bestätegung',
@@ -70,10 +72,13 @@ export default {
         details: 'Detailer',
         viewFullDetails: 'All Detailer weisen',
         moreItems: '+{count} weider Artikelen',
+        cancelConfirmation:
+            'Sidd Dir sécher datt Dir dës Bestellung annuléiere wëllt?',
         updateStatusSuccess:
             'De Bestellstatus gouf erfollegräich aktualiséiert!',
         updateStatusFailed: 'De Bestellstatus konnt net aktualiséiert ginn.',
         actions: {
+            cancelOrder: 'Bestellung annuléieren',
             startPreparing: 'Preparéieren',
             markAsReady: 'Prett',
             startDelivering: 'Liwweren',

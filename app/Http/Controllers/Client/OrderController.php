@@ -9,8 +9,6 @@ use App\Actions\Client\Order\Commands\Reorder\Reorder;
 use App\Actions\Client\Order\Queries\GetOrder;
 use App\Actions\Client\Order\Queries\GetOrders;
 use App\Actions\Client\Order\Queries\GetReorderData;
-use App\Enums\LoyaltyPointTransactionTypeEnum;
-use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Http\Controllers\Controller;
@@ -18,12 +16,9 @@ use App\Http\Requests\Client\Order\PlaceOrderRequest;
 use App\Http\Requests\Client\Order\ReorderRequest;
 use App\Http\Resources\Client\Address\AddressResource;
 use App\Http\Resources\Client\Order\OrderResource;
-use App\Models\Address;
-use App\Models\LoyaltyPointTransaction;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Throwable;
@@ -140,29 +135,33 @@ class OrderController extends Controller
     /**
      * @param Order $order
      * @param CancelOrder $cancelOrder
-     * @return HttpResponse
+     * @return JsonResponse
      * @throws Throwable
      */
-    public function cancel(Order $order, CancelOrder $cancelOrder): HttpResponse
+    public function cancel(Order $order, CancelOrder $cancelOrder): JsonResponse
     {
         $this->authorize('cancel', $order);
 
         $cancelOrder->execute($order);
 
-        return response()->noContent();
+        return response()->json([
+            'success' => true,
+        ]);
     }
 
     /**
      * @param Order $order
      * @param DeleteOrder $deleteOrder
-     * @return HttpResponse
+     * @return JsonResponse
      */
-    public function destroy(Order $order, DeleteOrder $deleteOrder): HttpResponse
+    public function destroy(Order $order, DeleteOrder $deleteOrder): JsonResponse
     {
         $this->authorize('delete', $order);
 
         $deleteOrder->execute($order);
 
-        return response()->noContent();
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

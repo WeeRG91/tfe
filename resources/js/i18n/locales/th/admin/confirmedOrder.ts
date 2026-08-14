@@ -23,8 +23,14 @@ export default {
         cancelledTitle: 'คำสั่งซื้อที่ถูกยกเลิก',
         orderCount: '{count} คำสั่งซื้อ',
     },
-    messages: { updated: 'อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว' },
-    errors: { updateFailed: 'ไม่สามารถอัปเดตสถานะคำสั่งซื้อได้' },
+    messages: {
+        updated: 'อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว',
+        cancelled: 'ยกเลิกคำสั่งซื้อเรียบร้อยแล้ว!',
+    },
+    errors: {
+        updateFailed: 'ไม่สามารถอัปเดตสถานะคำสั่งซื้อได้',
+        cancelFailed: 'ไม่สามารถยกเลิกคำสั่งซื้อได้',
+    },
     status: {
         pending: 'รอยืนยัน',
         confirmed: 'ยืนยันแล้ว',
@@ -64,9 +70,11 @@ export default {
         details: 'รายละเอียด',
         viewFullDetails: 'ดูรายละเอียดทั้งหมด',
         moreItems: 'อีก {count} รายการ',
+        cancelConfirmation: 'คุณแน่ใจหรือไม่ว่าต้องการยกเลิกคำสั่งซื้อนี้',
         updateStatusSuccess: 'อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!',
         updateStatusFailed: 'ไม่สามารถอัปเดตสถานะคำสั่งซื้อได้',
         actions: {
+            cancelOrder: 'ยกเลิกคำสั่งซื้อ',
             startPreparing: 'เริ่มเตรียมอาหาร',
             markAsReady: 'พร้อม',
             startDelivering: 'เริ่มจัดส่ง',

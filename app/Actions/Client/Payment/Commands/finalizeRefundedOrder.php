@@ -38,7 +38,10 @@ class finalizeRefundedOrder
             $this->reverseEarnedPoints($order);
 
             event(new StatusOrderUpdated($order));
-            event(new OrderCancelledBroadcast($order));
+
+            if ($order->user_id === auth()->user()->id) {
+                event(new OrderCancelledBroadcast($order));
+            }
         });
     }
 

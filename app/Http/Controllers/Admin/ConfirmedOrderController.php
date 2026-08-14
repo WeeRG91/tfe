@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\Order\Commands\CancelOrder;
 use App\Actions\Admin\Order\Commands\UpdateOrderStatus;
 use App\Actions\Admin\Order\Queries\GetConfirmedOrders;
 use App\Enums\OrderStatusEnum;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Throwable;
 
 class ConfirmedOrderController extends Controller
 {
@@ -57,6 +59,24 @@ class ConfirmedOrderController extends Controller
 
         return response()->json([
             'message' => __('messages.orders.status_updated'),
+            'success' => true,
+        ]);
+    }
+
+    /**
+     * @param Order $order
+     * @param CancelOrder $cancelOrder
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    public function cancel(Order $order, CancelOrder $cancelOrder): JsonResponse
+    {
+        $this->authorize('cancel', $order);
+
+        $cancelOrder->execute($order);
+
+        return response()->json([
+            'success' => true,
         ]);
     }
 }

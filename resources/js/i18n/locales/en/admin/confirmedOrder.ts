@@ -23,8 +23,14 @@ export default {
         cancelledTitle: 'Cancelled Orders',
         orderCount: '{count} order | {count} orders',
     },
-    messages: { updated: 'Order status updated successfully!' },
-    errors: { updateFailed: 'Failed to update order status.' },
+    messages: {
+        updated: 'Order status updated successfully!',
+        cancelled: 'Order cancelled successfully!',
+    },
+    errors: {
+        updateFailed: 'Failed to update order status.',
+        cancelFailed: 'Failed to cancel the order.',
+    },
     status: {
         pending: 'Pending',
         confirmed: 'Confirmed',
@@ -64,9 +70,11 @@ export default {
         details: 'Details',
         viewFullDetails: 'View Full Details',
         moreItems: '+{count} more items',
+        cancelConfirmation: 'Are you sure you want to cancel this order?',
         updateStatusSuccess: 'Order status updated successfully!',
         updateStatusFailed: 'Failed to update order status',
         actions: {
+            cancelOrder: 'Cancel Order',
             startPreparing: 'Start Preparing',
             markAsReady: 'Mark as Ready',
             startDelivering: 'Start Delivering',

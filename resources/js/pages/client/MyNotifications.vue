@@ -12,7 +12,7 @@ import { FilterNotificationEnum, NotificationType } from '@/types/notification';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { CheckCheck, Loader, MoreHorizontal, Trash2 } from 'lucide-vue-next';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 
@@ -100,6 +100,10 @@ const groupedNotifications = computed(() => {
 
 const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
+};
+
+const closeDropdown = () => {
+    showDropdown.value = false;
 };
 
 const markAsRead = async (id: number) => {
@@ -200,6 +204,7 @@ const loadNotifications = async () => {
 
 onMounted(() => {
     loadNotifications();
+    window.addEventListener('scroll', closeDropdown, true);
 
     observer.value = new IntersectionObserver(
         (entries) => {
@@ -219,6 +224,10 @@ onMounted(() => {
     watch(sentinel, (element) => {
         if (element) observer.value?.observe(element);
     });
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', closeDropdown, true);
 });
 
 watch(activeFilter, () => {

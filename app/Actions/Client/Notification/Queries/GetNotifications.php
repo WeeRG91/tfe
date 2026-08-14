@@ -25,7 +25,7 @@ class GetNotifications
                     default => null,
                 };
             })
-            ->latest()
+            ->orderByDesc('created_at')
             ->cursorPaginate(10);
     }
 }

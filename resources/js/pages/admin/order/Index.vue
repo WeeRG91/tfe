@@ -36,8 +36,9 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
 
 const updatedStatusOrderId = ref<number | null>(null);
 const expandedColumns = ref<Set<string>>(new Set(['confirmed']));
-const showCompletedModal = ref(false);
-const showCancelledModal = ref(false);
+const showCompletedModal = ref<boolean>(false);
+const showCancelledModal = ref<boolean>(false);
+const isCancelling = ref<boolean>(false);
 
 const columns = computed(() => [
     {
@@ -103,6 +104,25 @@ const handleStatusUpdate = async (
         toast.error(t('confirmedOrder.errors.updateFailed'));
     } finally {
         updatedStatusOrderId.value = null;
+    }
+};
+
+const handleCancelOrder = async (orderId: number) => {
+    isCancelling.value = true;
+
+    try {
+        const response = await orderStore.cancelConfirmedOrder(orderId);
+
+        if (response.success) {
+            await orderStore.getConfirmedOrders();
+        }
+
+        toast.success(t('confirmedOrder.messages.cancelled'));
+    } catch (error) {
+        console.error(error);
+        toast.error(t('confirmedOrder.errors.cancelFailed'));
+    } finally {
+        isCancelling.value = false;
     }
 };
 
@@ -252,6 +272,8 @@ onMounted(async () => {
                                 :key="order.id"
                                 :order="order"
                                 :update-status-order-id="updatedStatusOrderId"
+                                :is-cancelling="isCancelling"
+                                @cancel-order="handleCancelOrder"
                                 @update-status="handleStatusUpdate"
                             />
 
@@ -303,6 +325,8 @@ onMounted(async () => {
                             :key="order.id"
                             :order="order"
                             :update-status-order-id="updatedStatusOrderId"
+                            :is-cancelling="isCancelling"
+                            @cancel-order="handleCancelOrder"
                             @update-status="handleStatusUpdate"
                         />
 

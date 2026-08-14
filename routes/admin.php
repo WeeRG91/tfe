@@ -100,6 +100,7 @@ Route::middleware(['auth', 'verified', 'permission:admin.access'])
         Route::get('/', 'index')->name('index');
         Route::get('/get-confirmed-orders', 'getConfirmedOrders')->name('get-confirmed-orders');
         Route::post('/{order}/update-order-status', 'updateOrderStatus')->name('update-order-status');
+        Route::patch('/{order}/cancel', 'cancel')->name('cancel');
     });
 
     Route::controller(ChatController::class)->prefix('chats')->name('chat.')->group(function () {

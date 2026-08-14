@@ -73,6 +73,10 @@ const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
 };
 
+const closeDropdown = () => {
+    showDropdown.value = false;
+};
+
 const markAsRead = (notificationId: number) => {
     emit('mark-read', notificationId);
 };
@@ -125,6 +129,8 @@ useClickOutside(dropdownRef, () => {
 });
 
 onMounted(() => {
+    window.addEventListener('scroll', closeDropdown, true);
+
     if (props.open) {
         document.body.style.overflow = 'hidden';
     }
@@ -132,6 +138,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.body.style.overflow = '';
+    window.removeEventListener('scroll', closeDropdown, true);
 });
 
 watch(

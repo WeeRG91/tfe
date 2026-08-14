@@ -25,9 +25,11 @@ export default {
     },
     messages: {
         updated: 'Le statut de la commande a été mis à jour avec succès.',
+        cancelled: 'Commande annulée avec succès !',
     },
     errors: {
         updateFailed: 'Impossible de mettre à jour le statut de la commande.',
+        cancelFailed: "Impossible d'annuler la commande.",
     },
     status: {
         pending: 'En attente',
@@ -68,10 +70,12 @@ export default {
         details: 'Détails',
         viewFullDetails: 'Voir tous les détails',
         moreItems: '+{count} articles supplémentaires',
+        cancelConfirmation: 'Êtes-vous sûr de vouloir annuler cette commande ?',
         updateStatusSuccess:
             'Le statut de la commande a été mis à jour avec succès !',
         updateStatusFailed: 'Échec de la mise à jour du statut de la commande.',
         actions: {
+            cancelOrder: 'Annuler la commande',
             startPreparing: 'Préparer',
             markAsReady: 'Prête',
             startDelivering: 'Livrer',

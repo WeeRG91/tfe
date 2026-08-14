@@ -1,21 +1,17 @@
 <?php
 
-namespace App\Actions\Client\Order\Commands;
+namespace App\Actions\Admin\Order\Commands;
 
 use App\Actions\Client\Payment\Commands\finalizeRefundedOrder;
 use App\Actions\Client\Payment\Commands\RefundStripeOrder;
 use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentStatusEnum;
-use App\Events\OrderCancelledBroadcast;
-use App\Events\StatusOrderUpdated;
 use App\Models\Order;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
-readonly class CancelOrder
+class CancelOrder
 {
     public function __construct(
         private RefundStripeOrder $refundStripeOrder,
@@ -59,7 +55,7 @@ readonly class CancelOrder
             $order->payment_method === PaymentMethodEnum::CASH ||
             $order->payment_status === PaymentStatusEnum::PENDING
         ) {
-           $this->finalizeRefundedOrder->execute($order);
+            $this->finalizeRefundedOrder->execute($order);
         }
     }
 }
