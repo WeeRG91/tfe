@@ -17,4 +17,9 @@ class DishController extends Controller
 
         return DishResource::collection($dishes);
     }
+
+    public function show(Dish $dish): DishResource
+    {
+        return new DishResource($dish);
+    }
 }

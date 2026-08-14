@@ -11,6 +11,8 @@ Route::prefix('v1')
     ->group(function () {
         Route::get('dishes', [DishController::class, 'index'])
             ->name('dishes.index');
+        Route::get('dishes/{dish}', [DishController::class, 'show'])
+            ->name('dishes.show');
     });
 
 Route::get('/user', function (Request $request) {
