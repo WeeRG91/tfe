@@ -5,6 +5,7 @@ namespace App\Http\Resources\Api\V1;
 use App\Models\Dish;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 /** @mixin Dish */
 class DishResource extends JsonResource
@@ -26,6 +27,9 @@ class DishResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => number_format((float) $this->price, 2, '.', ''),
+            'image_url' => $this->main_image
+                ? Storage::disk('public')->url($this->main_image)
+                : null,
             'is_available' => (bool) $this->is_available,
             'category' => [
                 'value' => $this->category->value,

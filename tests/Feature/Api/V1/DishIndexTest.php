@@ -2,6 +2,7 @@
 
 use App\Enums\DishCategoryEnum;
 use App\Models\Dish;
+use Illuminate\Support\Facades\Storage;
 
 it('returns the public dish menu as json', function () {
     app()->setLocale('en');
@@ -11,6 +12,7 @@ it('returns the public dish menu as json', function () {
         'category' => DishCategoryEnum::MAIN_COURSE,
         'default_spicy_level' => 2,
         'is_available' => true,
+        'main_image' => 'dishes/chicken-curry.jpg',
     ]);
 
     $translation = $dish->translateOrNew('en');
@@ -35,6 +37,10 @@ it('returns the public dish menu as json', function () {
             'Chicken with vegetables and curry sauce.',
         )
         ->assertJsonPath('data.0.price', '14.50')
+        ->assertJsonPath(
+            'data.0.image_url',
+            Storage::disk('public')->url('dishes/chicken-curry.jpg'),
+        )
         ->assertJsonPath('data.0.is_available', true)
         ->assertJsonPath('data.0.category.value', 2)
         ->assertJsonPath('data.0.category.key', 'mainCourse')

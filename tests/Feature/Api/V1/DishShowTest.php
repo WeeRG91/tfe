@@ -36,6 +36,12 @@ it('returns a public dish detail as json', function () {
             'Chicken with vegetables and curry sauce.',
         )
         ->assertJsonPath('data.price', '14.50')
+        ->assertJsonStructure([
+            'data' => [
+                'image_url',
+            ],
+        ])
+        ->assertJsonPath('data.image_url', null)
         ->assertJsonPath('data.is_available', true)
         ->assertJsonPath('data.category.value', 2)
         ->assertJsonPath('data.category.key', 'mainCourse')
