@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\DishController;
+use App\Http\Controllers\Api\V1\DrinkController;
 use App\Http\Middleware\SetApiLocale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,9 @@ Route::prefix('v1')
             ->name('dishes.index');
         Route::get('dishes/{dish}', [DishController::class, 'show'])
             ->name('dishes.show');
+
+        Route::get('drinks', [DrinkController::class, 'index'])
+            ->name('drinks.index');
     });
 
 Route::get('/user', function (Request $request) {
