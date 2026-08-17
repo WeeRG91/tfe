@@ -6,6 +6,7 @@ use App\Models\Dish;
 use App\Models\Ingredient;
 use App\Models\Meat;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 it('returns a public dish detail as json', function () {
     $dish = Dish::query()->create([
@@ -74,6 +75,7 @@ it('returns ingredients allergens meats and rating summary', function () {
 
     $ingredient = Ingredient::query()->create([
         'allergen_id' => $allergen->id,
+        'main_image' => 'images/ingredient/peanut-sauce.jpg',
     ]);
 
     $ingredient->translateOrNew('en')->fill([
@@ -135,6 +137,12 @@ it('returns ingredients allergens meats and rating summary', function () {
         ->assertOk()
         ->assertJsonPath('data.ingredients.0.id', $ingredient->id)
         ->assertJsonPath('data.ingredients.0.name', 'Peanut sauce')
+        ->assertJsonPath(
+            'data.ingredients.0.image_url',
+            Storage::disk('public')->url(
+                'images/ingredient/peanut-sauce.jpg',
+            ),
+        )
         ->assertJsonPath(
             'data.ingredients.0.allergen.id',
             $allergen->id,

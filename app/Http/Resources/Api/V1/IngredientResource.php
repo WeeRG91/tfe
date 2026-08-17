@@ -5,6 +5,7 @@ namespace App\Http\Resources\Api\V1;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 /** @mixin Ingredient */
 class IngredientResource extends JsonResource
@@ -19,6 +20,9 @@ class IngredientResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'image_url' => $this->main_image
+                ? Storage::disk('public')->url($this->main_image)
+                : null,
             'allergen' => $this->whenLoaded(
                 'allergen',
                 fn () => $this->allergen
