@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorChallengeController;
+use App\Http\Controllers\Api\V1\Auth\TwoFactorSettingsController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DrinkController;
 use App\Http\Middleware\SetApiLocale;
@@ -33,9 +34,24 @@ Route::prefix('v1')
             ->middleware('auth:sanctum')
             ->name('auth.logout');
 
+        Route::get('auth/two-factor', [TwoFactorSettingsController::class, 'show'])
+            ->middleware('auth:sanctum')
+            ->name('auth.two-factor.show');
+        Route::post('auth/two-factor', [TwoFactorSettingsController::class, 'store'])
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('auth.two-factor.store');
+        Route::post('auth/two-factor/confirm', [TwoFactorSettingsController::class, 'confirm'])
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('auth.two-factor.confirm');
         Route::post('auth/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])
             ->middleware('throttle:6,1')
             ->name('auth.two-factor-challenge');
+        Route::post('auth/two-factor/recovery-codes', [TwoFactorSettingsController::class, 'regenerateRecoveryCodes'])
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('auth.two-factor.recovery-codes.store');
+        Route::delete('auth/two-factor', [TwoFactorSettingsController::class, 'destroy'])
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('auth.two-factor.destroy');
 
         Route::get('dishes', [DishController::class, 'index'])
             ->name('dishes.index');
