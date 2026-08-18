@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
+use App\Http\Controllers\Api\V1\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DrinkController;
 use App\Http\Middleware\SetApiLocale;
@@ -31,6 +32,10 @@ Route::prefix('v1')
         Route::post('auth/logout', [AuthenticatedSessionController::class, 'destroy'])
             ->middleware('auth:sanctum')
             ->name('auth.logout');
+
+        Route::post('auth/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])
+            ->middleware('throttle:6,1')
+            ->name('auth.two-factor-challenge');
 
         Route::get('dishes', [DishController::class, 'index'])
             ->name('dishes.index');

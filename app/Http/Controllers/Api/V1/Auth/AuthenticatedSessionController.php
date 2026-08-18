@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Resources\Api\V1\UserResource;
+use App\Services\Auth\MobileTwoFactorChallengeStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,17 +18,25 @@ class AuthenticatedSessionController extends Controller
         return new UserResource($request->user());
     }
 
-    public function store(LoginRequest $request): JsonResponse
-    {
+    public function store(
+        LoginRequest $request,
+        MobileTwoFactorChallengeStore $challengeStore
+    ): JsonResponse {
         $user = $request->validateCredentials();
 
         if (
             Features::enabled(Features::twoFactorAuthentication()) &&
             $user->hasEnabledTwoFactorAuthentication()
         ) {
+            $challengeToken = $challengeStore->create(
+                $user,
+                (string) $request->string('device_name'),
+            );
+
             return response()->json([
                 'message' => 'Two-factor authentication is required.',
                 'code' => 'two_factor_required',
+                'challenge_token' => $challengeToken,
             ], 409);
         }
 

@@ -50,6 +50,10 @@ it('does not issue a token before two-factor authentication', function () {
         ->assertJsonPath('message', 'Two-factor authentication is required.')
         ->assertJsonPath('code', 'two_factor_required');
 
+    expect($response->json('challenge_token'))
+        ->toBeString()
+        ->not->toBeEmpty();
+
     $this->assertDatabaseMissing('personal_access_tokens', [
         'tokenable_type' => User::class,
         'tokenable_id' => $user->id,
