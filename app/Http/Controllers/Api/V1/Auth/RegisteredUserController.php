@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Resources\Api\V1\UserResource;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
+use App\Notifications\Auth\MobileVerifyEmail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,7 +23,7 @@ class RegisteredUserController extends Controller
             'locale' => app()->getLocale(),
         ]);
 
-        event(new Registered($user));
+        $user->notify(new MobileVerifyEmail);
 
         $token = $user->createToken(
             $validated['device_name'],

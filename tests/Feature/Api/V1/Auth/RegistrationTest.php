@@ -1,12 +1,12 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Event;
+use App\Notifications\Auth\MobileVerifyEmail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 
 it('registers a mobile customer and issues a token', function () {
-    Event::fake([Registered::class]);
+    Notification::fake();
 
     $response = $this->postJson('/api/v1/auth/register', [
         'name' => 'Test Customer',
@@ -41,9 +41,9 @@ it('registers a mobile customer and issues a token', function () {
         'name' => 'Test phone',
     ]);
 
-    Event::assertDispatched(
-        Registered::class,
-        fn (Registered $event) => $event->user->is($user),
+    Notification::assertSentTo(
+        $user,
+        MobileVerifyEmail::class,
     );
 });
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DrinkController;
@@ -12,6 +13,14 @@ Route::prefix('v1')
     ->name('api.v1.')
     ->middleware(SetApiLocale::class)
     ->group(function () {
+        Route::get('auth/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+            ->middleware(['signed', 'throttle:6,1'])
+            ->whereNumber('id')
+            ->name('auth.email.verification.verify');
+        Route::post('auth/email/verification-notification', [EmailVerificationController::class, 'send'])
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('auth.email.verification.send');
+
         Route::get('auth/user', [AuthenticatedSessionController::class, 'show'])
             ->middleware('auth:sanctum')
             ->name('auth.user');
