@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
+use App\Http\Controllers\Api\V1\Auth\NewPasswordController;
+use App\Http\Controllers\Api\V1\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Api\V1\Auth\ProfileController;
 use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorChallengeController;
@@ -35,6 +37,12 @@ Route::prefix('v1')
             ->name('auth.register');
         Route::post('auth/login', [AuthenticatedSessionController::class, 'store'])
             ->name('auth.login');
+        Route::post('auth/forgot-password', [PasswordResetLinkController::class, 'store'])
+            ->middleware('throttle:6,1')
+            ->name('auth.password.email');
+        Route::post('auth/reset-password', [NewPasswordController::class, 'store'])
+            ->middleware('throttle:6,1')
+            ->name('auth.password.update');
         Route::post('auth/logout', [AuthenticatedSessionController::class, 'destroy'])
             ->middleware('auth:sanctum')
             ->name('auth.logout');
