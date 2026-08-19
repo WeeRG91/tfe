@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
+use App\Http\Controllers\Api\V1\Auth\ProfileController;
 use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorSettingsController;
@@ -26,6 +27,10 @@ Route::prefix('v1')
         Route::get('auth/user', [AuthenticatedSessionController::class, 'show'])
             ->middleware('auth:sanctum')
             ->name('auth.user');
+        Route::patch('auth/user', [ProfileController::class, 'update'])
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('auth.user.update');
+
         Route::post('auth/register', [RegisteredUserController::class, 'store'])
             ->name('auth.register');
         Route::post('auth/login', [AuthenticatedSessionController::class, 'store'])
