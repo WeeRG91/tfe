@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AddressController;
 use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\NewPasswordController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorSettingsController;
 use App\Http\Controllers\Api\V1\CartController;
+use App\Http\Controllers\Api\V1\CheckoutController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DrinkController;
 use App\Http\Middleware\SetApiLocale;
@@ -96,6 +98,21 @@ Route::prefix('v1')
             ->whereNumber('cartItemId')
             ->middleware(['auth:sanctum', 'throttle:60,1'])
             ->name('cart.items.destroy');
+
+        Route::get('checkout', [CheckoutController::class, 'show'])
+            ->middleware('auth:sanctum')
+            ->name('checkout.show');
+        Route::patch('addresses/{addressId}', [AddressController::class, 'update'])
+            ->whereNumber('addressId')
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->name('addresses.update');
+        Route::post('addresses', [AddressController::class, 'store'])
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->name('addresses.store');
+        Route::delete('addresses/{addressId}', [AddressController::class, 'destroy'])
+            ->whereNumber('addressId')
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->name('addresses.destroy');
     });
 
 Route::get('/user', function (Request $request) {
