@@ -39,6 +39,7 @@ return [
         'unauthorized' => 'Non autorisé.',
         'success' => 'Paiement réussi.',
         'confirmed' => 'Paiement confirmé.',
+        'card_required' => 'Un paiement par carte est requis pour cette opération.',
         'missing_signature' => 'Signature de paiement manquante.',
         'invalid_signature' => 'Signature de paiement invalide : :message',
         'not_allowed' => 'Vous n’êtes pas autorisé à payer cette commande.',

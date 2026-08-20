@@ -39,6 +39,7 @@ return [
         'unauthorized' => 'Unauthorized.',
         'success' => 'Payment successful.',
         'confirmed' => 'Payment confirmed.',
+        'card_required' => 'Card payment is required for this operation.',
         'missing_signature' => 'Missing payment signature.',
         'invalid_signature' => 'Invalid payment signature: :message',
         'not_allowed' => 'You are not allowed to pay for this order.',

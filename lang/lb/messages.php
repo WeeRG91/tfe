@@ -39,6 +39,7 @@ return [
         'unauthorized' => 'Net autoriséiert.',
         'success' => 'Bezuelung erfollegräich.',
         'confirmed' => 'Bezuelung gouf bestätegt.',
+        'card_required' => 'Fir dës Operatioun ass eng Kaartbezuelung erfuerderlech.',
         'missing_signature' => 'Bezuelungssignatur feelt.',
         'invalid_signature' => 'Ongëlteg Bezuelungssignatur: :message',
         'not_allowed' => 'Dir sidd net berechtegt, dës Bestellung ze bezuelen.',

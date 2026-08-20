@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\CheckoutController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DrinkController;
+use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Middleware\SetApiLocale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -102,6 +103,23 @@ Route::prefix('v1')
         Route::get('checkout', [CheckoutController::class, 'show'])
             ->middleware('auth:sanctum')
             ->name('checkout.show');
+        Route::post('checkout/orders', [CheckoutController::class, 'storeOrder'])
+            ->middleware([
+                'auth:sanctum',
+                'verified',
+                'throttle:10,1'
+            ])
+            ->name('checkout.orders.store');
+
+        Route::post('checkout/orders/{order}/payment-intent', [PaymentController::class, 'storePaymentIntent'])
+            ->whereNumber('order')
+            ->middleware([
+                'auth:sanctum',
+                'verified',
+                'throttle:10,1'
+            ])
+            ->name('checkout.orders.payment-intent.store');
+
         Route::patch('addresses/{addressId}', [AddressController::class, 'update'])
             ->whereNumber('addressId')
             ->middleware(['auth:sanctum', 'throttle:30,1'])

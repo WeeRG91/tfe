@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Actions\Client\Cart\Queries\GetOrCreateCart;
+use App\Actions\Client\Order\Commands\PlaceOrder\PlaceOrder;
 use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Checkout\PlaceOrderRequest;
 use App\Http\Resources\Api\V1\AddressResource;
 use App\Http\Resources\Api\V1\CartResource;
+use App\Http\Resources\Api\V1\OrderResource;
 use App\Models\LoyaltyPointTransaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class CheckoutController extends Controller
 {
@@ -83,5 +88,27 @@ class CheckoutController extends Controller
                 'delivery_fee' => '2.00',
             ],
         ]);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function storeOrder(
+        PlaceOrderRequest $request,
+        PlaceOrder $placeOrder,
+    ): JsonResponse
+    {
+        $result = $placeOrder->execute($request->validated());
+
+        if ($result['order'] === null) {
+            throw ValidationException::withMessages([
+                'cart' => $result['message'],
+            ]);
+        }
+
+        return response()->json([
+            'data' => new OrderResource($result['order']),
+            'message' => $result['message'],
+        ], 201);
     }
 }
