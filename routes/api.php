@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Auth\ProfileController;
 use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Api\V1\Auth\TwoFactorSettingsController;
+use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DrinkController;
 use App\Http\Middleware\SetApiLocale;
@@ -73,6 +74,28 @@ Route::prefix('v1')
 
         Route::get('drinks', [DrinkController::class, 'index'])
             ->name('drinks.index');
+
+        Route::get('cart', [CartController::class, 'show'])
+            ->middleware('auth:sanctum')
+            ->name('cart.show');
+        Route::patch('cart/items/{cartItemId}/quantity', [CartController::class, 'updateQuantity'])
+            ->whereNumber('cartItemId')
+            ->middleware(['auth:sanctum', 'throttle:60,1'])
+            ->name('cart.items.quantity.update');
+        Route::patch('cart/items/{cartItemId}/notes', [CartController::class, 'updateNotes'])
+            ->whereNumber('cartItemId')
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->name('cart.items.notes.update');
+        Route::post('cart/items/dishes', [CartController::class, 'storeDish'])
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->name('cart.items.dishes.store');
+        Route::post('cart/items/drinks', [CartController::class, 'storeDrink'])
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->name('cart.items.drinks.store');
+        Route::delete('cart/items/{cartItemId}', [CartController::class, 'destroyItem'])
+            ->whereNumber('cartItemId')
+            ->middleware(['auth:sanctum', 'throttle:60,1'])
+            ->name('cart.items.destroy');
     });
 
 Route::get('/user', function (Request $request) {

@@ -8,16 +8,12 @@ use Illuminate\Support\Str;
 
 class GetOrCreateCart
 {
-    /**
-     * @param Request $request
-     * @return Cart
-     */
     public function execute(Request $request): Cart
     {
         $guestToken = $request->header('X-Guest-Token');
 
-        if (auth()->check()) {
-            $userId = auth()->user()->id;
+        if ($request->user()) {
+            $userId = $request->user()->id;
             $existingUserCart = Cart::query()->where('user_id', $userId)->first();
 
             if ($existingUserCart) {
@@ -42,7 +38,7 @@ class GetOrCreateCart
             ]);
         }
 
-        if (!$guestToken) {
+        if (! $guestToken) {
             $guestToken = Str::uuid()->toString();
         }
 
