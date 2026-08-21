@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\CheckoutController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DrinkController;
+use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Middleware\SetApiLocale;
 use Illuminate\Http\Request;
@@ -107,7 +108,7 @@ Route::prefix('v1')
             ->middleware([
                 'auth:sanctum',
                 'verified',
-                'throttle:10,1'
+                'throttle:10,1',
             ])
             ->name('checkout.orders.store');
 
@@ -116,7 +117,7 @@ Route::prefix('v1')
             ->middleware([
                 'auth:sanctum',
                 'verified',
-                'throttle:10,1'
+                'throttle:10,1',
             ])
             ->name('checkout.orders.payment-intent.store');
 
@@ -131,6 +132,11 @@ Route::prefix('v1')
             ->whereNumber('addressId')
             ->middleware(['auth:sanctum', 'throttle:30,1'])
             ->name('addresses.destroy');
+
+        Route::get('orders/{orderId}', [OrderController::class, 'show'])
+            ->whereNumber('orderId')
+            ->middleware('auth:sanctum')
+            ->name('orders.show');
     });
 
 Route::get('/user', function (Request $request) {
