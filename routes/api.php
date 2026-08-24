@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\CheckoutController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DrinkController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Middleware\SetApiLocale;
@@ -140,6 +141,17 @@ Route::prefix('v1')
             ->whereNumber('orderId')
             ->middleware('auth:sanctum')
             ->name('orders.show');
+
+        Route::get('notifications', [NotificationController::class, 'index'])
+            ->middleware('auth:sanctum')
+            ->name('notifications.index');
+        Route::patch('notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->name('notifications.read-all');
+        Route::patch('notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])
+            ->whereNumber('notificationId')
+            ->middleware(['auth:sanctum', 'throttle:60,1'])
+            ->name('notifications.read');
     });
 
 Route::get('/user', function (Request $request) {
