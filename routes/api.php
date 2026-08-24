@@ -133,6 +133,9 @@ Route::prefix('v1')
             ->middleware(['auth:sanctum', 'throttle:30,1'])
             ->name('addresses.destroy');
 
+        Route::get('orders', [OrderController::class, 'index'])
+            ->middleware('auth:sanctum')
+            ->name('orders.index');
         Route::get('orders/{orderId}', [OrderController::class, 'show'])
             ->whereNumber('orderId')
             ->middleware('auth:sanctum')
