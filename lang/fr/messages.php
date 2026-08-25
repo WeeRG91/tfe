@@ -290,4 +290,26 @@ return [
         'thank_choice' => 'Merci de nous avoir choisis !',
         'serve_again' => 'Au plaisir de vous servir à nouveau.',
     ],
+    'push_notifications' => [
+        'order_confirmed' => [
+            'title' => 'Commande confirmée',
+            'body' => 'La commande n°:number a été confirmée.',
+        ],
+        'order_ready' => [
+            'title' => 'Commande prête',
+            'body' => 'La commande n°:number est prête.',
+        ],
+        'order_delivering' => [
+            'title' => 'Commande en livraison',
+            'body' => 'La commande n°:number est en cours de livraison.',
+        ],
+        'order_completed' => [
+            'title' => 'Commande terminée',
+            'body' => 'La commande n°:number a été terminée.',
+        ],
+        'order_cancelled' => [
+            'title' => 'Commande annulée',
+            'body' => 'La commande n°:number a été annulée.',
+        ],
+    ],
 ];

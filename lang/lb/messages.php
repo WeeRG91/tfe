@@ -288,4 +288,26 @@ return [
         'thank_choice' => 'Merci, datt Dir eis gewielt hutt!',
         'serve_again' => 'Mir freeën eis, Iech erëm ze zerwéieren.',
     ],
+    'push_notifications' => [
+        'order_confirmed' => [
+            'title' => 'Bestellung confirméiert',
+            'body' => 'D’Bestellung #:number gouf confirméiert.',
+        ],
+        'order_ready' => [
+            'title' => 'Bestellung prett',
+            'body' => 'D’Bestellung #:number ass prett.',
+        ],
+        'order_delivering' => [
+            'title' => 'Bestellung ënnerwee',
+            'body' => 'D’Bestellung #:number ass ënnerwee fir d’Liwwerung.',
+        ],
+        'order_completed' => [
+            'title' => 'Bestellung ofgeschloss',
+            'body' => 'D’Bestellung #:number gouf ofgeschloss.',
+        ],
+        'order_cancelled' => [
+            'title' => 'Bestellung annuléiert',
+            'body' => 'D’Bestellung #:number gouf annuléiert.',
+        ],
+    ],
 ];

@@ -305,4 +305,26 @@ return [
         'thank_choice' => 'Thank you for choosing us!',
         'serve_again' => 'We look forward to serving you again.',
     ],
+    'push_notifications' => [
+        'order_confirmed' => [
+            'title' => 'Order confirmed',
+            'body' => 'Order #:number has been confirmed.',
+        ],
+        'order_ready' => [
+            'title' => 'Order ready',
+            'body' => 'Order #:number is ready.',
+        ],
+        'order_delivering' => [
+            'title' => 'Order out for delivery',
+            'body' => 'Order #:number is out for delivery.',
+        ],
+        'order_completed' => [
+            'title' => 'Order completed',
+            'body' => 'Order #:number has been completed.',
+        ],
+        'order_cancelled' => [
+            'title' => 'Order cancelled',
+            'body' => 'Order #:number has been cancelled.',
+        ],
+    ],
 ];

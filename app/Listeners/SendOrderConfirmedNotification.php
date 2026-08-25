@@ -4,8 +4,9 @@ namespace App\Listeners;
 
 use App\Enums\NotificationTypeEnum;
 use App\Enums\OrderStatusEnum;
-use App\Events\StatusOrderUpdatedBroadcast;
 use App\Events\OrderPlacedBroadcast;
+use App\Events\StatusOrderUpdatedBroadcast;
+use App\Jobs\SendExpoPushNotification;
 use App\Mail\OrderUpdatedMail;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
@@ -41,8 +42,28 @@ class SendOrderConfirmedNotification
             'updated_at' => now(),
         ]);
 
+        $locale = $order->user->preferredLocale();
+
+        SendExpoPushNotification::dispatch(
+            userId: $order->user_id,
+            title: trans(
+                'messages.push_notifications.order_confirmed.title',
+                locale: $locale,
+            ),
+            body: trans(
+                'messages.push_notifications.order_confirmed.body',
+                ['number' => $order->order_number],
+                $locale,
+            ),
+            data: [
+                'type' => 'order_confirmed',
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+            ],
+        );
+
         Mail::to($order->user->email)
-            ->locale($order->user->preferredLocale())
+            ->locale($locale)
             ->queue(new OrderUpdatedMail(
                 $order,
                 OrderStatusEnum::CONFIRMED,

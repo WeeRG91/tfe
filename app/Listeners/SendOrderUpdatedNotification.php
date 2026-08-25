@@ -6,6 +6,7 @@ use App\Enums\NotificationTypeEnum;
 use App\Enums\OrderStatusEnum;
 use App\Events\StatusOrderUpdated;
 use App\Events\StatusOrderUpdatedBroadcast;
+use App\Jobs\SendExpoPushNotification;
 use App\Mail\OrderUpdatedMail;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,8 @@ class SendOrderUpdatedNotification
                     'updated_at' => now(),
                 ]);
 
+                $this->queuePushNotification($order, 'order_ready');
+
                 Mail::to($order->user->email)
                     ->locale($order->user->preferredLocale())
                     ->queue(new OrderUpdatedMail(
@@ -66,6 +69,8 @@ class SendOrderUpdatedNotification
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                $this->queuePushNotification($order, 'order_delivering');
 
                 Mail::to($order->user->email)
                     ->locale($order->user->preferredLocale())
@@ -91,6 +96,8 @@ class SendOrderUpdatedNotification
                     'updated_at' => now(),
                 ]);
 
+                $this->queuePushNotification($order, 'order_completed');
+
                 Mail::to($order->user->email)
                     ->locale($order->user->preferredLocale())
                     ->queue(new OrderUpdatedMail(
@@ -115,6 +122,8 @@ class SendOrderUpdatedNotification
                     'updated_at' => now(),
                 ]);
 
+                $this->queuePushNotification($order, 'order_cancelled');
+
                 Mail::to($order->user->email)
                     ->locale($order->user->preferredLocale())
                     ->queue(new OrderUpdatedMail(
@@ -125,5 +134,29 @@ class SendOrderUpdatedNotification
         }
 
         event(new StatusOrderUpdatedBroadcast($order));
+    }
+
+    private function queuePushNotification(Order $order, string $type): void
+    {
+        $locale = $order->user->preferredLocale();
+        $translationKey = "messages.push_notifications.{$type}";
+
+        SendExpoPushNotification::dispatch(
+            userId: $order->user_id,
+            title: trans(
+                "{$translationKey}.title",
+                locale: $locale,
+            ),
+            body: trans(
+                "{$translationKey}.body",
+                ['number' => $order->order_number],
+                $locale,
+            ),
+            data: [
+                'type' => $type,
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+            ],
+        );
     }
 }
