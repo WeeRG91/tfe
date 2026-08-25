@@ -102,4 +102,9 @@ class User extends Authenticatable implements HasLocalePreference, MustVerifyEma
     {
         return $this->locale ?? config('app.locale');
     }
+
+    public function expoPushTokens(): HasMany
+    {
+        return $this->hasMany(ExpoPushToken::class);
+    }
 }

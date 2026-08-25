@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\DrinkController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PushTokenController;
 use App\Http\Middleware\SetApiLocale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -152,6 +153,13 @@ Route::prefix('v1')
             ->whereNumber('notificationId')
             ->middleware(['auth:sanctum', 'throttle:60,1'])
             ->name('notifications.read');
+
+        Route::post('push-tokens', [PushTokenController::class, 'store'])
+            ->middleware(['auth:sanctum', 'throttle:20,1'])
+            ->name('push-tokens.store');
+        Route::delete('push-tokens', [PushTokenController::class, 'destroy'])
+            ->middleware(['auth:sanctum', 'throttle:20,1'])
+            ->name('push-tokens.destroy');
     });
 
 Route::get('/user', function (Request $request) {
