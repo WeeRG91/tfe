@@ -710,24 +710,6 @@ onBeforeUnmount(() => {
                                             @click="
                                                 openConfirmModal(
                                                     t(
-                                                        'dish.messages.confirmAvailable',
-                                                    ),
-                                                    'info',
-                                                    () =>
-                                                        toggleAvailability(
-                                                            dishData.id,
-                                                        ),
-                                                )
-                                            "
-                                        >
-                                            <CircleXIcon />
-                                            {{ t('admin.status.available') }}
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            v-else
-                                            @click="
-                                                openConfirmModal(
-                                                    t(
                                                         'dish.messages.confirmUnavailable',
                                                     ),
                                                     'info',
@@ -738,8 +720,26 @@ onBeforeUnmount(() => {
                                                 )
                                             "
                                         >
-                                            <CircleCheckBigIcon />
+                                            <CircleXIcon />
                                             {{ t('admin.status.unavailable') }}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            v-else
+                                            @click="
+                                                openConfirmModal(
+                                                    t(
+                                                        'dish.messages.confirmAvailable',
+                                                    ),
+                                                    'info',
+                                                    () =>
+                                                        toggleAvailability(
+                                                            dishData.id,
+                                                        ),
+                                                )
+                                            "
+                                        >
+                                            <CircleCheckBigIcon />
+                                            {{ t('admin.status.available') }}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

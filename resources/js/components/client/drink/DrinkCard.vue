@@ -85,65 +85,6 @@ const emit = defineEmits<{
 
             <div class="mt-auto">
                 <div class="mt-2 flex items-center justify-between">
-                    <div class="flex items-center gap-1">
-                        <span
-                            v-for="i in 4"
-                            :key="i"
-                            class="text-sm transition-colors"
-                            :class="{
-                                'text-gray-300':
-                                    props.drink.is_available ===
-                                    DrinkAvailabilityEnum.UNAVAILABLE,
-                                'text-yellow-400':
-                                    props.drink.is_available ===
-                                    DrinkAvailabilityEnum.AVAILABLE,
-                            }"
-                        >
-                            ★
-                        </span>
-                        <span
-                            class="ml-1 text-xs transition-colors"
-                            :class="{
-                                'text-gray-400':
-                                    props.drink.is_available ===
-                                    DrinkAvailabilityEnum.UNAVAILABLE,
-                                'text-gray-500':
-                                    props.drink.is_available ===
-                                    DrinkAvailabilityEnum.AVAILABLE,
-                            }"
-                        >
-                            (4)
-                        </span>
-                    </div>
-
-                    <div
-                        class="flex items-center gap-1 text-xs transition-colors"
-                        :class="{
-                            'text-gray-400':
-                                props.drink.is_available ===
-                                DrinkAvailabilityEnum.UNAVAILABLE,
-                            'text-gray-500':
-                                props.drink.is_available ===
-                                DrinkAvailabilityEnum.AVAILABLE,
-                        }"
-                    >
-                        <span
-                            :class="{
-                                'text-gray-400':
-                                    props.drink.is_available ===
-                                    DrinkAvailabilityEnum.UNAVAILABLE,
-                                'text-red-700':
-                                    props.drink.is_available ===
-                                    DrinkAvailabilityEnum.AVAILABLE,
-                            }"
-                        >
-                            ♥
-                        </span>
-                        <span>0</span>
-                    </div>
-                </div>
-
-                <div class="mt-2 flex items-center justify-between">
                     <span
                         class="text-xs tracking-widest uppercase transition-colors"
                         :class="{

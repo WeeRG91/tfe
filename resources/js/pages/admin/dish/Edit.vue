@@ -16,7 +16,7 @@ import { EditDishType } from '@/types/dish';
 import { IngredientOptionType } from '@/types/ingredient';
 import { MeatOptionType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
-import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
+import { Loader } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import dish from '@/routes/admin/dish';
