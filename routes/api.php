@@ -39,6 +39,12 @@ Route::prefix('v1')
         Route::patch('auth/user', [ProfileController::class, 'update'])
             ->middleware(['auth:sanctum', 'throttle:6,1'])
             ->name('auth.user.update');
+        Route::post('auth/user/avatar', [ProfileController::class, 'storePhoto'])
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('auth.user.avatar.store');
+        Route::delete('auth/user/avatar', [ProfileController::class, 'destroyPhoto'])
+            ->middleware(['auth:sanctum', 'throttle:6,1'])
+            ->name('auth.user.avatar.destroy');
 
         Route::post('auth/register', [RegisteredUserController::class, 'store'])
             ->name('auth.register');
