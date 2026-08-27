@@ -5,6 +5,7 @@ namespace App\Http\Resources\Api\V1;
 use App\Models\Meat;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 /** @mixin Meat */
 class MeatResource extends JsonResource
@@ -19,6 +20,9 @@ class MeatResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'image_url' => $this->mainImage
+                ? Storage::disk('public')->url($this->mainImage->path)
+                : null,
             'extra_price' => number_format(
                 (float) $this->extra_price, 2, '.', ''
             ),

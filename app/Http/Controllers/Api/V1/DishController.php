@@ -23,7 +23,7 @@ class DishController extends Controller
         $dish
             ->load([
                 'ingredients.allergen',
-                'meats',
+                'meats.mainImage',
             ])
             ->loadAvg('ratings', 'rating')
             ->loadCount('ratings');

@@ -96,6 +96,24 @@ it('returns ingredients allergens meats and rating summary', function () {
 
     $meat->save();
 
+    $meatImage = $meat->images()->create([
+        'name' => 'chicken.jpg',
+        'path' => 'images/meat/chicken.jpg',
+        'mime_type' => 'image/jpeg',
+        'size' => 1024,
+    ]);
+
+    $meatWithoutImage = Meat::query()->create([
+        'extra_price' => '1.50',
+    ]);
+
+    $meatWithoutImage->translateOrNew('en')->fill([
+        'name' => 'Beef',
+        'description' => 'Grilled beef.',
+    ]);
+
+    $meatWithoutImage->save();
+
     $dish = Dish::query()->create([
         'price' => '14.50',
         'category' => DishCategoryEnum::MAIN_COURSE,
@@ -112,6 +130,7 @@ it('returns ingredients allergens meats and rating summary', function () {
 
     $dish->ingredients()->attach($ingredient);
     $dish->meats()->attach($meat);
+    $dish->meats()->attach($meatWithoutImage);
 
     $users = User::factory()->count(2)->create();
 
@@ -153,7 +172,15 @@ it('returns ingredients allergens meats and rating summary', function () {
         )
         ->assertJsonPath('data.meats.0.id', $meat->id)
         ->assertJsonPath('data.meats.0.name', 'Chicken')
+        ->assertJsonPath(
+            'data.meats.0.image_url',
+            Storage::disk('public')->url($meatImage->path),
+        )
         ->assertJsonPath('data.meats.0.extra_price', '2.50')
+        ->assertJsonPath('data.meats.1.id', $meatWithoutImage->id)
+        ->assertJsonPath('data.meats.1.name', 'Beef')
+        ->assertJsonPath('data.meats.1.image_url', null)
+        ->assertJsonPath('data.meats.1.extra_price', '1.50')
         ->assertJsonPath('data.rating.average', 4.5)
         ->assertJsonPath('data.rating.count', 2);
 });
