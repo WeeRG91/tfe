@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\V1;
+namespace App\Http\Requests\Api\V1\PushToken;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class StorePushTokenRequest extends FormRequest
+class DestroyPushTokenRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,16 +28,6 @@ class StorePushTokenRequest extends FormRequest
                 'string',
                 'max:255',
                 'regex:/^(ExponentPushToken|ExpoPushToken)\[[A-Za-z0-9._~\-]+\]$/',
-            ],
-            'platform' => [
-                'required',
-                'string',
-                Rule::in(['android', 'ios']),
-            ],
-            'device_name' => [
-                'required',
-                'string',
-                'max:255',
             ],
         ];
     }
