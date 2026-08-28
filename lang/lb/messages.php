@@ -34,6 +34,7 @@ return [
         'created' => 'Bewäertung gouf erfollegräich ofgeschéckt.',
         'updated' => 'Bewäertung gouf erfollegräich aktualiséiert.',
         'deleted' => 'Bewäertung gouf erfollegräich geläscht.',
+        'not_eligible' => 'Dir kënnt dëse Plat bewäerten, nodeems Dir eng Bestellung mat dësem Plat ofgeschloss hutt.',
     ],
     'payment' => [
         'unauthorized' => 'Net autoriséiert.',

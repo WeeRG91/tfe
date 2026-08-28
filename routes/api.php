@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Auth\TwoFactorSettingsController;
 use App\Http\Controllers\Api\V1\CartController;
 use App\Http\Controllers\Api\V1\CheckoutController;
 use App\Http\Controllers\Api\V1\DishController;
+use App\Http\Controllers\Api\V1\DishReviewController;
 use App\Http\Controllers\Api\V1\DrinkController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrderController;
@@ -83,6 +84,22 @@ Route::prefix('v1')
             ->name('dishes.index');
         Route::get('dishes/{dish}', [DishController::class, 'show'])
             ->name('dishes.show');
+        Route::get('dishes/{dish}/reviews', [DishReviewController::class, 'index'])
+            ->name('dishes.reviews.index');
+        Route::get('dishes/{dish}/review-eligibility', [DishReviewController::class, 'eligibility'])
+            ->middleware(['auth:sanctum', 'verified','throttle:30,1'])
+            ->name('dishes.reviews.eligibility');
+        Route::post('dishes/{dish}/reviews', [DishReviewController::class, 'store'])
+            ->middleware(['auth:sanctum', 'verified', 'throttle:6,1'])
+            ->name('dishes.reviews.store');
+        Route::patch('dishes/{dish}/reviews/{reviewId}', [DishReviewController::class, 'update'])
+            ->whereNumber('reviewId')
+            ->middleware(['auth:sanctum', 'verified', 'throttle:20,1'])
+            ->name('dishes.reviews.update');
+        Route::delete('dishes/{dish}/reviews/{reviewId}', [DishReviewController::class, 'destroy'])
+            ->whereNumber('reviewId')
+            ->middleware(['auth:sanctum', 'verified', 'throttle:20,1'])
+            ->name('dishes.reviews.destroy');
 
         Route::get('drinks', [DrinkController::class, 'index'])
             ->name('drinks.index');

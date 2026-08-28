@@ -34,6 +34,7 @@ return [
         'created' => 'Review submitted successfully.',
         'updated' => 'Review updated successfully.',
         'deleted' => 'Review deleted successfully.',
+        'not_eligible' => 'You can review this dish after completing an order that contains it.',
     ],
     'payment' => [
         'unauthorized' => 'Unauthorized.',

@@ -34,6 +34,7 @@ return [
         'created' => 'Avis envoyé avec succès.',
         'updated' => 'Avis mis à jour avec succès.',
         'deleted' => 'Avis supprimé avec succès.',
+        'not_eligible' => 'Vous pourrez évaluer ce plat après avoir terminé une commande qui le contient.',
     ],
     'payment' => [
         'unauthorized' => 'Non autorisé.',
