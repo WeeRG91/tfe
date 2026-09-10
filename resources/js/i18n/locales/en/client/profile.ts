@@ -36,6 +36,11 @@ export default {
             invalidType:
                 'Please upload a valid image (JPEG, PNG, GIF, or WEBP).',
             alt: 'Profile photo',
+            remove: 'Remove photo',
+            removeMessage:
+                'Are you sure you want to remove your profile photo?',
+            removed: 'Profile photo removed successfully.',
+            removeFailed: 'Unable to remove your profile photo.',
         },
         form: {
             fullName: 'Full Name',

@@ -1,7 +1,10 @@
 <?php
 
 return [
-    'profile' => ['updated' => 'Profile updated successfully.'],
+    'profile' => [
+        'updated' => 'Profile updated successfully.',
+        'photo_removed' => 'Profile photo removed successfully.',
+    ],
     'account' => [
         'not_found' => 'User not found. Please sign up to create an account.',
         'already_activated' => 'This account is already activated. Please sign in.',

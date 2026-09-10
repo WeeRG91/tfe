@@ -1,7 +1,10 @@
 <?php
 
 return [
-    'profile' => ['updated' => 'Le profil a été mis à jour.'],
+    'profile' => [
+        'updated' => 'Le profil a été mis à jour.',
+        'photo_removed' => 'La photo de profil a été supprimée.',
+    ],
     'account' => [
         'not_found' => 'Utilisateur introuvable. Veuillez créer un compte.',
         'already_activated' => 'Ce compte est déjà activé. Veuillez vous connecter.',

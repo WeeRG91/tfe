@@ -35,6 +35,10 @@ export default {
             invalidType:
                 'โปรดอัปโหลดรูปภาพที่ถูกต้อง (JPEG, PNG, GIF หรือ WEBP)',
             alt: 'รูปโปรไฟล์',
+            remove: 'ลบรูปภาพ',
+            removeMessage: 'คุณต้องการลบรูปโปรไฟล์หรือไม่?',
+            removed: 'ลบรูปโปรไฟล์เรียบร้อยแล้ว',
+            removeFailed: 'ไม่สามารถลบรูปโปรไฟล์ได้',
         },
         form: {
             fullName: 'ชื่อ-นามสกุล',

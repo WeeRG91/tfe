@@ -31,8 +31,7 @@ class ProfileController extends Controller
     public function update(
         ProfileUpdateRequest $request,
         ImageService $imageService
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $user = $request->user();
 
         $user->fill([
@@ -58,6 +57,22 @@ class ProfileController extends Controller
 
         return back()->with([
             'success' => __('messages.profile.updated'),
+        ]);
+    }
+
+    public function destroyAvatar(
+        Request $request,
+        ImageService $imageService
+    ): RedirectResponse {
+        $user = $request->user();
+        $avatar = $user->avatar;
+
+        if ($avatar) {
+            $imageService->delete($avatar);
+        }
+
+        return back()->with([
+            'success' => __('messages.profile.photo_removed'),
         ]);
     }
 

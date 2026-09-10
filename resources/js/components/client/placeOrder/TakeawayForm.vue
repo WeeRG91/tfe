@@ -154,6 +154,7 @@ const selectedPickupLabel = computed(() => {
     return new Intl.DateTimeFormat(locale.value, {
         dateStyle: 'full',
         timeStyle: 'short',
+        hourCycle: 'h24',
     }).format(date);
 });
 

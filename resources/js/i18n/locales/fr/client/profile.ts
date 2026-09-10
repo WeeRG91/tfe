@@ -36,6 +36,11 @@ export default {
             invalidType:
                 'Veuillez sélectionner une image valide (JPEG, PNG, GIF ou WEBP).',
             alt: 'Photo de profil',
+            remove: 'Supprimer la photo',
+            removeMessage:
+                'Voulez-vous vraiment supprimer votre photo de profil ?',
+            removed: 'La photo de profil a été supprimée.',
+            removeFailed: 'Impossible de supprimer votre photo de profil.',
         },
         form: {
             fullName: 'Nom complet',

@@ -36,6 +36,10 @@ export default {
             invalidType:
                 'Lued w.e.g. eng valabel Bilddatei erop (JPEG, PNG, GIF oder WEBP).',
             alt: 'Profilfoto',
+            remove: 'Foto läschen',
+            removeMessage: 'Wëllt Dir Är Profilfoto wierklech läschen?',
+            removed: 'D’Profilfoto gouf geläscht.',
+            removeFailed: 'D’Profilfoto konnt net geläscht ginn.',
         },
         form: {
             fullName: 'Vollstännegen Numm',

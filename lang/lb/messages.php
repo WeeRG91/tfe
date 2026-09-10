@@ -1,7 +1,10 @@
 <?php
 
 return [
-    'profile' => ['updated' => 'De Profil gouf erfollegräich aktualiséiert.'],
+    'profile' => [
+        'updated' => 'De Profil gouf erfollegräich aktualiséiert.',
+        'photo_removed' => 'D’Profilfoto gouf geläscht.',
+    ],
     'account' => [
         'not_found' => 'Benotzer net fonnt. Registréiert Iech w.e.g.',
         'already_activated' => 'Dëse Kont ass schonn aktivéiert. Mellt Iech w.e.g. un.',

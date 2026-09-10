@@ -8,6 +8,7 @@ import { Camera, Mail, Save, Trash2, User } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const props = defineProps<{
     user: UserType;
@@ -17,10 +18,12 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const isEditing = ref(false);
+const isEditing = ref<boolean>(false);
 const photoPreview = ref<string | null>(props.user.avatar || null);
 const fileInputRef = ref<HTMLInputElement | null>(null);
-const showDeleteModal = ref(false);
+const showDeleteModal = ref<boolean>(false);
+const showRemovePhotoModal = ref<boolean>(false);
+const isRemovingPhoto = ref<boolean>(false);
 
 const verifyForm = useForm({});
 const updateForm = useForm({
@@ -54,6 +57,39 @@ const updateProfile = () => {
             if (errors.profile_photo) {
                 toast.error(errors.profile_photo);
             }
+        },
+    });
+};
+
+const removeProfilePhoto = () => {
+    if (isRemovingPhoto.value) {
+        return;
+    }
+
+    isRemovingPhoto.value = true;
+
+    router.delete('/settings/profile/avatar', {
+        preserveScroll: true,
+        onSuccess: () => {
+            photoPreview.value = null;
+            updateForm.avatar = null;
+            showRemovePhotoModal.value = false;
+
+            if (fileInputRef.value) {
+                fileInputRef.value.value = '';
+            }
+
+            router.reload({
+                only: ['auth'],
+            });
+
+            toast.success(t('profile.infoTab.photo.removed'));
+        },
+        onError: () => {
+            toast.error(t('profile.infoTab.photo.removeFailed'));
+        },
+        onFinish: () => {
+            isRemovingPhoto.value = false;
         },
     });
 };
@@ -159,12 +195,6 @@ const resendVerification = () => {
             <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
                 <div class="md:col-span-1">
                     <div class="sticky top-6">
-                        <label
-                            class="mb-1.5 block text-sm font-medium text-gray-700"
-                        >
-                            {{ t('profile.infoTab.photo.label') }}
-                        </label>
-
                         <div class="relative mx-auto h-32 w-32 flex-shrink-0">
                             <div
                                 class="h-full w-full overflow-hidden rounded-full border-2 border-gray-200 bg-gray-100"
@@ -194,6 +224,17 @@ const resendVerification = () => {
                                     title="Change photo"
                                 >
                                     <Camera class="h-5 w-5" />
+                                </button>
+
+                                <button
+                                    v-if="photoPreview"
+                                    type="button"
+                                    :disabled="isRemovingPhoto"
+                                    :title="t('profile.infoTab.photo.remove')"
+                                    class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                    @click="showRemovePhotoModal = true"
+                                >
+                                    <Trash2 class="h-5 w-5" />
                                 </button>
                             </div>
                         </div>
@@ -343,6 +384,15 @@ const resendVerification = () => {
                 {{ t('profile.infoTab.delete.button') }}
             </button>
         </div>
+
+        <ConfirmModal
+            :open="showRemovePhotoModal"
+            :on-close="() => (showRemovePhotoModal = false)"
+            :message="t('profile.infoTab.photo.removeMessage')"
+            type="destructive"
+            :is-loading="isRemovingPhoto"
+            @confirm="removeProfilePhoto"
+        />
 
         <ConfirmUserDeleteModal v-model:open="showDeleteModal" />
     </div>
