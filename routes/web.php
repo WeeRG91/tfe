@@ -49,17 +49,6 @@ Route::controller(MenuController::class)->prefix('menu')->name('menu.')->group(f
     Route::get('/drinks/get-drinks', 'getDrinks')->name('get-drinks');
 });
 
-Route::controller(CartController::class)->prefix('cart')->name('cart.')->group(function () {
-    Route::get('/checkout', 'checkout')->name('checkout');
-    Route::get('/place-order', 'placeOrder')->name('place-order');
-    Route::get('/get-cart', 'getCart')->name('get-cart');
-    Route::post('/items/add-dish', 'addDish')->name('add-dish');
-    Route::post('/items/add-drink', 'addDrink')->name('add-drink');
-    Route::patch('/items/{cartItemId}/notes', 'updateNotes')->name('update-notes');
-    Route::patch('/items/{cartItemId}/quantity', 'updateQuantity')->name('update-quantity');
-    Route::delete('/items/{cartItemId}', 'removeItem')->name('remove-item');
-});
-
 Route::controller(ClientGlobalSearchController::class)->prefix('client-global-search')->name('client-global-search.')->group(function () {
     Route::get('/', 'search')->name('search');
 });
@@ -73,6 +62,17 @@ Route::controller(RatingController::class)->prefix('ratings')->name('rating.')->
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::controller(CartController::class)->prefix('cart')->name('cart.')->group(function () {
+        Route::get('/checkout', 'checkout')->name('checkout');
+        Route::get('/place-order', 'placeOrder')->name('place-order');
+        Route::get('/get-cart', 'getCart')->name('get-cart');
+        Route::post('/items/add-dish', 'addDish')->name('add-dish');
+        Route::post('/items/add-drink', 'addDrink')->name('add-drink');
+        Route::patch('/items/{cartItemId}/notes', 'updateNotes')->name('update-notes');
+        Route::patch('/items/{cartItemId}/quantity', 'updateQuantity')->name('update-quantity');
+        Route::delete('/items/{cartItemId}', 'removeItem')->name('remove-item');
+    });
+
     Route::controller(OrderController::class)->prefix('orders')->name('order.')->group(function () {
         Route::get('/', 'getOrders')->name('get-orders');
         Route::get('/my-orders', 'myOrders')->name('my-orders');
@@ -133,8 +133,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{rating}', 'destroy')->name('destroy');
     });
 });
-
-
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

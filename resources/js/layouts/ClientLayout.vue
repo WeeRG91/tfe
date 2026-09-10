@@ -7,12 +7,13 @@ import NotificationsDrawer from '@/components/client/notification/NotificationsD
 import { useCartStore } from '@/stores/cart';
 import { useNotificationStore } from '@/stores/notification';
 import { FilterNotificationEnum } from '@/types/notification';
-import { usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { AppPageProps } from '@/types';
 
-const page = usePage();
+const page = usePage<AppPageProps>();
 const user = computed(() => page.props.auth?.user);
 
 const notificationStore = useNotificationStore();
@@ -26,6 +27,12 @@ const isNotificationsOpen = ref<boolean>(false);
 const isConfirmLoading = ref<boolean>(false);
 
 const openCart = () => {
+    if (!user.value) {
+        router.visit('/login');
+
+        return;
+    }
+
     isCartOpen.value = true;
 };
 const closeCart = () => {
@@ -90,10 +97,11 @@ type EchoChannel = {
 const channel = ref<EchoChannel | null>(null);
 
 onMounted(async () => {
-    await cartStore.getCart();
-
     if (user.value) {
+        await cartStore.getCart();
         await notificationStore.getNotifications(FilterNotificationEnum.ALL);
+    } else {
+        cartStore.$reset();
     }
 
     if (user.value?.id) {

@@ -6,13 +6,15 @@ import EmptyDrinkList from '@/components/client/drink/EmptyDrinkList.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { CategoryOptionType } from '@/types/category';
 import { ClientDrinkType } from '@/types/drink';
-import { Head } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
+import { AppPageProps } from '@/types';
 
 const { t } = useI18n();
+const page = usePage<AppPageProps>();
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -26,6 +28,12 @@ const selectedDrink = ref<ClientDrinkType | null>(null);
 const isAddModalOpen = ref<boolean>(false);
 
 const openAddModal = (drink: ClientDrinkType) => {
+    if (!page.props.auth.user) {
+        router.visit('/login');
+
+        return;
+    }
+
     selectedDrink.value = drink;
     isAddModalOpen.value = true;
 };

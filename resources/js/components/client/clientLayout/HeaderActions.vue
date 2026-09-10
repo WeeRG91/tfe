@@ -37,6 +37,7 @@ const emit = defineEmits<{
     </button>
 
     <button
+        v-if="user"
         @click="emit('open-cart')"
         class="group relative items-center gap-2 rounded-lg px-3 py-2 text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
     >

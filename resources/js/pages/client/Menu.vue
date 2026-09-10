@@ -7,15 +7,17 @@ import ClientLayout from '@/layouts/ClientLayout.vue';
 import { useDishStore } from '@/stores/dish';
 import { CategoryOptionType } from '@/types/category';
 import { ClientDishType } from '@/types/dish';
-import { Head } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { ReviewResultType } from '@/types/rating';
 import { useI18n } from 'vue-i18n';
+import { AppPageProps } from '@/types';
 
 const { t } = useI18n();
+const page = usePage<AppPageProps>();
 
 const props = defineProps<{
     categories: CategoryOptionType[];
@@ -31,6 +33,12 @@ const selectedDish = ref<ClientDishType | null>(null);
 const isAddModalOpen = ref<boolean>(false);
 
 const openAddModal = (dish: ClientDishType) => {
+    if (!page.props.auth.user) {
+        router.visit('/login');
+
+        return;
+    }
+
     selectedDish.value = dish;
     isAddModalOpen.value = true;
 };
