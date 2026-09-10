@@ -49,7 +49,7 @@ export default {
         reviewSection: {
             title: 'Bewäertungen',
             writeReview: 'Bewäertung schreiwen',
-            alreadyReviewed: 'Dir hutt dëse Plat scho bewäert',
+            alreadyReviewed: 'Schonn bewäert',
             writeYourReview: 'Schreift Är Bewäertung',
             editYourReview: 'Är Bewäertung änneren',
             yourRating: 'Är Bewäertung',
@@ -67,6 +67,8 @@ export default {
             edited: 'Geännert',
             noReviewsYet: 'Nach keng Bewäertungen',
             firstReview: 'Sidd déi éischt Persoun, déi dëse Plat bewäert!',
+            notEligible: 'No enger Bestellung mat dësem Plat bewäertbar.',
+            signInToReview: 'Umelle fir eng Bewäertung ze schreiwen',
         },
         messages: {
             loadReviewsFailed: "D'Bewäertunge konnten net geluede ginn",

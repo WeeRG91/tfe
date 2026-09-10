@@ -48,7 +48,7 @@ export default {
         reviewSection: {
             title: 'Avis',
             writeReview: 'Écrire un avis',
-            alreadyReviewed: 'Vous avez déjà évalué ce plat',
+            alreadyReviewed: 'Déjà évalué',
             writeYourReview: 'Écrivez votre avis',
             editYourReview: 'Modifier votre avis',
             yourRating: 'Votre note',
@@ -66,6 +66,8 @@ export default {
             edited: 'Modifié',
             noReviewsYet: 'Aucun avis pour le moment',
             firstReview: 'Soyez le premier à donner votre avis sur ce plat !',
+            notEligible: 'Avis disponible après une commande contenant ce plat.',
+            signInToReview: 'Connectez-vous pour laisser un avis',
         },
         messages: {
             loadReviewsFailed: 'Impossible de charger les avis',

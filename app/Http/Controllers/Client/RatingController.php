@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Enums\OrderStatusEnum;
 use App\Events\DishRatingUpdatedBroadcast;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Client\Rating\ReviewResource;
@@ -13,10 +14,6 @@ use Illuminate\Support\Facades\Auth;
 
 class RatingController extends Controller
 {
-    /**
-     * @param Dish $dish
-     * @return JsonResponse
-     */
     public function getReviews(Dish $dish): JsonResponse
     {
         $reviews = $dish->ratings()
@@ -32,22 +29,33 @@ class RatingController extends Controller
         );
     }
 
-    /**
-     * @param Request $request
-     * @param Dish $dish
-     * @return JsonResponse
-     */
     public function store(Request $request, Dish $dish): JsonResponse
     {
-        $existingRating = DishRating::query()
-            ->where('dish_id', $dish->id)
-            ->where('user_id', Auth::id())
-            ->first();
+        $user = $request->user();
+
+        $hasCompletedOrder = $user->orders()
+            ->where('status', OrderStatusEnum::COMPLETED->value)
+            ->whereHas('items', function ($query) use ($dish) {
+                $query
+                    ->where('item_type', Dish::class)
+                    ->where('item_id', $dish->id);
+            })
+            ->exists();
+
+        abort_unless(
+            $hasCompletedOrder,
+            403,
+            __('messages.ratings.not_eligible'),
+        );
+
+        $existingRating = $dish->ratings()
+            ->where('user_id', $user->id)
+            ->exists();
 
         if ($existingRating) {
             return response()->json([
                 'message' => __('messages.ratings.already_rated'),
-            ], 403);
+            ], 409);
         }
 
         $validated = $request->validate([
@@ -56,11 +64,11 @@ class RatingController extends Controller
         ]);
 
         $rating = DishRating::query()->create([
-                'dish_id' => $dish->id,
-                'user_id' => $request->user()->id,
-                'rating' => $validated['rating'],
-                'review' => $validated['review'],
-            ]
+            'dish_id' => $dish->id,
+            'user_id' => $request->user()->id,
+            'rating' => $validated['rating'],
+            'review' => $validated['review'] ?? null,
+        ]
         );
 
         $rating->load('user');
@@ -69,7 +77,7 @@ class RatingController extends Controller
 
         return response()->json([
             'success' => true,
-        ]);
+        ], 201);
     }
 
     public function update(Request $request, DishRating $rating): JsonResponse

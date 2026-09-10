@@ -7,6 +7,7 @@ use App\Actions\Client\Dish\Queries\GetDishes;
 use App\Actions\Client\Drink\Queries\GetDrinks;
 use App\Enums\DishCategoryEnum;
 use App\Enums\DrinkCategoryEnum;
+use App\Enums\OrderStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Dish;
 use Illuminate\Http\JsonResponse;
@@ -16,9 +17,6 @@ use Inertia\Response as InertiaResponse;
 
 class MenuController extends Controller
 {
-    /**
-     * @return InertiaResponse
-     */
     public function dish(): InertiaResponse
     {
         return Inertia::render('client/Menu', [
@@ -26,11 +24,6 @@ class MenuController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param GetDishes $query
-     * @return JsonResponse
-     */
     public function getDishes(Request $request, GetDishes $query): JsonResponse
     {
         $dishes = $query->execute($request);
@@ -38,21 +31,37 @@ class MenuController extends Controller
         return response()->json($dishes);
     }
 
-    /**
-     * @param Dish $dish
-     * @param GetDish $query
-     * @return InertiaResponse
-     */
-    public function showDish(Dish $dish, GetDish $query): InertiaResponse
-    {
+    public function showDish(
+        Request $request,
+        Dish $dish,
+        GetDish $query
+    ): InertiaResponse {
+        $user = $request->user();
+
+        $existingReview = $user && $dish->ratings()
+            ->where('user_id', $user->id)
+            ->exists();
+
+        $hasCompletedOrder = $user && ! $existingReview
+            ? $user->orders()
+                ->where('status', OrderStatusEnum::COMPLETED->value)
+                ->whereHas('items', function ($query) use ($dish) {
+                    $query
+                        ->where('item_type', Dish::class)
+                        ->where('item_id', $dish->id);
+                })
+                ->exists()
+            : false;
+
         return Inertia::render('client/DishDetail', [
             'dish' => $query->execute($dish),
+            'reviewEligibility' => [
+                'can_review' => $hasCompletedOrder,
+                'has_review' => $existingReview,
+            ],
         ]);
     }
 
-    /**
-     * @return InertiaResponse
-     */
     public function drink(): InertiaResponse
     {
         return Inertia::render('client/Drinks', [
@@ -60,11 +69,6 @@ class MenuController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param GetDrinks $query
-     * @return JsonResponse
-     */
     public function getDrinks(Request $request, GetDrinks $query): JsonResponse
     {
         $drinks = $query->execute($request);

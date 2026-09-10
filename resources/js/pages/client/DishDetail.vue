@@ -17,6 +17,10 @@ import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     dish: ClientDishType;
+    reviewEligibility: {
+        can_review: boolean;
+        has_review: boolean;
+    };
 }>();
 
 const { t } = useI18n();
@@ -50,6 +54,20 @@ const hasUserReviewed = computed(() => {
     return reviews.value.some((review) => review.user.id === user.value?.id);
 });
 
+const canWriteReview = computed(
+    () =>
+        Boolean(user.value) &&
+        props.reviewEligibility.can_review &&
+        !props.reviewEligibility.has_review &&
+        !hasUserReviewed.value,
+);
+
+const hasExistingReview = computed(
+    () =>
+        props.reviewEligibility.has_review ||
+        hasUserReviewed.value,
+)
+
 const reviewForm = useForm({
     rating: 0,
     review: '',
@@ -82,10 +100,11 @@ const openAddModal = () => {
 };
 
 const toggleReviewForm = () => {
-    if (!user.value) {
+    if (!canWriteReview.value) {
         return;
     }
     showReviewForm.value = !showReviewForm.value;
+
     if (showReviewForm.value) {
         reviewForm.rating = 0;
         reviewForm.review = '';
@@ -112,7 +131,8 @@ const cancelEdit = () => {
 };
 
 const submitReview = async () => {
-    if (!user.value) return;
+    if (!canWriteReview.value) return;
+
     isSubmitting.value = true;
 
     try {
@@ -508,17 +528,26 @@ onUnmounted(() => {
                     </div>
 
                     <button
-                        v-if="user && !hasUserReviewed"
+                        v-if="canWriteReview"
+                        type="button"
                         @click="toggleReviewForm"
                         class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-red-200 transition-all hover:shadow-xl hover:shadow-red-300 active:scale-95"
                     >
                         {{ t('menu.dishDetail.reviewSection.writeReview') }}
                     </button>
+
                     <div
-                        v-else-if="user && hasUserReviewed"
+                        v-else-if="user && hasExistingReview"
                         class="flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm font-medium text-green-700"
                     >
                         {{ t('menu.dishDetail.reviewSection.alreadyReviewed') }}
+                    </div>
+
+                    <div
+                        v-else-if="user"
+                        class="w-sm flex items-center justify-center rounded-xl border border-amber-200 bg-amber-50 px-5 py-3 text-[13px] text-amber-800"
+                    >
+                        <span>{{ t('menu.dishDetail.reviewSection.notEligible') }}</span>
                     </div>
                 </div>
 

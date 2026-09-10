@@ -48,7 +48,7 @@ export default {
         reviewSection: {
             title: 'Reviews',
             writeReview: 'Write a Review',
-            alreadyReviewed: "You've reviewed this dish",
+            alreadyReviewed: 'Already reviewed',
             writeYourReview: 'Write Your Review',
             editYourReview: 'Edit Your Review',
             yourRating: 'Your Rating',
@@ -66,6 +66,9 @@ export default {
             edited: 'Edited',
             noReviewsYet: 'No reviews yet',
             firstReview: 'Be the first to review this dish!',
+            notEligible:
+                'Review available after completing an order with this dish.',
+            signInToReview: 'Sign in to write a review',
         },
         messages: {
             loadReviewsFailed: 'Failed to load reviews',

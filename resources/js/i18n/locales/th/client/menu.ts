@@ -65,6 +65,9 @@ export default {
             edited: 'แก้ไขแล้ว',
             noReviewsYet: 'ยังไม่มีรีวิว',
             firstReview: 'เป็นคนแรกที่รีวิวเมนูนี้!',
+            notEligible:
+                'คุณสามารถรีวิวเมนูนี้ได้หลังจากคำสั่งซื้อที่มีเมนูนี้เสร็จสมบูรณ์',
+            signInToReview: 'เข้าสู่ระบบเพื่อเขียนรีวิว',
         },
         messages: {
             loadReviewsFailed: 'ไม่สามารถโหลดรีวิวได้',
