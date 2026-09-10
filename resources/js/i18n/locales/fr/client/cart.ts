@@ -93,9 +93,15 @@ export default {
             pickupPhoneHelper:
                 'Nous enverrons les mises à jour de votre commande à ce numéro.',
             pickupTime: 'Heure de retrait souhaitée',
-            pickupTimeHelper:
-                "Minimum 30 minutes à partir de maintenant, jusqu'à 7 jours à l'avance",
             readyAt: 'Votre commande sera prête à :',
+            selectDate: 'Choisissez une date de retrait',
+            selectTime: 'Choisissez une heure de retrait',
+            today: 'Aujourd’hui',
+            openingHours: '11:00–21:00',
+            noSlots:
+                'Il ne reste plus de créneaux pour cette date. Veuillez choisir un autre jour.',
+            pickupTimeHelper:
+                'Choisissez un créneau disponible. Un minimum de 30 minutes est nécessaire pour la préparation.',
         },
         deliveryForm: {
             title: 'Adresse de livraison',

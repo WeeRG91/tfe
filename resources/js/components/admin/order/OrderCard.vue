@@ -430,7 +430,7 @@ watch(
             :onClose="closeConfirmModal"
             :message="confirmModalMessage"
             :type="confirmModalType"
-            :isLoading="isCancelling"
+            :isLoading="isCancelling!"
             @confirm="confirmModalAction"
         />
     </div>

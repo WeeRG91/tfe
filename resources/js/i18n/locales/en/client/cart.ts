@@ -88,9 +88,15 @@ export default {
             pickupPhonePlaceholder: 'Phone number for contact',
             pickupPhoneHelper: "We'll send order updates to this number",
             pickupTime: 'Preferred Pickup Time',
-            pickupTimeHelper:
-                'Minimum 30 minutes from now, up to 7 days in advance',
             readyAt: 'Your order will be ready at:',
+            selectDate: 'Select a pickup date',
+            selectTime: 'Select a pickup time',
+            today: 'Today',
+            openingHours: '11:00–21:00',
+            noSlots:
+                'No pickup times remain for this date. Please choose another day.',
+            pickupTimeHelper:
+                'Choose an available time. At least 30 minutes are required for preparation.',
         },
         deliveryForm: {
             title: 'Delivery Address',

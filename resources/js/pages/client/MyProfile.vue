@@ -122,7 +122,7 @@ const tabs = computed(() => [
                         class="max-w-2xl rounded-2xl bg-white p-4 shadow-sm md:p-6 lg:p-8"
                     >
                         <InfoTab
-                            v-if="activeTab === 'info'"
+                            v-if="activeTab === 'info' && user"
                             :user="user"
                             :must-verify-email="props.mustVerifyEmail"
                         />
@@ -130,7 +130,7 @@ const tabs = computed(() => [
                         <PasswordTab v-else-if="activeTab === 'password'" />
 
                         <TwoFactorTab
-                            v-else-if="activeTab === 'two-factor'"
+                            v-else-if="activeTab === 'two-factor' && user"
                             :two-factor-auth-enabled="twoFactorAuthEnabled"
                             :user="user"
                         />

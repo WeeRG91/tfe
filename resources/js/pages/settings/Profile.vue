@@ -37,7 +37,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 const page = usePage();
 const user = page.props.auth.user;
 
-const photoPreview = ref<string | null>(user.avatar || null);
+const photoPreview = ref<string | null>(user?.avatar || null);
 
 const handlePhotoSelect = (event: Event) => {
     const input = event.target as HTMLInputElement;
@@ -76,7 +76,7 @@ const handlePhotoSelect = (event: Event) => {
         <Head :title="t('setting.profile.title')" />
 
         <SettingsLayout>
-            <div class="flex flex-col space-y-6">
+            <div v-if="user" class="flex flex-col space-y-6">
                 <HeadingSmall
                     :title="t('setting.profile.heading.title')"
                     :description="t('setting.profile.heading.description')"

@@ -94,21 +94,31 @@ const {
 
 const earnedPoints = computed(() => Math.floor(totalIncVat.value * 3));
 
-// Minimum pickup time (current time + 30 minutes)
-const minPickupTime = computed(() => {
-    const date = new Date();
-    date.setMinutes(date.getMinutes() + 30);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-    return date.toISOString().slice(0, 16);
-});
+const isValidPickupSlot = (value: string): boolean => {
+    if (!value) {
+        return false;
+    }
 
-// Maximum pickup time (7 days from now)
-const maxPickupTime = computed(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 7);
-    return date.toISOString().slice(0, 16);
-});
+    const pickupDate = new Date(value);
+
+    if (Number.isNaN(pickupDate.getTime())) {
+        return false;
+    }
+
+    const minimumDate = new Date();
+    minimumDate.setMinutes(minimumDate.getMinutes() + 30);
+
+    const hours = pickupDate.getHours();
+    const minutes = pickupDate.getMinutes();
+
+    return (
+        pickupDate >= minimumDate &&
+        hours >= 11 &&
+        hours <= 21 &&
+        !(hours === 21 && minutes > 0) &&
+        minutes % 15 === 0
+    );
+};
 
 const isFormValid = computed(() => {
     if (!selectedOrderType.value) return false;
@@ -121,7 +131,7 @@ const isFormValid = computed(() => {
     if (selectedOrderType.value.value === OrderTypeEnum.TAKEAWAY) {
         return (
             !!pickupTime.value &&
-            pickupTime.value >= minPickupTime.value &&
+            isValidPickupSlot(pickupTime.value) &&
             pickupName.value.trim().length > 0 &&
             pickupPhone.value.trim().length > 0
         );
@@ -239,7 +249,7 @@ const onOrderTypeChange = async (type: OrderTypeEnum) => {
         pickupTime.value = '';
         selectedAddressId.value = null;
     } else if (type === OrderTypeEnum.TAKEAWAY) {
-        pickupTime.value = minPickupTime.value;
+        pickupTime.value = '';
         tableNumber.value = '';
         selectedAddressId.value = null;
     } else if (type === OrderTypeEnum.DELIVERY) {
@@ -299,8 +309,6 @@ onMounted(() => {
                             v-model:pickup-name="pickupName"
                             v-model:pickup-phone="pickupPhone"
                             v-model:pickup-time="pickupTime"
-                            :min-pickup-time="minPickupTime"
-                            :max-pickup-time="maxPickupTime"
                         />
 
                         <DeliveryForm

@@ -90,9 +90,15 @@ export default {
             pickupPhoneHelper:
                 'Mir schécken d’Aktualiséierunge vun Ärer Bestellung op dës Nummer.',
             pickupTime: 'Gewënschten Ofhuelzäitpunkt',
-            pickupTimeHelper:
-                'Op d’mannst 30 Minutte vun elo un, bis zu 7 Deeg am Viraus',
             readyAt: 'Är Bestellung ass prett um:',
+            selectDate: 'Wielt en Ofhouldatum',
+            selectTime: 'Wielt eng Ofhuelzäit',
+            today: 'Haut',
+            openingHours: '11:00–21:00',
+            noSlots:
+                'Fir dësen Dag si keng Ofhuelzäite méi disponibel. Wielt w.e.g. en aneren Dag.',
+            pickupTimeHelper:
+                'Wielt eng disponibel Zäit. Mir brauchen op d’mannst 30 Minutte fir d’Virbereedung.',
         },
         deliveryForm: {
             title: 'Liwweradress',

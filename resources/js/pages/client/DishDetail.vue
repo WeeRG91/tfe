@@ -47,7 +47,7 @@ const ratingPercentage = computed(() => {
 const hasUserReviewed = computed(() => {
     if (!user.value) return false;
 
-    return reviews.value.some((review) => review.user.id === user.value.id);
+    return reviews.value.some((review) => review.user.id === user.value?.id);
 });
 
 const reviewForm = useForm({
