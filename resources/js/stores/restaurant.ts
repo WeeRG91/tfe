@@ -7,6 +7,8 @@ type RestaurantStatus = {
     status: string;
     message: string | null;
     checked_at: string;
+    timezone: string;
+    next_open_at: string | null;
 };
 
 type AvailabilityResponse = {

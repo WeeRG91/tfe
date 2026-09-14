@@ -13,4 +13,7 @@ export default {
     pickupHelp: 'Choose one of the available pickup slots.',
     pickupUnavailable:
         'Your selected pickup time is no longer available. Please choose another slot.',
+    reopensToday: 'We reopen today at {time}.',
+    reopensTomorrow: 'We reopen tomorrow at {time}.',
+    reopensOn: 'We reopen on {date} at {time}.',
 };

@@ -13,4 +13,7 @@ export default {
     pickupHelp: 'Choisissez un créneau de retrait disponible.',
     pickupUnavailable:
         'Votre créneau de retrait n’est plus disponible. Veuillez en choisir un autre.',
+    reopensToday: 'Nous rouvrons aujourd’hui à {time}.',
+    reopensTomorrow: 'Nous rouvrons demain à {time}.',
+    reopensOn: 'Nous rouvrons le {date} à {time}.',
 };

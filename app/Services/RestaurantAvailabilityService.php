@@ -101,6 +101,104 @@ class RestaurantAvailabilityService
         ]);
     }
 
+    public function nextOpenAt(
+        ?CarbonInterface $from = null,
+        ?int $days = null,
+    ): ?CarbonImmutable
+    {
+        $localFrom = $this->toRestaurantTimezone(
+            $from ?? CarbonImmutable::now(
+                config('restaurant.timezone'),
+            ),
+        );
+
+        $days ??= (int) config(
+            'restaurant.next_open_search_days',
+            90,
+        );
+
+        if ($days <= 0) {
+            throw new InvalidArgumentException(
+                'The next-opening search range must be greater than zero.',
+            );
+        }
+
+        $firstDate = $localFrom->startOfDay();
+
+        $schedules = RestaurantHour::query()
+            ->get()
+            ->keyBy(
+                fn (RestaurantHour $hour) => $hour->weekday->value,
+            );
+
+        $closures = RestaurantClosure::query()
+            ->where('starts_at', '<', $firstDate->addDays($days)->utc())
+            ->where('ends_at', '>', $localFrom->utc())
+            ->orderBy('starts_at')
+            ->get();
+
+        for ($offset = 0; $offset < $days; $offset++) {
+            $date = $firstDate->addDays($offset);
+
+            $schedule = $schedules->get($date->dayOfWeekIso);
+
+            if (
+                $schedule === null ||
+                !$schedule->is_open ||
+                $schedule->opens_at === null ||
+                $schedule->closes_at === null
+            ) {
+                continue;
+            }
+
+            $opening = $date->setTimeFromTimeString(
+                $schedule->opens_at,
+            );
+
+            $closing = $date->setTimeFromTimeString(
+                $schedule->closes_at,
+            );
+
+            if ($opening->greaterThanOrEqualTo($closing)) {
+                continue;
+            }
+
+            $candidate = $opening->lessThan($localFrom)
+                ? $localFrom
+                : $opening;
+
+            foreach ($closures as $closure) {
+                $closureStart = $this->toRestaurantTimezone(
+                    $closure->starts_at,
+                );
+
+                $closureEnd = $this->toRestaurantTimezone(
+                    $closure->ends_at,
+                );
+
+                if ($closureEnd->lessThanOrEqualTo($candidate)) {
+                    continue;
+                }
+
+                if ($closureStart->greaterThan($candidate)) {
+                    break;
+                }
+
+                $candidate = $closureEnd;
+
+                if ($candidate->greaterThanOrEqualTo($closing)) {
+                    break;
+                }
+            }
+
+            if ($candidate->lessThan($closing)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
     public function pickupAvailability(
         ?CarbonInterface $from = null,
         ?int $days = null,

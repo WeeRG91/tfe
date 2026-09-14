@@ -14,6 +14,9 @@ return [
         'Europe/Luxembourg',
     ),
 
+
+    'next_open_search_days' => 90,
+
     /*
     |--------------------------------------------------------------------------
     | Takeaway settings

@@ -14,4 +14,7 @@ export default {
     pickupHelp: 'Wielt eng disponibel Ofhuelzäit.',
     pickupUnavailable:
         'Är gewielten Ofhuelzäit ass net méi verfügbar. Wielt w.e.g. eng aner Zäit.',
+    reopensToday: 'Mir maachen haut um {time} erëm op.',
+    reopensTomorrow: 'Mir maachen muer um {time} erëm op.',
+    reopensOn: 'Mir maachen den {date} um {time} erëm op.',
 };

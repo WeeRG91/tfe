@@ -1,18 +1,11 @@
 <script setup lang="ts">
+import { useRestaurantClosureMessage } from '@/composables/useRestaurantClosureMessage';
 import { useRestaurantStore } from '@/stores/restaurant';
-import { Clock3 } from 'lucide-vue-next';
-import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const restaurantStore = useRestaurantStore();
-const { t } = useI18n();
 
-const message = computed(() => {
-    return (
-        restaurantStore.current?.message?.trim() ||
-        t('restaurant.closed')
-    );
-});
+const { message } = useRestaurantClosureMessage();
 </script>
 
 <template>
@@ -56,12 +49,7 @@ const message = computed(() => {
 
 <style scoped>
 .closure-banner {
-    background: linear-gradient(
-        110deg,
-        #fff7ed 0%,
-        #fef3c7 50%,
-        #fffbeb 100%
-    );
+    background: linear-gradient(110deg, #fff7ed 0%, #fef3c7 50%, #fffbeb 100%);
 
     box-shadow: 0 3px 12px rgb(180 83 9 / 6%);
 }

@@ -34,6 +34,11 @@ it('returns the current status and pickup availability publicly', function () {
         ->assertOk()
         ->assertJsonPath('data.current.is_open', true)
         ->assertJsonPath('data.current.status', 'open')
+        ->assertJsonPath('data.current.next_open_at', null)
+        ->assertJsonPath(
+            'data.current.timezone',
+            'Europe/Luxembourg',
+        )
         ->assertJsonPath(
             'data.current.checked_at',
             '2026-09-14T12:00:00+02:00',
@@ -100,6 +105,10 @@ it('reports an exceptional closure through the public endpoint', function () {
         ->assertJsonPath(
             'data.current.message',
             'Closed temporarily for a private event.',
+        )
+        ->assertJsonPath(
+            'data.current.next_open_at',
+            '2026-09-14T18:00:00+02:00',
         );
 });
 
@@ -123,4 +132,25 @@ it('rejects an excessive availability range', function () {
     ]))
         ->assertUnprocessable()
         ->assertJsonValidationErrors('days');
+});
+
+it('returns the next opening through the mobile availability endpoint', function () {
+    CarbonImmutable::setTestNow(
+        CarbonImmutable::parse(
+            '2026-09-14 09:00:00',
+            'Europe/Luxembourg',
+        ),
+    );
+
+    $this->getJson('/api/v1/restaurant/availability?days=1')
+        ->assertOk()
+        ->assertJsonPath('data.current.is_open', false)
+        ->assertJsonPath(
+            'data.current.timezone',
+            'Europe/Luxembourg',
+        )
+        ->assertJsonPath(
+            'data.current.next_open_at',
+            '2026-09-14T11:00:00+02:00',
+        );
 });

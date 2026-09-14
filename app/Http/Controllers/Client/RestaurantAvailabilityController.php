@@ -33,11 +33,19 @@ class RestaurantAvailabilityController extends Controller
             config('restaurant.timezone'),
         );
 
+        $status = $availability->orderingStatusAt($now);
+
+        $nextOpenAt = $status['is_open']
+            ? null
+            : $availability->nextOpenAt($now);
+
         return response()->json([
             'data' => [
                 'current' => [
-                    ...$availability->orderingStatusAt($now),
+                    ...$status,
                     'checked_at' => $now->toIso8601String(),
+                    'timezone' => config('restaurant.timezone'),
+                    'next_open_at' => $nextOpenAt?->toIso8601String(),
                 ],
                 'pickup' => $availability->pickupAvailability(
                     $now,
