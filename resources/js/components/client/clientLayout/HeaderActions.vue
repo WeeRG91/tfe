@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import { User } from '@/types';
 import { Bell, Search, ShoppingCart } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
-import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 
 const { t } = useI18n();
 
@@ -25,7 +25,7 @@ const emit = defineEmits<{
     <button
         v-if="user"
         @click="emit('open-notifications')"
-        class="group hidden relative sm:flex items-center rounded-lg p-2 text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+        class="group relative hidden items-center rounded-lg p-2 text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600 sm:flex"
     >
         <Bell class="h-5 w-5" />
         <span

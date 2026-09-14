@@ -11,8 +11,14 @@ use App\Models\Address;
 use App\Models\Cart;
 use App\Models\Dish;
 use App\Models\LoyaltyPointTransaction;
+use App\Models\RestaurantHour;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Event;
+
+afterEach(function () {
+    CarbonImmutable::setTestNow();
+});
 
 it('places a cash dine-in order from the authenticated mobile users cart', function () {
     Event::fake([OrderPlacedBroadcast::class]);
@@ -209,7 +215,22 @@ it('places a pending takeaway card order without awarding points', function () {
     $user = User::factory()->withoutTwoFactor()->create();
     $token = $user->createToken('Test phone', ['mobile']);
     $cart = Cart::query()->create(['user_id' => $user->id]);
-    $pickupTime = now()->addHour()->startOfMinute();
+    $now = CarbonImmutable::parse(
+        '2026-09-14 12:00:00',
+        'Europe/Luxembourg',
+    );
+
+    CarbonImmutable::setTestNow($now);
+
+    RestaurantHour::query()->create([
+        'weekday' => 1,
+        'is_open' => true,
+        'opens_at' => '11:00:00',
+        'closes_at' => '22:00:00',
+        'last_pickup_at' => '21:00:00',
+    ]);
+
+    $pickupTime = $now->addHour();
 
     $dish = Dish::query()->create([
         'price' => '12.00',
@@ -264,6 +285,7 @@ it('places a pending takeaway card order without awarding points', function () {
         'status' => OrderStatusEnum::PENDING->value,
         'payment_method' => PaymentMethodEnum::CARD->value,
         'payment_status' => PaymentStatusEnum::PENDING->value,
+        'pickup_time' => '2026-09-14 11:00:00',
     ]);
 
     $this->assertDatabaseMissing('loyalty_point_transactions', [
@@ -450,4 +472,52 @@ it('requires authentication to place a mobile order', function () {
     $this
         ->postJson('/api/v1/checkout/orders', [])
         ->assertUnauthorized();
+});
+
+it('rejects a takeaway time that is not an available slot', function () {
+    $now = CarbonImmutable::parse(
+        '2026-09-14 12:00:00',
+        'Europe/Luxembourg',
+    );
+
+    CarbonImmutable::setTestNow($now);
+
+    RestaurantHour::query()->create([
+        'weekday' => 1,
+        'is_open' => true,
+        'opens_at' => '11:00:00',
+        'closes_at' => '22:00:00',
+        'last_pickup_at' => '21:00:00',
+    ]);
+
+    $user = User::factory()
+        ->withoutTwoFactor()
+        ->create();
+
+    $token = $user->createToken(
+        'Test phone',
+        ['mobile'],
+    );
+
+    $cart = Cart::query()->create([
+        'user_id' => $user->id,
+    ]);
+
+    $this
+        ->withToken($token->plainTextToken)
+        ->postJson('/api/v1/checkout/orders', [
+            'cart_id' => $cart->id,
+            'type' => OrderTypeEnum::TAKEAWAY->value,
+
+            // 13:05 is not on a 15-minute boundary.
+            'pickup_time' => '2026-09-14T13:05:00+02:00',
+
+            'pickup_name' => 'Test Customer',
+            'pickup_phone' => '+352 621 000 000',
+            'payment_method' => PaymentMethodEnum::CASH->value,
+        ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('pickup_time');
+
+    $this->assertDatabaseCount('orders', 0);
 });

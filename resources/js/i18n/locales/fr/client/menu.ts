@@ -66,7 +66,8 @@ export default {
             edited: 'Modifié',
             noReviewsYet: 'Aucun avis pour le moment',
             firstReview: 'Soyez le premier à donner votre avis sur ce plat !',
-            notEligible: 'Avis disponible après une commande contenant ce plat.',
+            notEligible:
+                'Avis disponible après une commande contenant ce plat.',
             signInToReview: 'Connectez-vous pour laisser un avis',
         },
         messages: {

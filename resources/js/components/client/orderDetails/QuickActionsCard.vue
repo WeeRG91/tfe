@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import {
-    Printer,
-    Trash,
-    ShoppingBag,
-    CreditCard,
-    XCircle,
-} from 'lucide-vue-next';
 import menu from '@/routes/menu';
 import { OrderStatusEnum, OrderType } from '@/types/order';
+import {
+    CreditCard,
+    Printer,
+    ShoppingBag,
+    Trash,
+    XCircle,
+} from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{

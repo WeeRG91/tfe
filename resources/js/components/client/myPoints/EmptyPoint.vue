@@ -12,7 +12,9 @@ const { t } = useI18n();
         <div class="mb-4 rounded-full bg-gray-200 p-4">
             <Gift class="h-8 w-8 text-gray-400" />
         </div>
-        <h3 class="mb-2 text-lg font-semibold text-gray-900">{{ t('point.emptyPoint.title') }}</h3>
+        <h3 class="mb-2 text-lg font-semibold text-gray-900">
+            {{ t('point.emptyPoint.title') }}
+        </h3>
         <p class="max-w-md text-sm text-gray-500">
             {{ t('point.emptyPoint.description') }}
         </p>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { formatTime } from '@/lib/utils';
 import { OrderType, OrderTypeEnum } from '@/types/order';
 import { Check, Clock } from 'lucide-vue-next';
-import { formatTime } from '@/lib/utils';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{

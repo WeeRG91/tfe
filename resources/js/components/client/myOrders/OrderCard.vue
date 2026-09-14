@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import {
     formatPrice,
     getOrderStatusIcon,
@@ -25,9 +26,8 @@ import {
     XCircle,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import OrderItemsList from './OrderItemsList.vue';
 import { useI18n } from 'vue-i18n';
-import { useDateFormatter } from '@/composables/useDateFormatter';
+import OrderItemsList from './OrderItemsList.vue';
 
 const props = defineProps<{
     orderToShow: OrderType;

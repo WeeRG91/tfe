@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import { login, logout } from '@/routes';
+import cart from '@/routes/cart';
+import clientProfile from '@/routes/client-profile';
+import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 import menu from '@/routes/menu';
+import notification from '@/routes/notification';
 import order from '@/routes/order';
+import { router } from '@inertiajs/vue3';
 import {
     Bell,
     HandPlatter,
@@ -14,12 +20,6 @@ import {
     Wine,
     X,
 } from 'lucide-vue-next';
-import cart from '@/routes/cart';
-import notification from '@/routes/notification';
-import { router } from '@inertiajs/vue3';
-import { login, logout } from '@/routes';
-import clientProfile from '@/routes/client-profile';
-import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();

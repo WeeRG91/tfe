@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { HandCoins } from 'lucide-vue-next';
 import { PaymentMethodEnum, PaymentMethodType } from '@/types/payment';
+import { HandCoins } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{

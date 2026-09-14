@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { useClickOutside } from '@/composables/useClickOutside';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import role from '@/routes/admin/role';
 import type { BreadcrumbItem, CursorPaginated } from '@/types';
@@ -20,10 +22,8 @@ import {
     X,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { toast } from 'vue-sonner';
-import { usePermission } from '@/composables/usePermission';
 import { useI18n } from 'vue-i18n';
-import { useDateFormatter } from '@/composables/useDateFormatter';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 const { formatDateOnly } = useDateFormatter();

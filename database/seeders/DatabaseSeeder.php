@@ -32,6 +32,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'super_admin@example.com',
         ]);
 
-        $this->call([RolesAndPermissionsSeeder::class]);
+        $this->call([
+            RestaurantHoursSeeder::class,
+            RolesAndPermissionsSeeder::class,
+        ]);
     }
 }

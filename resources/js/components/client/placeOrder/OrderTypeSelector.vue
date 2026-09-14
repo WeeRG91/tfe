@@ -12,7 +12,7 @@ const emit = defineEmits<{
     'update:modelValue': [value: OrderTypeEnum];
 }>();
 
-const {t} = useI18n()
+const { t } = useI18n();
 
 const getOrderTypeIcon = (orderTypeValue: OrderTypeEnum) => {
     switch (orderTypeValue) {
@@ -62,7 +62,9 @@ const selectType = (value: OrderTypeEnum) => {
                             : 'text-gray-400'
                     "
                 />
-                <span class="font-medium">{{ t(`common.orderTypes.${orderType.key}`) }}</span>
+                <span class="font-medium">{{
+                    t(`common.orderTypes.${orderType.key}`)
+                }}</span>
             </button>
         </div>
     </div>

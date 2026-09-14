@@ -3,8 +3,8 @@ import { formatPrice } from '@/lib/utils';
 import menu from '@/routes/menu';
 import { ClientDishType, DishAvailabilityEnum } from '@/types/dish';
 import { router } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
 import { Flame } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import GlobalSearchModal from '@/components/admin/GlobalSearchModal.vue';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { usePermission } from '@/composables/usePermission';
 import type { BreadcrumbItemType } from '@/types';
 import { Search } from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { usePermission } from '@/composables/usePermission';
-import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import { useI18n } from 'vue-i18n';
 
 withDefaults(
@@ -67,9 +67,11 @@ onUnmounted(() => {
                 class="flex h-11 w-11 items-center justify-center gap-1 rounded-md px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted sm:w-44 sm:justify-start sm:border sm:shadow-sm"
             >
                 <Search class="h-4 w-4" />
-                <span class="hidden text-sm sm:inline">{{ t('layout.search') }}</span>
+                <span class="hidden text-sm sm:inline">{{
+                    t('layout.search')
+                }}</span>
                 <kbd
-                    class="ml-1 hidden rounded border bg-muted px-1.5 py-0.5 text-xs sm:inline-block text-nowrap"
+                    class="ml-1 hidden rounded border bg-muted px-1.5 py-0.5 text-xs text-nowrap sm:inline-block"
                 >
                     Ctrl K
                 </kbd>

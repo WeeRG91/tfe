@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import {
-    MapPin,
-    User,
-    Phone,
-    Star,
-    Edit,
-    Trash,
-    Check,
-    Plus,
-    Home,
-} from 'lucide-vue-next';
 import type { AddressType } from '@/types/address';
+import {
+    Check,
+    Edit,
+    Home,
+    MapPin,
+    Phone,
+    Plus,
+    Star,
+    Trash,
+    User,
+} from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{

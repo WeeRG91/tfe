@@ -93,8 +93,7 @@ export default {
         messages: {
             updated: "L'utilisateur a été mis à jour avec succès.",
             invalidInput: 'Données invalides.',
-            error:
-                'Une erreur est survenue. Veuillez vérifier le formulaire.',
+            error: 'Une erreur est survenue. Veuillez vérifier le formulaire.',
         },
     },
 };

@@ -23,7 +23,7 @@ export default {
     },
     form: {
         title: 'สร้างวัตถุดิบ',
-        editTitle: "แก้ไขวัตถุดิบ: {name}",
+        editTitle: 'แก้ไขวัตถุดิบ: {name}',
         breadcrumbs: {
             ingredients: 'วัตถุดิบ',
             create: 'บันทึก',

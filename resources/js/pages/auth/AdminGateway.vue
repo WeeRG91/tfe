@@ -4,8 +4,8 @@ import { home } from '@/routes';
 import { dashboard } from '@/routes/admin';
 import { Head, Link } from '@inertiajs/vue3';
 import { HandPlatter, LayoutDashboard } from 'lucide-vue-next';
-import { useI18n } from 'vue-i18n';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 

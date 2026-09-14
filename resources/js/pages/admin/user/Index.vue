@@ -2,6 +2,7 @@
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import { Button } from '@/components/ui/button';
 import { useClickOutside } from '@/composables/useClickOutside';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { getInitials, getUserAvatarColor } from '@/lib/utils';
@@ -29,7 +30,6 @@ import {
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const { t } = useI18n();
 const { formatDateOnly } = useDateFormatter();

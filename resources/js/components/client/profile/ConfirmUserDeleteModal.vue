@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { AlertTriangle, X } from 'lucide-vue-next';
+import settings from '@/actions/App/Http/Controllers/Settings';
 import { useForm } from '@inertiajs/vue3';
+import { AlertTriangle, X } from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
-import settings from '@/actions/App/Http/Controllers/Settings';
 
 const props = defineProps<{
     open: boolean;

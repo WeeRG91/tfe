@@ -14,6 +14,7 @@ import { Flame, X } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
+import { useRestaurantOrdering } from '@/composables/useRestaurantOrdering';
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -24,6 +25,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
+const { canStartOrdering } = useRestaurantOrdering();
 const { formatDateForHumans } = useDateFormatter();
 const page = usePage();
 const user = computed(() => page.props.auth?.user || null);
@@ -63,10 +65,8 @@ const canWriteReview = computed(
 );
 
 const hasExistingReview = computed(
-    () =>
-        props.reviewEligibility.has_review ||
-        hasUserReviewed.value,
-)
+    () => props.reviewEligibility.has_review || hasUserReviewed.value,
+);
 
 const reviewForm = useForm({
     rating: 0,
@@ -95,7 +95,11 @@ const loadReviews = async () => {
     }
 };
 
-const openAddModal = () => {
+const openAddModal = async () => {
+    if (!(await canStartOrdering())) {
+        return;
+    }
+
     isAddModalOpen.value = true;
 };
 
@@ -545,9 +549,11 @@ onUnmounted(() => {
 
                     <div
                         v-else-if="user"
-                        class="w-sm flex items-center justify-center rounded-xl border border-amber-200 bg-amber-50 px-5 py-3 text-[13px] text-amber-800"
+                        class="flex w-sm items-center justify-center rounded-xl border border-amber-200 bg-amber-50 px-5 py-3 text-[13px] text-amber-800"
                     >
-                        <span>{{ t('menu.dishDetail.reviewSection.notEligible') }}</span>
+                        <span>{{
+                            t('menu.dishDetail.reviewSection.notEligible')
+                        }}</span>
                     </div>
                 </div>
 

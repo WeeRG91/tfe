@@ -23,7 +23,6 @@ export default {
     messages: {
         resetSuccess: 'D’Passwuert gouf erfollegräich zeréckgesat.',
         invalidInput: 'Ongülteg Donnéeën. Kontrolléiert w.e.g. de Formulaire.',
-        error:
-            'E Feeler ass opgetrueden. Kontrolléiert w.e.g. de Formulaire.',
+        error: 'E Feeler ass opgetrueden. Kontrolléiert w.e.g. de Formulaire.',
     },
 };

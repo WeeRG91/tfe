@@ -5,14 +5,14 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import meat from '@/routes/admin/meat';
 import { BreadcrumbItem } from '@/types';
 import { MeatErrorType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Loader } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { toast } from 'vue-sonner';
-import meat from '@/routes/admin/meat';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     errors: MeatErrorType;

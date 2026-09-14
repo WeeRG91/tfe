@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
-import { toast } from 'vue-sonner';
 import { login, register } from '@/routes';
-import { MoveLeft, MoveRight, Eye, EyeOff } from 'lucide-vue-next';
 import { ActivateUserType } from '@/types/user';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Eye, EyeOff, MoveLeft, MoveRight } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 defineProps<{
     user: ActivateUserType;

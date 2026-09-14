@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart';
+import { ItemTypeEnum } from '@/types/cart';
+import { ClientDrinkType } from '@/types/drink';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
-import { ClientDrinkType } from '@/types/drink';
-import { formatPrice } from '@/lib/utils';
-import { ItemTypeEnum } from '@/types/cart';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 

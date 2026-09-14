@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import settings from '@/actions/App/Http/Controllers/Settings';
 import ConfirmUserDeleteModal from '@/components/client/profile/ConfirmUserDeleteModal.vue';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import verification from '@/routes/verification';
 import type { User as UserType } from '@/types/index';
 import { router, useForm } from '@inertiajs/vue3';
@@ -8,7 +9,6 @@ import { Camera, Mail, Save, Trash2, User } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const props = defineProps<{
     user: UserType;

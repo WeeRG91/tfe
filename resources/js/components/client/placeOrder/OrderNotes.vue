@@ -65,9 +65,9 @@ const isNearLimit = computed(() => remainingCharacters.value < 50);
             </div>
 
             <div class="mt-3 flex flex-wrap gap-2">
-                <span class="text-xs text-gray-500"
-                    >{{ t('cart.orderNotes.quickSuggestions') }}</span
-                >
+                <span class="text-xs text-gray-500">{{
+                    t('cart.orderNotes.quickSuggestions')
+                }}</span>
                 <button
                     @click="
                         emit(

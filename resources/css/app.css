@@ -167,7 +167,7 @@
         @apply border-border outline-ring/50;
     }
     body {
-        @apply bg-background text-foreground w-screen h-screen;
+        @apply h-screen w-screen bg-background text-foreground;
     }
 }
 

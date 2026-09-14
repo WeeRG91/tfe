@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { X, Eye, EyeOff, Shield } from 'lucide-vue-next';
 import axios from 'axios';
-import { toast } from 'vue-sonner';
+import { Eye, EyeOff, Shield, X } from 'lucide-vue-next';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     open: boolean;

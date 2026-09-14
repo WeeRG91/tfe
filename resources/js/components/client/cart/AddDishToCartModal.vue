@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getSpicyLevelLabels } from '@/lib/const';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart';
 import { ItemTypeEnum } from '@/types/cart';
@@ -6,9 +7,8 @@ import { ClientDishType } from '@/types/dish';
 import { Flame } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
 import { useI18n } from 'vue-i18n';
-import { getSpicyLevelLabels } from '@/lib/const';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     dish: ClientDishType;

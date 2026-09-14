@@ -1,8 +1,8 @@
 import chat from '@/routes/admin/chat';
+import message from '@/routes/admin/message';
 import { ChatType } from '@/types/chat';
 import axios from 'axios';
 import { defineStore } from 'pinia';
-import message from '@/routes/admin/message';
 
 export const useChatStore = defineStore('chat', {
     state: () => ({
@@ -19,7 +19,7 @@ export const useChatStore = defineStore('chat', {
                     chat.getChats().url,
                 );
 
-                this.chats = data
+                this.chats = data;
             } catch (error) {
                 console.error(error);
                 throw error;

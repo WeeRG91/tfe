@@ -87,7 +87,7 @@ Route::prefix('v1')
         Route::get('dishes/{dish}/reviews', [DishReviewController::class, 'index'])
             ->name('dishes.reviews.index');
         Route::get('dishes/{dish}/review-eligibility', [DishReviewController::class, 'eligibility'])
-            ->middleware(['auth:sanctum', 'verified','throttle:30,1'])
+            ->middleware(['auth:sanctum', 'verified', 'throttle:30,1'])
             ->name('dishes.reviews.eligibility');
         Route::post('dishes/{dish}/reviews', [DishReviewController::class, 'store'])
             ->middleware(['auth:sanctum', 'verified', 'throttle:6,1'])
@@ -116,10 +116,10 @@ Route::prefix('v1')
             ->middleware(['auth:sanctum', 'throttle:30,1'])
             ->name('cart.items.notes.update');
         Route::post('cart/items/dishes', [CartController::class, 'storeDish'])
-            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->middleware(['auth:sanctum', 'restaurant.open', 'throttle:30,1'])
             ->name('cart.items.dishes.store');
         Route::post('cart/items/drinks', [CartController::class, 'storeDrink'])
-            ->middleware(['auth:sanctum', 'throttle:30,1'])
+            ->middleware(['auth:sanctum', 'restaurant.open', 'throttle:30,1'])
             ->name('cart.items.drinks.store');
         Route::delete('cart/items/{cartItemId}', [CartController::class, 'destroyItem'])
             ->whereNumber('cartItemId')
@@ -133,6 +133,7 @@ Route::prefix('v1')
             ->middleware([
                 'auth:sanctum',
                 'verified',
+                'restaurant.open',
                 'throttle:10,1',
             ])
             ->name('checkout.orders.store');
@@ -183,6 +184,9 @@ Route::prefix('v1')
         Route::delete('push-tokens', [PushTokenController::class, 'destroy'])
             ->middleware(['auth:sanctum', 'throttle:20,1'])
             ->name('push-tokens.destroy');
+
+        Route::get('restaurant/availability', \App\Http\Controllers\Client\RestaurantAvailabilityController::class)
+            ->name('restaurant.availability');
     });
 
 Route::get('/user', function (Request $request) {

@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\PaymentController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\RatingController;
+use App\Http\Controllers\Client\RestaurantAvailabilityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
@@ -41,6 +42,9 @@ Route::get('/', function () {
     return Inertia::render('client/Home');
 })->name('home');
 
+Route::get('/restaurant/availability', RestaurantAvailabilityController::class)
+    ->name('restaurant.availability');
+
 Route::controller(MenuController::class)->prefix('menu')->name('menu.')->group(function () {
     Route::get('/dishes', 'dish')->name('dish');
     Route::get('/dishes/get-dishes', 'getDishes')->name('get-dishes');
@@ -66,8 +70,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/checkout', 'checkout')->name('checkout');
         Route::get('/place-order', 'placeOrder')->name('place-order');
         Route::get('/get-cart', 'getCart')->name('get-cart');
-        Route::post('/items/add-dish', 'addDish')->name('add-dish');
-        Route::post('/items/add-drink', 'addDrink')->name('add-drink');
+        Route::post('/items/add-dish', 'addDish')
+            ->middleware('restaurant.open')
+            ->name('add-dish');
+        Route::post('/items/add-drink', 'addDrink')
+            ->middleware('restaurant.open')
+            ->name('add-drink');
         Route::patch('/items/{cartItemId}/notes', 'updateNotes')->name('update-notes');
         Route::patch('/items/{cartItemId}/quantity', 'updateQuantity')->name('update-quantity');
         Route::delete('/items/{cartItemId}', 'removeItem')->name('remove-item');
@@ -79,8 +87,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{order}', 'getOrder')->name('get-order');
         Route::get('/{order}/details', 'orderDetails')->name('order-details');
         Route::get('/{order}/reorder', 'reorder')->name('reorder');
-        Route::post('/place-order', 'placeOrder')->name('place-order');
-        Route::post('/reorder', 'confirmReorder')->name('confirm-reorder');
+        Route::post('/place-order', 'placeOrder')
+            ->middleware('restaurant.open')
+            ->name('place-order');
+        Route::post('/reorder', 'confirmReorder')
+            ->middleware('restaurant.open')
+            ->name('confirm-reorder');
         Route::patch('/{order}/cancel', 'cancel')->name('cancel');
         Route::delete('/{order}', 'destroy')->name('destroy');
     });

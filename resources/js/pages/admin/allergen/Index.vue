@@ -15,6 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import allergen from '@/routes/admin/allergen';
@@ -37,7 +38,6 @@ import {
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const { t } = useI18n();
 const { formatDateOnly } = useDateFormatter();

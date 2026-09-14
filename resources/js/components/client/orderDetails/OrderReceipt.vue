@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { OrderType } from '@/types/order';
-import { formatPrice } from '@/lib/utils';
-import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
-import { getSpicyLevelLabels } from '@/lib/const';
-import { PaymentMethodEnum } from '@/types/payment';
 import { useDateFormatter } from '@/composables/useDateFormatter';
+import { getSpicyLevelLabels } from '@/lib/const';
+import { formatPrice } from '@/lib/utils';
+import { OrderType } from '@/types/order';
+import { PaymentMethodEnum } from '@/types/payment';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     orderToShow: OrderType;

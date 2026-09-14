@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import address from '@/routes/address';
 import { AddressType } from '@/types/address';
 import axios from 'axios';
 import { Home, MapPin, Phone, User, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
-import address from '@/routes/address';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     isOpen: boolean;

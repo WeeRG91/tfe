@@ -314,4 +314,7 @@ return [
             'body' => 'D’Bestellung #:number gouf annuléiert.',
         ],
     ],
+    'restaurant' => [
+        'closed' => 'De Restaurant ass momentan zou.',
+    ],
 ];

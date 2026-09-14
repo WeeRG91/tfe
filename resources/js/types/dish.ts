@@ -5,12 +5,9 @@ import { LocaleType } from '@/types/locale';
 export type DishTranslationForm = {
     name: string;
     description: string;
-}
+};
 
-export type DishTranslations = Record<
-    LocaleType,
-    DishTranslationForm
->
+export type DishTranslations = Record<LocaleType, DishTranslationForm>;
 
 export type DishType = {
     id: number;

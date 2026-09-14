@@ -349,7 +349,10 @@ watch(
                                                     <span
                                                         class="text-xs font-medium text-amber-600"
                                                     >
-                                                        +€{{ item.meat.extra_price }}
+                                                        +€{{
+                                                            item.meat
+                                                                .extra_price
+                                                        }}
                                                     </span>
                                                 </div>
                                             </div>

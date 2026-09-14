@@ -3,12 +3,12 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import role from '@/routes/admin/role';
 import { type BreadcrumbItem } from '@/types';
 import { PermissionType } from '@/types/permission';
+import { RoleType } from '@/types/role';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ChevronDown, ChevronUp } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { toast } from 'vue-sonner';
-import { RoleType } from '@/types/role';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     roleToEdit: RoleType;

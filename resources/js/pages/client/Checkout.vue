@@ -4,13 +4,13 @@ import EmptyCartList from '@/components/client/cart/EmptyCartList.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart';
+import { ItemTypeEnum } from '@/types/cart';
 import { Head } from '@inertiajs/vue3';
 import { Coffee, CreditCard, Utensils } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
-import { toast } from 'vue-sonner';
-import { ItemTypeEnum } from '@/types/cart';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 

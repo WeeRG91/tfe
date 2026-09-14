@@ -4,8 +4,6 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
-import { useForm, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import {
     Dialog,
     DialogContent,
@@ -14,12 +12,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { toast } from 'vue-sonner';
+import ingredient from '@/routes/admin/ingredient';
 import { AllergenOptionType } from '@/types/allergen';
 import { IngredientErrorType, IngredientOptionType } from '@/types/ingredient';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { Loader } from 'lucide-vue-next';
-import ingredient from '@/routes/admin/ingredient';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     open: boolean;

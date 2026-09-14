@@ -52,7 +52,7 @@ export default {
             reactivateSuccess:
                 'Le lien de réactivation a été envoyé avec succès ! Veuillez consulter votre boîte e-mail.',
             verificationSuccess:
-                "Le lien de vérification a été envoyé avec succès ! Veuillez consulter votre boîte e-mail.",
+                'Le lien de vérification a été envoyé avec succès ! Veuillez consulter votre boîte e-mail.',
             error: 'Une erreur s’est produite. Veuillez réessayer.',
         },
     },

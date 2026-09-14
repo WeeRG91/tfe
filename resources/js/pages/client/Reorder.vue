@@ -5,25 +5,28 @@ import DineInForm from '@/components/client/placeOrder/DineInForm.vue';
 import LoyaltyPointsSection from '@/components/client/placeOrder/LoyaltyPointsSection.vue';
 import OrderNotes from '@/components/client/placeOrder/OrderNotes.vue';
 import OrderSidebar from '@/components/client/placeOrder/OrderSidebar.vue';
+import OrderSummary from '@/components/client/placeOrder/OrderSummary.vue';
 import OrderTypeSelector from '@/components/client/placeOrder/OrderTypeSelector.vue';
 import PaymentMethodSelector from '@/components/client/placeOrder/PaymentMethodSelector.vue';
 import TakeawayForm from '@/components/client/placeOrder/TakeawayForm.vue';
 import { useLoyaltyPoints } from '@/composables/useLoyaltyPoints';
+import { usePickupAvailability } from '@/composables/usePickupAvailability';
+import { usePickupErrorHandling } from '@/composables/usePickupErrorHandling';
+import { useRestaurantOrdering } from '@/composables/useRestaurantOrdering';
 import { useVatCalculator } from '@/composables/useVatCalculator';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import address from '@/routes/address';
+import order from '@/routes/order';
+import paymentOrder from '@/routes/payment-order';
+import { useOrderStore } from '@/stores/order';
 import { AddressType } from '@/types/address';
 import { OrderType, OrderTypeEnum, OrderTypeType } from '@/types/order';
 import { PaymentMethodType } from '@/types/payment';
 import { Head, router } from '@inertiajs/vue3';
 import axios from 'axios';
+import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import OrderSummary from '@/components/client/placeOrder/OrderSummary.vue';
-import { useOrderStore } from '@/stores/order';
-import { storeToRefs } from 'pinia';
-import order from '@/routes/order';
-import paymentOrder from '@/routes/payment-order';
 
 const props = defineProps<{
     orderToReorder: OrderType;
@@ -34,6 +37,13 @@ const props = defineProps<{
 
 const orderStore = useOrderStore();
 const { isLoading: isOrderLoading } = storeToRefs(orderStore);
+const {
+    availability: pickupAvailability,
+    isLoading: isPickupLoading,
+    hasError: hasPickupError,
+    refresh: refreshPickupAvailability,
+    isAvailableSlot,
+} = usePickupAvailability();
 
 const selectedOrderTypeValue = ref<OrderTypeEnum | null>(null);
 const selectedAddressId = ref<number | null>(null);
@@ -85,25 +95,15 @@ const {
     selectedOrderTypeValue,
 });
 
+const { handleClosureError } = useRestaurantOrdering();
+const { handlePickupError } = usePickupErrorHandling(
+    pickupTime,
+    refreshPickupAvailability,
+);
+
 const earnedPoints = computed(() =>
     Math.floor(props.orderToReorder.total_inc_vat * 3),
 );
-
-// Minimum pickup time (current time + 30 minutes)
-const minPickupTime = computed(() => {
-    const date = new Date();
-    date.setMinutes(date.getMinutes() + 30);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-    return date.toISOString().slice(0, 16);
-});
-
-// Maximum pickup time (7 days from now)
-const maxPickupTime = computed(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 7);
-    return date.toISOString().slice(0, 16);
-});
 
 const isFormValid = computed(() => {
     if (!selectedOrderType.value) return false;
@@ -116,7 +116,7 @@ const isFormValid = computed(() => {
     if (selectedOrderType.value.value === OrderTypeEnum.TAKEAWAY) {
         return (
             !!pickupTime.value &&
-            pickupTime.value >= minPickupTime.value &&
+            isAvailableSlot(pickupTime.value) &&
             pickupName.value.trim().length > 0 &&
             pickupPhone.value.trim().length > 0
         );
@@ -219,7 +219,14 @@ const placeOrder = async () => {
             router.visit(paymentOrder.payment(placedOrder.id).url);
         }
     } catch (error) {
-        console.log(error);
+        if (handleClosureError(error)) {
+            return;
+        }
+
+        if (await handlePickupError(error)) {
+            return;
+        }
+
         toast.error('Failed to place order');
     }
 };
@@ -234,7 +241,7 @@ const onOrderTypeChange = async (type: OrderTypeEnum) => {
         pickupTime.value = '';
         selectedAddressId.value = null;
     } else if (type === OrderTypeEnum.TAKEAWAY) {
-        pickupName.value = minPickupTime.value;
+        pickupName.value = '';
         tableNumber.value = '';
         selectedAddressId.value = null;
     } else if (type === OrderTypeEnum.DELIVERY) {
@@ -294,8 +301,10 @@ onMounted(() => {
                             v-model:pickup-name="pickupName"
                             v-model:pickup-phone="pickupPhone"
                             v-model:pickup-time="pickupTime"
-                            :min-pickup-time="minPickupTime"
-                            :max-pickup-time="maxPickupTime"
+                            :availability="pickupAvailability"
+                            :availability-loading="isPickupLoading"
+                            :availability-error="hasPickupError"
+                            @retry="refreshPickupAvailability"
                         />
 
                         <DeliveryForm

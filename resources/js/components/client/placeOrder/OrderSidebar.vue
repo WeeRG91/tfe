@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { CreditCard } from 'lucide-vue-next';
 import { formatPrice } from '@/lib/utils';
+import { CreditCard } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{

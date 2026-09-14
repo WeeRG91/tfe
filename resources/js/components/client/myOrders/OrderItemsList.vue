@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Utensils, Coffee, Soup } from 'lucide-vue-next';
-import { formatPrice } from '@/lib/utils';
-import { OrderType } from '@/types/order';
-import { ItemTypeEnum } from '@/types/cart';
-import { useI18n } from 'vue-i18n';
-import { computed } from 'vue';
 import { getSpicyLevelLabels } from '@/lib/const';
+import { formatPrice } from '@/lib/utils';
+import { ItemTypeEnum } from '@/types/cart';
+import { OrderType } from '@/types/order';
+import { Coffee, Soup, Utensils } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     order: OrderType;
@@ -107,7 +107,8 @@ const getItemTypeColor = (itemType: number) => {
                                 class="flex flex-wrap items-center gap-1 text-gray-500"
                             >
                                 <span
-                                    >🚫 {{
+                                    >🚫
+                                    {{
                                         t('order.orderItemsList.removed')
                                     }}:</span
                                 >

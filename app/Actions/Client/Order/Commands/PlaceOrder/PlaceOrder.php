@@ -7,21 +7,23 @@ use App\Actions\Client\Order\Commands\CreateOrder;
 use App\Actions\Client\Order\Commands\HandleLoyaltyPoints;
 use App\Enums\PaymentMethodEnum;
 use App\Events\OrderPlacedBroadcast;
+use App\Services\RestaurantAvailabilityService;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 readonly class PlaceOrder
 {
     public function __construct(
-        private CreateOrder           $createOrder,
-        private CreateOrderItems      $createOrderItems,
+        private CreateOrder $createOrder,
+        private CreateOrderItems $createOrderItems,
         private CalculateOrderAmounts $calculateOrderAmounts,
-        private HandleLoyaltyPoints   $handleLoyaltyPoints,
+        private HandleLoyaltyPoints $handleLoyaltyPoints,
+        private RestaurantAvailabilityService $availability,
     ) {}
 
     /**
-     * @param array $data
      * @return array|string[]
+     *
      * @throws Throwable
      */
     public function execute(array $data): array
@@ -29,6 +31,8 @@ readonly class PlaceOrder
         $user = auth()->user();
 
         return DB::transaction(function () use ($data, $user) {
+            $this->availability->assertCanAcceptOrders();
+
             $cart = $user->cart()
                 ->whereKey($data['cart_id'])
                 ->lockForUpdate()
@@ -36,7 +40,7 @@ readonly class PlaceOrder
 
             $cart->load('items.item', 'items.meat', 'items.removedIngredients');
 
-            if (!$cart || $cart->items->isEmpty()) {
+            if (! $cart || $cart->items->isEmpty()) {
                 return [
                     'message' => __('messages.orders.cart_empty'),
                     'order' => null,

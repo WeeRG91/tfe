@@ -4,8 +4,8 @@ import { store } from '@/routes/password/confirm';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, MoveLeft } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { toast } from 'vue-sonner';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 

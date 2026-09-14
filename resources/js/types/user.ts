@@ -1,7 +1,7 @@
+import { OrderStatusType } from '@/types/order';
 import { PermissionType } from '@/types/permission';
 import { LoyaltyPointTransactionType } from '@/types/point';
 import { RoleType } from '@/types/role';
-import { OrderStatusType } from '@/types/order';
 
 export type UserType = {
     id: number;

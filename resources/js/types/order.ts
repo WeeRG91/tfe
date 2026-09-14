@@ -96,7 +96,6 @@ export type PlaceOrderPayloadType = {
     used_points: number;
 };
 
-
 export type ReorderPayloadType = {
     order_id: number;
     type: number;

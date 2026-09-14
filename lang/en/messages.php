@@ -331,4 +331,7 @@ return [
             'body' => 'Order #:number has been cancelled.',
         ],
     ],
+    'restaurant' => [
+        'closed' => 'The restaurant is currently closed.',
+    ],
 ];

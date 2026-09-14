@@ -189,7 +189,9 @@ const handlePasswordInput = (event: Event) => {
                             type="password"
                             class="mt-1 block w-full"
                             :placeholder="
-                                t('setting.password.placeholders.confirmPassword')
+                                t(
+                                    'setting.password.placeholders.confirmPassword',
+                                )
                             "
                         />
                         <InputError :message="errors.password_confirmation" />
@@ -200,7 +202,7 @@ const handlePasswordInput = (event: Event) => {
                             :disabled="processing"
                             data-test="update-password-button"
                         >
-                            {{t('admin.buttons.save')}}
+                            {{ t('admin.buttons.save') }}
                         </Button>
 
                         <Transition
@@ -213,7 +215,7 @@ const handlePasswordInput = (event: Event) => {
                                 v-show="recentlySuccessful"
                                 class="text-sm text-neutral-600"
                             >
-                                {{t('setting.password.messages.saved')}}
+                                {{ t('setting.password.messages.saved') }}
                             </p>
                         </Transition>
                     </div>

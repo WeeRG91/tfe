@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { getSpicyLevelLabels } from '@/lib/const';
 import { formatPrice } from '@/lib/utils';
 import { CartItemType } from '@/types/cart';
 import { OrderItemType } from '@/types/order';
 import { Soup } from 'lucide-vue-next';
-import { useI18n } from 'vue-i18n';
 import { computed } from 'vue';
-import { getSpicyLevelLabels } from '@/lib/const';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     items: CartItemType[] | OrderItemType[];
@@ -43,8 +43,13 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                         <div class="font-medium">
                             {{ item.quantity }}x {{ item.item.name }}
                         </div>
-                        <div v-if="item.spicy_level" class="mt-1 text-xs text-gray-600">
-                            <span class="font-medium">{{ t('common.spicyLevel.title') }}:</span>
+                        <div
+                            v-if="item.spicy_level"
+                            class="mt-1 text-xs text-gray-600"
+                        >
+                            <span class="font-medium"
+                                >{{ t('common.spicyLevel.title') }}:</span
+                            >
                             <span class="ml-0.5 text-gray-500">
                                 {{ spicyLevelLabels[item.spicy_level] }}
                             </span>
@@ -133,8 +138,7 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                     class="mt-2 flex justify-between border-t border-gray-100 pt-2 text-xs text-amber-600"
                 >
                     <span>🌟 {{ t('cart.orderSummary.pointsToEarn') }}</span>
-                    <span class="font-medium"
-                        >
+                    <span class="font-medium">
                         {{ t('cart.orderSummary.points', earnedPoints) }}</span
                     >
                 </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
-const {t} = useI18n()
+const { t } = useI18n();
 </script>
 
 <template>
@@ -14,7 +14,9 @@ const {t} = useI18n()
             🍽️
         </div>
 
-        <h3 class="mt-4 text-lg font-semibold">{{ t('menu.emptyList.title') }}</h3>
+        <h3 class="mt-4 text-lg font-semibold">
+            {{ t('menu.emptyList.title') }}
+        </h3>
 
         <p class="mt-2 max-w-sm text-sm text-gray-500">
             {{ t('menu.emptyList.description') }}

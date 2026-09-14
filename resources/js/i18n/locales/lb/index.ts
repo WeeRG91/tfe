@@ -35,6 +35,7 @@ import order from '@/i18n/locales/lb/client/order';
 import payment from '@/i18n/locales/lb/client/payment';
 import point from '@/i18n/locales/lb/client/point';
 import profile from '@/i18n/locales/lb/client/profile';
+import restaurant from '@/i18n/locales/lb/client/restaurant';
 import search from '@/i18n/locales/lb/client/search';
 
 import confirmModal from '@/i18n/locales/lb/confirmModal';
@@ -78,8 +79,9 @@ export default {
     payment,
     point,
     profile,
+    restaurant,
     search,
 
     confirmModal,
     errors,
-}
+};

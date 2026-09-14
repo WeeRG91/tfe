@@ -3,8 +3,8 @@ import image from '@/routes/admin/image';
 import axios from 'axios';
 import { ImagePlus, Star } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     modelValue: File[];
@@ -71,10 +71,7 @@ const validateImages = async (images: File[]) => {
 
         const { width, height } = await getImageDimensions(image);
 
-        if (
-            width > MAX_WIDTH ||
-            height > MAX_HEIGHT
-        ) {
+        if (width > MAX_WIDTH || height > MAX_HEIGHT) {
             error.value = t('admin.imageUploader.errors.invalidDimensions', {
                 fileName: image.name,
                 maxWidth: MAX_WIDTH,

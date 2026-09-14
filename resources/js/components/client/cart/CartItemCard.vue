@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { getSpicyLevelLabels } from '@/lib/const';
 import { useCartStore } from '@/stores/cart';
 import { CartItemType, ItemTypeEnum } from '@/types/cart';
 import { SquarePen } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getSpicyLevelLabels } from '@/lib/const';
 
 const cartStore = useCartStore();
 const { isLoading } = storeToRefs(cartStore);

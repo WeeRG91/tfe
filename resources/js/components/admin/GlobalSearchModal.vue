@@ -30,7 +30,7 @@ import { SearchResultEnum } from '@/types/search';
 import { router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
 import axios from 'axios';
-import { CornerDownLeft, Loader, Search, X, Shield } from 'lucide-vue-next';
+import { CornerDownLeft, Loader, Search, Shield, X } from 'lucide-vue-next';
 import {
     ComponentPublicInstance,
     computed,

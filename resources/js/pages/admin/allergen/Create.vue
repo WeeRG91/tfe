@@ -6,15 +6,15 @@ import MultipleSelect from '@/components/MultipleSelect.vue';
 import CreateIngredientModal from '@/components/admin/ingredient/CreateIngredientModal.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import allergen from '@/routes/admin/allergen';
 import type { BreadcrumbItem, ErrorType } from '@/types';
 import { AllergenOptionType } from '@/types/allergen';
 import { IngredientOptionType } from '@/types/ingredient';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Loader } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { toast } from 'vue-sonner';
-import allergen from '@/routes/admin/allergen';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     ingredients: IngredientOptionType[];

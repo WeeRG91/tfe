@@ -5,10 +5,12 @@ import FormTextarea from '@/components/FormTextarea.vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 import MultipleSelect from '@/components/MultipleSelect.vue';
 import Select from '@/components/Select.vue';
+import SpicyLevelSelector from '@/components/admin/dish/SpicyLevelSelector.vue';
 import CreateIngredientModal from '@/components/admin/ingredient/CreateIngredientModal.vue';
 import CreateMeatModal from '@/components/admin/meat/CreateMeatModal.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import dish from '@/routes/admin/dish';
 import type { BreadcrumbItem, ErrorType } from '@/types';
 import { AllergenOptionType } from '@/types/allergen';
 import { CategoryOptionType } from '@/types/category';
@@ -17,10 +19,8 @@ import { MeatOptionType } from '@/types/meat';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Loader } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { toast } from 'vue-sonner';
-import dish from '@/routes/admin/dish';
-import SpicyLevelSelector from '@/components/admin/dish/SpicyLevelSelector.vue';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     ingredients: IngredientOptionType[];

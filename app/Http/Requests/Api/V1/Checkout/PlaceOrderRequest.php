@@ -4,6 +4,8 @@ namespace App\Http\Requests\Api\V1\Checkout;
 
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
+use App\Rules\ValidPickupSlot;
+use App\Services\RestaurantAvailabilityService;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -46,29 +48,32 @@ class PlaceOrderRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:255',
-                'required_if:type,' . OrderTypeEnum::DINE_IN->value,
-                'prohibited_unless:type,' . OrderTypeEnum::DINE_IN->value,
+                'required_if:type,'.OrderTypeEnum::DINE_IN->value,
+                'prohibited_unless:type,'.OrderTypeEnum::DINE_IN->value,
             ],
             'pickup_time' => [
                 'nullable',
                 'string',
                 'max:255',
-                'required_if:type,' . OrderTypeEnum::TAKEAWAY->value,
-                'prohibited_unless:type,' . OrderTypeEnum::TAKEAWAY->value,
+                'required_if:type,'.OrderTypeEnum::TAKEAWAY->value,
+                'prohibited_unless:type,'.OrderTypeEnum::TAKEAWAY->value,
+                new ValidPickupSlot(
+                    app(RestaurantAvailabilityService::class),
+                ),
             ],
             'pickup_name' => [
                 'nullable',
                 'string',
                 'max:255',
-                'required_if:type,' . OrderTypeEnum::TAKEAWAY->value,
-                'prohibited_unless:type,' . OrderTypeEnum::TAKEAWAY->value,
+                'required_if:type,'.OrderTypeEnum::TAKEAWAY->value,
+                'prohibited_unless:type,'.OrderTypeEnum::TAKEAWAY->value,
             ],
             'pickup_phone' => [
                 'nullable',
                 'string',
                 'max:255',
-                'required_if:type,' . OrderTypeEnum::TAKEAWAY->value,
-                'prohibited_unless:type,' . OrderTypeEnum::TAKEAWAY->value,
+                'required_if:type,'.OrderTypeEnum::TAKEAWAY->value,
+                'prohibited_unless:type,'.OrderTypeEnum::TAKEAWAY->value,
             ],
             'address_id' => [
                 'nullable',
@@ -79,8 +84,8 @@ class PlaceOrderRequest extends FormRequest
                         $this->user()->id,
                     ),
                 ),
-                'required_if:type,' . OrderTypeEnum::DELIVERY->value,
-                'prohibited_unless:type,' . OrderTypeEnum::DELIVERY->value,
+                'required_if:type,'.OrderTypeEnum::DELIVERY->value,
+                'prohibited_unless:type,'.OrderTypeEnum::DELIVERY->value,
             ],
             'payment_method' => [
                 'required',

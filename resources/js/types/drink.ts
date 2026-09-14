@@ -48,4 +48,3 @@ export enum DrinkAvailabilityEnum {
     AVAILABLE = 'Available',
     UNAVAILABLE = 'Unavailable',
 }
-

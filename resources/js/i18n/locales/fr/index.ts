@@ -29,12 +29,13 @@ import common from '@/i18n/locales/fr/client/common';
 import drinks from '@/i18n/locales/fr/client/drinks';
 import home from '@/i18n/locales/fr/client/home';
 import menu from '@/i18n/locales/fr/client/menu';
-import navigation from '@/i18n/locales/fr/client/navigation'
+import navigation from '@/i18n/locales/fr/client/navigation';
 import notification from '@/i18n/locales/fr/client/notification';
 import order from '@/i18n/locales/fr/client/order';
 import payment from '@/i18n/locales/fr/client/payment';
 import point from '@/i18n/locales/fr/client/point';
 import profile from '@/i18n/locales/fr/client/profile';
+import restaurant from '@/i18n/locales/fr/client/restaurant';
 import search from '@/i18n/locales/fr/client/search';
 
 import confirmModal from '@/i18n/locales/fr/confirmModal';
@@ -78,8 +79,9 @@ export default {
     payment,
     point,
     profile,
+    restaurant,
     search,
 
     confirmModal,
     errors,
-}
+};

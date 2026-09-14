@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { login, register } from '@/routes';
-import { Head, useForm, Link } from '@inertiajs/vue3';
 import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
-import { toast } from 'vue-sonner';
+import { login, register } from '@/routes';
 import { request } from '@/routes/password';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { MoveLeft, MoveRight } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 defineProps<{
     status?: string;

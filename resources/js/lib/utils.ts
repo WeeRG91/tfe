@@ -1,4 +1,9 @@
+import menu from '@/routes/menu';
+import order from '@/routes/order';
+import { NotifiableTypeEnum, NotificationTypeEnum } from '@/types/notification';
 import { OrderStatusEnum, OrderTypeEnum } from '@/types/order';
+import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/payment';
+import { LoyaltyPointTransactionType, PointTypeEnum } from '@/types/point';
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import { type ClassValue, clsx } from 'clsx';
 import {
@@ -18,15 +23,10 @@ import {
     ShoppingBag,
     Truck,
     Utensils,
-    Wine
+    Wine,
 } from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
 import { FunctionalComponent } from 'vue';
-import { PaymentMethodEnum, PaymentStatusEnum } from '@/types/payment';
-import { NotifiableTypeEnum, NotificationTypeEnum } from '@/types/notification';
-import order from '@/routes/order';
-import menu from '@/routes/menu';
-import { LoyaltyPointTransactionType, PointTypeEnum } from '@/types/point';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -132,7 +132,10 @@ export const getPaymentStatusVariant = (status: PaymentStatusEnum) => {
 };
 
 export const getPaymentStatusIcon = (status: PaymentStatusEnum) => {
-    const variants: Record<PaymentStatusEnum, FunctionalComponent<LucideProps>> = {
+    const variants: Record<
+        PaymentStatusEnum,
+        FunctionalComponent<LucideProps>
+    > = {
         [PaymentStatusEnum.PENDING]: Clock,
         [PaymentStatusEnum.PAID]: CheckCircle,
         [PaymentStatusEnum.FAILED]: AlertCircle,
@@ -191,7 +194,10 @@ export const getNotificationIconColor = (type: NotificationTypeEnum) => {
     return colors[type] || 'text-gray-600';
 };
 
-export const notificationRoutes: Record<NotifiableTypeEnum, (id: number) => string> = {
+export const notificationRoutes: Record<
+    NotifiableTypeEnum,
+    (id: number) => string
+> = {
     [NotifiableTypeEnum.ORDER]: (id) => order.orderDetails(id).url,
     [NotifiableTypeEnum.DISH]: (id) => menu.showDish(id).url,
     [NotifiableTypeEnum.DRINK]: () => menu.drink().url,

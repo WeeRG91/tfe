@@ -9,8 +9,8 @@ export function usePasswordStrength(password: Ref<string>) {
         symbol: /[!@#$%^&*(),.?":{}|<>]/.test(password.value),
     }));
 
-    const passwordStrength = computed(() =>
-        Object.values(passwordChecks.value).filter(Boolean).length
+    const passwordStrength = computed(
+        () => Object.values(passwordChecks.value).filter(Boolean).length,
     );
 
     const getPasswordStrengthColor = (index: number) => {
@@ -21,11 +21,11 @@ export function usePasswordStrength(password: Ref<string>) {
         }
 
         return 'bg-gray-100';
-    }
+    };
 
     return {
         passwordChecks,
         passwordStrength,
         getPasswordStrengthColor,
-    }
+    };
 }

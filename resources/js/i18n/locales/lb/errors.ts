@@ -2,8 +2,7 @@ export default {
     403: {
         title: 'Zougang refuséiert',
         eyebrow: 'Verbueden',
-        description:
-            'Dir hutt keng Berechtegung fir dës Säit opzemaachen.',
+        description: 'Dir hutt keng Berechtegung fir dës Säit opzemaachen.',
     },
     404: {
         title: 'Säit net fonnt',
@@ -39,4 +38,4 @@ export default {
     goBack: 'Zeréck',
     needAssistance: 'Braucht Dir Hëllef?',
     contactSupport: 'Support kontaktéieren',
-}
+};

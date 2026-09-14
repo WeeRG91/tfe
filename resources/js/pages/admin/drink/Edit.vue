@@ -6,6 +6,7 @@ import ImageUploader from '@/components/ImageUploader.vue';
 import Select from '@/components/Select.vue';
 import { Button } from '@/components/ui/button';
 import AdminLayout from '@/layouts/AdminLayout.vue';
+import drink from '@/routes/admin/drink';
 import { BreadcrumbItem } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { DishErrorType } from '@/types/dish';
@@ -13,9 +14,8 @@ import { EditDrinkType } from '@/types/drink';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Loader, SquarePenIcon, X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { toast } from 'vue-sonner';
-import drink from '@/routes/admin/drink';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     drinkToEdit: EditDrinkType;

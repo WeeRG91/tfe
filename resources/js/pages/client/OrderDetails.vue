@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import OrderDetailsCard from '@/components/client/orderDetails/OrderDetailsCard.vue';
 import OrderItemsCard from '@/components/client/orderDetails/OrderItemsCard.vue';
+import OrderReceipt from '@/components/client/orderDetails/OrderReceipt.vue';
 import OrderStatusTimeline from '@/components/client/orderDetails/OrderStatusTimeline.vue';
 import PaymentSummaryCard from '@/components/client/orderDetails/PaymentSummaryCard.vue';
 import QuickActionsCard from '@/components/client/orderDetails/QuickActionsCard.vue';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import ClientLayout from '@/layouts/ClientLayout.vue';
-import { OrderType } from '@/types/order';
-import { Head, usePage } from '@inertiajs/vue3';
-import OrderReceipt from '@/components/client/orderDetails/OrderReceipt.vue';
 import { getOrderStatusVariant } from '@/lib/utils';
 import { useOrderStore } from '@/stores/order';
+import { OrderType } from '@/types/order';
+import { Head, usePage } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 
 const props = defineProps<{
     orderToShow: OrderType;
@@ -123,7 +123,6 @@ onUnmounted(() => {
                         <h1
                             class="text-[16px] font-semibold uppercase md:text-4xl"
                         >
-
                             {{ currentOrder.order_number }}
                         </h1>
                         <p class="mt-2 text-gray-600">

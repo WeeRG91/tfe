@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import DesktopNav from '@/components/client/clientLayout/DesktopNav.vue';
+import { User } from '@/types';
 import { Menu } from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import HeaderActions from './HeaderActions.vue';
 import MobileMenu from './MobileMenu.vue';
 import UserMenu from './UserMenu.vue';
-import { User } from '@/types';
 
 defineProps<{
     user: User | null;

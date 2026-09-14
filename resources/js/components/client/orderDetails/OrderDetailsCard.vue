@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import { formatAddress, getOrderTypeIcon } from '@/lib/utils';
 import { OrderType } from '@/types/order';
+import { PaymentMethodEnum } from '@/types/payment';
 import { Coins, CreditCard, FileText, MapPin, User } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
-import { PaymentMethodEnum } from '@/types/payment';
-import { useDateFormatter } from '@/composables/useDateFormatter';
 
 defineProps<{
     orderToShow: OrderType;

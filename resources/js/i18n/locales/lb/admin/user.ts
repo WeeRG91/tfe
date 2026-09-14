@@ -94,8 +94,7 @@ export default {
         messages: {
             updated: 'De Benotzer gouf erfollegräich aktualiséiert.',
             invalidInput: 'Ongülteg Donnéeën.',
-            error:
-                'E Feeler ass opgetrueden. Kontrolléiert w.e.g. de Formulaire.',
+            error: 'E Feeler ass opgetrueden. Kontrolléiert w.e.g. de Formulaire.',
         },
     },
 };

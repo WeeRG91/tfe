@@ -206,9 +206,7 @@ const updatePassword = () => {
                         >
                             {{ passwordChecks.symbol ? '✓' : '○' }}
                             {{
-                                t(
-                                    'profile.passwordTab.passwordStrength.symbol',
-                                )
+                                t('profile.passwordTab.passwordStrength.symbol')
                             }}
                         </span>
                     </div>

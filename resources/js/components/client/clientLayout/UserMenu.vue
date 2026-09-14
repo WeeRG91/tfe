@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useClickOutside } from '@/composables/useClickOutside';
-import order from '@/routes/order';
-import { LogIn, NotepadText, User, Trophy } from 'lucide-vue-next';
-import { ref } from 'vue';
-import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
-import { Link, router } from '@inertiajs/vue3';
 import { login, logout } from '@/routes';
 import clientProfile from '@/routes/client-profile';
+import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
+import order from '@/routes/order';
 import type { User as UserType } from '@/types/index';
+import { Link, router } from '@inertiajs/vue3';
+import { LogIn, NotepadText, Trophy, User } from 'lucide-vue-next';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();

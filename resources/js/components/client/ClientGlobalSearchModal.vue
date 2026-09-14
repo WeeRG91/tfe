@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import menu from '@/routes/menu';
 import { GlobalSearchType, SearchResultType, SearchType } from '@/types';
+import { SearchResultEnum } from '@/types/search';
 import { router } from '@inertiajs/vue3';
 import { useDebounceFn } from '@vueuse/core';
 import axios from 'axios';
@@ -14,7 +15,6 @@ import {
     ref,
     watch,
 } from 'vue';
-import { SearchResultEnum } from '@/types/search';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -418,7 +418,11 @@ watch(flatResults, () => {
                                                 <p
                                                     class="mt-0.5 text-[10px] text-gray-500 sm:text-xs"
                                                 >
-                                                    {{ t(`menu.categories.${item.category.key}`) }}
+                                                    {{
+                                                        t(
+                                                            `menu.categories.${item.category.key}`,
+                                                        )
+                                                    }}
                                                 </p>
                                             </div>
                                         </div>

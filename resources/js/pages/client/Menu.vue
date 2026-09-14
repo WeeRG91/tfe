@@ -3,20 +3,22 @@ import AddDishToCartModal from '@/components/client/cart/AddDishToCartModal.vue'
 import DishCard from '@/components/client/menu/DishCard.vue';
 import DishCardSkeleton from '@/components/client/menu/DishCardSkeleton.vue';
 import EmptyDishList from '@/components/client/menu/EmptyDishList.vue';
+import { useRestaurantOrdering } from '@/composables/useRestaurantOrdering';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { useDishStore } from '@/stores/dish';
+import { AppPageProps } from '@/types';
 import { CategoryOptionType } from '@/types/category';
 import { ClientDishType } from '@/types/dish';
+import { ReviewResultType } from '@/types/rating';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
-import { ReviewResultType } from '@/types/rating';
 import { useI18n } from 'vue-i18n';
-import { AppPageProps } from '@/types';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
+const { canStartOrdering } = useRestaurantOrdering();
 const page = usePage<AppPageProps>();
 
 const props = defineProps<{
@@ -32,7 +34,11 @@ const hasLoaded = ref<boolean>(false);
 const selectedDish = ref<ClientDishType | null>(null);
 const isAddModalOpen = ref<boolean>(false);
 
-const openAddModal = (dish: ClientDishType) => {
+const openAddModal = async (dish: ClientDishType) => {
+    if (!(await canStartOrdering())) {
+        return;
+    }
+
     if (!page.props.auth.user) {
         router.visit('/login');
 

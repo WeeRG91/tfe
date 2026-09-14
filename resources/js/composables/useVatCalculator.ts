@@ -1,7 +1,7 @@
 import { CartItemType, ItemTypeEnum } from '@/types/cart';
-import { computed, Ref } from 'vue';
 import { ALCOHOL_CATEGORIES, AlcoholCategory } from '@/types/drink';
 import { OrderItemType, OrderTypeEnum } from '@/types/order';
+import { computed, Ref } from 'vue';
 
 export function useVatCalculator(params: {
     items: Ref<CartItemType[] | OrderItemType[]>;
@@ -21,14 +21,18 @@ export function useVatCalculator(params: {
         items.value.filter(
             (i) =>
                 i.item_type === ItemTypeEnum.DRINK &&
-                ALCOHOL_CATEGORIES.includes(i.item.category.label as AlcoholCategory),
+                ALCOHOL_CATEGORIES.includes(
+                    i.item.category.label as AlcoholCategory,
+                ),
         ),
     );
     const nonAlcoholicItems = computed(() =>
         items.value.filter(
             (i) =>
                 i.item_type === ItemTypeEnum.DRINK &&
-                !ALCOHOL_CATEGORIES.includes(i.item.category.label as AlcoholCategory),
+                !ALCOHOL_CATEGORIES.includes(
+                    i.item.category.label as AlcoholCategory,
+                ),
         ),
     );
 
@@ -50,12 +54,16 @@ export function useVatCalculator(params: {
             0,
         );
         const delivery =
-            selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY ? deliveryFee.value : 0;
+            selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY
+                ? deliveryFee.value
+                : 0;
 
         return alcoholic + delivery;
     });
 
-    const subtotalBeforeDeliveryFee = computed(() => total12.value + total21.value - deliveryFee.value);
+    const subtotalBeforeDeliveryFee = computed(
+        () => total12.value + total21.value - deliveryFee.value,
+    );
     const subtotal = computed(() => total12.value + total21.value);
 
     const totalAfterDiscount = computed(() => {

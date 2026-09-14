@@ -24,7 +24,7 @@ export default {
     },
     form: {
         title: 'Create Ingredient',
-        editTitle: "Edit ingredient: {name}",
+        editTitle: 'Edit ingredient: {name}',
         breadcrumbs: {
             ingredients: 'Ingredients',
             create: 'Create',

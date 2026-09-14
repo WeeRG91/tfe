@@ -7,8 +7,8 @@ import { request } from '@/routes/password';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, MoveLeft, MoveRight } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { toast } from 'vue-sonner';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 defineProps<{
     status?: string;

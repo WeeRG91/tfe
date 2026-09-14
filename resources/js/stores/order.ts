@@ -96,7 +96,7 @@ export const useOrderStore = defineStore('order', {
             this.isLoading = true;
 
             try {
-                const {data} = await axios.patch(order.cancel(orderId).url);
+                const { data } = await axios.patch(order.cancel(orderId).url);
 
                 return data;
             } catch (error) {
@@ -111,7 +111,7 @@ export const useOrderStore = defineStore('order', {
             this.isLoading = true;
 
             try {
-                const {data} = await axios.delete(order.destroy(orderId).url);
+                const { data } = await axios.delete(order.destroy(orderId).url);
 
                 return data;
             } catch (error) {
@@ -143,7 +143,9 @@ export const useOrderStore = defineStore('order', {
             this.isLoading = true;
 
             try {
-                const {data} = await axios.patch(confirmedOrder.cancel(orderId).url);
+                const { data } = await axios.patch(
+                    confirmedOrder.cancel(orderId).url,
+                );
 
                 return data;
             } catch (error) {

@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
 import { login } from '@/routes';
+import verification from '@/routes/verification';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { MoveLeft, MoveRight } from 'lucide-vue-next';
-import CostumedAuthLayout from '@/layouts/CostumedAuthLayout.vue';
-import { toast } from 'vue-sonner';
-import verification from '@/routes/verification';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 defineProps<{
     status?: string;

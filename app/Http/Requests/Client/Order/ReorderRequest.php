@@ -4,6 +4,8 @@ namespace App\Http\Requests\Client\Order;
 
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
+use App\Rules\ValidPickupSlot;
+use App\Services\RestaurantAvailabilityService;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,44 +32,44 @@ class ReorderRequest extends FormRequest
             'order_id' => [
                 'required',
                 Rule::exists('orders', 'id')->where(
-                    fn (Builder $query) =>
-                        $query->where('user_id', $this->user()->id)
-                )
+                    fn (Builder $query) => $query->where('user_id', $this->user()->id)
+                ),
             ],
             'type' => ['required', Rule::in(OrderTypeEnum::values())],
             'table_number' => [
                 'nullable',
                 'string',
-                'required_if:type,' . OrderTypeEnum::DINE_IN->value,
-                'prohibited_unless:type,' . OrderTypeEnum::DINE_IN->value
+                'required_if:type,'.OrderTypeEnum::DINE_IN->value,
+                'prohibited_unless:type,'.OrderTypeEnum::DINE_IN->value,
             ],
             'pickup_time' => [
                 'nullable',
                 'date',
-                'after:now',
-                'required_if:type,' . OrderTypeEnum::TAKEAWAY->value,
-                'prohibited_unless:type,' . OrderTypeEnum::TAKEAWAY->value
+                'required_if:type,'.OrderTypeEnum::TAKEAWAY->value,
+                'prohibited_unless:type,'.OrderTypeEnum::TAKEAWAY->value,
+                new ValidPickupSlot(
+                    app(RestaurantAvailabilityService::class),
+                ),
             ],
             'pickup_name' => [
                 'nullable',
                 'string',
-                'required_if:type,' . OrderTypeEnum::TAKEAWAY->value,
-                'prohibited_unless:type,' . OrderTypeEnum::TAKEAWAY->value
+                'required_if:type,'.OrderTypeEnum::TAKEAWAY->value,
+                'prohibited_unless:type,'.OrderTypeEnum::TAKEAWAY->value,
             ],
             'pickup_phone' => [
                 'nullable',
                 'string',
-                'required_if:type,' . OrderTypeEnum::TAKEAWAY->value,
-                'prohibited_unless:type,' . OrderTypeEnum::TAKEAWAY->value
+                'required_if:type,'.OrderTypeEnum::TAKEAWAY->value,
+                'prohibited_unless:type,'.OrderTypeEnum::TAKEAWAY->value,
             ],
             'address_id' => [
                 'nullable',
                 Rule::exists('addresses', 'id')->where(
-                    fn (Builder $query) =>
-                        $query->where('user_id', $this->user()->id)
+                    fn (Builder $query) => $query->where('user_id', $this->user()->id)
                 ),
-                'required_if:type,' . OrderTypeEnum::DELIVERY->value,
-                'prohibited_unless:type,' . OrderTypeEnum::DELIVERY->value
+                'required_if:type,'.OrderTypeEnum::DELIVERY->value,
+                'prohibited_unless:type,'.OrderTypeEnum::DELIVERY->value,
             ],
             'payment_method' => ['required', Rule::in(PaymentMethodEnum::values())],
             'notes' => ['nullable', 'string', 'max:1000'],

@@ -50,9 +50,9 @@ export default {
             activateSuccess:
                 'Den Aktivéierungslink gouf erfollegräich geschéckt! Kontrolléiert w.e.g. Är E-Mailen.',
             reactivateSuccess:
-                "De Reaktivéierungslink gouf erfollegräich geschéckt! Kontrolléiert w.e.g. Är E-Mailen.",
+                'De Reaktivéierungslink gouf erfollegräich geschéckt! Kontrolléiert w.e.g. Är E-Mailen.',
             verificationSuccess:
-                "De Verifizéierungslink gouf erfollegräich geschéckt! Kontrolléiert w.e.g. Är E-Mailen.",
+                'De Verifizéierungslink gouf erfollegräich geschéckt! Kontrolléiert w.e.g. Är E-Mailen.',
             error: 'Eppes ass schifgaangen. Probéiert w.e.g. nach eng Kéier.',
         },
     },

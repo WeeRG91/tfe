@@ -32,7 +32,9 @@ export const useNotificationStore = defineStore('notification', {
 
         async markAsRead(id: number) {
             try {
-                const {data} = await axios.patch(notification.markAsRead(id).url);
+                const { data } = await axios.patch(
+                    notification.markAsRead(id).url,
+                );
 
                 await this.getNotifications(FilterNotificationEnum.ALL);
 

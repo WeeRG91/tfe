@@ -15,11 +15,13 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import meat from '@/routes/admin/meat';
 import { BreadcrumbItem, CursorPaginated, type FilterType } from '@/types';
 import { MeatType } from '@/types/meat';
+import { MeatPermissionEnum } from '@/types/permission';
 import { Head, router } from '@inertiajs/vue3';
 import { watchDebounced } from '@vueuse/core';
 import axios from 'axios';
@@ -34,10 +36,8 @@ import {
     XIcon,
 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
-import { MeatPermissionEnum } from '@/types/permission';
 import { useI18n } from 'vue-i18n';
-import { useDateFormatter } from '@/composables/useDateFormatter';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 const { formatDateOnly } = useDateFormatter();

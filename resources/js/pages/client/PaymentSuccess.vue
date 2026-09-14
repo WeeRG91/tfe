@@ -7,12 +7,12 @@ import PaymentSummaryCard from '@/components/client/orderDetails/PaymentSummaryC
 import QuickActionsCard from '@/components/client/orderDetails/QuickActionsCard.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import order from '@/routes/order';
+import paymentOrder from '@/routes/payment-order';
 import { OrderType } from '@/types/order';
 import { PaymentStatusEnum } from '@/types/payment';
 import { Head, Link } from '@inertiajs/vue3';
 import axios from 'axios';
-import { computed, onMounted, ref, onUnmounted } from 'vue';
-import paymentOrder from '@/routes/payment-order';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
     orderToPay: OrderType;
@@ -124,7 +124,7 @@ onUnmounted(() => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-8">
-                <p class="text-sm tracking-widest text-red-500 uppercase mb-1">
+                <p class="mb-1 text-sm tracking-widest text-red-500 uppercase">
                     [ Payment Details ]
                 </p>
                 <div

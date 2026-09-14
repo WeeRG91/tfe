@@ -1,14 +1,14 @@
 <script setup lang="ts"></script>
 
 <template>
-    <div
-        class="group flex h-full overflow-hidden rounded-md border bg-white"
-    >
+    <div class="group flex h-full overflow-hidden rounded-md border bg-white">
         <div class="relative w-32 overflow-hidden sm:w-40 md:w-44">
             <div class="h-68 w-full animate-pulse bg-gray-200"></div>
 
             <div class="absolute top-2 left-2">
-                <div class="h-6 w-16 animate-pulse rounded-full bg-gray-300"></div>
+                <div
+                    class="h-6 w-16 animate-pulse rounded-full bg-gray-300"
+                ></div>
             </div>
         </div>
 
@@ -28,17 +28,29 @@
                 <div class="mt-2 flex items-center justify-between">
                     <div class="flex items-center gap-1">
                         <div class="flex gap-0.5">
-                            <div v-for="i in 5" :key="i" class="h-4 w-4 animate-pulse rounded bg-gray-200"></div>
+                            <div
+                                v-for="i in 5"
+                                :key="i"
+                                class="h-4 w-4 animate-pulse rounded bg-gray-200"
+                            ></div>
                         </div>
-                        <div class="ml-1 h-3 w-8 animate-pulse rounded bg-gray-200"></div>
+                        <div
+                            class="ml-1 h-3 w-8 animate-pulse rounded bg-gray-200"
+                        ></div>
                     </div>
 
-                    <div class="h-4 w-6 animate-pulse rounded bg-gray-200"></div>
+                    <div
+                        class="h-4 w-6 animate-pulse rounded bg-gray-200"
+                    ></div>
                 </div>
 
                 <div class="mt-2 flex items-center justify-between">
-                    <div class="h-3 w-20 animate-pulse rounded bg-gray-200"></div>
-                    <div class="h-5 w-12 animate-pulse rounded bg-gray-200"></div>
+                    <div
+                        class="h-3 w-20 animate-pulse rounded bg-gray-200"
+                    ></div>
+                    <div
+                        class="h-5 w-12 animate-pulse rounded bg-gray-200"
+                    ></div>
                 </div>
             </div>
         </div>
@@ -46,4 +58,3 @@
 </template>
 
 <style scoped></style>
-

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { login, register } from '@/routes';
-import { Head, Link } from '@inertiajs/vue3';
 import { dashboard } from '@/routes/admin';
+import { Head, Link } from '@inertiajs/vue3';
 </script>
 
 <template>

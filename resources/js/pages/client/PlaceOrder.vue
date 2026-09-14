@@ -10,6 +10,9 @@ import OrderTypeSelector from '@/components/client/placeOrder/OrderTypeSelector.
 import PaymentMethodSelector from '@/components/client/placeOrder/PaymentMethodSelector.vue';
 import TakeawayForm from '@/components/client/placeOrder/TakeawayForm.vue';
 import { useLoyaltyPoints } from '@/composables/useLoyaltyPoints';
+import { usePickupAvailability } from '@/composables/usePickupAvailability';
+import { usePickupErrorHandling } from '@/composables/usePickupErrorHandling';
+import { useRestaurantOrdering } from '@/composables/useRestaurantOrdering';
 import { useVatCalculator } from '@/composables/useVatCalculator';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { getTotalPoints } from '@/lib/utils';
@@ -37,6 +40,13 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
+const {
+    availability: pickupAvailability,
+    isLoading: isPickupLoading,
+    hasError: hasPickupError,
+    refresh: refreshPickupAvailability,
+    isAvailableSlot,
+} = usePickupAvailability();
 
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
@@ -92,33 +102,13 @@ const {
     selectedOrderTypeValue,
 });
 
+const { handleClosureError } = useRestaurantOrdering();
+const { handlePickupError } = usePickupErrorHandling(
+    pickupTime,
+    refreshPickupAvailability,
+);
+
 const earnedPoints = computed(() => Math.floor(totalIncVat.value * 3));
-
-const isValidPickupSlot = (value: string): boolean => {
-    if (!value) {
-        return false;
-    }
-
-    const pickupDate = new Date(value);
-
-    if (Number.isNaN(pickupDate.getTime())) {
-        return false;
-    }
-
-    const minimumDate = new Date();
-    minimumDate.setMinutes(minimumDate.getMinutes() + 30);
-
-    const hours = pickupDate.getHours();
-    const minutes = pickupDate.getMinutes();
-
-    return (
-        pickupDate >= minimumDate &&
-        hours >= 11 &&
-        hours <= 21 &&
-        !(hours === 21 && minutes > 0) &&
-        minutes % 15 === 0
-    );
-};
 
 const isFormValid = computed(() => {
     if (!selectedOrderType.value) return false;
@@ -131,7 +121,7 @@ const isFormValid = computed(() => {
     if (selectedOrderType.value.value === OrderTypeEnum.TAKEAWAY) {
         return (
             !!pickupTime.value &&
-            isValidPickupSlot(pickupTime.value) &&
+            isAvailableSlot(pickupTime.value) &&
             pickupName.value.trim().length > 0 &&
             pickupPhone.value.trim().length > 0
         );
@@ -234,7 +224,14 @@ const placeOrder = async () => {
             router.visit(paymentOrder.payment(placedOrder.id).url);
         }
     } catch (error) {
-        console.log(error);
+        if (handleClosureError(error)) {
+            return;
+        }
+
+        if (await handlePickupError(error)) {
+            return;
+        }
+
         toast.error(t('cart.placeOrderPage.errors.placeOrder'));
     }
 };
@@ -309,6 +306,10 @@ onMounted(() => {
                             v-model:pickup-name="pickupName"
                             v-model:pickup-phone="pickupPhone"
                             v-model:pickup-time="pickupTime"
+                            :availability="pickupAvailability"
+                            :availability-loading="isPickupLoading"
+                            :availability-error="hasPickupError"
+                            @retry="refreshPickupAvailability"
                         />
 
                         <DeliveryForm

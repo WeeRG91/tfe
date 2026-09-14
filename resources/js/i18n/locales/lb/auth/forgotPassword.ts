@@ -8,7 +8,6 @@ export default {
     messages: {
         resetLinkSent:
             'De Link fir d’Passwuert zeréckzesetzen gouf erfollegräich geschéckt.',
-        error:
-            'E Feeler ass opgetrueden. Probéiert et w.e.g. nach eng Kéier.',
+        error: 'E Feeler ass opgetrueden. Probéiert et w.e.g. nach eng Kéier.',
     },
 };

@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { getSpicyLevelLabels } from '@/lib/const';
 import { formatPrice } from '@/lib/utils';
 import { OrderType } from '@/types/order';
 import { Soup } from 'lucide-vue-next';
-import { useI18n } from 'vue-i18n';
 import { computed } from 'vue';
-import { getSpicyLevelLabels } from '@/lib/const';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
     orderToShow: OrderType;
@@ -34,7 +34,10 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                         <div class="font-medium">
                             {{ item.quantity }}x {{ item.item?.name }}
                         </div>
-                        <div v-if="item.spicy_level" class="mt-1 text-xs text-gray-500">
+                        <div
+                            v-if="item.spicy_level"
+                            class="mt-1 text-xs text-gray-500"
+                        >
                             {{ t('common.spicyLevel.title') }}:
                             {{ spicyLevelLabels[item.spicy_level] }}
                         </div>

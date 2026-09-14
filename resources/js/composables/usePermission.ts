@@ -31,7 +31,7 @@ export function usePermission() {
 
     const canSearch = () => {
         return searchPermissions.some((permission) => can(permission));
-    }
+    };
 
     return {
         can,

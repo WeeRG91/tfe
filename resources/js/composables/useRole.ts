@@ -8,9 +8,9 @@ export function useRole() {
 
     const hasRole = (role: string) => {
         return roles.value.includes(role);
-    }
+    };
 
     return {
         hasRole,
-    }
+    };
 }

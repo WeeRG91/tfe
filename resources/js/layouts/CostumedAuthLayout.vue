@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
+import { router } from '@inertiajs/vue3';
 
 defineProps<{
     title: string;

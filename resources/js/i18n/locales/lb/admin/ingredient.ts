@@ -25,7 +25,7 @@ export default {
     },
     form: {
         title: 'Zutat erstellen',
-        editTitle: "Zutat änneren: {name}",
+        editTitle: 'Zutat änneren: {name}',
         breadcrumbs: {
             ingredients: 'Zutaten',
             create: 'Uleeën',

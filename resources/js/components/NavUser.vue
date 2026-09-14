@@ -13,8 +13,8 @@ import {
 } from '@/components/ui/sidebar';
 import { usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown } from 'lucide-vue-next';
-import UserMenuContent from './UserMenuContent.vue';
 import { computed } from 'vue';
+import UserMenuContent from './UserMenuContent.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);

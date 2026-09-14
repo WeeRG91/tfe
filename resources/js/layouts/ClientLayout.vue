@@ -6,12 +6,15 @@ import LayoutHeader from '@/components/client/clientLayout/LayoutHeader.vue';
 import NotificationsDrawer from '@/components/client/notification/NotificationsDrawer.vue';
 import { useCartStore } from '@/stores/cart';
 import { useNotificationStore } from '@/stores/notification';
+import { useRestaurantStore } from '@/stores/restaurant';
+import { AppPageProps } from '@/types';
 import { FilterNotificationEnum } from '@/types/notification';
 import { router, usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { AppPageProps } from '@/types';
+import RestaurantClosureBanner from '@/components/client/clientLayout/RestaurantClosureBanner.vue';
+import RestaurantClosedModal from '@/components/client/clientLayout/RestaurantClosedModal.vue';
 
 const page = usePage<AppPageProps>();
 const user = computed(() => page.props.auth?.user);
@@ -20,6 +23,16 @@ const notificationStore = useNotificationStore();
 const { notifications } = storeToRefs(notificationStore);
 const cartStore = useCartStore();
 const { items } = storeToRefs(cartStore);
+
+const restaurantStore = useRestaurantStore();
+
+let restaurantRefreshTimer: ReturnType<typeof setInterval> | null = null;
+
+const refreshRestaurantStatus = () => {
+    if (document.visibilityState === 'visible') {
+        void restaurantStore.refresh();
+    }
+};
 
 const isCartOpen = ref<boolean>(false);
 const isSearchOpen = ref<boolean>(false);
@@ -97,6 +110,12 @@ type EchoChannel = {
 const channel = ref<EchoChannel | null>(null);
 
 onMounted(async () => {
+    void restaurantStore.refresh();
+
+    restaurantRefreshTimer = setInterval(refreshRestaurantStatus, 60_000);
+
+    document.addEventListener('visibilitychange', refreshRestaurantStatus);
+
     if (user.value) {
         await cartStore.getCart();
         await notificationStore.getNotifications(FilterNotificationEnum.ALL);
@@ -117,6 +136,13 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+    if (restaurantRefreshTimer !== null) {
+        clearInterval(restaurantRefreshTimer);
+        restaurantRefreshTimer = null;
+    }
+
+    document.removeEventListener('visibilitychange', refreshRestaurantStatus);
+
     if (channel.value) {
         window.Echo.leave(`private-user.${user.value?.id}`);
     }
@@ -136,6 +162,8 @@ onUnmounted(() => {
             @open-notifications="openNotifications"
         />
 
+        <RestaurantClosureBanner />
+
         <div class="relative flex-1">
             <div class="pointer-events-none absolute inset-0 overflow-hidden">
                 <div
@@ -152,6 +180,8 @@ onUnmounted(() => {
         </div>
 
         <ChatBubble v-if="user" />
+
+        <RestaurantClosedModal />
 
         <CartDrawer :open="isCartOpen" :onClose="closeCart" />
 

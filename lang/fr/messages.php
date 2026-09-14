@@ -316,4 +316,7 @@ return [
             'body' => 'La commande n°:number a été annulée.',
         ],
     ],
+    'restaurant' => [
+        'closed' => 'Le restaurant est actuellement fermé.',
+    ],
 ];

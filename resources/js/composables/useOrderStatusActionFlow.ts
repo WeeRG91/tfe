@@ -12,7 +12,7 @@ enum ActionEnum {
 export function useOrderStatusActionFlow(
     updateStatus: (orderStatus: OrderStatusEnum, actionId: string) => void,
 ) {
-    const {t} = useI18n();
+    const { t } = useI18n();
 
     const getPreviousStatus = (status: OrderStatusEnum) => {
         const PREVIOUS_STATUS: Record<OrderStatusEnum, OrderStatusEnum | null> =
@@ -88,7 +88,9 @@ export function useOrderStatusActionFlow(
             if (type === OrderTypeEnum.DELIVERY) {
                 actions.push({
                     id: ActionEnum.STARTDELIVERING,
-                    label: t('confirmedOrder.orderCard.actions.startDelivering'),
+                    label: t(
+                        'confirmedOrder.orderCard.actions.startDelivering',
+                    ),
                     action: () =>
                         updateStatus(nextStatus!, ActionEnum.STARTDELIVERING),
                     class: 'bg-purple-500 hover:bg-purple-700',
