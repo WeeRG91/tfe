@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRestaurantClosureMessage } from '@/composables/useRestaurantClosureMessage';
 import { useRestaurantStore } from '@/stores/restaurant';
-import { useI18n } from 'vue-i18n';
 
 const restaurantStore = useRestaurantStore();
 

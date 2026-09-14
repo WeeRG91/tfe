@@ -19,12 +19,15 @@ import {
 } from 'lucide-vue-next';
 import { computed, nextTick, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     hours: RestaurantHourType[];
     closures: RestaurantClosureType[];
     timezone: string;
 }>();
+
+const { t, locale } = useI18n();
 
 const editableHours = ref<RestaurantHourType[]>(
     props.hours.map((day) => ({ ...day })),
@@ -34,20 +37,20 @@ const hourErrors = ref<Record<string, string[]>>({});
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: 'Restaurant schedule',
+        title: t('restaurantSchedule.title'),
         href: '/admin/restaurant-schedule',
     },
 ]);
 
-const weekdayLabels: Record<number, string> = {
-    1: 'Monday',
-    2: 'Tuesday',
-    3: 'Wednesday',
-    4: 'Thursday',
-    5: 'Friday',
-    6: 'Saturday',
-    7: 'Sunday',
-};
+const weekdayLabels = computed<Record<number, string>>(() => ({
+    1: t('restaurantSchedule.weekdays.monday'),
+    2: t('restaurantSchedule.weekdays.tuesday'),
+    3: t('restaurantSchedule.weekdays.wednesday'),
+    4: t('restaurantSchedule.weekdays.thursday'),
+    5: t('restaurantSchedule.weekdays.friday'),
+    6: t('restaurantSchedule.weekdays.saturday'),
+    7: t('restaurantSchedule.weekdays.sunday'),
+}));
 
 type ClosureFormType = {
     is_all_day: boolean;
@@ -79,19 +82,32 @@ const closureToDelete = ref<RestaurantClosureType | null>(null);
 const isDeletingClosure = ref<boolean>(false);
 
 const formatDateTime = (value: string): string => {
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(locale.value, {
+        timeZone: props.timezone,
         dateStyle: 'medium',
         timeStyle: 'short',
     }).format(new Date(value));
 };
 
+const formatCalendarDate = (value: string | null): string => {
+    if (!value) {
+        return '';
+    }
+
+    return new Intl.DateTimeFormat(locale.value, {
+        timeZone: 'UTC',
+        dateStyle: 'medium',
+    }).format(new Date(`${value}T12:00:00Z`));
+};
+
 const closurePeriod = (closure: RestaurantClosureType): string => {
     if (closure.is_all_day) {
-        if (closure.starts_on === closure.ends_on) {
-            return closure.starts_on ?? '';
-        }
+        const start = formatCalendarDate(closure.starts_on);
+        const end = formatCalendarDate(closure.ends_on);
 
-        return `${closure.starts_on} – ${closure.ends_on}`;
+        return closure.starts_on === closure.ends_on
+            ? start
+            : `${start} – ${end}`;
     }
 
     return `${formatDateTime(closure.starts_at)} – ${formatDateTime(
@@ -137,19 +153,19 @@ const saveRegularHours = async (): Promise<void> => {
             last_pickup_at: day.is_open ? day.last_pickup_at : null,
         }));
 
-        toast.success('Regular opening hours saved.');
+        toast.success(t('restaurantSchedule.messages.hoursSaved'));
     } catch (error: unknown) {
         if (axios.isAxiosError(error) && error.response?.status === 422) {
             hourErrors.value = error.response.data.errors ?? {};
 
-            toast.error('Please correct the highlighted schedule fields.');
+            toast.error(t('restaurantSchedule.messages.hoursValidation'));
 
             return;
         }
 
         console.error(error);
 
-        toast.error('Unable to save regular opening hours.');
+        toast.error(t('restaurantSchedule.messages.hoursFailed'));
     } finally {
         isSavingHours.value = false;
     }
@@ -203,8 +219,8 @@ const saveClosure = async (): Promise<void> => {
 
         toast.success(
             wasEditing
-                ? 'Exceptional closure updated.'
-                : 'Exceptional closure added.',
+                ? t('restaurantSchedule.messages.closureUpdated')
+                : t('restaurantSchedule.messages.closureAdded'),
         );
 
         resetClosureForm();
@@ -218,8 +234,8 @@ const saveClosure = async (): Promise<void> => {
 
             toast.error(
                 editingClosureId.value === null
-                    ? 'Unable to add the exceptional closure.'
-                    : 'Unable to update the exceptional closure.',
+                    ? t('restaurantSchedule.messages.closureAddFailed')
+                    : t('restaurantSchedule.messages.closureUpdateFailed'),
             );
 
             return;
@@ -227,7 +243,7 @@ const saveClosure = async (): Promise<void> => {
 
         console.error(error);
 
-        toast.error('Unable to add the exceptional closure.');
+        toast.error(t('restaurantSchedule.messages.closureAddFailed'));
     } finally {
         isSavingClosure.value = false;
     }
@@ -277,9 +293,10 @@ const deleteConfirmationMessage = computed(() => {
         return '';
     }
 
-    const name = closure.reason || 'this exceptional closure';
+    const name =
+        closure.reason || t('restaurantSchedule.closures.fallbackName');
 
-    return `Are you sure you want to delete ${name}?`;
+    return t('restaurantSchedule.closures.confirmDelete', { name: name });
 });
 
 const deleteClosure = async (): Promise<void> => {
@@ -300,7 +317,7 @@ const deleteClosure = async (): Promise<void> => {
 
         closureToDelete.value = null;
 
-        toast.success('Exceptional closure deleted.');
+        toast.success(t('restaurantSchedule.messages.closureDeleted'));
 
         router.reload({
             only: ['closures'],
@@ -308,7 +325,7 @@ const deleteClosure = async (): Promise<void> => {
     } catch (error: unknown) {
         console.error(error);
 
-        toast.error('Unable to delete the exceptional closure.');
+        toast.error(t('restaurantSchedule.messages.closureDeleteFailed'));
     } finally {
         isDeletingClosure.value = false;
     }
@@ -316,18 +333,21 @@ const deleteClosure = async (): Promise<void> => {
 </script>
 
 <template>
-    <Head title="Restaurant schedule" />
+    <Head :title="t('restaurantSchedule.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-6 p-4">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">
-                    Restaurant schedule
+                    {{ t('restaurantSchedule.title') }}
                 </h1>
 
                 <p class="mt-1 text-sm text-muted-foreground">
-                    Manage regular opening hours and exceptional closures. Times
-                    are displayed in {{ props.timezone }}.
+                    {{
+                        t('restaurantSchedule.description', {
+                            timezone: props.timezone,
+                        })
+                    }}
                 </p>
             </div>
 
@@ -343,10 +363,14 @@ const deleteClosure = async (): Promise<void> => {
                         </div>
 
                         <div>
-                            <h2 class="font-semibold">Regular opening hours</h2>
+                            <h2 class="font-semibold">
+                                {{ t('restaurantSchedule.regular.title') }}
+                            </h2>
 
                             <p class="text-sm text-muted-foreground">
-                                The normal weekly restaurant schedule.
+                                {{
+                                    t('restaurantSchedule.regular.description')
+                                }}
                             </p>
                         </div>
                     </div>
@@ -364,7 +388,11 @@ const deleteClosure = async (): Promise<void> => {
 
                         <Save v-else class="h-4 w-4" />
 
-                        {{ isSavingHours ? 'Saving…' : 'Save hours' }}
+                        {{
+                            isSavingHours
+                                ? t('restaurantSchedule.regular.saving')
+                                : t('restaurantSchedule.regular.save')
+                        }}
                     </button>
                 </div>
 
@@ -394,7 +422,15 @@ const deleteClosure = async (): Promise<void> => {
                                 />
 
                                 <span class="text-sm font-medium">
-                                    {{ day.is_open ? 'Open' : 'Closed' }}
+                                    {{
+                                        day.is_open
+                                            ? t(
+                                                  'restaurantSchedule.regular.open',
+                                              )
+                                            : t(
+                                                  'restaurantSchedule.regular.closed',
+                                              )
+                                    }}
                                 </span>
                             </label>
 
@@ -407,7 +443,11 @@ const deleteClosure = async (): Promise<void> => {
                                         :for="`opens-at-${day.weekday}`"
                                         class="mb-1.5 block text-xs font-medium text-muted-foreground"
                                     >
-                                        Opens at
+                                        {{
+                                            t(
+                                                'restaurantSchedule.regular.opensAt',
+                                            )
+                                        }}
                                     </label>
 
                                     <input
@@ -437,7 +477,11 @@ const deleteClosure = async (): Promise<void> => {
                                         :for="`closes-at-${day.weekday}`"
                                         class="mb-1.5 block text-xs font-medium text-muted-foreground"
                                     >
-                                        Closes at
+                                        {{
+                                            t(
+                                                'restaurantSchedule.regular.closesAt',
+                                            )
+                                        }}
                                     </label>
 
                                     <input
@@ -467,7 +511,11 @@ const deleteClosure = async (): Promise<void> => {
                                         :for="`last-pickup-${day.weekday}`"
                                         class="mb-1.5 block text-xs font-medium text-muted-foreground"
                                     >
-                                        Last pickup
+                                        {{
+                                            t(
+                                                'restaurantSchedule.regular.lastPickup',
+                                            )
+                                        }}
                                     </label>
 
                                     <input
@@ -497,7 +545,9 @@ const deleteClosure = async (): Promise<void> => {
                                 v-else
                                 class="flex flex-1 items-center rounded-lg bg-muted/50 px-4 py-3 text-sm text-muted-foreground"
                             >
-                                The restaurant is closed all day.
+                                {{
+                                    t('restaurantSchedule.regular.closeAllDay')
+                                }}
                             </div>
                         </div>
                     </div>
@@ -513,10 +563,12 @@ const deleteClosure = async (): Promise<void> => {
                     </div>
 
                     <div>
-                        <h2 class="font-semibold">Exceptional closures</h2>
+                        <h2 class="font-semibold">
+                            {{ t('restaurantSchedule.closures.title') }}
+                        </h2>
 
                         <p class="text-sm text-muted-foreground">
-                            Full-day and temporary closure periods.
+                            {{ t('restaurantSchedule.closures.description') }}
                         </p>
                     </div>
                 </div>
@@ -533,16 +585,24 @@ const deleteClosure = async (): Promise<void> => {
                             <h3 class="font-medium">
                                 {{
                                     editingClosureId === null
-                                        ? 'Add an exceptional closure'
-                                        : 'Edit exceptional closure'
+                                        ? t(
+                                              'restaurantSchedule.closures.addTitle',
+                                          )
+                                        : t(
+                                              'restaurantSchedule.closures.editTitle',
+                                          )
                                 }}
                             </h3>
 
                             <p class="text-sm text-muted-foreground">
                                 {{
                                     editingClosureId === null
-                                        ? 'Close one or more full days, or select a custom period.'
-                                        : 'Update the selected closure period and message.'
+                                        ? t(
+                                              'restaurantSchedule.closures.addDescription',
+                                          )
+                                        : t(
+                                              'restaurantSchedule.closures.editDescription',
+                                          )
                                 }}
                             </p>
                         </div>
@@ -559,7 +619,7 @@ const deleteClosure = async (): Promise<void> => {
                             "
                             @click="closureForm.is_all_day = true"
                         >
-                            Full day
+                            {{ t('restaurantSchedule.closures.fullDay') }}
                         </button>
 
                         <button
@@ -572,7 +632,7 @@ const deleteClosure = async (): Promise<void> => {
                             "
                             @click="closureForm.is_all_day = false"
                         >
-                            Custom hours
+                            {{ t('restaurantSchedule.closures.customHours') }}
                         </button>
                     </div>
 
@@ -585,7 +645,11 @@ const deleteClosure = async (): Promise<void> => {
                                 for="closure-start-date"
                                 class="mb-1.5 block text-sm font-medium"
                             >
-                                First closed day
+                                {{
+                                    t(
+                                        'restaurantSchedule.closures.firstClosedDay',
+                                    )
+                                }}
                             </label>
 
                             <input
@@ -611,7 +675,11 @@ const deleteClosure = async (): Promise<void> => {
                                 for="closure-end-date"
                                 class="mb-1.5 block text-sm font-medium"
                             >
-                                Last closed day
+                                {{
+                                    t(
+                                        'restaurantSchedule.closures.lastClosedDay',
+                                    )
+                                }}
                             </label>
 
                             <input
@@ -640,7 +708,9 @@ const deleteClosure = async (): Promise<void> => {
                                 for="closure-start-time"
                                 class="mb-1.5 block text-sm font-medium"
                             >
-                                Closed from
+                                {{
+                                    t('restaurantSchedule.closures.closedFrom')
+                                }}
                             </label>
 
                             <input
@@ -667,7 +737,9 @@ const deleteClosure = async (): Promise<void> => {
                                 for="closure-end-time"
                                 class="mb-1.5 block text-sm font-medium"
                             >
-                                Closed until
+                                {{
+                                    t('restaurantSchedule.closures.closedUntil')
+                                }}
                             </label>
 
                             <input
@@ -697,7 +769,11 @@ const deleteClosure = async (): Promise<void> => {
                                 for="closure-reason"
                                 class="mb-1.5 block text-sm font-medium"
                             >
-                                Internal reason
+                                {{
+                                    t(
+                                        'restaurantSchedule.closures.internalReason',
+                                    )
+                                }}
                             </label>
 
                             <input
@@ -705,7 +781,11 @@ const deleteClosure = async (): Promise<void> => {
                                 v-model="closureForm.reason"
                                 type="text"
                                 maxlength="255"
-                                placeholder="For example: Public holiday"
+                                :placeholder="
+                                    t(
+                                        'restaurantSchedule.closures.internalReason',
+                                    )
+                                "
                                 class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
                                 :class="{
                                     'border-red-500': closureError('reason'),
@@ -713,7 +793,9 @@ const deleteClosure = async (): Promise<void> => {
                             />
 
                             <p class="mt-1 text-xs text-muted-foreground">
-                                Only administrators will see this reason.
+                                {{
+                                    t('restaurantSchedule.closures.reasonHelp')
+                                }}
                             </p>
 
                             <p
@@ -729,7 +811,11 @@ const deleteClosure = async (): Promise<void> => {
                                 for="closure-public-message"
                                 class="mb-1.5 block text-sm font-medium"
                             >
-                                Client message
+                                {{
+                                    t(
+                                        'restaurantSchedule.closures.clientMessage',
+                                    )
+                                }}
                             </label>
 
                             <textarea
@@ -737,7 +823,11 @@ const deleteClosure = async (): Promise<void> => {
                                 v-model="closureForm.public_message"
                                 rows="3"
                                 maxlength="500"
-                                placeholder="For example: We are closed today for a public holiday."
+                                :placeholder="
+                                    t(
+                                        'restaurantSchedule.closures.messagePlaceholder',
+                                    )
+                                "
                                 class="w-full resize-none rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
                                 :class="{
                                     'border-red-500':
@@ -747,8 +837,11 @@ const deleteClosure = async (): Promise<void> => {
 
                             <div class="mt-1 flex justify-between gap-3">
                                 <p class="text-xs text-muted-foreground">
-                                    Displayed in the client banner and warning
-                                    modal.
+                                    {{
+                                        t(
+                                            'restaurantSchedule.closures.messageHelp',
+                                        )
+                                    }}
                                 </p>
 
                                 <span class="text-xs text-muted-foreground">
@@ -774,8 +867,10 @@ const deleteClosure = async (): Promise<void> => {
                         >
                             {{
                                 editingClosureId === null
-                                    ? 'Reset'
-                                    : 'Cancel editing'
+                                    ? t('restaurantSchedule.closures.reset')
+                                    : t(
+                                          'restaurantSchedule.closures.cancelEditing',
+                                      )
                             }}
                         </button>
 
@@ -801,11 +896,15 @@ const deleteClosure = async (): Promise<void> => {
                             {{
                                 isSavingClosure
                                     ? editingClosureId === null
-                                        ? 'Adding closure…'
-                                        : 'Saving changes…'
+                                        ? t(
+                                              'restaurantSchedule.closures.adding',
+                                          )
+                                        : t(
+                                              'restaurantSchedule.closures.saving',
+                                          )
                                     : editingClosureId === null
-                                      ? 'Add closure'
-                                      : 'Save changes'
+                                      ? t('restaurantSchedule.closures.add')
+                                      : t('restaurantSchedule.closures.save')
                             }}
                         </button>
                     </div>
@@ -815,7 +914,7 @@ const deleteClosure = async (): Promise<void> => {
                     v-if="props.closures.length === 0"
                     class="p-8 text-center text-sm text-muted-foreground"
                 >
-                    No exceptional closures have been added.
+                    {{ t('restaurantSchedule.closures.empty') }}
                 </div>
 
                 <div v-else class="divide-y">
@@ -830,7 +929,10 @@ const deleteClosure = async (): Promise<void> => {
                             <div>
                                 <p class="font-medium">
                                     {{
-                                        closure.reason || 'Exceptional closure'
+                                        closure.reason ||
+                                        t(
+                                            'restaurantSchedule.closures.fallbackName',
+                                        )
                                     }}
                                 </p>
 
@@ -845,8 +947,12 @@ const deleteClosure = async (): Promise<void> => {
                                 >
                                     {{
                                         closure.is_all_day
-                                            ? 'Full day'
-                                            : 'Custom hours'
+                                            ? t(
+                                                  'restaurantSchedule.closures.fullDay',
+                                              )
+                                            : t(
+                                                  'restaurantSchedule.closures.customHours',
+                                              )
                                     }}
                                 </span>
 
@@ -856,7 +962,7 @@ const deleteClosure = async (): Promise<void> => {
                                     @click="editClosure(closure)"
                                 >
                                     <Pencil class="h-3.5 w-3.5" />
-                                    Edit
+                                    {{ t('restaurantSchedule.closures.edit') }}
                                 </button>
 
                                 <button
@@ -865,21 +971,31 @@ const deleteClosure = async (): Promise<void> => {
                                     @click="requestClosureDeletion(closure)"
                                 >
                                     <Trash2 class="h-3.5 w-3.5" />
-                                    Delete
+                                    {{
+                                        t('restaurantSchedule.closures.delete')
+                                    }}
                                 </button>
                             </div>
                         </div>
 
                         <p v-if="closure.public_message" class="text-sm">
-                            Client message:
-                            {{ closure.public_message }}
+                            {{
+                                t(
+                                    'restaurantSchedule.closures.clientMessageLabel',
+                                    { message: closure.public_message },
+                                )
+                            }}
                         </p>
 
                         <p
                             v-if="closure.created_by"
                             class="text-xs text-muted-foreground"
                         >
-                            Created by {{ closure.created_by }}
+                            {{
+                                t('restaurantSchedule.closures.createdBy', {
+                                    name: closure.created_by,
+                                })
+                            }}
                         </p>
                     </article>
                 </div>

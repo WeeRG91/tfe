@@ -8,6 +8,7 @@ import globalSearch from '@/i18n/locales/fr/admin/globalSearch';
 import ingredient from '@/i18n/locales/fr/admin/ingredient';
 import layout from '@/i18n/locales/fr/admin/layout';
 import meat from '@/i18n/locales/fr/admin/meat';
+import restaurantSchedule from '@/i18n/locales/fr/admin/restaurantSchedule';
 import role from '@/i18n/locales/fr/admin/role';
 import setting from '@/i18n/locales/fr/admin/setting';
 import user from '@/i18n/locales/fr/admin/user';
@@ -52,6 +53,7 @@ export default {
     ingredient,
     layout,
     meat,
+    restaurantSchedule,
     role,
     setting,
     user,

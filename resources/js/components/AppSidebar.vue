@@ -49,10 +49,12 @@ import {
     UserRoundPen,
     UserRoundPlus,
     Wine,
+    CalendarClock,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AppLogo from './AppLogo.vue';
+import restaurantSchedule from '@/routes/admin/restaurant-schedule';
 
 const page = usePage();
 const currentUser = computed(() => page.props.auth?.user);
@@ -121,6 +123,12 @@ const mainNavItems = computed<NavItem[]>(() => [
         href: chat.chats().url,
         icon: MessageCircle,
         permission: ChatPermissionEnum.CHAT_VIEW,
+    },
+    {
+        title: t('restaurantSchedule.title'),
+        href: restaurantSchedule.index(),
+        icon: CalendarClock,
+        permission: AdminPermissionEnum.DASHBOARD_VIEW,
     },
 ]);
 
