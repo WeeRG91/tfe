@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AllergenController;
 use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\ConfirmedOrderController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DishController;
 use App\Http\Controllers\Admin\DrinkController;
 use App\Http\Controllers\Admin\GlobalSearchController;
@@ -20,9 +21,7 @@ Route::middleware(['auth', 'verified', 'permission:admin.access'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::controller(DishController::class)->prefix('dishes')->name('dish.')->group(function () {
             Route::get('/', 'index')->name('index');

@@ -546,7 +546,7 @@ const deleteClosure = async (): Promise<void> => {
                                 class="flex flex-1 items-center rounded-lg bg-muted/50 px-4 py-3 text-sm text-muted-foreground"
                             >
                                 {{
-                                    t('restaurantSchedule.regular.closeAllDay')
+                                    t('restaurantSchedule.regular.closedAllDay')
                                 }}
                             </div>
                         </div>

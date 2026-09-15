@@ -2,6 +2,7 @@ import admin from '@/i18n/locales/lb/admin/admin';
 import allergen from '@/i18n/locales/lb/admin/allergen';
 import chat from '@/i18n/locales/lb/admin/chat';
 import confirmedOrder from '@/i18n/locales/lb/admin/confirmedOrder';
+import dashboard from '@/i18n/locales/lb/admin/dashboard';
 import dish from '@/i18n/locales/lb/admin/dish';
 import drink from '@/i18n/locales/lb/admin/drink';
 import globalSearch from '@/i18n/locales/lb/admin/globalSearch';
@@ -47,6 +48,7 @@ export default {
     allergen,
     chat,
     confirmedOrder,
+    dashboard,
     dish,
     drink,
     globalSearch,
