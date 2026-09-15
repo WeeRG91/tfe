@@ -24,6 +24,9 @@ export default {
         closedAllDay: 'De Restaurant ass de ganzen Dag zou.',
         save: 'Ëffnungszäite späicheren',
         saving: 'Gëtt gespäichert…',
+        periodNumber: 'Period {number}',
+        addPeriod: 'Zweet Period derbäisetzen',
+        removePeriod: 'Zweet Period ewechhuelen',
     },
 
     closures: {

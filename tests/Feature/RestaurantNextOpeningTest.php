@@ -9,15 +9,19 @@ beforeEach(function () {
     config()->set('restaurant.timezone', 'Europe/Luxembourg');
 
     foreach (range(1, 7) as $weekday) {
-        RestaurantHour::query()->updateOrCreate(
+        $day = RestaurantHour::query()->updateOrCreate(
             ['weekday' => $weekday],
             [
                 'is_open' => true,
-                'opens_at' => '11:00:00',
-                'closes_at' => '22:00:00',
-                'last_pickup_at' => '21:00:00',
             ],
         );
+
+        $day->periods()->create([
+            'position' => 1,
+            'opens_at' => '11:00:00',
+            'closes_at' => '22:00:00',
+            'last_pickup_at' => '21:00:00',
+        ]);
     }
 
     $this->availability = app(RestaurantAvailabilityService::class);
@@ -168,4 +172,36 @@ it('returns null when no weekday is open', function () {
     expect(
         $this->availability->nextOpenAt($from),
     )->toBeNull();
+});
+
+it('returns the second opening after the afternoon break', function () {
+    $tuesday = RestaurantHour::query()
+        ->where('weekday', 2)
+        ->firstOrFail();
+
+    $tuesday->periods()->delete();
+
+    $tuesday->periods()->createMany([
+        [
+            'position' => 1,
+            'opens_at' => '11:00:00',
+            'closes_at' => '14:30:00',
+            'last_pickup_at' => '14:00:00',
+        ],
+        [
+            'position' => 2,
+            'opens_at' => '18:00:00',
+            'closes_at' => '22:00:00',
+            'last_pickup_at' => '21:00:00',
+        ],
+    ]);
+
+    $from = CarbonImmutable::parse(
+        '2026-09-15 15:00:00',
+        'Europe/Luxembourg',
+    );
+
+    expect(
+        $this->availability->nextOpenAt($from)?->toIso8601String(),
+    )->toBe('2026-09-15T18:00:00+02:00');
 });

@@ -24,6 +24,9 @@ export default {
         closedAllDay: 'Le restaurant est fermé toute la journée.',
         save: 'Enregistrer les horaires',
         saving: 'Enregistrement…',
+        periodNumber: 'Période {number}',
+        addPeriod: 'Ajouter une deuxième période',
+        removePeriod: 'Supprimer la deuxième période',
     },
 
     closures: {

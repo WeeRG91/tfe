@@ -126,6 +126,7 @@ class RestaurantAvailabilityService
         $firstDate = $localFrom->startOfDay();
 
         $schedules = RestaurantHour::query()
+            ->with('periods')
             ->get()
             ->keyBy(
                 fn (RestaurantHour $hour) => $hour->weekday->value,
@@ -144,55 +145,58 @@ class RestaurantAvailabilityService
 
             if (
                 $schedule === null ||
-                !$schedule->is_open ||
-                $schedule->opens_at === null ||
-                $schedule->closes_at === null
+                !$schedule->is_open
             ) {
                 continue;
             }
 
-            $opening = $date->setTimeFromTimeString(
-                $schedule->opens_at,
-            );
-
-            $closing = $date->setTimeFromTimeString(
-                $schedule->closes_at,
-            );
-
-            if ($opening->greaterThanOrEqualTo($closing)) {
-                continue;
-            }
-
-            $candidate = $opening->lessThan($localFrom)
-                ? $localFrom
-                : $opening;
-
-            foreach ($closures as $closure) {
-                $closureStart = $this->toRestaurantTimezone(
-                    $closure->starts_at,
+            foreach ($schedule->periods as $period) {
+                $opening = $date->setTimeFromTimeString(
+                    $period->opens_at,
                 );
 
-                $closureEnd = $this->toRestaurantTimezone(
-                    $closure->ends_at,
+                $closing = $date->setTimeFromTimeString(
+                    $period->closes_at,
                 );
 
-                if ($closureEnd->lessThanOrEqualTo($candidate)) {
+                if (
+                    $opening->greaterThanOrEqualTo($closing) ||
+                    $closing->lessThanOrEqualTo($localFrom)
+                ) {
                     continue;
                 }
 
-                if ($closureStart->greaterThan($candidate)) {
-                    break;
+                $candidate = $opening->lessThan($localFrom)
+                    ? $localFrom
+                    : $opening;
+
+                foreach ($closures as $closure) {
+                    $closureStart = $this->toRestaurantTimezone(
+                        $closure->starts_at,
+                    );
+
+                    $closureEnd = $this->toRestaurantTimezone(
+                        $closure->ends_at,
+                    );
+
+                    if ($closureEnd->lessThanOrEqualTo($candidate)) {
+                        continue;
+                    }
+
+                    if ($closureStart->greaterThan($candidate)) {
+                        break;
+                    }
+
+                    $candidate = $closureEnd;
+
+                    if ($candidate->greaterThanOrEqualTo($closing)) {
+                        break;
+                    }
                 }
 
-                $candidate = $closureEnd;
-
-                if ($candidate->greaterThanOrEqualTo($closing)) {
-                    break;
+                if ($candidate->lessThan($closing)) {
+                    return $candidate;
                 }
-            }
-
-            if ($candidate->lessThan($closing)) {
-                return $candidate;
             }
         }
 
@@ -222,6 +226,7 @@ class RestaurantAvailabilityService
         );
 
         $schedules = RestaurantHour::query()
+            ->with('periods')
             ->get()
             ->keyBy(fn (RestaurantHour $hour) => $hour->weekday->value);
 
@@ -250,47 +255,54 @@ class RestaurantAvailabilityService
             $schedule = $schedules->get($date->dayOfWeekIso);
 
             $slots = [];
+            $periods = [];
 
             if (
                 $schedule !== null &&
-                $schedule->is_open &&
-                $schedule->opens_at !== null &&
-                $schedule->closes_at !== null &&
-                $schedule->last_pickup_at !== null
+                $schedule->is_open
             ) {
-                $openingDateTime = $date->setTimeFromTimeString(
-                    $schedule->opens_at,
-                );
-
-                $closingDateTime = $date->setTimeFromTimeString(
-                    $schedule->closes_at,
-                );
-
-                $lastPickupDateTime = $date->setTimeFromTimeString(
-                    $schedule->last_pickup_at,
-                );
-
-                for (
-                    $slot = $openingDateTime;
-                    $slot->lessThanOrEqualTo($lastPickupDateTime);
-                    $slot = $slot->addMinutes($slotInterval)
-                ) {
-                    if ($slot->lessThan($minimumPickupTime)) {
-                        continue;
-                    }
-
-                    if ($slot->greaterThanOrEqualTo($closingDateTime)) {
-                        continue;
-                    }
-
-                    if ($this->isCoveredByClosure($slot, $closures)) {
-                        continue;
-                    }
-
-                    $slots[] = [
-                        'value' => $slot->toIso8601String(),
-                        'label' => $slot->format('H:i'),
+                foreach ($schedule->periods as $period) {
+                    $periods[] = [
+                        'position' => $period->position,
+                        'opens_at' => $period->opens_at,
+                        'closes_at' => $period->closes_at,
+                        'last_pickup_at' => $period->last_pickup_at,
                     ];
+
+                    $openingDateTime = $date->setTimeFromTimeString(
+                        $period->opens_at,
+                    );
+
+                    $closingDateTime = $date->setTimeFromTimeString(
+                        $period->closes_at,
+                    );
+
+                    $lastPickupDateTime = $date->setTimeFromTimeString(
+                        $period->last_pickup_at,
+                    );
+
+                    for (
+                        $slot = $openingDateTime;
+                        $slot->lessThanOrEqualTo($lastPickupDateTime);
+                        $slot = $slot->addMinutes($slotInterval)
+                    ) {
+                        if ($slot->lessThan($minimumPickupTime)) {
+                            continue;
+                        }
+
+                        if ($slot->greaterThanOrEqualTo($closingDateTime)) {
+                            continue;
+                        }
+
+                        if ($this->isCoveredByClosure($slot, $closures)) {
+                            continue;
+                        }
+
+                        $slots[] = [
+                            'value' => $slot->toIso8601String(),
+                            'label' => $slot->format('H:i'),
+                        ];
+                    }
                 }
             }
 
@@ -298,9 +310,7 @@ class RestaurantAvailabilityService
                 'date' => $date->format('Y-m-d'),
                 'weekday' => $date->dayOfWeekIso,
                 'available' => count($slots) > 0,
-                'opens_at' => $schedule?->opens_at,
-                'closes_at' => $schedule?->closes_at,
-                'last_pickup_at' => $schedule?->last_pickup_at,
+                'periods' => $periods,
                 'slots' => $slots,
             ];
         }
@@ -352,6 +362,7 @@ class RestaurantAvailabilityService
     private function scheduleFor(CarbonInterface $localDateTime): ?RestaurantHour
     {
         return RestaurantHour::query()
+            ->with('periods')
             ->where('weekday', $localDateTime->dayOfWeekIso)
             ->first();
     }
@@ -360,23 +371,26 @@ class RestaurantAvailabilityService
         CarbonInterface $localDateTime,
         RestaurantHour $schedule
     ): bool {
-        if (
-            $schedule->opens_at === null ||
-            $schedule->closes_at === null
-        ) {
-            return false;
+        $date = $localDateTime->startOfDay();
+
+        foreach ($schedule->periods as $period) {
+            $opening = $date->setTimeFromTimeString(
+                $period->opens_at,
+            );
+
+            $closing = $date->setTimeFromTimeString(
+                $period->closes_at,
+            );
+
+            if (
+                $localDateTime->greaterThanOrEqualTo($opening) &&
+                $localDateTime->lessThan($closing)
+            ) {
+                return true;
+            }
         }
 
-        $openingDateTime = $localDateTime
-            ->startOfDay()
-            ->setTimeFromTimeString($schedule->opens_at);
-
-        $closingDateTime = $localDateTime
-            ->startOfDay()
-            ->setTimeFromTimeString($schedule->closes_at);
-
-        return $localDateTime->greaterThanOrEqualTo($openingDateTime)
-            && $localDateTime->lessThan($closingDateTime);
+        return false;
     }
 
     private function roundUpToInterval(

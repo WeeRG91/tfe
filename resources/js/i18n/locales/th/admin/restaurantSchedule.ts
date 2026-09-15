@@ -24,6 +24,9 @@ export default {
         closedAllDay: 'ร้านอาหารปิดให้บริการตลอดทั้งวัน',
         save: 'บันทึกเวลาทำการ',
         saving: 'กำลังบันทึก…',
+        periodNumber: 'ช่วงที่ {number}',
+        addPeriod: 'เพิ่มช่วงที่สอง',
+        removePeriod: 'ลบช่วงที่สอง',
     },
 
     closures: {

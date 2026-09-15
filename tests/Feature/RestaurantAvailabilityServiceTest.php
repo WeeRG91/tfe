@@ -8,9 +8,13 @@ use Carbon\CarbonImmutable;
 beforeEach(function () {
     config()->set('restaurant.timezone', 'Europe/Luxembourg');
 
-    RestaurantHour::query()->create([
+    $day = RestaurantHour::query()->create([
         'weekday' => 1,
         'is_open' => true,
+    ]);
+
+    $day->periods()->create([
+        'position' => 1,
         'opens_at' => '11:00:00',
         'closes_at' => '22:00:00',
         'last_pickup_at' => '21:00:00',
@@ -182,6 +186,52 @@ it('generates pickup slots from opening time through last pickup time', function
         ->and($slots[array_key_last($slots)]['label'])->toBe('21:00');
 });
 
+it('generates pickup slots for two periods without slots in the break', function () {
+    $monday = RestaurantHour::query()
+        ->where('weekday', 1)
+        ->firstOrFail();
+
+    // Replace the default all-day period for this test only.
+    $monday->periods()->delete();
+
+    $monday->periods()->createMany([
+        [
+            'position' => 1,
+            'opens_at' => '11:00:00',
+            'closes_at' => '14:30:00',
+            'last_pickup_at' => '14:00:00',
+        ],
+        [
+            'position' => 2,
+            'opens_at' => '18:00:00',
+            'closes_at' => '22:00:00',
+            'last_pickup_at' => '21:00:00',
+        ],
+    ]);
+
+    $now = CarbonImmutable::parse(
+        '2026-09-14 10:00:00',
+        'Europe/Luxembourg',
+    );
+
+    $availability = $this->availability->pickupAvailability($now, 1);
+    $date = $availability['dates'][0];
+    $labels = collect($date['slots'])->pluck('label');
+
+    expect($date['available'])->toBeTrue()
+        ->and($date['periods'])->toHaveCount(2)
+        ->and($labels)
+        ->toContain('11:00')
+        ->toContain('14:00')
+        ->not->toContain('14:15')
+        ->not->toContain('14:30')
+        ->not->toContain('17:45')
+        ->toContain('18:00')
+        ->toContain('21:00')
+        ->not->toContain('21:15');
+
+});
+
 it('rounds the minimum pickup time up to the next interval', function () {
     $now = CarbonImmutable::parse(
         '2026-09-14 11:07:00',
@@ -312,4 +362,43 @@ it('validates a pickup time against the generated slots', function () {
                 $now,
             ),
         )->toBeFalse();
+});
+
+it('is closed between two Tuesday opening periods', function () {
+    $tuesday = RestaurantHour::query()->create([
+        'weekday' => 2,
+        'is_open' => true,
+    ]);
+
+    $tuesday->periods()->createMany([
+        [
+            'position' => 1,
+            'opens_at' => '11:00:00',
+            'closes_at' => '14:30:00',
+            'last_pickup_at' => '14:00:00',
+        ],
+        [
+            'position' => 2,
+            'opens_at' => '18:00:00',
+            'closes_at' => '22:00:00',
+            'last_pickup_at' => '21:00:00',
+        ],
+    ]);
+
+    foreach ([
+                 '11:00:00' => true,
+                 '14:29:59' => true,
+                 '14:30:00' => false,
+                 '17:59:59' => false,
+                 '18:00:00' => true,
+                 '22:00:00' => false,
+             ] as $time => $expected) {
+        $dateTime = CarbonImmutable::parse(
+            "2026-09-15 {$time}",
+            'Europe/Luxembourg',
+        );
+
+        expect($this->availability->isOpenAt($dateTime))
+            ->toBe($expected);
+    }
 });

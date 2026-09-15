@@ -1,11 +1,17 @@
+export type RestaurantHourPeriodType = {
+    id: number | null;
+    position: number;
+    opens_at: string;
+    closes_at: string;
+    last_pickup_at: string;
+}
+
 export type RestaurantHourType = {
     id: number;
     weekday: number;
     weekday_key: string;
     is_open: boolean;
-    opens_at: string | null;
-    closes_at: string | null;
-    last_pickup_at: string | null;
+    periods: RestaurantHourPeriodType[];
 };
 
 export type RestaurantClosureType = {

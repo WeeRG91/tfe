@@ -18,8 +18,8 @@ import {
     Trash2,
 } from 'lucide-vue-next';
 import { computed, nextTick, ref } from 'vue';
-import { toast } from 'vue-sonner';
 import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     hours: RestaurantHourType[];
@@ -30,7 +30,10 @@ const props = defineProps<{
 const { t, locale } = useI18n();
 
 const editableHours = ref<RestaurantHourType[]>(
-    props.hours.map((day) => ({ ...day })),
+    props.hours.map((day) => ({
+        ...day,
+        periods: day.periods.map((period) => ({ ...period })),
+    })),
 );
 const isSavingHours = ref<boolean>(false);
 const hourErrors = ref<Record<string, string[]>>({});
@@ -117,12 +120,51 @@ const closurePeriod = (closure: RestaurantClosureType): string => {
 
 const ensureOpenTimes = (day: RestaurantHourType): void => {
     if (!day.is_open) {
+        day.periods = [];
         return;
     }
 
-    day.opens_at ??= '11:00';
-    day.closes_at ??= '22:00';
-    day.last_pickup_at ??= '21:00';
+    if (day.periods.length === 0) {
+        day.periods = [
+            {
+                id: null,
+                position: 1,
+                opens_at: '11:00',
+                closes_at: '22:00',
+                last_pickup_at: '21:00',
+            },
+        ];
+    }
+};
+
+const addPeriod = (day: RestaurantHourType): void => {
+    if (!day.is_open || day.periods.length >= 2) {
+        return;
+    }
+
+    day.periods.push({
+        id: null,
+        position: 2,
+        opens_at: '',
+        closes_at: '',
+        last_pickup_at: '',
+    });
+};
+
+const removeSecondPeriod = (day: RestaurantHourType): void => {
+    if (day.periods.length !== 2) {
+        return;
+    }
+
+    day.periods.splice(1, 1);
+};
+
+const periodErrorFor = (
+    dayIndex: number,
+    periodIndex: number,
+    field: string,
+): string | null => {
+    return errorFor(dayIndex, `periods.${periodIndex}.${field}`);
 };
 
 const errorFor = (index: number, field: string): string | null => {
@@ -138,20 +180,17 @@ const saveRegularHours = async (): Promise<void> => {
     const hours = editableHours.value.map((day) => ({
         weekday: day.weekday,
         is_open: day.is_open,
-        opens_at: day.is_open ? day.opens_at : null,
-        closes_at: day.is_open ? day.closes_at : null,
-        last_pickup_at: day.is_open ? day.last_pickup_at : null,
+        periods: day.is_open
+            ? day.periods.map((period) => ({
+                  opens_at: period.opens_at,
+                  closes_at: period.closes_at,
+                  last_pickup_at: period.last_pickup_at,
+              }))
+            : [],
     }));
 
     try {
         await axios.put('/admin/restaurant-schedule/hours', { hours });
-
-        editableHours.value = editableHours.value.map((day) => ({
-            ...day,
-            opens_at: day.is_open ? day.opens_at : null,
-            closes_at: day.is_open ? day.closes_at : null,
-            last_pickup_at: day.is_open ? day.last_pickup_at : null,
-        }));
 
         toast.success(t('restaurantSchedule.messages.hoursSaved'));
     } catch (error: unknown) {
@@ -434,111 +473,208 @@ const deleteClosure = async (): Promise<void> => {
                                 </span>
                             </label>
 
-                            <div
-                                v-if="day.is_open"
-                                class="grid flex-1 gap-4 sm:grid-cols-3"
-                            >
-                                <div>
-                                    <label
-                                        :for="`opens-at-${day.weekday}`"
-                                        class="mb-1.5 block text-xs font-medium text-muted-foreground"
-                                    >
-                                        {{
-                                            t(
-                                                'restaurantSchedule.regular.opensAt',
-                                            )
-                                        }}
-                                    </label>
+                            <div v-if="day.is_open" class="flex-1 space-y-4">
+                                <p
+                                    v-if="errorFor(index, 'periods')"
+                                    class="text-xs text-red-600"
+                                >
+                                    {{ errorFor(index, 'periods') }}
+                                </p>
 
-                                    <input
-                                        :id="`opens-at-${day.weekday}`"
-                                        v-model="day.opens_at"
-                                        type="time"
-                                        step="900"
-                                        class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                                        :class="{
-                                            'border-red-500': errorFor(
-                                                index,
-                                                'opens_at',
-                                            ),
-                                        }"
-                                    />
-
-                                    <p
-                                        v-if="errorFor(index, 'opens_at')"
-                                        class="mt-1 text-xs text-red-600"
+                                <div
+                                    v-for="(period, periodIndex) in day.periods"
+                                    :key="periodIndex"
+                                    class="space-y-3 rounded-lg border p-3"
+                                >
+                                    <div
+                                        class="flex items-center justify-between gap-3"
                                     >
-                                        {{ errorFor(index, 'opens_at') }}
-                                    </p>
+                                        <p class="text-sm font-medium">
+                                            {{
+                                                t(
+                                                    'restaurantSchedule.regular.periodNumber',
+                                                    {
+                                                        number: periodIndex + 1,
+                                                    },
+                                                )
+                                            }}
+                                        </p>
+
+                                        <button
+                                            v-if="periodIndex === 1"
+                                            type="button"
+                                            :disabled="isSavingHours"
+                                            class="text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-60"
+                                            @click="removeSecondPeriod(day)"
+                                        >
+                                            {{
+                                                t(
+                                                    'restaurantSchedule.regular.removePeriod',
+                                                )
+                                            }}
+                                        </button>
+                                    </div>
+
+                                    <div class="grid gap-4 sm:grid-cols-3">
+                                        <div>
+                                            <label
+                                                :for="`opens-at-${day.weekday}-${periodIndex}`"
+                                                class="mb-1.5 block text-xs font-medium text-muted-foreground"
+                                            >
+                                                {{
+                                                    t(
+                                                        'restaurantSchedule.regular.opensAt',
+                                                    )
+                                                }}
+                                            </label>
+
+                                            <input
+                                                :id="`opens-at-${day.weekday}-${periodIndex}`"
+                                                v-model="period.opens_at"
+                                                type="time"
+                                                step="900"
+                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                                :class="{
+                                                    'border-red-500':
+                                                        periodErrorFor(
+                                                            index,
+                                                            periodIndex,
+                                                            'opens_at',
+                                                        ),
+                                                }"
+                                            />
+
+                                            <p
+                                                v-if="
+                                                    periodErrorFor(
+                                                        index,
+                                                        periodIndex,
+                                                        'opens_at',
+                                                    )
+                                                "
+                                                class="mt-1 text-xs text-red-600"
+                                            >
+                                                {{
+                                                    periodErrorFor(
+                                                        index,
+                                                        periodIndex,
+                                                        'opens_at',
+                                                    )
+                                                }}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <label
+                                                :for="`closes-at-${day.weekday}-${periodIndex}`"
+                                                class="mb-1.5 block text-xs font-medium text-muted-foreground"
+                                            >
+                                                {{
+                                                    t(
+                                                        'restaurantSchedule.regular.closesAt',
+                                                    )
+                                                }}
+                                            </label>
+
+                                            <input
+                                                :id="`closes-at-${day.weekday}-${periodIndex}`"
+                                                v-model="period.closes_at"
+                                                type="time"
+                                                step="900"
+                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                                :class="{
+                                                    'border-red-500':
+                                                        periodErrorFor(
+                                                            index,
+                                                            periodIndex,
+                                                            'closes_at',
+                                                        ),
+                                                }"
+                                            />
+
+                                            <p
+                                                v-if="
+                                                    periodErrorFor(
+                                                        index,
+                                                        periodIndex,
+                                                        'closes_at',
+                                                    )
+                                                "
+                                                class="mt-1 text-xs text-red-600"
+                                            >
+                                                {{
+                                                    periodErrorFor(
+                                                        index,
+                                                        periodIndex,
+                                                        'closes_at',
+                                                    )
+                                                }}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <label
+                                                :for="`last-pickup-${day.weekday}-${periodIndex}`"
+                                                class="mb-1.5 block text-xs font-medium text-muted-foreground"
+                                            >
+                                                {{
+                                                    t(
+                                                        'restaurantSchedule.regular.lastPickup',
+                                                    )
+                                                }}
+                                            </label>
+
+                                            <input
+                                                :id="`last-pickup-${day.weekday}-${periodIndex}`"
+                                                v-model="period.last_pickup_at"
+                                                type="time"
+                                                step="900"
+                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                                :class="{
+                                                    'border-red-500':
+                                                        periodErrorFor(
+                                                            index,
+                                                            periodIndex,
+                                                            'last_pickup_at',
+                                                        ),
+                                                }"
+                                            />
+
+                                            <p
+                                                v-if="
+                                                    periodErrorFor(
+                                                        index,
+                                                        periodIndex,
+                                                        'last_pickup_at',
+                                                    )
+                                                "
+                                                class="mt-1 text-xs text-red-600"
+                                            >
+                                                {{
+                                                    periodErrorFor(
+                                                        index,
+                                                        periodIndex,
+                                                        'last_pickup_at',
+                                                    )
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label
-                                        :for="`closes-at-${day.weekday}`"
-                                        class="mb-1.5 block text-xs font-medium text-muted-foreground"
-                                    >
-                                        {{
-                                            t(
-                                                'restaurantSchedule.regular.closesAt',
-                                            )
-                                        }}
-                                    </label>
-
-                                    <input
-                                        :id="`closes-at-${day.weekday}`"
-                                        v-model="day.closes_at"
-                                        type="time"
-                                        step="900"
-                                        class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                                        :class="{
-                                            'border-red-500': errorFor(
-                                                index,
-                                                'closes_at',
-                                            ),
-                                        }"
-                                    />
-
-                                    <p
-                                        v-if="errorFor(index, 'closes_at')"
-                                        class="mt-1 text-xs text-red-600"
-                                    >
-                                        {{ errorFor(index, 'closes_at') }}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <label
-                                        :for="`last-pickup-${day.weekday}`"
-                                        class="mb-1.5 block text-xs font-medium text-muted-foreground"
-                                    >
-                                        {{
-                                            t(
-                                                'restaurantSchedule.regular.lastPickup',
-                                            )
-                                        }}
-                                    </label>
-
-                                    <input
-                                        :id="`last-pickup-${day.weekday}`"
-                                        v-model="day.last_pickup_at"
-                                        type="time"
-                                        step="900"
-                                        class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
-                                        :class="{
-                                            'border-red-500': errorFor(
-                                                index,
-                                                'last_pickup_at',
-                                            ),
-                                        }"
-                                    />
-
-                                    <p
-                                        v-if="errorFor(index, 'last_pickup_at')"
-                                        class="mt-1 text-xs text-red-600"
-                                    >
-                                        {{ errorFor(index, 'last_pickup_at') }}
-                                    </p>
-                                </div>
+                                <button
+                                    v-if="day.periods.length < 2"
+                                    type="button"
+                                    :disabled="isSavingHours"
+                                    class="text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-60"
+                                    @click="addPeriod(day)"
+                                >
+                                    {{
+                                        t(
+                                            'restaurantSchedule.regular.addPeriod',
+                                        )
+                                    }}
+                                </button>
                             </div>
 
                             <div

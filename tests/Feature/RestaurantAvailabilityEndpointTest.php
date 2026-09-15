@@ -7,9 +7,13 @@ use Carbon\CarbonImmutable;
 beforeEach(function () {
     config()->set('restaurant.timezone', 'Europe/Luxembourg');
 
-    RestaurantHour::query()->create([
+    $day = RestaurantHour::query()->create([
         'weekday' => 1,
         'is_open' => true,
+    ]);
+
+    $day->periods()->create([
+        'position' => 1,
         'opens_at' => '11:00:00',
         'closes_at' => '22:00:00',
         'last_pickup_at' => '21:00:00',

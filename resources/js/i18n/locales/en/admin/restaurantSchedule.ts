@@ -24,6 +24,9 @@ export default {
         closedAllDay: 'The restaurant is closed all day.',
         save: 'Save hours',
         saving: 'Saving…',
+        periodNumber: 'Period {number}',
+        addPeriod: 'Add second period',
+        removePeriod: 'Remove second period',
     },
 
     closures: {
@@ -31,7 +34,8 @@ export default {
         description: 'Full-day and temporary closure periods.',
         addTitle: 'Add exceptional closure',
         editTitle: 'Edit exceptional closure',
-        addDescription: 'Close one or more full days, or select a custom period.',
+        addDescription:
+            'Close one or more full days, or select a custom period.',
         editDescription: 'Update the selected closure period and message.',
         fullDay: 'Full day',
         customHours: 'Custom hours',

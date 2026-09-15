@@ -79,10 +79,13 @@ it('rejects adding a drink while the restaurant is closed', function () {
 });
 
 it('allows adding a drink during opening hours', function () {
-    RestaurantHour::query()->create([
-        // September 12, 2026 is Saturday.
+    $day = RestaurantHour::query()->create([
         'weekday' => 6,
         'is_open' => true,
+    ]);
+
+    $day->periods()->create([
+        'position' => 1,
         'opens_at' => '11:00:00',
         'closes_at' => '22:00:00',
         'last_pickup_at' => '21:00:00',

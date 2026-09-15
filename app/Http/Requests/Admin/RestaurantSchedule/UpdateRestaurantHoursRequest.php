@@ -50,16 +50,21 @@ class UpdateRestaurantHoursRequest extends FormRequest
                 'required',
                 'boolean',
             ],
-            'hours.*.opens_at' => [
-                'nullable',
+            'hours.*.periods' => ['present', 'array', 'max:2'],
+            'hours.*.periods.*' => ['required', 'array'],
+
+            'hours.*.periods.*.opens_at' => [
+                'required',
                 'date_format:H:i',
             ],
-            'hours.*.closes_at' => [
-                'nullable',
+
+            'hours.*.periods.*.closes_at' => [
+                'required',
                 'date_format:H:i',
             ],
-            'hours.*.last_pickup_at' => [
-                'nullable',
+
+            'hours.*.periods.*.last_pickup_at' => [
+                'required',
                 'date_format:H:i',
             ],
         ];
@@ -71,7 +76,11 @@ class UpdateRestaurantHoursRequest extends FormRequest
             function (Validator $validator): void {
                 $hours = $this->input('hours', []);
 
-                foreach ($hours as $index => $day) {
+                if (! is_array($hours)) {
+                    return;
+                }
+
+                foreach ($hours as $dayIndex => $day) {
                     if (! is_array($day)) {
                         continue;
                     }
@@ -81,65 +90,95 @@ class UpdateRestaurantHoursRequest extends FormRequest
                         FILTER_VALIDATE_BOOLEAN,
                     );
 
-                    if (! $isOpen) {
+                    $periods = $day['periods'] ?? null;
+
+                    if (! is_array($periods)) {
+                        // The rules() method reports missing or invalid periods.
                         continue;
                     }
 
-                    $opensAt = $day['opens_at'] ?? null;
-                    $closesAt = $day['closes_at'] ?? null;
-                    $lastPickupAt = $day['last_pickup_at'] ?? null;
-
-                    if ($opensAt === null) {
+                    if ($isOpen && count($periods) === 0) {
                         $validator->errors()->add(
-                            "hours.$index.opens_at",
-                            'The opening time is required for an open day.',
+                            "hours.$dayIndex.periods",
+                            'An open day needs at least one period.',
                         );
                     }
 
-                    if ($closesAt === null) {
+                    if (! $isOpen && count($periods) > 0) {
                         $validator->errors()->add(
-                            "hours.$index.closes_at",
-                            'The closing time is required for an open day.',
+                            "hours.$dayIndex.periods",
+                            'A closed day cannot have opening periods.',
                         );
-                    }
 
-                    if ($lastPickupAt === null) {
-                        $validator->errors()->add(
-                            "hours.$index.last_pickup_at",
-                            'The last pickup time is required for an open day.',
-                        );
-                    }
-
-                    if (
-                        $opensAt === null ||
-                        $closesAt === null ||
-                        $lastPickupAt === null ||
-                        ! $this->isValidTime($opensAt) ||
-                        ! $this->isValidTime($closesAt) ||
-                        ! $this->isValidTime($lastPickupAt)
-                    ) {
                         continue;
                     }
 
-                    if ($opensAt >= $closesAt) {
-                        $validator->errors()->add(
-                            "hours.$index.closes_at",
-                            'The closing time must be after the opening time.',
-                        );
+                    $validRanges = [];
+
+                    foreach ($periods as $periodIndex => $period) {
+                        if (! is_array($period)) {
+                            continue;
+                        }
+
+                        $opensAt = $period['opens_at'] ?? null;
+                        $closesAt = $period['closes_at'] ?? null;
+                        $lastPickupAt = $period['last_pickup_at'] ?? null;
+
+                        // rules() reports missing or malformed times.
+                        // Compare times only when all three are valid.
+                        if (
+                            ! $this->isValidTime($opensAt) ||
+                            ! $this->isValidTime($closesAt) ||
+                            ! $this->isValidTime($lastPickupAt)
+                        ) {
+                            continue;
+                        }
+
+                        if ($opensAt >= $closesAt) {
+                            $validator->errors()->add(
+                                "hours.$dayIndex.periods.$periodIndex.closes_at",
+                                'Closing must be after opening.',
+                            );
+
+                            continue;
+                        }
+
+                        if (
+                            $lastPickupAt < $opensAt ||
+                            $lastPickupAt >= $closesAt
+                        ) {
+                            $validator->errors()->add(
+                                "hours.$dayIndex.periods.$periodIndex.last_pickup_at",
+                                'Last pickup must be between opening and closing.',
+                            );
+                        }
+
+                        $validRanges[] = [
+                            'index' => $periodIndex,
+                            'opens_at' => $opensAt,
+                            'closes_at' => $closesAt,
+                        ];
                     }
 
-                    if ($lastPickupAt < $opensAt) {
-                        $validator->errors()->add(
-                            "hours.$index.last_pickup_at",
-                            'The last pickup time cannot be before opening.',
-                        );
-                    }
+                    // Sort a copy for validation. We do not change the request.
+                    usort(
+                        $validRanges,
+                        fn (array $a, array $b) => strcmp(
+                            $a['opens_at'],
+                            $b['opens_at'],
+                        ),
+                    );
 
-                    if ($lastPickupAt >= $closesAt) {
-                        $validator->errors()->add(
-                            "hours.$index.last_pickup_at",
-                            'The last pickup time must be before closing.',
-                        );
+                    for ($index = 1; $index < count($validRanges); $index++) {
+                        $previous = $validRanges[$index - 1];
+                        $current = $validRanges[$index];
+
+                        if ($current['opens_at'] < $previous['closes_at']) {
+                            $validator->errors()->add(
+                                "hours.$dayIndex.periods.{$current['index']}.opens_at",
+                                'Opening periods cannot overlap.',
+                            );
+                        }
                     }
                 }
             },

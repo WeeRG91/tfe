@@ -3,13 +3,18 @@ export type PickupSlot = {
     label: string;
 };
 
+export type PickupAvailabilityPeriod = {
+    position: number;
+    opens_at: string;
+    closes_at: string;
+    last_pickup_at: string;
+}
+
 export type PickupAvailabilityDate = {
     date: string;
     weekday: number;
     available: boolean;
-    opens_at: string | null;
-    closes_at: string | null;
-    last_pickup_at: string | null;
+    periods: PickupAvailabilityPeriod[];
     slots: PickupSlot[];
 };
 

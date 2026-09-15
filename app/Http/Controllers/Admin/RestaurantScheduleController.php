@@ -23,6 +23,7 @@ class RestaurantScheduleController extends Controller
         $timezone = config('restaurant.timezone');
 
         $hours = RestaurantHour::query()
+            ->with('periods')
             ->orderBy('weekday')
             ->get()
             ->map(fn (RestaurantHour $hour) => [
@@ -30,11 +31,15 @@ class RestaurantScheduleController extends Controller
                 'weekday' => $hour->weekday->value,
                 'weekday_key' => $hour->weekday->key(),
                 'is_open' => $hour->is_open,
-                'opens_at' => $this->shortTime($hour->opens_at),
-                'closes_at' => $this->shortTime($hour->closes_at),
-                'last_pickup_at' => $this->shortTime(
-                    $hour->last_pickup_at,
-                ),
+                'periods' => $hour->periods->map(fn ($period) => [
+                    'id' => $period->id,
+                    'position' => $period->position,
+                    'opens_at' => $this->shortTime($period->opens_at),
+                    'closes_at' => $this->shortTime($period->closes_at),
+                    'last_pickup_at' => $this->shortTime(
+                        $period->last_pickup_at,
+                    ),
+                ])->values(),
             ])
             ->values();
 
@@ -88,24 +93,41 @@ class RestaurantScheduleController extends Controller
         DB::transaction(function () use ($request): void {
             foreach ($request->validated('hours') as $day) {
                 $isOpen = (bool) $day['is_open'];
+                $periods = $day['periods'];
 
-                RestaurantHour::query()->updateOrCreate(
+                usort(
+                    $periods,
+                    fn (array $a, array $b) => strcmp(
+                        $a['opens_at'],
+                        $b['opens_at'],
+                    ),
+                );
+
+                $hour = RestaurantHour::query()->updateOrCreate(
                     [
                         'weekday' => $day['weekday'],
                     ],
                     [
                         'is_open' => $isOpen,
-                        'opens_at' => $isOpen
-                            ? $this->normalizeTime($day['opens_at'])
-                            : null,
-                        'closes_at' => $isOpen
-                            ? $this->normalizeTime($day['closes_at'])
-                            : null,
-                        'last_pickup_at' => $isOpen
-                            ? $this->normalizeTime($day['last_pickup_at'])
-                            : null,
                     ]
                 );
+
+                $hour->periods()->delete();
+
+                foreach ($periods as $index => $period) {
+                    $hour->periods()->create([
+                        'position' => $index + 1,
+                        'opens_at' => $this->normalizeTime(
+                            $period['opens_at'],
+                        ),
+                        'closes_at' => $this->normalizeTime(
+                            $period['closes_at'],
+                        ),
+                        'last_pickup_at' => $this->normalizeTime(
+                            $period['last_pickup_at'],
+                        ),
+                    ]);
+                }
             }
         });
 
