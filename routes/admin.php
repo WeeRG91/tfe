@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Admin\AllergenController;
 use App\Http\Controllers\Admin\ChatController;
+use App\Http\Controllers\Admin\CompanyDeliveryDateController;
 use App\Http\Controllers\Admin\ConfirmedOrderController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DeliveryCompanyController;
 use App\Http\Controllers\Admin\DishController;
 use App\Http\Controllers\Admin\DrinkController;
 use App\Http\Controllers\Admin\GlobalSearchController;
@@ -15,7 +17,6 @@ use App\Http\Controllers\Admin\RestaurantScheduleController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::middleware(['auth', 'verified', 'permission:admin.access'])
     ->prefix('admin')
@@ -148,4 +149,25 @@ Route::middleware(['auth', 'verified', 'permission:admin.access'])
             Route::put('/closures/{restaurantClosure}', 'updateClosure')->name('closures.update');
             Route::delete('/closures/{restaurantClosure}', 'destroyClosure')->name('closures.destroy');
         });
+
+        Route::controller(DeliveryCompanyController::class)
+            ->prefix('delivery-companies')
+            ->name('delivery-companies.')
+            ->middleware('company.delivery.enabled')
+            ->group(function () {
+                Route::post('/', 'store')->name('store');
+                Route::put('/{deliveryCompany}', 'update')->name('update');
+                Route::delete('/{deliveryCompany}', 'destroy')->name('destroy');
+            });
+
+        Route::controller(CompanyDeliveryDateController::class)
+            ->prefix('delivery-companies/{deliveryCompany}/dates')
+            ->name('delivery-companies.dates.')
+            ->middleware('company.delivery.enabled')
+            ->scopeBindings()
+            ->group(function () {
+                Route::post('/', 'store')->name('store');
+                Route::patch('/{deliveryDate}/availability', 'updateAvailability')->name('availability');
+                Route::delete('/{deliveryDate}', 'destroy')->name('destroy');
+            });
     });

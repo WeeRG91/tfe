@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureCompanyDeliveryIsEnabled;
 use App\Http\Middleware\EnsureRestaurantIsOpen;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -7,8 +8,8 @@ use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Inertia\Inertia;
@@ -33,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'restaurant.open' => EnsureRestaurantIsOpen::class,
+            'company.delivery.enabled' => EnsureCompanyDeliveryIsEnabled::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
@@ -82,7 +84,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return redirect()->route('verify-changed-email.expired');
             }
 
-            if (!in_array($response->getStatusCode(), [403, 404, 429, 500, 503], true)) {
+            if (! in_array($response->getStatusCode(), [403, 404, 429, 500, 503], true)) {
                 return $response;
             }
 

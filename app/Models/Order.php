@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DeliveryTypeEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
@@ -29,6 +30,8 @@ class Order extends Model
         'prepare_at' => 'datetime',
         'ready_at' => 'datetime',
         'vat_breakdown' => 'array',
+        'delivery_type' => DeliveryTypeEnum::class,
+        'delivery_date' => 'date',
     ];
 
     public function items(): HasMany
@@ -49,5 +52,10 @@ class Order extends Model
     public function notifications(): MorphMany
     {
         return $this->morphMany(Notification::class, 'notifiable');
+    }
+
+    public function deliveryCompany(): BelongsTo
+    {
+        return $this->belongsTo(DeliveryCompany::class);
     }
 }

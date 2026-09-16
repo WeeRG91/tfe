@@ -14,9 +14,6 @@ return [
         'Europe/Luxembourg',
     ),
 
-
-    'next_open_search_days' => 90,
-
     /*
     |--------------------------------------------------------------------------
     | Takeaway settings
@@ -41,6 +38,45 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Delivery settings
+    |--------------------------------------------------------------------------
+    */
+    'delivery' => [
+        'own_address' => [
+            'postal_codes' => array_values(array_filter(array_map(
+                'trim',
+                explode(
+                    ',',
+                    (string) env(
+                        'RESTAURANT_DELIVERY_POSTAL_CODES',
+                        '6700',
+                    ),
+                ),
+            ))),
+
+            'fee' => (float) env(
+                'RESTAURANT_OWN_ADDRESS_DELIVERY_FEE',
+                2.00,
+            ),
+        ],
+
+        'company' => [
+            'enabled' => (bool) env(
+                'RESTAURANT_COMPANY_DELIVERY_ENABLED',
+                false,
+            ),
+
+            'default_minimum_advance_days' => (int) env(
+                'RESTAURANT_COMPANY_DELIVERY_ADVANCE_DAYS',
+                2,
+            ),
+
+            'fee' => 0.00,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Ordering policy
     |--------------------------------------------------------------------------
     |
@@ -52,4 +88,6 @@ return [
         'RESTAURANT_ALLOW_ORDERS_WHILE_CLOSED',
         false,
     ),
+
+    'next_open_search_days' => 90,
 ];
