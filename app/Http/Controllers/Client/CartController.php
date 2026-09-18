@@ -8,6 +8,7 @@ use App\Actions\Client\Cart\Commands\RemoveCartItem;
 use App\Actions\Client\Cart\Commands\UpdateCartItemNotes;
 use App\Actions\Client\Cart\Commands\UpdateCartItemQuantity;
 use App\Actions\Client\Cart\Queries\GetOrCreateCart;
+use App\Actions\Client\Order\Queries\GetDeliveryOptions;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Http\Controllers\Controller;
@@ -51,19 +52,22 @@ class CartController extends Controller
     }
 
     /**
+     * @param GetDeliveryOptions $getDeliveryOptions
      * @return InertiaResponse
      */
-    public function placeOrder(): InertiaResponse
+    public function placeOrder(
+        GetDeliveryOptions $getDeliveryOptions,
+    ): InertiaResponse
     {
         $addresses = Address::query()
             ->where('user_id', auth()->user()->id)
-            ->orderBy('is_default', 'desc')
+            ->orderByDesc('is_default')
             ->get();
 
         $loyaltyPointTransactions = loyaltyPointTransaction::query()
             ->with('order:id,order_number')
             ->where('user_id', auth()->user()->id)
-            ->orderBy('created_at', 'desc')
+            ->orderByDesc('created_at')
             ->get();
 
         return Inertia::render('client/PlaceOrder', [
@@ -71,6 +75,7 @@ class CartController extends Controller
             'paymentMethods' => PaymentMethodEnum::getPaymentMethods(),
             'addresses' => AddressResource::collection($addresses)->collection,
             'loyaltyPointTransactions' => LoyaltyPointTransactionResource::collection($loyaltyPointTransactions)->collection,
+            'deliveryOptions' => $getDeliveryOptions->execute(),
         ]);
     }
 

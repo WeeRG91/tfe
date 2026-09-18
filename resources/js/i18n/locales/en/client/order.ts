@@ -93,6 +93,8 @@ export default {
         paidOn: 'Paid on {date}',
         orderNotes: 'Order Notes',
         notAvailable: 'N/A',
+        deliveryCompany: 'Delivery to company',
+        deliveryDate: 'Delivery date',
     },
     orderItemsCard: {
         title: 'Order Items',

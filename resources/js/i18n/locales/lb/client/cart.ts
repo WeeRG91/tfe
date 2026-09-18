@@ -75,6 +75,7 @@ export default {
     },
     orderType: {
         title: 'Bestellungsart',
+        unavailableWhileClosed: 'Net verfügbar',
         dineInForm: {
             title: 'Dëschinformatiounen',
             tableNumber: 'Dëschnummer',
@@ -101,7 +102,6 @@ export default {
                 'Wielt eng disponibel Zäit. Mir brauchen op d’mannst 30 Minutte fir d’Virbereedung.',
         },
         deliveryForm: {
-            title: 'Liwweradress',
             default: 'Standard',
             addNewAddress: 'Nei Adress derbäisetzen',
             noAddresses: 'Keng gespäichert Adresse fonnt',
@@ -139,6 +139,25 @@ export default {
                     addFailed: 'D’Adress konnt net gespäichert ginn.',
                 },
             },
+            title: 'Liwweroptiounen',
+            ownAddress: 'Op meng Adress liwweren',
+            ownAddressDescription:
+                'Verfügbar fir registréiert Adressen am Postleitzuelberäich {postalCodes}.',
+            ownAddressFee: 'Liwwergebühr: {fee} €',
+            company: 'Bei eng Firma liwweren',
+            companyDescription:
+                'Wielt eng Firma an ee vun hire verfügbare Liwwerdatumer.',
+            free: 'Gratis',
+            unavailable: 'Net verfügbar',
+            selectDeliveryMethod: 'Wielt eng Liwwermethod',
+            selectCompany: 'Firma auswielen',
+            selectCompanyPlaceholder: 'Wielt eng Firma',
+            selectDate: 'Liwwerdatum auswielen',
+            selectDatePlaceholder: 'Wielt e verfügbaren Datum',
+            noCompanyDates: 'Momentan si keng Liwwerdatumer verfügbar.',
+            minimumAdvance:
+                'Bestellunge mussen mindestens {days} Deeg am Viraus gemaach ginn.',
+            deliveryFee: 'Liwwergebühr',
         },
     },
     paymentMethod: {

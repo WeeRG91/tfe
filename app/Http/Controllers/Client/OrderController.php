@@ -6,6 +6,7 @@ use App\Actions\Client\Order\Commands\CancelOrder;
 use App\Actions\Client\Order\Commands\DeleteOrder;
 use App\Actions\Client\Order\Commands\PlaceOrder\PlaceOrder;
 use App\Actions\Client\Order\Commands\Reorder\Reorder;
+use App\Actions\Client\Order\Queries\GetDeliveryOptions;
 use App\Actions\Client\Order\Queries\GetOrder;
 use App\Actions\Client\Order\Queries\GetOrders;
 use App\Actions\Client\Order\Queries\GetReorderData;
@@ -99,9 +100,14 @@ class OrderController extends Controller
     /**
      * @param Order $order
      * @param GetReorderData $getReorderData
+     * @param GetDeliveryOptions $getDeliveryOptions
      * @return InertiaResponse
      */
-    public function reorder(Order $order, GetReorderData $getReorderData): InertiaResponse
+    public function reorder(
+        Order $order,
+        GetReorderData $getReorderData,
+        GetDeliveryOptions $getDeliveryOptions,
+    ): InertiaResponse
     {
         $result = $getReorderData->execute(
             auth()->user(),
@@ -113,6 +119,7 @@ class OrderController extends Controller
             'orderTypes' => OrderTypeEnum::getTypes(),
             'paymentMethods' => PaymentMethodEnum::getPaymentMethods(),
             'addresses' => AddressResource::collection($result['addresses'])->collection,
+            'deliveryOptions' => $getDeliveryOptions->execute(),
         ]);
     }
 

@@ -74,6 +74,7 @@ export default {
     },
     orderType: {
         title: 'ประเภทคำสั่งซื้อ',
+        unavailableWhileClosed: 'ไม่พร้อมใช้งานในช่วงที่ร้านปิด',
         dineInForm: {
             title: 'ข้อมูลโต๊ะ',
             tableNumber: 'หมายเลขโต๊ะ',
@@ -99,7 +100,6 @@ export default {
                 'เลือกเวลาที่ว่าง โดยต้องเผื่อเวลาเตรียมอาหารอย่างน้อย 30 นาที',
         },
         deliveryForm: {
-            title: 'ที่อยู่สำหรับจัดส่ง',
             default: 'ค่าเริ่มต้น',
             addNewAddress: 'เพิ่มที่อยู่ใหม่',
             noAddresses: 'ยังไม่มีที่อยู่ที่บันทึกไว้',
@@ -136,6 +136,23 @@ export default {
                     addFailed: 'ไม่สามารถบันทึกที่อยู่ได้',
                 },
             },
+            title: 'ตัวเลือกการจัดส่ง',
+            ownAddress: 'จัดส่งไปยังที่อยู่ของฉัน',
+            ownAddressDescription:
+                'ใช้ได้สำหรับที่อยู่ที่ลงทะเบียนไว้ในรหัสไปรษณีย์ {postalCodes}',
+            ownAddressFee: 'ค่าจัดส่ง {fee} €',
+            company: 'จัดส่งไปยังบริษัท',
+            companyDescription: 'เลือกบริษัทและวันที่จัดส่งที่พร้อมให้บริการ',
+            free: 'ฟรี',
+            unavailable: 'ไม่พร้อมใช้งานในขณะนี้',
+            selectDeliveryMethod: 'เลือกวิธีการจัดส่ง',
+            selectCompany: 'เลือกบริษัท',
+            selectCompanyPlaceholder: 'เลือกบริษัท',
+            selectDate: 'เลือกวันที่จัดส่ง',
+            selectDatePlaceholder: 'เลือกวันที่ที่พร้อมให้บริการ',
+            noCompanyDates: 'ขณะนี้ยังไม่มีวันที่จัดส่งที่พร้อมให้บริการ',
+            minimumAdvance: 'ต้องสั่งซื้อล่วงหน้าอย่างน้อย {days} วัน',
+            deliveryFee: 'ค่าจัดส่ง',
         },
     },
     paymentMethod: {

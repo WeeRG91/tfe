@@ -93,6 +93,8 @@ export default {
         paidOn: 'ชำระเงินเมื่อ {date}',
         orderNotes: 'หมายเหตุคำสั่งซื้อ',
         notAvailable: 'ไม่มีข้อมูล',
+        deliveryCompany: 'จัดส่งที่บริษัท',
+        deliveryDate: 'วันที่จัดส่ง',
     },
     orderItemsCard: {
         title: 'รายการอาหารในคำสั่งซื้อ',

@@ -27,18 +27,21 @@ import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { DeliveryOptionsType, DeliveryTypeEnum } from '@/types/delivery';
 
 const props = defineProps<{
     orderToReorder: OrderType;
     orderTypes: OrderTypeType[];
     paymentMethods: PaymentMethodType[];
     addresses: AddressType[];
+    deliveryOptions: DeliveryOptionsType;
 }>();
 
 const orderStore = useOrderStore();
 const { isLoading: isOrderLoading } = storeToRefs(orderStore);
 const {
     availability: pickupAvailability,
+    currentStatus: restaurantStatus,
     isLoading: isPickupLoading,
     hasError: hasPickupError,
     refresh: refreshPickupAvailability,
@@ -57,12 +60,22 @@ const showAddressModal = ref<boolean>(false);
 const editingAddress = ref<AddressType | null>(null);
 const existingAddresses = ref<AddressType[]>(props.addresses ?? []);
 const deletedAddressId = ref<number | null>(null);
+const selectedDeliveryType = ref<DeliveryTypeEnum | null>(null);
+const selectedDeliveryCompanyId = ref<number | null>(null);
+const selectedDeliveryDate = ref<string>('');
 
 const orderItems = computed(() => props.orderToReorder.items ?? []);
 
-const deliveryFee = computed(() =>
-    selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY ? 2 : 0,
-);
+const deliveryFee = computed(() => {
+    if (
+        selectedOrderTypeValue.value !== OrderTypeEnum.DELIVERY ||
+        selectedDeliveryType.value !== DeliveryTypeEnum.OWN_ADDRESS
+    ) {
+        return 0;
+    }
+
+    return Number(props.deliveryOptions.own_address.fee);
+});
 
 const loyaltyPoints = computed(
     () => props.orderToReorder.user.loyalty_points ?? 0,
@@ -71,6 +84,46 @@ const selectedOrderType = computed(() => {
     return props.orderTypes.find(
         (type) => type.value === selectedOrderTypeValue.value,
     );
+});
+
+const eligibleAddresses = computed(() =>
+    existingAddresses.value.filter((address) =>
+        props.deliveryOptions.own_address.postal_codes.includes(
+            address.postal_code,
+        ),
+    ),
+);
+
+const selectedCompany = computed(() =>
+    props.deliveryOptions.company.companies.find(
+        (company) => company.id === selectedDeliveryCompanyId.value,
+    ),
+);
+
+const hasAvailableCompanyDelivery = computed(
+    () =>
+        props.deliveryOptions.company.enabled &&
+        props.deliveryOptions.company.companies.some(
+            (company) => company.dates.length > 0,
+        ),
+);
+
+const disabledOrderTypes = computed<OrderTypeEnum[]>(() => {
+    if (isPickupLoading.value || !restaurantStatus.value) {
+        return [OrderTypeEnum.DINEIN, OrderTypeEnum.DELIVERY];
+    }
+
+    if (restaurantStatus.value.is_open) {
+        return [];
+    }
+
+    const disabled: OrderTypeEnum[] = [OrderTypeEnum.DINEIN];
+
+    if (!hasAvailableCompanyDelivery.value) {
+        disabled.push(OrderTypeEnum.DELIVERY);
+    }
+
+    return disabled;
 });
 
 const {
@@ -123,7 +176,24 @@ const isFormValid = computed(() => {
     }
 
     if (selectedOrderType.value.value === OrderTypeEnum.DELIVERY) {
-        return selectedAddressId.value !== null;
+        if (selectedDeliveryType.value === DeliveryTypeEnum.OWN_ADDRESS) {
+            return (
+                restaurantStatus.value?.is_open === true &&
+                eligibleAddresses.value.some(
+                    (address) => address.id === selectedAddressId.value,
+                )
+            );
+        }
+
+        if (selectedDeliveryType.value === DeliveryTypeEnum.COMPANY) {
+            return (
+                props.deliveryOptions.company.enabled &&
+                selectedCompany.value !== undefined &&
+                selectedCompany.value.dates.includes(selectedDeliveryDate.value)
+            );
+        }
+
+        return false;
     }
 
     return false;
@@ -159,8 +229,12 @@ const onAddressSaved = async (savedAddress: AddressType) => {
 };
 
 const selectDefaultAddress = () => {
-    const defaultAddress = existingAddresses.value.find((a) => a.is_default);
-    selectedAddressId.value = defaultAddress ? defaultAddress.id : null;
+    const defaultAddress = eligibleAddresses.value.find(
+        (address) => address.is_default,
+    );
+
+    selectedAddressId.value =
+        defaultAddress?.id ?? eligibleAddresses.value[0]?.id ?? null;
 };
 
 const deleteAddress = async (addressId: number) => {
@@ -203,7 +277,22 @@ const placeOrder = async () => {
             pickup_time: pickupTime.value,
             pickup_name: pickupName.value,
             pickup_phone: pickupPhone.value,
-            address_id: selectedAddressId.value,
+            address_id:
+                selectedDeliveryType.value === DeliveryTypeEnum.OWN_ADDRESS
+                    ? selectedAddressId.value
+                    : null,
+            delivery_type:
+                selectedOrderTypeValue.value === OrderTypeEnum.DELIVERY
+                    ? selectedDeliveryType.value
+                    : null,
+            delivery_company_id:
+                selectedDeliveryType.value === DeliveryTypeEnum.COMPANY
+                    ? selectedDeliveryCompanyId.value
+                    : null,
+            delivery_date:
+                selectedDeliveryType.value === DeliveryTypeEnum.COMPANY
+                    ? selectedDeliveryDate.value
+                    : null,
             payment_method: paymentMethod.value!,
             notes: notes.value,
             used_points: selectedPoints.value,
@@ -234,6 +323,9 @@ const placeOrder = async () => {
 const onOrderTypeChange = async (type: OrderTypeEnum) => {
     selectedOrderTypeValue.value = type;
     paymentMethod.value = null;
+    selectedDeliveryType.value = null;
+    selectedDeliveryCompanyId.value = null;
+    selectedDeliveryDate.value = '';
 
     if (type === OrderTypeEnum.DINEIN) {
         pickupName.value = '';
@@ -249,7 +341,6 @@ const onOrderTypeChange = async (type: OrderTypeEnum) => {
         pickupName.value = '';
         pickupPhone.value = '';
         pickupTime.value = '';
-        selectDefaultAddress();
     }
 
     removePoints();
@@ -283,6 +374,7 @@ onMounted(() => {
                         <OrderTypeSelector
                             v-model="selectedOrderTypeValue"
                             :order-types="props.orderTypes"
+                            :disabled-order-types="disabledOrderTypes"
                             @update:model-value="onOrderTypeChange"
                         />
 
@@ -312,9 +404,18 @@ onMounted(() => {
                                 selectedOrderTypeValue ===
                                 OrderTypeEnum.DELIVERY
                             "
+                            v-model:delivery-type="selectedDeliveryType"
                             v-model:selected-address-id="selectedAddressId"
+                            v-model:selected-company-id="
+                                selectedDeliveryCompanyId
+                            "
+                            v-model:delivery-date="selectedDeliveryDate"
                             :addresses="existingAddresses"
+                            :delivery-options="props.deliveryOptions"
                             :deleting-address-id="deletedAddressId"
+                            :restaurant-open="
+                                restaurantStatus?.is_open ?? false
+                            "
                             @add-address="addNewAddress"
                             @edit-address="editAddress"
                             @delete-address="deleteAddress"
@@ -346,12 +447,7 @@ onMounted(() => {
                         <OrderSummary
                             :items="orderItems"
                             :subtotal="subtotalBeforeDeliveryFee"
-                            :delivery-fee="
-                                selectedOrderType?.value ===
-                                OrderTypeEnum.DELIVERY
-                                    ? 2
-                                    : 0
-                            "
+                            :delivery-fee="deliveryFee"
                             :discount-amount="discountAmount"
                             :vat12-total="vat12Total"
                             :vat21-total="vat21Total"

@@ -1,12 +1,14 @@
 import {
     PickupAvailability,
     PickupAvailabilityResponse,
+    RestaurantCurrentAvailability,
 } from '@/types/restaurant';
 import axios from 'axios';
 import { onMounted, onScopeDispose, ref } from 'vue';
 
 export function usePickupAvailability() {
     const availability = ref<PickupAvailability | null>(null);
+    const currentStatus = ref<RestaurantCurrentAvailability | null>(null);
     const isLoading = ref<boolean>(true);
     const hasError = ref<boolean>(false);
 
@@ -18,6 +20,7 @@ export function usePickupAvailability() {
         isLoading.value = true;
         hasError.value = false;
         availability.value = null;
+        currentStatus.value = null;
 
         try {
             const response = await axios.get<PickupAvailabilityResponse>(
@@ -32,6 +35,7 @@ export function usePickupAvailability() {
             }
 
             availability.value = response.data.data.pickup;
+            currentStatus.value = response.data.data.current;
 
             return true;
         } catch (error) {
@@ -72,17 +76,18 @@ export function usePickupAvailability() {
 
     onMounted(() => {
         void refresh();
-    })
+    });
 
     onScopeDispose(() => {
-        requestId += 1
-    })
+        requestId += 1;
+    });
 
     return {
         availability,
+        currentStatus,
         isLoading,
         hasError,
         refresh,
         isAvailableSlot,
-    }
+    };
 }

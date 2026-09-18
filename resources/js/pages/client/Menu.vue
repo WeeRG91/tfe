@@ -3,7 +3,6 @@ import AddDishToCartModal from '@/components/client/cart/AddDishToCartModal.vue'
 import DishCard from '@/components/client/menu/DishCard.vue';
 import DishCardSkeleton from '@/components/client/menu/DishCardSkeleton.vue';
 import EmptyDishList from '@/components/client/menu/EmptyDishList.vue';
-import { useRestaurantOrdering } from '@/composables/useRestaurantOrdering';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { useDishStore } from '@/stores/dish';
 import { AppPageProps } from '@/types';
@@ -18,7 +17,6 @@ import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
-const { canStartOrdering } = useRestaurantOrdering();
 const page = usePage<AppPageProps>();
 
 const props = defineProps<{
@@ -35,10 +33,6 @@ const selectedDish = ref<ClientDishType | null>(null);
 const isAddModalOpen = ref<boolean>(false);
 
 const openAddModal = async (dish: ClientDishType) => {
-    if (!(await canStartOrdering())) {
-        return;
-    }
-
     if (!page.props.auth.user) {
         router.visit('/login');
 

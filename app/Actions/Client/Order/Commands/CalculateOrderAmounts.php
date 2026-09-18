@@ -2,6 +2,9 @@
 
 namespace App\Actions\Client\Order\Commands;
 
+use App\Enums\DeliveryTypeEnum;
+use App\Enums\OrderTypeEnum;
+
 class CalculateOrderAmounts
 {
     /**
@@ -15,7 +18,8 @@ class CalculateOrderAmounts
         float $itemsTotalIncVat,
         array $vatBreakdown,
         int $usedPoints,
-        int $type
+        int $type,
+        ?string $deliveryType,
     ): array
     {
         $rewards = [
@@ -25,7 +29,17 @@ class CalculateOrderAmounts
 
         $discountTotal = $rewards[$usedPoints] ?? 0;
 
-        $deliveryFee = $type === 3 ? 2 : 0;
+        $isOwnAddressDelivery =
+            $type === OrderTypeEnum::DELIVERY->value &&
+            $deliveryType ===
+            DeliveryTypeEnum::OWN_ADDRESS->value;
+
+        $deliveryFee = $isOwnAddressDelivery
+            ? (float) config(
+                'restaurant.delivery.own_address.fee',
+                2.00,
+            )
+            : 0.0;
 
         $discountedItemsTotal = max($itemsTotalIncVat - $discountTotal, 0);
 

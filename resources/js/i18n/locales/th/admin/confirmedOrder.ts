@@ -103,6 +103,8 @@ export default {
             pickupBy: 'รับสินค้าเวลา',
             table: 'โต๊ะ',
             tableNumber: 'หมายเลขโต๊ะ',
+            deliveryCompany: 'จัดส่งที่บริษัท',
+            deliveryDate: 'วันที่จัดส่ง',
         },
         payment: {
             information: 'ข้อมูลการชำระเงิน',

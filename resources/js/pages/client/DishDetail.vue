@@ -14,7 +14,6 @@ import { Flame, X } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { useRestaurantOrdering } from '@/composables/useRestaurantOrdering';
 
 const props = defineProps<{
     dish: ClientDishType;
@@ -25,7 +24,6 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
-const { canStartOrdering } = useRestaurantOrdering();
 const { formatDateForHumans } = useDateFormatter();
 const page = usePage();
 const user = computed(() => page.props.auth?.user || null);
@@ -96,10 +94,6 @@ const loadReviews = async () => {
 };
 
 const openAddModal = async () => {
-    if (!(await canStartOrdering())) {
-        return;
-    }
-
     isAddModalOpen.value = true;
 };
 

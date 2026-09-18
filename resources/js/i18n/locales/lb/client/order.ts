@@ -96,6 +96,8 @@ export default {
         paidOn: 'Bezuelt den {date}',
         orderNotes: 'Notize fir d’Bestellung',
         notAvailable: 'Net verfügbar',
+        deliveryCompany: 'Firma-Liwwerung',
+        deliveryDate: 'Liwwerdatum',
     },
     orderItemsCard: {
         title: 'Artikele vun der Bestellung',

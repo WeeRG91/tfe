@@ -3,6 +3,7 @@ import allergen from '@/i18n/locales/fr/admin/allergen';
 import chat from '@/i18n/locales/fr/admin/chat';
 import confirmedOrder from '@/i18n/locales/fr/admin/confirmedOrder';
 import dashboard from '@/i18n/locales/fr/admin/dashboard';
+import deliveryCompanies from '@/i18n/locales/fr/admin/deliveryCompanies';
 import dish from '@/i18n/locales/fr/admin/dish';
 import drink from '@/i18n/locales/fr/admin/drink';
 import globalSearch from '@/i18n/locales/fr/admin/globalSearch';
@@ -49,6 +50,7 @@ export default {
     chat,
     confirmedOrder,
     dashboard,
+    deliveryCompanies,
     dish,
     drink,
     globalSearch,

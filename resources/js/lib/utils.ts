@@ -43,25 +43,15 @@ export function toUrl(href: NonNullable<InertiaLinkProps['href']>) {
     return typeof href === 'string' ? href : href?.url;
 }
 
-export function formatPrice(price: number) {
-    return price?.toFixed(2);
+export function formatPrice(price: number | string | null | undefined): string {
+    const numericPrice = Number(price ?? 0);
+
+    if (!Number.isFinite(numericPrice)) {
+        return '0.00';
+    }
+
+    return numericPrice.toFixed(2);
 }
-
-export const formatDate = (date: string | null) => {
-    if (!date) return 'Not set';
-    return new Date(date).toLocaleString([], {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-export const formatDateShort = (date: string | null) => {
-    if (!date) return 'Not set';
-    return new Date(date).toLocaleDateString();
-};
 
 export const formatTime = (date: string | null) => {
     if (!date) return 'Not set';

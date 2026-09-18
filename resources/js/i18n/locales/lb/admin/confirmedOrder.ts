@@ -107,6 +107,8 @@ export default {
             pickupBy: 'Ofhuelen ëm',
             table: 'Dësch',
             tableNumber: 'Dëschnummer',
+            deliveryCompany: 'Firma-Liwwerung',
+            deliveryDate: 'Liwwerdatum',
         },
         payment: {
             information: 'Bezuelinformatiounen',

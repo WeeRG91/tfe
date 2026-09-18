@@ -1,17 +1,25 @@
 <script setup lang="ts">
 import { useDateFormatter } from '@/composables/useDateFormatter';
 import { formatAddress, getOrderTypeIcon } from '@/lib/utils';
-import { OrderType } from '@/types/order';
+import { OrderType, OrderTypeEnum } from '@/types/order';
 import { PaymentMethodEnum } from '@/types/payment';
-import { Coins, CreditCard, FileText, MapPin, User } from 'lucide-vue-next';
+import {
+    Coins,
+    CreditCard,
+    FileText,
+    MapPin,
+    User,
+    Building2,
+} from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
+import { DeliveryTypeEnum } from '@/types/delivery';
 
 defineProps<{
     orderToShow: OrderType;
 }>();
 
 const { t } = useI18n();
-const { formatDate } = useDateFormatter();
+const { formatDate, formatDateOnly } = useDateFormatter();
 </script>
 
 <template>
@@ -43,7 +51,7 @@ const { formatDate } = useDateFormatter();
                     </p>
                     <p
                         v-if="
-                            orderToShow.type.label === 'Dine-in' &&
+                            orderToShow.type.value === OrderTypeEnum.DINEIN &&
                             orderToShow.table_number
                         "
                         class="mt-1 text-sm text-gray-600"
@@ -65,7 +73,7 @@ const { formatDate } = useDateFormatter();
             </div>
 
             <div
-                v-if="orderToShow.type.label === 'Takeaway'"
+                v-if="orderToShow.type.value === OrderTypeEnum.TAKEAWAY"
                 class="flex items-start gap-3"
             >
                 <div class="flex-shrink-0 rounded-lg bg-red-50 p-2">
@@ -92,8 +100,8 @@ const { formatDate } = useDateFormatter();
 
             <div
                 v-if="
-                    orderToShow.type.label === 'Delivery' &&
-                    orderToShow.delivery_address
+                    orderToShow.delivery_address &&
+                    orderToShow.delivery_type !== DeliveryTypeEnum.COMPANY
                 "
                 class="flex items-start gap-3"
             >
@@ -113,6 +121,39 @@ const { formatDate } = useDateFormatter();
                     </p>
                     <p class="text-sm text-gray-600">
                         {{ formatAddress(orderToShow.delivery_address) }}
+                    </p>
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    orderToShow.delivery_type === DeliveryTypeEnum.COMPANY &&
+                    orderToShow.delivery_company
+                "
+                class="flex items-start gap-3"
+            >
+                <div class="flex-shrink-0 rounded-lg bg-red-50 p-2">
+                    <Building2 class="h-5 w-5 text-red-500" />
+                </div>
+
+                <div>
+                    <p class="text-sm text-gray-500">
+                        {{ t('order.orderDetailsCard.deliveryCompany') }}
+                    </p>
+
+                    <p class="font-medium text-gray-800">
+                        {{ orderToShow.delivery_company.name }}
+                    </p>
+
+                    <p
+                        v-if="orderToShow.delivery_date"
+                        class="mt-1 text-sm text-gray-600"
+                    >
+                        {{ t('order.orderDetailsCard.deliveryDate') }}
+                    </p>
+
+                    <p class="font-medium text-gray-800">
+                        {{ formatDateOnly(orderToShow.delivery_date) }}
                     </p>
                 </div>
             </div>

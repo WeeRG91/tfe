@@ -76,6 +76,7 @@ export default {
     },
     orderType: {
         title: 'Type de commande',
+        unavailableWhileClosed: 'Indisponible',
         dineInForm: {
             title: 'Informations sur la table',
             tableNumber: 'Numéro de table',
@@ -104,7 +105,6 @@ export default {
                 'Choisissez un créneau disponible. Un minimum de 30 minutes est nécessaire pour la préparation.',
         },
         deliveryForm: {
-            title: 'Adresse de livraison',
             default: 'Par défaut',
             addNewAddress: 'Ajouter une nouvelle adresse',
             noAddresses: 'Aucune adresse enregistrée',
@@ -144,6 +144,26 @@ export default {
                     addFailed: "Impossible d'enregistrer l'adresse.",
                 },
             },
+            title: 'Options de livraison',
+            ownAddress: 'Livrer à mon adresse',
+            ownAddressDescription:
+                'Disponible pour les adresses enregistrées dans le code postal {postalCodes}.',
+            ownAddressFee: 'Frais de livraison : {fee} €',
+            company: 'Livrer à une entreprise',
+            companyDescription:
+                'Choisissez une entreprise et l’une de ses dates de livraison disponibles.',
+            free: 'Gratuit',
+            unavailable: 'Indisponible',
+            selectDeliveryMethod: 'Choisissez un mode de livraison',
+            selectCompany: 'Sélectionner une entreprise',
+            selectCompanyPlaceholder: 'Choisissez une entreprise',
+            selectDate: 'Sélectionner une date de livraison',
+            selectDatePlaceholder: 'Choisissez une date disponible',
+            noCompanyDates:
+                'Aucune date de livraison n’est actuellement disponible.',
+            minimumAdvance:
+                'Les commandes doivent être passées au moins {days} jours à l’avance.',
+            deliveryFee: 'Frais de livraison',
         },
     },
     paymentMethod: {

@@ -15,6 +15,8 @@ export default {
         deliveryAddress: 'Liwweradress',
         deliveryToBms: 'Liwwerung op BMS',
         orderItems: 'Bestallten Artikelen',
+        deliveryCompany: 'Firma-Liwwerung',
+        deliveryDate: 'Liwwerdatum',
     },
 
     item: {

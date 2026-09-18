@@ -4,6 +4,7 @@ use App\Models\DeliveryCompany;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Spatie\Permission\Models\Permission;
+use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
     config()->set(
@@ -264,4 +265,60 @@ it('does not manage a delivery date through another company', function () {
 
     expect($deliveryDate->refresh()->is_available)
         ->toBeTrue();
+});
+
+it('shows delivery companies and their dates', function () {
+    $company = DeliveryCompany::query()->create([
+        'name' => 'BMS',
+        'is_active' => true,
+        'minimum_advance_days' => 2,
+    ]);
+
+    $company->deliveryDates()->create([
+        'delivery_date' => '2026-09-18',
+        'is_available' => true,
+    ]);
+
+    $this->get(
+        route('admin.delivery-companies.index'),
+    )
+        ->assertOk()
+        ->assertInertia(
+            fn (Assert $page) => $page
+                ->component('admin/delivery-companies/Index')
+                ->where('features.companyDelivery', true)
+                ->where(
+                    'defaultMinimumAdvanceDays',
+                    2,
+                )
+                ->has('companies', 1)
+                ->where(
+                    'companies.0.id',
+                    $company->id,
+                )
+                ->where(
+                    'companies.0.name',
+                    'BMS',
+                )
+                ->where(
+                    'companies.0.is_active',
+                    true,
+                )
+                ->where(
+                    'companies.0.minimum_advance_days',
+                    2,
+                )
+                ->where(
+                    'companies.0.dates.0.delivery_date',
+                    '2026-09-18',
+                )
+                ->where(
+                    'companies.0.dates.0.is_available',
+                    true,
+                )
+                ->where(
+                    'companies.0.earliest_delivery_date',
+                    '2026-09-18',
+                ),
+        );
 });

@@ -3,7 +3,6 @@ import AddDrinkToCartModal from '@/components/client/cart/AddDrinkToCartModal.vu
 import DrinkCard from '@/components/client/drink/DrinkCard.vue';
 import DrinkCardSkeleton from '@/components/client/drink/DrinkCardSkeleton.vue';
 import EmptyDrinkList from '@/components/client/drink/EmptyDrinkList.vue';
-import { useRestaurantOrdering } from '@/composables/useRestaurantOrdering';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { AppPageProps } from '@/types';
 import { CategoryOptionType } from '@/types/category';
@@ -15,7 +14,6 @@ import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
-const { canStartOrdering } = useRestaurantOrdering();
 const page = usePage<AppPageProps>();
 
 const props = defineProps<{
@@ -30,10 +28,6 @@ const selectedDrink = ref<ClientDrinkType | null>(null);
 const isAddModalOpen = ref<boolean>(false);
 
 const openAddModal = async (drink: ClientDrinkType) => {
-    if (!(await canStartOrdering())) {
-        return;
-    }
-
     if (!page.props.auth.user) {
         router.visit('/login');
 

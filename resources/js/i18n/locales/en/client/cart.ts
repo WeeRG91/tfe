@@ -74,6 +74,7 @@ export default {
     },
     orderType: {
         title: 'Order Type',
+        unavailableWhileClosed: 'Unavailable while closed',
         dineInForm: {
             title: 'Table Details',
             tableNumber: 'Table Number',
@@ -99,7 +100,6 @@ export default {
                 'Choose an available time. At least 30 minutes are required for preparation.',
         },
         deliveryForm: {
-            title: 'Delivery Address',
             default: 'Default',
             addNewAddress: 'Add New Address',
             noAddresses: 'No saved addresses found',
@@ -135,6 +135,24 @@ export default {
                     'Please fix the errors above before submitting.',
                 addFailed: 'Failed to add address.',
             },
+            title: 'Delivery options',
+            ownAddress: 'Deliver to my address',
+            ownAddressDescription:
+                'Available for registered addresses in postal code {postalCodes}.',
+            ownAddressFee: '€{fee} delivery fee',
+            company: 'Deliver to a company',
+            companyDescription:
+                'Choose a company and one of its available delivery dates.',
+            free: 'Free',
+            unavailable: 'Unavailable',
+            selectDeliveryMethod: 'Choose a delivery method',
+            selectCompany: 'Select a company',
+            selectCompanyPlaceholder: 'Choose a company',
+            selectDate: 'Select a delivery date',
+            selectDatePlaceholder: 'Choose an available date',
+            noCompanyDates: 'No delivery dates are currently available.',
+            minimumAdvance: 'Orders require at least {days} days notice.',
+            deliveryFee: 'Delivery fee',
         },
     },
     paymentMethod: {

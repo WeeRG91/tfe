@@ -8,7 +8,7 @@ export type PickupAvailabilityPeriod = {
     opens_at: string;
     closes_at: string;
     last_pickup_at: string;
-}
+};
 
 export type PickupAvailabilityDate = {
     date: string;
@@ -26,8 +26,23 @@ export type PickupAvailability = {
     dates: PickupAvailabilityDate[];
 };
 
+export type RestaurantCurrentAvailability = {
+    is_open: boolean;
+    accepting_orders: boolean;
+    status:
+        | 'open'
+        | 'closed_day'
+        | 'outside_opening_hours'
+        | 'exceptionally_closed';
+    message: string | null;
+    checked_at: string;
+    timezone: string;
+    next_open_at: string | null;
+};
+
 export type PickupAvailabilityResponse = {
     data: {
+        current: RestaurantCurrentAvailability;
         pickup: PickupAvailability;
     };
 };

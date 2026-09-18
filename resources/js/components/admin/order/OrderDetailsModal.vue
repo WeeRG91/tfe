@@ -12,7 +12,7 @@ import {
     getPaymentStatusIcon,
     getPaymentStatusVariant,
 } from '@/lib/utils';
-import { OrderStatusEnum, OrderType } from '@/types/order';
+import { OrderStatusEnum, OrderType, OrderTypeEnum } from '@/types/order';
 import {
     AlertCircle,
     MapPin,
@@ -20,9 +20,12 @@ import {
     UserCircle,
     Utensils,
     X,
+    Building2,
+    CalendarDays,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { DeliveryTypeEnum } from '@/types/delivery';
 
 const props = defineProps<{
     order: OrderType | null;
@@ -36,7 +39,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
-const { formatDate } = useDateFormatter();
+const { formatDate, formatDateOnly } = useDateFormatter();
 
 const orderStatusActionId = ref<string>('');
 
@@ -476,7 +479,11 @@ watch(
                                 </div>
 
                                 <div
-                                    v-if="order.type.label === 'Delivery'"
+                                    v-if="
+                                        order.delivery_address &&
+                                        order.delivery_type !==
+                                            DeliveryTypeEnum.COMPANY
+                                    "
                                     class="flex items-start gap-2"
                                 >
                                     <MapPin
@@ -504,7 +511,78 @@ watch(
                                 </div>
 
                                 <div
-                                    v-if="order.type.label === 'Takeaway'"
+                                    v-if="
+                                        order.delivery_type ===
+                                            DeliveryTypeEnum.COMPANY &&
+                                        order.delivery_company
+                                    "
+                                    class="flex items-start gap-2"
+                                >
+                                    <Building2
+                                        :size="16"
+                                        class="mt-0.5 text-gray-400"
+                                    />
+
+                                    <div>
+                                        <p
+                                            class="text-sm text-gray-900 dark:text-white"
+                                        >
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.customer.deliveryCompany',
+                                                )
+                                            }}
+                                        </p>
+
+                                        <p
+                                            class="text-xs font-medium text-gray-600 dark:text-gray-300"
+                                        >
+                                            {{ order.delivery_company.name }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    v-if="
+                                        order.delivery_type ===
+                                            DeliveryTypeEnum.COMPANY &&
+                                        order.delivery_date
+                                    "
+                                    class="flex items-start gap-2"
+                                >
+                                    <CalendarDays
+                                        :size="16"
+                                        class="mt-0.5 text-gray-400"
+                                    />
+
+                                    <div>
+                                        <p
+                                            class="text-sm text-gray-900 dark:text-white"
+                                        >
+                                            {{
+                                                t(
+                                                    'confirmedOrder.details.customer.deliveryDate',
+                                                )
+                                            }}
+                                        </p>
+
+                                        <p
+                                            class="text-xs font-medium text-gray-600 dark:text-gray-300"
+                                        >
+                                            {{
+                                                formatDateOnly(
+                                                    order.delivery_date,
+                                                )
+                                            }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    v-if="
+                                        order.type.value ===
+                                        OrderTypeEnum.TAKEAWAY
+                                    "
                                     class="flex items-start gap-2"
                                 >
                                     <UserCircle
@@ -542,7 +620,10 @@ watch(
                                 </div>
 
                                 <div
-                                    v-if="order.type.label === 'Dine-in'"
+                                    v-if="
+                                        order.type.value ===
+                                        OrderTypeEnum.DINEIN
+                                    "
                                     class="flex items-start gap-2"
                                 >
                                     <Utensils

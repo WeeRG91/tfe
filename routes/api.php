@@ -116,10 +116,10 @@ Route::prefix('v1')
             ->middleware(['auth:sanctum', 'throttle:30,1'])
             ->name('cart.items.notes.update');
         Route::post('cart/items/dishes', [CartController::class, 'storeDish'])
-            ->middleware(['auth:sanctum', 'restaurant.open', 'throttle:30,1'])
+            ->middleware(['auth:sanctum' ,'throttle:30,1'])
             ->name('cart.items.dishes.store');
         Route::post('cart/items/drinks', [CartController::class, 'storeDrink'])
-            ->middleware(['auth:sanctum', 'restaurant.open', 'throttle:30,1'])
+            ->middleware(['auth:sanctum' ,'throttle:30,1'])
             ->name('cart.items.drinks.store');
         Route::delete('cart/items/{cartItemId}', [CartController::class, 'destroyItem'])
             ->whereNumber('cartItemId')

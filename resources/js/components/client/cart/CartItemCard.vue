@@ -6,6 +6,7 @@ import { SquarePen } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { formatPrice } from '@/lib/utils';
 
 const cartStore = useCartStore();
 const { isLoading } = storeToRefs(cartStore);
@@ -34,10 +35,6 @@ const categoryLabel = computed(() => {
 
 const isEditingNotes = ref<boolean>(false);
 const editedNotes = ref<string>(props.cartItem.notes || '');
-
-const formatPrice = (price: number) => {
-    return (price || 0).toFixed(2);
-};
 
 const updateQuantity = (action: 'increase' | 'decrease') => {
     emit('update-quantity', props.cartItem.id, action);

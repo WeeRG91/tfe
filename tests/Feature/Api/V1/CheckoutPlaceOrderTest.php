@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\DeliveryTypeEnum;
 use App\Enums\DishCategoryEnum;
 use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Enums\OrderStatusEnum;
@@ -136,9 +137,9 @@ it('places a delivery order with an owned address and loyalty discount', functio
         'last_name' => 'Customer',
         'phone' => '+352 621 000 000',
         'street' => '1 Delivery Street',
-        'city' => 'Luxembourg',
-        'postal_code' => 'L-1111',
-        'country' => 'Luxembourg',
+        'city' => 'Arlon',
+        'postal_code' => '6700',
+        'country' => 'Belgium',
         'is_default' => true,
     ]);
 
@@ -177,6 +178,8 @@ it('places a delivery order with an owned address and loyalty discount', functio
             'address_id' => $address->id,
             'payment_method' => PaymentMethodEnum::CASH->value,
             'used_points' => 300,
+            'delivery_type' =>
+                DeliveryTypeEnum::OWN_ADDRESS->value,
         ]);
 
     $response
@@ -193,6 +196,17 @@ it('places a delivery order with an owned address and loyalty discount', functio
         ->assertJsonPath('data.total', '11.50');
 
     $orderId = $response->json('data.id');
+
+    $this->assertDatabaseHas('orders', [
+        'id' => $orderId,
+        'delivery_type' =>
+            DeliveryTypeEnum::OWN_ADDRESS->value,
+        'address_id' => $address->id,
+        'delivery_company_id' => null,
+        'delivery_company_name' => null,
+        'delivery_date' => null,
+        'delivery_fee' => 2,
+    ]);
 
     $this->assertDatabaseHas('loyalty_point_transactions', [
         'user_id' => $user->id,
@@ -368,10 +382,28 @@ it('validates fields required by each mobile order type', function () {
         ->postJson('/api/v1/checkout/orders', [
             'cart_id' => $cart->id,
             'type' => OrderTypeEnum::DELIVERY->value,
-            'payment_method' => PaymentMethodEnum::CASH->value,
+            'payment_method' =>
+                PaymentMethodEnum::CASH->value,
         ])
         ->assertUnprocessable()
-        ->assertJsonValidationErrors('address_id');
+        ->assertJsonValidationErrors(
+            'delivery_type',
+        );
+
+    $this
+        ->withToken($token->plainTextToken)
+        ->postJson('/api/v1/checkout/orders', [
+            'cart_id' => $cart->id,
+            'type' => OrderTypeEnum::DELIVERY->value,
+            'delivery_type' =>
+                DeliveryTypeEnum::OWN_ADDRESS->value,
+            'payment_method' =>
+                PaymentMethodEnum::CASH->value,
+        ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(
+            'address_id',
+        );
 });
 
 it('rejects another users cart and delivery address', function () {
@@ -387,9 +419,9 @@ it('rejects another users cart and delivery address', function () {
         'last_name' => 'Customer',
         'phone' => '+352 621 999 999',
         'street' => '99 Private Street',
-        'city' => 'Luxembourg',
-        'postal_code' => 'L-9999',
-        'country' => 'Luxembourg',
+        'city' => 'Arlon',
+        'postal_code' => '6700',
+        'country' => 'Belgium',
         'is_default' => true,
     ]);
 
@@ -398,6 +430,8 @@ it('rejects another users cart and delivery address', function () {
         ->postJson('/api/v1/checkout/orders', [
             'cart_id' => $otherCart->id,
             'type' => OrderTypeEnum::DELIVERY->value,
+            'delivery_type' =>
+                DeliveryTypeEnum::OWN_ADDRESS->value,
             'address_id' => $otherAddress->id,
             'payment_method' => PaymentMethodEnum::CASH->value,
         ])
@@ -526,6 +560,59 @@ it('rejects a takeaway time that is not an available slot', function () {
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors('pickup_time');
+
+    $this->assertDatabaseCount('orders', 0);
+});
+
+it('rejects own-address delivery outside configured postal codes', function () {
+    config()->set(
+        'restaurant.allow_orders_while_closed',
+        true,
+    );
+
+    config()->set(
+        'restaurant.delivery.own_address.postal_codes',
+        ['6700'],
+    );
+
+    $user = User::factory()
+        ->withoutTwoFactor()
+        ->create();
+
+    $token = $user->createToken(
+        'Test phone',
+        ['mobile'],
+    );
+
+    $cart = Cart::query()->create([
+        'user_id' => $user->id,
+    ]);
+
+    $address = Address::query()->create([
+        'user_id' => $user->id,
+        'first_name' => 'Test',
+        'last_name' => 'Customer',
+        'phone' => '+352 621 000 000',
+        'street' => '1 Outside Street',
+        'city' => 'Brussels',
+        'postal_code' => '1000',
+        'country' => 'Belgium',
+        'is_default' => true,
+    ]);
+
+    $this
+        ->withToken($token->plainTextToken)
+        ->postJson('/api/v1/checkout/orders', [
+            'cart_id' => $cart->id,
+            'type' => OrderTypeEnum::DELIVERY->value,
+            'delivery_type' =>
+                DeliveryTypeEnum::OWN_ADDRESS->value,
+            'address_id' => $address->id,
+            'payment_method' =>
+                PaymentMethodEnum::CASH->value,
+        ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('address_id');
 
     $this->assertDatabaseCount('orders', 0);
 });

@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 const props = defineProps<{
     modelValue: OrderTypeEnum | null;
     orderTypes: OrderTypeType[];
+    disabledOrderTypes: OrderTypeEnum[];
 }>();
 
 const emit = defineEmits<{
@@ -27,7 +28,14 @@ const getOrderTypeIcon = (orderTypeValue: OrderTypeEnum) => {
     }
 };
 
+const isTypeDisabled = (value: OrderTypeEnum) =>
+    props.disabledOrderTypes.includes(value);
+
 const selectType = (value: OrderTypeEnum) => {
+    if (isTypeDisabled(value)) {
+        return;
+    }
+
     emit('update:modelValue', value);
 };
 </script>
@@ -45,26 +53,41 @@ const selectType = (value: OrderTypeEnum) => {
             <button
                 v-for="orderType in props.orderTypes"
                 :key="orderType.value"
+                type="button"
+                :disabled="isTypeDisabled(orderType.value)"
                 @click="selectType(orderType.value)"
                 :class="[
                     'flex items-center justify-center gap-2 rounded-lg border-2 p-4 transition-all',
-                    props.modelValue === orderType.value
-                        ? 'border-red-500 bg-red-50'
-                        : 'border-gray-200 hover:border-red-200',
+                    isTypeDisabled(orderType.value)
+                        ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 opacity-60'
+                        : props.modelValue === orderType.value
+                          ? 'border-red-500 bg-red-50'
+                          : 'border-gray-200 hover:border-red-200',
                 ]"
             >
                 <component
                     :is="getOrderTypeIcon(orderType.value)"
                     class="h-5 w-5"
                     :class="
-                        props.modelValue === orderType.value
-                            ? 'text-red-500'
-                            : 'text-gray-400'
+                        isTypeDisabled(orderType.value)
+                            ? 'text-gray-400'
+                            : props.modelValue === orderType.value
+                              ? 'text-red-500'
+                              : 'text-gray-400'
                     "
                 />
-                <span class="font-medium">{{
-                    t(`common.orderTypes.${orderType.key}`)
-                }}</span>
+                <div class="flex flex-col items-start">
+                    <span class="font-medium">
+                        {{ t(`common.orderTypes.${orderType.key}`) }}
+                    </span>
+
+                    <span
+                        v-if="isTypeDisabled(orderType.value)"
+                        class="text-xs font-normal text-gray-500"
+                    >
+                        {{ t('cart.orderType.unavailableWhileClosed') }}
+                    </span>
+                </div>
             </button>
         </div>
     </div>

@@ -15,6 +15,8 @@ export default {
         deliveryAddress: 'Adresse de livraison',
         deliveryToBms: 'Livraison à BMS',
         orderItems: 'Articles de la commande',
+        deliveryCompany: "Livraison à l'entreprise",
+        deliveryDate: 'Date de livraison',
     },
 
     item: {

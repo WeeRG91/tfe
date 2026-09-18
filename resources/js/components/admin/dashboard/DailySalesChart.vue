@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { use, type EChartsCoreOption } from 'echarts/core';
-import { CanvasRenderer } from 'echarts/renderers';
 import { LineChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent } from 'echarts/components';
+import { use, type EChartsCoreOption } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { computed } from 'vue';
 import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
 

@@ -5,6 +5,8 @@ namespace App\Actions\Client\Order\Commands\Reorder;
 use App\Actions\Client\Order\Commands\CalculateOrderAmounts;
 use App\Actions\Client\Order\Commands\CreateOrder;
 use App\Actions\Client\Order\Commands\HandleLoyaltyPoints;
+use App\Enums\DeliveryTypeEnum;
+use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Events\OrderPlacedBroadcast;
 use App\Models\Order;
@@ -41,7 +43,23 @@ readonly class Reorder
         }
 
         return DB::transaction(function () use ($order, $data, $user) {
-            $this->availability->assertCanAcceptOrders();
+            $isFutureTakeaway =
+                (int) $data['type'] ===
+                OrderTypeEnum::TAKEAWAY->value;
+
+            $isCompanyDelivery =
+                (int) $data['type'] ===
+                OrderTypeEnum::DELIVERY->value &&
+                ($data['delivery_type'] ?? null) ===
+                DeliveryTypeEnum::COMPANY->value &&
+                config(
+                    'restaurant.delivery.company.enabled',
+                    false,
+                );
+
+            if (! $isFutureTakeaway && ! $isCompanyDelivery) {
+                $this->availability->assertCanAcceptOrders();
+            }
 
             $newOrder = $this->createOrder->execute($data, $user);
 
@@ -56,6 +74,7 @@ readonly class Reorder
                 vatBreakdown: $vatBreakdown,
                 usedPoints: $usedPoints,
                 type: $type,
+                deliveryType: $data['delivery_type'] ?? null,
             );
 
             $newOrder->update($amounts);

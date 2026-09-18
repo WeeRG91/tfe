@@ -41,6 +41,9 @@ export type AppPageProps<
 > = T & {
     name: string;
     quote: { message: string; author: string };
+    features: {
+        companyDelivery: boolean;
+    };
     auth: Auth;
     locale: LocaleType;
     fallbackLocale: LocaleType;

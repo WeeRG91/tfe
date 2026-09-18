@@ -13,6 +13,8 @@ export default {
         customer: 'Customer',
         deliveryAddress: 'Delivery Address',
         orderItems: 'Order Items',
+        deliveryCompany: 'Delivery to company',
+        deliveryDate: 'Delivery date',
     },
     item: {
         spicyLevel: 'Spicy level',

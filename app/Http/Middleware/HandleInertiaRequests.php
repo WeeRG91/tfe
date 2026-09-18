@@ -51,6 +51,11 @@ class HandleInertiaRequests extends Middleware
             'fallbackLocale' => config('app.fallback_locale'),
             'availableLocales' => config('locales.supported'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
+            'features' => [
+                'companyDelivery' => (bool) config(
+                    'restaurant.delivery.company.enabled',
+                ),
+            ],
             'auth' => [
                 'user' => $user
                     ? new GlobalUserResource($user)

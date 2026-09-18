@@ -1,9 +1,11 @@
 export default {
-    closed: 'Le restaurant est actuellement fermé.',
-    closedTitle: 'Restaurant fermé',
-    closedDescription:
-        'Veuillez revenir pendant nos heures d’ouverture pour passer votre commande.',
-    understood: 'Compris',
+    closedTitle: 'Le restaurant est actuellement fermé',
+    closed: 'Nous n’acceptons pas de commandes immédiates pour le moment.',
+    advanceOrderDescription:
+        'Vous pouvez toujours passer une commande à emporter pour un prochain créneau d’ouverture disponible.',
+    advanceOrderDescriptionWithCompany:
+        'Vous pouvez toujours commander à l’avance à emporter pour un prochain créneau d’ouverture ou choisir une date de livraison disponible pour une entreprise.',
+    understood: 'Continuer à parcourir',
     statusUnavailable:
         'Impossible de vérifier la disponibilité du restaurant. Veuillez réessayer.',
     pickupLoading: 'Chargement des créneaux de retrait…',

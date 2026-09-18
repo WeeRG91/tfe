@@ -16,10 +16,12 @@ import { dashboard } from '@/routes/admin';
 import allergen from '@/routes/admin/allergen';
 import chat from '@/routes/admin/chat';
 import confirmedOrder from '@/routes/admin/confirmed-order';
+import deliveryCompanies from '@/routes/admin/delivery-companies';
 import dish from '@/routes/admin/dish';
 import drink from '@/routes/admin/drink';
 import ingredient from '@/routes/admin/ingredient';
 import meat from '@/routes/admin/meat';
+import restaurantSchedule from '@/routes/admin/restaurant-schedule';
 import role from '@/routes/admin/role';
 import user from '@/routes/admin/user';
 import { type NavItem } from '@/types';
@@ -40,6 +42,8 @@ import {
     BeanOff,
     Beef,
     BookOpen,
+    Building2,
+    CalendarClock,
     Carrot,
     Folder,
     LayoutGrid,
@@ -49,12 +53,10 @@ import {
     UserRoundPen,
     UserRoundPlus,
     Wine,
-    CalendarClock,
 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AppLogo from './AppLogo.vue';
-import restaurantSchedule from '@/routes/admin/restaurant-schedule';
 
 const page = usePage();
 const currentUser = computed(() => page.props.auth?.user);
@@ -130,6 +132,16 @@ const mainNavItems = computed<NavItem[]>(() => [
         icon: CalendarClock,
         permission: AdminPermissionEnum.DASHBOARD_VIEW,
     },
+    ...(page.props.features.companyDelivery
+        ? [
+              {
+                  title: t('deliveryCompanies.title'),
+                  href: deliveryCompanies.index(),
+                  icon: Building2,
+                  permission: AdminPermissionEnum.DASHBOARD_VIEW,
+              },
+          ]
+        : []),
 ]);
 
 const footerNavItems = computed<NavItem[]>(() => [

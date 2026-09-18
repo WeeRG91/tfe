@@ -71,10 +71,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/place-order', 'placeOrder')->name('place-order');
         Route::get('/get-cart', 'getCart')->name('get-cart');
         Route::post('/items/add-dish', 'addDish')
-            ->middleware('restaurant.open')
             ->name('add-dish');
         Route::post('/items/add-drink', 'addDrink')
-            ->middleware('restaurant.open')
             ->name('add-drink');
         Route::patch('/items/{cartItemId}/notes', 'updateNotes')->name('update-notes');
         Route::patch('/items/{cartItemId}/quantity', 'updateQuantity')->name('update-quantity');

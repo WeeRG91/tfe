@@ -103,6 +103,8 @@ export default {
             pickupBy: 'Pickup by',
             table: 'Table',
             tableNumber: 'Table Number',
+            deliveryCompany: 'Delivery to company',
+            deliveryDate: 'Delivery date',
         },
         payment: {
             information: 'Payment Information',

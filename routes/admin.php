@@ -155,6 +155,7 @@ Route::middleware(['auth', 'verified', 'permission:admin.access'])
             ->name('delivery-companies.')
             ->middleware('company.delivery.enabled')
             ->group(function () {
+                Route::get('/', 'index')->name('index');
                 Route::post('/', 'store')->name('store');
                 Route::put('/{deliveryCompany}', 'update')->name('update');
                 Route::delete('/{deliveryCompany}', 'destroy')->name('destroy');

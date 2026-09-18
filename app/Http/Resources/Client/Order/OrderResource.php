@@ -36,6 +36,16 @@ class OrderResource extends JsonResource
             'pickup_name' => $this->pickup_name,
             'pickup_phone' => $this->pickup_phone,
             'delivery_address' => $this->whenLoaded('address', fn () => new AddressResource($this->address)),
+            'delivery_type' => $this->delivery_type?->value,
+            'delivery_company' =>
+                $this->delivery_company_name
+                    ? [
+                    'id' => $this->delivery_company_id,
+                    'name' =>
+                        $this->delivery_company_name,
+                    ]
+                    : null,
+            'delivery_date' => $this->delivery_date?->format('Y-m-d'),
             'status' => OrderStatusEnum::getStatus($this->status),
             'payment_method' => PaymentMethodEnum::getPaymentMethod($this->payment_method),
             'payment_status' => PaymentStatusEnum::getPaymentStatus($this->payment_status),

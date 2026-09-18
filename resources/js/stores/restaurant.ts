@@ -17,6 +17,9 @@ type AvailabilityResponse = {
     };
 };
 
+const CLOSED_WARNING_SESSION_KEY =
+    'restaurant-closed-warning-shown';
+
 export const useRestaurantStore = defineStore('restaurant', {
     state: () => ({
         current: null as RestaurantStatus | null,
@@ -52,6 +55,16 @@ export const useRestaurantStore = defineStore('restaurant', {
 
                 this.current = response.data.data.current;
 
+                if (this.current.is_open) {
+                    try {
+                        window.sessionStorage.removeItem(
+                            CLOSED_WARNING_SESSION_KEY,
+                        );
+                    } catch {
+                        //
+                    }
+                }
+
                 return true;
             } catch (error) {
                 this.hasError = true;
@@ -65,6 +78,31 @@ export const useRestaurantStore = defineStore('restaurant', {
             } finally {
                 this.isLoading = false;
             }
+        },
+
+        showClosedModalOnce(message: string | null = null) {
+            if (!this.isClosed) {
+                return;
+            }
+
+            try {
+                if (
+                    window.sessionStorage.getItem(
+                        CLOSED_WARNING_SESSION_KEY,
+                    ) === 'true'
+                ) {
+                    return;
+                }
+
+                window.sessionStorage.setItem(
+                    CLOSED_WARNING_SESSION_KEY,
+                    'true',
+                );
+            } catch {
+                //
+            }
+
+            this.showClosedModal(message);
         },
 
         showClosedModal(message: string | null = null) {

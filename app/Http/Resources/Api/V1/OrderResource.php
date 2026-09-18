@@ -36,6 +36,20 @@ class OrderResource extends JsonResource
                     ? new AddressResource($this->address)
                     : null,
             ),
+            'delivery_type' =>
+                $this->delivery_type?->value,
+
+            'delivery_company' =>
+                $this->delivery_company_name
+                    ? [
+                    'id' => $this->delivery_company_id,
+                    'name' =>
+                        $this->delivery_company_name,
+                ]
+                    : null,
+
+            'delivery_date' =>
+                $this->delivery_date?->format('Y-m-d'),
             'status' => $this->enumData($this->status),
             'payment_method' => $this->enumData($this->payment_method),
             'payment_status' => $this->enumData($this->payment_status),

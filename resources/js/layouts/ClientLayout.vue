@@ -3,6 +3,8 @@ import CartDrawer from '@/components/client/cart/CartDrawer.vue';
 import ClientGlobalSearchModal from '@/components/client/ClientGlobalSearchModal.vue';
 import ChatBubble from '@/components/client/clientLayout/ChatBubble.vue';
 import LayoutHeader from '@/components/client/clientLayout/LayoutHeader.vue';
+import RestaurantClosedModal from '@/components/client/clientLayout/RestaurantClosedModal.vue';
+import RestaurantClosureBanner from '@/components/client/clientLayout/RestaurantClosureBanner.vue';
 import NotificationsDrawer from '@/components/client/notification/NotificationsDrawer.vue';
 import { useCartStore } from '@/stores/cart';
 import { useNotificationStore } from '@/stores/notification';
@@ -13,8 +15,6 @@ import { router, usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import RestaurantClosureBanner from '@/components/client/clientLayout/RestaurantClosureBanner.vue';
-import RestaurantClosedModal from '@/components/client/clientLayout/RestaurantClosedModal.vue';
 
 const page = usePage<AppPageProps>();
 const user = computed(() => page.props.auth?.user);
@@ -28,9 +28,15 @@ const restaurantStore = useRestaurantStore();
 
 let restaurantRefreshTimer: ReturnType<typeof setInterval> | null = null;
 
-const refreshRestaurantStatus = () => {
-    if (document.visibilityState === 'visible') {
-        void restaurantStore.refresh();
+const refreshRestaurantStatus = async (): Promise<void> => {
+    if (document.visibilityState !== 'visible') {
+        return;
+    }
+
+    const refreshed = await restaurantStore.refresh();
+
+    if (refreshed && restaurantStore.isClosed) {
+        restaurantStore.showClosedModalOnce();
     }
 };
 
@@ -110,7 +116,7 @@ type EchoChannel = {
 const channel = ref<EchoChannel | null>(null);
 
 onMounted(async () => {
-    void restaurantStore.refresh();
+    await refreshRestaurantStatus();
 
     restaurantRefreshTimer = setInterval(refreshRestaurantStatus, 60_000);
 

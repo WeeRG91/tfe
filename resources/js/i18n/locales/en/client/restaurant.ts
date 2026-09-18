@@ -1,9 +1,11 @@
 export default {
-    closed: 'The restaurant is currently closed.',
-    closedTitle: 'Restaurant closed',
-    closedDescription:
-        'Please come back during our opening hours to place your order.',
-    understood: 'Understood',
+    closedTitle: 'The restaurant is currently closed',
+    closed: 'We are not accepting immediate orders right now.',
+    advanceOrderDescription:
+        'You can still place a takeaway order for an available future opening time.',
+    advanceOrderDescriptionWithCompany:
+        'You can still order in advance for takeaway at a future opening time or choose an available company delivery date.',
+    understood: 'Continue browsing',
     statusUnavailable:
         'Unable to check restaurant availability. Please try again.',
     pickupLoading: 'Loading available pickup slots…',

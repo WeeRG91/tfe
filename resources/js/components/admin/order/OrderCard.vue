@@ -6,6 +6,7 @@ import { useOrderStatusActionFlow } from '@/composables/useOrderStatusActionFlow
 import { usePermission } from '@/composables/usePermission';
 import { formatAddress, getOrderStatusVariant } from '@/lib/utils';
 import { useOrderStore } from '@/stores/order';
+import { DeliveryTypeEnum } from '@/types/delivery';
 import { OrderStatusEnum, OrderType, OrderTypeEnum } from '@/types/order';
 import { OrderPermissionEnum } from '@/types/permission';
 import {
@@ -15,6 +16,7 @@ import {
     LoaderCircle,
     MapPin,
     User,
+    Building2,
 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -29,7 +31,7 @@ const props = defineProps<{
 const { can } = usePermission();
 
 const { t } = useI18n();
-const { formatDate } = useDateFormatter();
+const { formatDate, formatDateOnly } = useDateFormatter();
 
 const emit = defineEmits<{
     'cancel-order': [orderId: number];
@@ -77,6 +79,22 @@ const isModalOpen = ref<boolean>(false);
 const orderStatusActions = computed(() =>
     getOrderStatusActions(props.order.status.value, props.order.type.value),
 );
+
+const isCompanyDelivery = computed(
+    () => props.order.delivery_type === DeliveryTypeEnum.COMPANY,
+);
+
+const deliveryDestination = computed(() => {
+    if (isCompanyDelivery.value && props.order.delivery_company) {
+        const companyName = props.order.delivery_company.name;
+
+        return props.order.delivery_date
+            ? `${companyName} · ${formatDateOnly(props.order.delivery_date)}`
+            : companyName;
+    }
+
+    return formatAddress(props.order.delivery_address);
+});
 
 const openOrderDetails = (order: OrderType) => {
     selectedOrder.value = order;
@@ -167,12 +185,13 @@ watch(
                     v-if="order.type.value === OrderTypeEnum.DELIVERY"
                     class="flex items-start gap-2"
                 >
-                    <MapPin
+                    <component
+                        :is="isCompanyDelivery ? Building2 : MapPin"
                         :size="14"
                         class="mt-0.5 flex-shrink-0 text-muted-foreground"
                     />
                     <span class="text-xs break-words">
-                        {{ formatAddress(order.delivery_address) }}
+                        {{ deliveryDestination }}
                     </span>
                 </div>
                 <div
@@ -316,12 +335,13 @@ watch(
                     v-if="order.type.value === OrderTypeEnum.DELIVERY"
                     class="flex items-start gap-2"
                 >
-                    <MapPin
+                    <component
+                        :is="isCompanyDelivery ? Building2 : MapPin"
                         :size="14"
                         class="mt-0.5 flex-shrink-0 text-muted-foreground"
                     />
                     <span class="flex-1 text-xs break-words">
-                        {{ formatAddress(order.delivery_address) }}
+                        {{ deliveryDestination }}
                     </span>
                 </div>
                 <div

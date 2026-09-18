@@ -104,6 +104,8 @@ export default {
             pickupBy: 'Retrait à',
             table: 'Table',
             tableNumber: 'Numéro de table',
+            deliveryCompany: "Livraison à l'entreprise",
+            deliveryDate: 'Date de livraison',
         },
         payment: {
             information: 'Informations de paiement',

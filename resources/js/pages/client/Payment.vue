@@ -7,13 +7,22 @@ import {
     getOrderTypeIcon,
 } from '@/lib/utils';
 import paymentOrder from '@/routes/payment-order';
-import { OrderType } from '@/types/order';
+import { OrderType, OrderTypeEnum } from '@/types/order';
 import { Head } from '@inertiajs/vue3';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
-import { CreditCard, HandCoins, MapPin, Soup, User } from 'lucide-vue-next';
+import {
+    CreditCard,
+    HandCoins,
+    MapPin,
+    Soup,
+    User,
+    Building2,
+} from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { DeliveryTypeEnum } from '@/types/delivery';
 
 const props = defineProps<{
     order: OrderType;
@@ -21,6 +30,8 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
+
+const { formatDateOnly } = useDateFormatter();
 
 const stripe = ref<any>(null);
 const elements = ref<any>(null);
@@ -199,8 +210,8 @@ onMounted(() => {
                                         </p>
                                         <p
                                             v-if="
-                                                props.order.type.label ===
-                                                'Dine-in'
+                                                props.order.type.value ===
+                                                OrderTypeEnum.DINEIN
                                             "
                                             class="mt-1 text-sm text-gray-600"
                                         >
@@ -209,8 +220,8 @@ onMounted(() => {
                                         </p>
                                         <p
                                             v-if="
-                                                props.order.type.label ===
-                                                'Takeaway'
+                                                props.order.type.value ===
+                                                OrderTypeEnum.TAKEAWAY
                                             "
                                             class="mt-1 text-sm text-gray-600"
                                         >
@@ -221,7 +232,10 @@ onMounted(() => {
                                 </div>
 
                                 <div
-                                    v-if="props.order.type.label === 'Takeaway'"
+                                    v-if="
+                                        props.order.type.value ===
+                                        OrderTypeEnum.TAKEAWAY
+                                    "
                                     class="flex items-start gap-3"
                                 >
                                     <div
@@ -248,7 +262,11 @@ onMounted(() => {
                                 </div>
 
                                 <div
-                                    v-if="props.order.type.label === 'Delivery'"
+                                    v-if="
+                                        props.order.delivery_address &&
+                                        props.order.delivery_type !==
+                                            DeliveryTypeEnum.COMPANY
+                                    "
                                     class="flex items-start gap-3"
                                 >
                                     <div
@@ -298,6 +316,54 @@ onMounted(() => {
                                             {{
                                                 props.order.delivery_address
                                                     .country
+                                            }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    v-if="
+                                        props.order.delivery_type ===
+                                            DeliveryTypeEnum.COMPANY &&
+                                        props.order.delivery_company
+                                    "
+                                    class="flex items-start gap-3"
+                                >
+                                    <div
+                                        class="flex-shrink-0 rounded-lg bg-red-50 p-2"
+                                    >
+                                        <Building2
+                                            class="h-5 w-5 text-red-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <p class="text-sm text-gray-500">
+                                            {{
+                                                t(
+                                                    'payment.order.deliveryCompany',
+                                                )
+                                            }}
+                                        </p>
+
+                                        <p class="font-medium text-gray-800">
+                                            {{
+                                                props.order.delivery_company
+                                                    .name
+                                            }}
+                                        </p>
+
+                                        <p
+                                            v-if="props.order.delivery_date"
+                                            class="mt-1 text-sm text-gray-600"
+                                        >
+                                            {{
+                                                t('payment.order.deliveryDate')
+                                            }}:
+                                            {{
+                                                formatDateOnly(
+                                                    props.order.delivery_date,
+                                                )
                                             }}
                                         </p>
                                     </div>

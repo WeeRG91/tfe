@@ -1,6 +1,7 @@
 import { AddressType } from '@/types/address';
 import { CategoryOptionType } from '@/types/category';
 import { PaymentMethodType, PaymentStatusType } from '@/types/payment';
+import { DeliveryTypeEnum } from '@/types/delivery';
 
 export type OrderType = {
     id: number;
@@ -11,7 +12,13 @@ export type OrderType = {
     pickup_time: string;
     pickup_name: string;
     pickup_phone: string;
-    delivery_address: AddressType;
+    delivery_address: AddressType | null;
+    delivery_type: DeliveryTypeEnum | null;
+    delivery_company: {
+        id: number | null;
+        name: string;
+    } | null;
+    delivery_date: string | null;
     status: OrderStatusType;
     payment_method: PaymentMethodType;
     payment_status: PaymentStatusType;
@@ -91,6 +98,9 @@ export type PlaceOrderPayloadType = {
     pickup_name?: string | null;
     pickup_phone?: string | null;
     address_id?: number | null;
+    delivery_type?: DeliveryTypeEnum | null;
+    delivery_company_id?: number | null;
+    delivery_date?: string | null;
     payment_method: number;
     notes?: string | null;
     used_points: number;
@@ -104,6 +114,9 @@ export type ReorderPayloadType = {
     pickup_name?: string | null;
     pickup_phone?: string | null;
     address_id?: number | null;
+    delivery_type?: DeliveryTypeEnum | null;
+    delivery_company_id?: number | null;
+    delivery_date?: string | null;
     payment_method: number;
     notes?: string | null;
     used_points: number;

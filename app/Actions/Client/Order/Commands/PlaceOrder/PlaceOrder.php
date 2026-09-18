@@ -5,6 +5,8 @@ namespace App\Actions\Client\Order\Commands\PlaceOrder;
 use App\Actions\Client\Order\Commands\CalculateOrderAmounts;
 use App\Actions\Client\Order\Commands\CreateOrder;
 use App\Actions\Client\Order\Commands\HandleLoyaltyPoints;
+use App\Enums\DeliveryTypeEnum;
+use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Events\OrderPlacedBroadcast;
 use App\Services\RestaurantAvailabilityService;
@@ -31,7 +33,20 @@ readonly class PlaceOrder
         $user = auth()->user();
 
         return DB::transaction(function () use ($data, $user) {
-            $this->availability->assertCanAcceptOrders();
+            $isFutureTakeaway = (int) $data['type'] === OrderTypeEnum::TAKEAWAY->value;
+
+            $isCompanyDelivery =
+                (int) $data['type'] === OrderTypeEnum::DELIVERY->value &&
+                ($data['delivery_type'] ?? null) === DeliveryTypeEnum::COMPANY->value &&
+                config(
+                    'restaurant.delivery.company.enabled',
+                    false,
+                );
+
+            if (!$isFutureTakeaway && !$isCompanyDelivery) {
+                $this->availability
+                    ->assertCanAcceptOrders();
+            }
 
             $cart = $user->cart()
                 ->whereKey($data['cart_id'])
@@ -60,6 +75,7 @@ readonly class PlaceOrder
                 vatBreakdown: $vatBreakdown,
                 usedPoints: $usedPoints,
                 type: $type,
+                deliveryType: $data['delivery_type'] ?? null,
             );
 
             $order->update($amounts);

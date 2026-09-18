@@ -11,9 +11,16 @@ import {
 import { useRestaurantStore } from '@/stores/restaurant';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { AppPageProps } from '@/types';
+import { usePage } from '@inertiajs/vue3';
 
 const restaurantStore = useRestaurantStore();
 const { t } = useI18n();
+const page = usePage<AppPageProps>();
+
+const companyDeliveryEnabled = computed(
+    () => page.props.features?.companyDelivery ?? false,
+);
 
 const message = computed(() => {
     return (
@@ -39,9 +46,20 @@ const message = computed(() => {
                     {{ t('restaurant.closedTitle') }}
                 </DialogTitle>
 
-                <DialogDescription>
-                    {{ message }}
-                    {{ t('restaurant.closedDescription') }}
+                <DialogDescription class="space-y-3">
+                    <p>
+                        {{ message }}
+                    </p>
+
+                    <p class="font-medium text-gray-700">
+                        {{
+                            companyDeliveryEnabled
+                                ? t(
+                                      'restaurant.advanceOrderDescriptionWithCompany',
+                                  )
+                                : t('restaurant.advanceOrderDescription')
+                        }}
+                    </p>
                 </DialogDescription>
             </DialogHeader>
 

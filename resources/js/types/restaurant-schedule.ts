@@ -4,7 +4,7 @@ export type RestaurantHourPeriodType = {
     opens_at: string;
     closes_at: string;
     last_pickup_at: string;
-}
+};
 
 export type RestaurantHourType = {
     id: number;

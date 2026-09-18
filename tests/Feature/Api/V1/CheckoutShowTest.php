@@ -3,10 +3,33 @@
 use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Models\Address;
 use App\Models\Cart;
+use App\Models\DeliveryCompany;
 use App\Models\LoyaltyPointTransaction;
 use App\Models\User;
+use Carbon\CarbonImmutable;
+
+afterEach(function () {
+    CarbonImmutable::setTestNow();
+});
 
 it('returns the authenticated mobile users checkout options', function () {
+    config()->set(
+        'restaurant.delivery.company.enabled',
+        true,
+    );
+
+    config()->set(
+        'restaurant.timezone',
+        'Europe/Luxembourg',
+    );
+
+    CarbonImmutable::setTestNow(
+        CarbonImmutable::parse(
+            '2026-09-16 10:00:00',
+            'Europe/Luxembourg',
+        ),
+    );
+
     $user = User::factory()->withoutTwoFactor()->create();
     $token = $user->createToken('Test phone', ['mobile']);
     $cart = Cart::query()->create(['user_id' => $user->id]);
@@ -47,6 +70,27 @@ it('returns the authenticated mobile users checkout options', function () {
         'type' => LoyaltyPointTransactionTypeEnum::REDEEMED,
     ]);
 
+    $company = DeliveryCompany::query()->create([
+        'name' => 'BMS',
+        'is_active' => true,
+        'minimum_advance_days' => 2,
+    ]);
+
+    $company->deliveryDates()->createMany([
+        [
+            'delivery_date' => '2026-09-17',
+            'is_available' => true,
+        ],
+        [
+            'delivery_date' => '2026-09-18',
+            'is_available' => true,
+        ],
+        [
+            'delivery_date' => '2026-09-19',
+            'is_available' => false,
+        ],
+    ]);
+
     $response = $this
         ->withToken($token->plainTextToken)
         ->getJson('/api/v1/checkout', [
@@ -65,6 +109,38 @@ it('returns the authenticated mobile users checkout options', function () {
         ->assertJsonPath('data.order_types.0.key', 'dinein')
         ->assertJsonPath('data.order_types.1.key', 'takeaway')
         ->assertJsonPath('data.order_types.2.key', 'delivery')
+        ->assertJsonPath(
+            'data.delivery_options.own_address.fee',
+            '2.00',
+        )
+        ->assertJsonPath(
+            'data.delivery_options.own_address.postal_codes.0',
+            '6700',
+        )
+        ->assertJsonPath(
+            'data.delivery_options.company.enabled',
+            true,
+        )
+        ->assertJsonPath(
+            'data.delivery_options.company.fee',
+            '0.00',
+        )
+        ->assertJsonPath(
+            'data.delivery_options.company.companies.0.id',
+            $company->id,
+        )
+        ->assertJsonPath(
+            'data.delivery_options.company.companies.0.name',
+            'BMS',
+        )
+        ->assertJsonPath(
+            'data.delivery_options.company.companies.0.dates.0',
+            '2026-09-18',
+        )
+        ->assertJsonCount(
+            1,
+            'data.delivery_options.company.companies.0.dates',
+        )
         ->assertJsonPath('data.payment_methods.0.value', 1)
         ->assertJsonPath('data.payment_methods.0.key', 'cash')
         ->assertJsonPath('data.payment_methods.1.key', 'card')

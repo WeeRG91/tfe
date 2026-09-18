@@ -2,8 +2,10 @@
 
 namespace App\Actions\Client\Order\Commands;
 
+use App\Enums\DeliveryTypeEnum;
 use App\Enums\OrderStatusEnum;
 use App\Enums\PaymentMethodEnum;
+use App\Models\DeliveryCompany;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\RestaurantAvailabilityService;
@@ -20,10 +22,28 @@ readonly class CreateOrder
     {
         $isCash = $data['payment_method'] === PaymentMethodEnum::CASH->value;
 
+        $deliveryCompany = null;
+
+        if (
+            ($data['delivery_type'] ?? null) === DeliveryTypeEnum::COMPANY->value
+        ) {
+            $deliveryCompany = DeliveryCompany::query()
+                ->where('is_active', true)
+                ->findOrFail(
+                    $data['delivery_company_id'],
+                );
+        }
+
         return Order::query()->create([
             'user_id' => $user->id,
             'order_number' => 'ORD-'.Str::ulid(),
             'type' => $data['type'],
+            'delivery_type' => $data['delivery_type'] ?? null,
+            'delivery_company_id' => $deliveryCompany?->id,
+            'delivery_company_name' => $deliveryCompany?->name,
+            'delivery_date' => $deliveryCompany
+                ? $data['delivery_date']
+                : null,
             'table_number' => $data['table_number'] ?? null,
             'pickup_time' => $this->normalizePickupTime($data),
             'pickup_name' => $data['pickup_name'] ?? null,

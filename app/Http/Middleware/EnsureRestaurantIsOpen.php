@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\DeliveryTypeEnum;
+use App\Enums\OrderTypeEnum;
 use App\Services\RestaurantAvailabilityService;
 use Closure;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +23,20 @@ readonly class EnsureRestaurantIsOpen
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $isFutureTakeaway = $request->integer('type') === OrderTypeEnum::TAKEAWAY->value;
+
+        $isCompanyDelivery =
+            $request->integer('type') === OrderTypeEnum::DELIVERY->value &&
+            $request->string('delivery_type')->toString() === DeliveryTypeEnum::COMPANY->value &&
+            config(
+                'restaurant.delivery.company.enabled',
+                false,
+            );
+
+        if ($isFutureTakeaway || $isCompanyDelivery) {
+            return $next($request);
+        }
+
         $status = $this->availability->orderingStatusAt();
 
         if ($status['accepting_orders']) {

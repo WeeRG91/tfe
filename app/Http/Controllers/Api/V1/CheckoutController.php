@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Actions\Client\Cart\Queries\GetOrCreateCart;
 use App\Actions\Client\Order\Commands\PlaceOrder\PlaceOrder;
+use App\Actions\Client\Order\Queries\GetDeliveryOptions;
 use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
@@ -23,6 +24,7 @@ class CheckoutController extends Controller
     public function show(
         Request $request,
         GetOrCreateCart $getOrCreateCart,
+        GetDeliveryOptions $getDeliveryOptions,
     ): JsonResponse {
         $user = $request->user();
 
@@ -86,6 +88,8 @@ class CheckoutController extends Controller
                     ],
                 ],
                 'delivery_fee' => '2.00',
+                'delivery_options' =>
+                    $getDeliveryOptions->execute(),
             ],
         ]);
     }
