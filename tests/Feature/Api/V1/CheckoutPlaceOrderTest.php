@@ -178,8 +178,7 @@ it('places a delivery order with an owned address and loyalty discount', functio
             'address_id' => $address->id,
             'payment_method' => PaymentMethodEnum::CASH->value,
             'used_points' => 300,
-            'delivery_type' =>
-                DeliveryTypeEnum::OWN_ADDRESS->value,
+            'delivery_type' => DeliveryTypeEnum::OWN_ADDRESS->value,
         ]);
 
     $response
@@ -199,8 +198,7 @@ it('places a delivery order with an owned address and loyalty discount', functio
 
     $this->assertDatabaseHas('orders', [
         'id' => $orderId,
-        'delivery_type' =>
-            DeliveryTypeEnum::OWN_ADDRESS->value,
+        'delivery_type' => DeliveryTypeEnum::OWN_ADDRESS->value,
         'address_id' => $address->id,
         'delivery_company_id' => null,
         'delivery_company_name' => null,
@@ -382,8 +380,7 @@ it('validates fields required by each mobile order type', function () {
         ->postJson('/api/v1/checkout/orders', [
             'cart_id' => $cart->id,
             'type' => OrderTypeEnum::DELIVERY->value,
-            'payment_method' =>
-                PaymentMethodEnum::CASH->value,
+            'payment_method' => PaymentMethodEnum::CASH->value,
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(
@@ -395,10 +392,8 @@ it('validates fields required by each mobile order type', function () {
         ->postJson('/api/v1/checkout/orders', [
             'cart_id' => $cart->id,
             'type' => OrderTypeEnum::DELIVERY->value,
-            'delivery_type' =>
-                DeliveryTypeEnum::OWN_ADDRESS->value,
-            'payment_method' =>
-                PaymentMethodEnum::CASH->value,
+            'delivery_type' => DeliveryTypeEnum::OWN_ADDRESS->value,
+            'payment_method' => PaymentMethodEnum::CASH->value,
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(
@@ -430,8 +425,7 @@ it('rejects another users cart and delivery address', function () {
         ->postJson('/api/v1/checkout/orders', [
             'cart_id' => $otherCart->id,
             'type' => OrderTypeEnum::DELIVERY->value,
-            'delivery_type' =>
-                DeliveryTypeEnum::OWN_ADDRESS->value,
+            'delivery_type' => DeliveryTypeEnum::OWN_ADDRESS->value,
             'address_id' => $otherAddress->id,
             'payment_method' => PaymentMethodEnum::CASH->value,
         ])
@@ -605,11 +599,9 @@ it('rejects own-address delivery outside configured postal codes', function () {
         ->postJson('/api/v1/checkout/orders', [
             'cart_id' => $cart->id,
             'type' => OrderTypeEnum::DELIVERY->value,
-            'delivery_type' =>
-                DeliveryTypeEnum::OWN_ADDRESS->value,
+            'delivery_type' => DeliveryTypeEnum::OWN_ADDRESS->value,
             'address_id' => $address->id,
-            'payment_method' =>
-                PaymentMethodEnum::CASH->value,
+            'payment_method' => PaymentMethodEnum::CASH->value,
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors('address_id');

@@ -9,53 +9,37 @@ use Illuminate\Pagination\CursorPaginator;
 
 abstract class BaseCursorPagination
 {
-    /**
-     * @param Builder $query
-     * @param Request $request
-     * @return Builder
-     */
     protected function filters(Builder $query, Request $request): Builder
     {
-        if (!$request->filter || $request->filter === 'all') {
+        if (! $request->filter || $request->filter === 'all') {
             $query->withoutTrashed();
         }
 
-        $query->when($request->filter === 'available', fn (Builder $q) =>
-            $q->where('is_available', true)->withoutTrashed()
+        $query->when($request->filter === 'available', fn (Builder $q) => $q->where('is_available', true)->withoutTrashed()
         );
 
-        $query->when($request->filter === 'unavailable', fn (Builder $q) =>
-            $q->where('is_available', false)->withoutTrashed()
+        $query->when($request->filter === 'unavailable', fn (Builder $q) => $q->where('is_available', false)->withoutTrashed()
         );
 
-        $query->when($request->filter === 'deleted', fn (Builder $q) =>
-            $q->onlyTrashed()
+        $query->when($request->filter === 'deleted', fn (Builder $q) => $q->onlyTrashed()
         );
 
-        $query->when($request->category, fn (Builder $q) =>
-            $q->where('category', $request->category)
+        $query->when($request->category, fn (Builder $q) => $q->where('category', $request->category)
         );
 
-        $query->when($request->allergen, fn (Builder $q) =>
-            $q->where('allergen_id', $request->allergen)
+        $query->when($request->allergen, fn (Builder $q) => $q->where('allergen_id', $request->allergen)
         );
 
-        $query->when($request->search, fn (Builder $q) =>
-            $q->whereTranslationLike(
-                'name',
-                '%' . $request->string('search')->trim() . '%',
-                app()->getLocale(),
-            )
+        $query->when($request->search, fn (Builder $q) => $q->whereTranslationLike(
+            'name',
+            '%'.$request->string('search')->trim().'%',
+            app()->getLocale(),
+        )
         );
 
         return $query;
     }
 
-    /**
-     * @param Builder $query
-     * @param int $perPage
-     * @return CursorPaginator
-     */
     protected function paginate(Builder $query, int $perPage): CursorPaginator
     {
         return $query
@@ -64,9 +48,7 @@ abstract class BaseCursorPagination
     }
 
     /**
-     * @param CursorPaginator $items
-     * @param class-string<JsonResource> $resource
-     * @return array
+     * @param  class-string<JsonResource>  $resource
      */
     protected function formatPagination(CursorPaginator $items, string $resource): array
     {

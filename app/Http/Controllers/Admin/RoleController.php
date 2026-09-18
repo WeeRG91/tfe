@@ -22,9 +22,6 @@ use Throwable;
 
 class RoleController extends Controller
 {
-    /**
-     * @return Response
-     */
     public function index(): Response
     {
         $this->authorize('viewAny', Role::class);
@@ -32,11 +29,6 @@ class RoleController extends Controller
         return Inertia::render('admin/role/Index');
     }
 
-    /**
-     * @param Request $request
-     * @param GetRoles $getRoles
-     * @return JsonResponse
-     */
     public function getRoles(Request $request, GetRoles $getRoles): JsonResponse
     {
         $this->authorize('viewAny', Role::class);
@@ -56,9 +48,6 @@ class RoleController extends Controller
         ]);
     }
 
-    /**
-     * @return Response
-     */
     public function create(): Response
     {
         $this->authorize('create', Role::class);
@@ -68,11 +57,6 @@ class RoleController extends Controller
         ]);
     }
 
-    /**
-     * @param CreateRoleRequest $request
-     * @param CreateRole $createRole
-     * @return RedirectResponse
-     */
     public function store(CreateRoleRequest $request, CreateRole $createRole): RedirectResponse
     {
         $this->authorize('create', Role::class);
@@ -93,10 +77,6 @@ class RoleController extends Controller
         }
     }
 
-    /**
-     * @param Role $role
-     * @return Response
-     */
     public function edit(Role $role): Response
     {
         $this->authorize('update', $role);
@@ -109,58 +89,46 @@ class RoleController extends Controller
         ]);
     }
 
-    /**
-     * @param UpdateRoleRequest $request
-     * @param Role $role
-     * @param UpdateRole $updateRole
-     * @return RedirectResponse
-     */
     public function update(
         UpdateRoleRequest $request,
         Role $role,
         UpdateRole $updateRole
-    ): RedirectResponse
-    {
-       $this->authorize('update', $role);
+    ): RedirectResponse {
+        $this->authorize('update', $role);
 
-       try {
-           $updateRole->execute(
-               $role,
-               $request->name,
-               $request->permissions ?? []
-           );
+        try {
+            $updateRole->execute(
+                $role,
+                $request->name,
+                $request->permissions ?? []
+            );
 
-           return redirect()->route('admin.role.index');
-       } catch (Throwable $e) {
-           report($e);
+            return redirect()->route('admin.role.index');
+        } catch (Throwable $e) {
+            report($e);
 
-           return back()->withErrors([
-               'message' => __('messages.resources.role.update_failed'),
-           ]);
-       }
+            return back()->withErrors([
+                'message' => __('messages.resources.role.update_failed'),
+            ]);
+        }
     }
 
-    /**
-     * @param Role $role
-     * @param DeleteRole $deleteRole
-     * @return JsonResponse|RedirectResponse
-     */
     public function destroy(Role $role, DeleteRole $deleteRole): JsonResponse|RedirectResponse
     {
-       $this->authorize('delete', $role);
+        $this->authorize('delete', $role);
 
-       try {
+        try {
             $deleteRole->execute($role);
 
-           return response()->json([
-               'message' => __('messages.resources.role.deleted'),
-           ]);
-       } catch (Throwable $e) {
-           report($e);
+            return response()->json([
+                'message' => __('messages.resources.role.deleted'),
+            ]);
+        } catch (Throwable $e) {
+            report($e);
 
-           return back()->withErrors([
-               'message' => __('messages.resources.role.delete_failed'),
-           ]);
-       }
+            return back()->withErrors([
+                'message' => __('messages.resources.role.delete_failed'),
+            ]);
+        }
     }
 }

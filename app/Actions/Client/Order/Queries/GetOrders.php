@@ -9,11 +9,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class GetOrders
 {
-    /**
-     * @param User $user
-     * @param string|null $status
-     * @return Collection
-     */
     public function execute(User $user, ?string $status = null): Collection
     {
         return Order::query()

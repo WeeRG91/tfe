@@ -9,30 +9,27 @@ use App\Models\Meat;
 
 class GetDishFormData
 {
-    /**
-     * @return array
-     */
     public function execute(): array
     {
         return [
             'ingredients' => Ingredient::query()
                 ->get()
                 ->map(fn (Ingredient $ingredient) => [
-                'value' => $ingredient->id,
-                'label' => $ingredient->name,
-            ]),
+                    'value' => $ingredient->id,
+                    'label' => $ingredient->name,
+                ]),
             'meats' => Meat::query()
                 ->get()
                 ->map(fn (Meat $meat) => [
-                'value' => $meat->id,
-                'label' => $meat->name,
-            ]),
+                    'value' => $meat->id,
+                    'label' => $meat->name,
+                ]),
             'allergens' => Allergen::query()
                 ->get()
                 ->map(fn ($allergen) => [
-                'value' => $allergen->id,
-                'label' => $allergen->name,
-            ]),
+                    'value' => $allergen->id,
+                    'label' => $allergen->name,
+                ]),
             'categories' => DishCategoryEnum::getCategories(),
         ];
     }

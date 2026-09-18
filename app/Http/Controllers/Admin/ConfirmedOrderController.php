@@ -18,9 +18,6 @@ use Throwable;
 
 class ConfirmedOrderController extends Controller
 {
-    /**
-     * @return Response
-     */
     public function index(): Response
     {
         $this->authorize('viewAny', Order::class);
@@ -28,10 +25,6 @@ class ConfirmedOrderController extends Controller
         return Inertia::render('admin/order/Index');
     }
 
-    /**
-     * @param GetConfirmedOrders $getConfirmedOrders
-     * @return JsonResponse
-     */
     public function getConfirmedOrders(GetConfirmedOrders $getConfirmedOrders): JsonResponse
     {
         $this->authorize('viewAny', Order::class);
@@ -41,12 +34,6 @@ class ConfirmedOrderController extends Controller
         return response()->json(ConfirmedOrderResource::collection($confirmedOrders)->collection);
     }
 
-    /**
-     * @param Request $request
-     * @param Order $order
-     * @param UpdateOrderStatus $updateOrderStatus
-     * @return JsonResponse
-     */
     public function updateOrderStatus(Request $request, Order $order, UpdateOrderStatus $updateOrderStatus): JsonResponse
     {
         $this->authorize('update', $order);
@@ -64,9 +51,6 @@ class ConfirmedOrderController extends Controller
     }
 
     /**
-     * @param Order $order
-     * @param CancelOrder $cancelOrder
-     * @return JsonResponse
      * @throws Throwable
      */
     public function cancel(Order $order, CancelOrder $cancelOrder): JsonResponse

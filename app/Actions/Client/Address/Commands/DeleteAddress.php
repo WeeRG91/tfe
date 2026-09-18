@@ -6,14 +6,10 @@ use App\Models\Address;
 
 class DeleteAddress
 {
-    /**
-     * @param int $addressId
-     * @return array
-     */
     public function execute(int $addressId): array
     {
         $address = Address::query()->findOrFail($addressId);
-        $user  = auth()->user();
+        $user = auth()->user();
 
         if ($address->user_id !== $user->id) {
             return [

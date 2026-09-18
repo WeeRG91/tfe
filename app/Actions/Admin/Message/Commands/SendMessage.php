@@ -9,18 +9,11 @@ use App\Models\User;
 
 class SendMessage
 {
-    /**
-     * @param User $user
-     * @param Chat $chat
-     * @param string $content
-     * @return Message
-     */
     public function execute(
         User $user,
         Chat $chat,
         string $content
-    ): Message
-    {
+    ): Message {
         $message = Message::query()->create([
             'chat_id' => $chat->id,
             'sender_id' => $user->id,

@@ -23,9 +23,6 @@ use Throwable;
 
 class AllergenController extends Controller
 {
-    /**
-     * @return InertiaResponse
-     */
     public function index(): InertiaResponse
     {
         $this->authorize('viewAny', Allergen::class);
@@ -33,11 +30,6 @@ class AllergenController extends Controller
         return Inertia::render('admin/allergen/Index');
     }
 
-    /**
-     * @param Request $request
-     * @param GetPaginatedAllergens $query
-     * @return JsonResponse
-     */
     public function getAllergens(Request $request, GetPaginatedAllergens $query): JsonResponse
     {
         $this->authorize('viewAny', Allergen::class);
@@ -47,10 +39,6 @@ class AllergenController extends Controller
         return response()->json($allergens);
     }
 
-    /**
-     * @param GetAllergenFormData $query
-     * @return InertiaResponse
-     */
     public function create(GetAllergenFormData $query): InertiaResponse
     {
         $this->authorize('create', Allergen::class);
@@ -58,16 +46,10 @@ class AllergenController extends Controller
         return Inertia::render('admin/allergen/Create', $query->execute());
     }
 
-    /**
-     * @param AllergenCreateRequest $request
-     * @param CreateAllergen $command
-     * @return RedirectResponse
-     */
     public function store(
         AllergenCreateRequest $request,
         CreateAllergen $command
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('create', Allergen::class);
 
         try {
@@ -88,18 +70,11 @@ class AllergenController extends Controller
         }
     }
 
-    /**
-     * @param Allergen $allergen
-     * @param GetAllergenForEdit $query
-     * @param GetAllergenFormData $formData
-     * @return InertiaResponse
-     */
     public function edit(
         Allergen $allergen,
         GetAllergenForEdit $query,
         GetAllergenFormData $formData
-    ): InertiaResponse
-    {
+    ): InertiaResponse {
         $this->authorize('update', $allergen);
 
         return Inertia::render('admin/allergen/Edit', [
@@ -108,18 +83,11 @@ class AllergenController extends Controller
         ]);
     }
 
-    /**
-     * @param AllergenUpdateRequest $request
-     * @param Allergen $allergen
-     * @param UpdateAllergen $command
-     * @return RedirectResponse
-     */
     public function update(
         AllergenUpdateRequest $request,
         Allergen $allergen,
         UpdateAllergen $command
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('update', $allergen);
 
         try {
@@ -127,7 +95,7 @@ class AllergenController extends Controller
 
             $command->execute(
                 allergen: $allergen,
-                data:$validated,
+                data: $validated,
                 files: $request->file('images', []),
             );
 
@@ -141,11 +109,6 @@ class AllergenController extends Controller
         }
     }
 
-    /**
-     * @param Allergen $allergen
-     * @param RestoreAllergen $command
-     * @return JsonResponse
-     */
     public function restore(Allergen $allergen, RestoreAllergen $command): JsonResponse
     {
         $this->authorize('restore', $allergen);
@@ -157,11 +120,6 @@ class AllergenController extends Controller
         ]);
     }
 
-    /**
-     * @param Allergen $allergen
-     * @param DeleteAllergen $command
-     * @return JsonResponse
-     */
     public function destroy(Allergen $allergen, DeleteAllergen $command): JsonResponse
     {
         $this->authorize('delete', $allergen);
@@ -173,11 +131,6 @@ class AllergenController extends Controller
         ]);
     }
 
-    /**
-     * @param Allergen $allergen
-     * @param ForceDeleteAllergen $command
-     * @return JsonResponse
-     */
     public function forceDelete(Allergen $allergen, ForceDeleteAllergen $command): JsonResponse
     {
         $this->authorize('delete', $allergen);

@@ -10,8 +10,6 @@ use App\Models\Order;
 class CreateOrderItems
 {
     /**
-     * @param Order $order
-     * @param Cart $cart
      * @return array{0: float, 1: array}
      */
     public function execute(Order $order, Cart $cart): array
@@ -34,7 +32,7 @@ class CreateOrderItems
 
             $vatAmount = $item->total - ($item->total / (1 + $vatRate / 100));
 
-            if (!isset($vatBreakdown[$vatRate])) {
+            if (! isset($vatBreakdown[$vatRate])) {
                 $vatBreakdown[$vatRate] = [
                     'vat_rate' => $vatRate,
                     'vat_total' => 0,

@@ -20,12 +20,10 @@ class StatusOrderUpdatedBroadcast implements ShouldBroadcast
 
     /**
      * Get the channels the event should broadcast on.
-     *
-     * @return PrivateChannel
      */
     public function broadcastOn(): PrivateChannel
     {
-        return new PrivateChannel('user.' . $this->order->user_id);
+        return new PrivateChannel('user.'.$this->order->user_id);
     }
 
     public function broadcastWith(): array

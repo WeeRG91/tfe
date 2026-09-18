@@ -27,10 +27,6 @@ class GlobalSearch
         'role' => Role::class,
     ];
 
-    /**
-     * @param $item
-     * @return string
-     */
     private function getImage($item): string
     {
         if (isset($item->main_image) && $item->main_image) {
@@ -44,11 +40,6 @@ class GlobalSearch
         return Storage::disk('public')->url('images/picture.png');
     }
 
-    /**
-     * @param string $type
-     * @param Collection $items
-     * @return array
-     */
     private function formatItems(string $type, Collection $items): array
     {
         return $items->map(fn ($item) => [
@@ -59,10 +50,6 @@ class GlobalSearch
         ])->toArray();
     }
 
-    /**
-     * @param string $query
-     * @return array
-     */
     public function execute(string $query): array
     {
         $results = [];
@@ -71,7 +58,7 @@ class GlobalSearch
             $items = $model::query()
                 ->whereTranslationLike(
                     'name',
-                    '%' . $query . '%',
+                    '%'.$query.'%',
                     app()->getLocale(),
                 )
                 ->limit(5)
@@ -82,7 +69,7 @@ class GlobalSearch
 
         foreach ($this->regularModels as $type => $model) {
             $items = $model::query()
-                ->where('name', 'LIKE', '%' . $query . '%')
+                ->where('name', 'LIKE', '%'.$query.'%')
                 ->limit(5)
                 ->get();
 

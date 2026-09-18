@@ -19,7 +19,7 @@ class NotificationResource extends JsonResource
 
         if (
             $this->notifiable instanceof Order
-            && !isset($data['order_type'])
+            && ! isset($data['order_type'])
         ) {
             $data['order_id'] ??= $this->notifiable->id;
             $data['order_number'] ??= $this->notifiable->order_number;

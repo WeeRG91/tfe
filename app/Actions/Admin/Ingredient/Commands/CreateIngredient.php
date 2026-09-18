@@ -15,16 +15,12 @@ readonly class CreateIngredient
     ) {}
 
     /**
-     * @param array $data
-     * @param array $files
-     * @return Ingredient
      * @throws Throwable
      */
     public function execute(
         array $data,
         array $files = []
-    ): Ingredient
-    {
+    ): Ingredient {
         return DB::transaction(function () use (
             $data,
             $files

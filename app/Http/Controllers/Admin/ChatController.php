@@ -16,11 +16,6 @@ use Inertia\Response;
 
 class ChatController extends Controller
 {
-    /**
-     * @param User $user
-     * @param CreateChat $createChat
-     * @return JsonResponse
-     */
     public function create(User $user, CreateChat $createChat): JsonResponse
     {
         $chat = $createChat->execute($user);
@@ -28,18 +23,11 @@ class ChatController extends Controller
         return response()->json(new ChatResource($chat));
     }
 
-    /**
-     * @return Response
-     */
     public function chats(): Response
     {
         return Inertia::render('admin/chat/Chat');
     }
 
-    /**
-     * @param GetChats $getChats
-     * @return JsonResponse
-     */
     public function getChats(GetChats $getChats): JsonResponse
     {
         $chats = $getChats->execute();
@@ -47,11 +35,6 @@ class ChatController extends Controller
         return response()->json(ChatResource::collection($chats));
     }
 
-    /**
-     * @param Chat $chat
-     * @param GetChatMessages $getChatMessages
-     * @return JsonResponse
-     */
     public function getChatMessages(Chat $chat, GetChatMessages $getChatMessages): JsonResponse
     {
         return response()->json(

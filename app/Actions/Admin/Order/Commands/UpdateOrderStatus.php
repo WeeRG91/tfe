@@ -13,11 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateOrderStatus
 {
-    /**
-     * @param Order $order
-     * @param int $newStatus
-     * @return void
-     */
     public function execute(Order $order, int $newStatus): void
     {
         $currentStatus = $order->status->value;
@@ -28,7 +23,7 @@ class UpdateOrderStatus
 
         $isBackward = $this->isBackward($currentStatus, $newStatus);
 
-        if (!$isBackward) {
+        if (! $isBackward) {
             $data = array_merge($data, $this->forwardTransitions($order, $newStatus));
         } else {
             $data = array_merge($data, $this->backwardTransitions($order, $newStatus));
@@ -48,11 +43,6 @@ class UpdateOrderStatus
         }
     }
 
-    /**
-     * @param int $currentStatus
-     * @param int $newString
-     * @return bool
-     */
     private function isBackward(int $currentStatus, int $newString): bool
     {
         return match ($currentStatus) {
@@ -64,11 +54,6 @@ class UpdateOrderStatus
         };
     }
 
-    /**
-     * @param Order $order
-     * @param int $newStatus
-     * @return array
-     */
     private function forwardTransitions(Order $order, int $newStatus): array
     {
         $data = [];
@@ -96,11 +81,6 @@ class UpdateOrderStatus
         return $data;
     }
 
-    /**
-     * @param Order $order
-     * @param int $newStatus
-     * @return array
-     */
     private function backwardTransitions(Order $order, int $newStatus): array
     {
         $data = [];
@@ -143,7 +123,9 @@ class UpdateOrderStatus
             default => null,
         };
 
-        if (!$type) return;
+        if (! $type) {
+            return;
+        }
 
         DB::table('notifications')
             ->where('user_id', $order->user_id)

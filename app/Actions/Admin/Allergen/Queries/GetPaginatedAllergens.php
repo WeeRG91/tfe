@@ -9,10 +9,6 @@ use Illuminate\Http\Request;
 
 class GetPaginatedAllergens extends BaseCursorPagination
 {
-    /**
-     * @param Request $request
-     * @return array
-     */
     public function execute(Request $request): array
     {
         $query = Allergen::query()

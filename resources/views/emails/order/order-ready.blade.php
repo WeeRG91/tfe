@@ -1,64 +1,69 @@
 @php
+    use App\Enums\DeliveryTypeEnum;
+    use App\Enums\OrderTypeEnum;
+
     $title = __('messages.emails.subjects.ready');
-    $headerClass = 'header-ready';
     $headerTitle = __('messages.emails.headers.ready_title');
-    $headerSubtitle = __('messages.emails.headers.ready_subtitle');
     $badgeClass = 'badge-ready';
-    $sectionTitleClass = 'section-title-ready';
+
+    $headerSubtitle = match ($order->type) {
+        OrderTypeEnum::DINE_IN =>
+            __('messages.emails.ready_messages.dine_in'),
+
+        OrderTypeEnum::TAKEAWAY =>
+            __('messages.emails.ready_messages.takeaway'),
+
+        OrderTypeEnum::DELIVERY =>
+            $order->delivery_type === DeliveryTypeEnum::COMPANY
+                ? __('messages.emails.ready_messages.company_delivery')
+                : __('messages.emails.ready_messages.address_delivery'),
+    };
 @endphp
 
 @extends('emails.order.order-email-layout')
 
 @section('status-content')
     <div class="section">
-        <div class="section-title {{ $sectionTitleClass }}">
+        <div class="section-title">
             {{ __('messages.emails.order_summary') }}
         </div>
-        <div class="info-grid">
-            <div class="info-item">
-                <div class="info-label">{{ __('messages.emails.order_number') }}</div>
-                <div class="info-value">#{{ $order->order_number }}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">{{ __('messages.emails.ready_at') }}</div>
-                <div class="info-value">
-                    {{ $order->ready_at?->locale(app()->getLocale())->translatedFormat('d F Y H:i') ?? '—' }}
-                </div>
-            </div>
-        </div>
+
+        <table
+            role="presentation"
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            style="width: 100%;"
+        >
+            <tr>
+                <td
+                    style="
+                        padding: 12px 0;
+                        color: #6b7280;
+                        font-size: 14px;
+                    "
+                >
+                    {{ __('messages.emails.ready_at') }}
+                </td>
+
+                <td
+                    align="right"
+                    style="
+                        padding: 12px 0;
+                        color: #1f2937;
+                        font-size: 14px;
+                        font-weight: 600;
+                    "
+                >
+                    {{ $order->ready_at
+                        ?->locale(app()->getLocale())
+                        ->translatedFormat('d F Y, H:i') ?? '—' }}
+                </td>
+            </tr>
+        </table>
     </div>
 
-    <div class="progress-tracker">
-        <div class="progress-steps">
-            <div class="progress-line">
-                <div class="progress-line-active" style="width: 66%; background: #2196F3;"></div>
-            </div>
-            <div class="step completed">
-                <div class="step-circle">✓</div>
-                <div class="step-label">{{ __('messages.emails.placed') }}</div>
-            </div>
-            <div class="step completed">
-                <div class="step-circle">✓</div>
-                <div class="step-label">{{ __('messages.emails.confirmed') }}</div>
-            </div>
-            <div class="step completed">
-                <div class="step-circle">✓</div>
-                <div class="step-label">{{ __('messages.emails.ready') }}</div>
-            </div>
-            @if($order->type === \App\Enums\OrderTypeEnum::DELIVERY)
-                <div class="step active">
-                    <div class="step-circle"></div>
-                    <div class="step-label">{{ __('messages.emails.delivering') }}</div>
-                </div>
-            @endif
-            <div class="step active">
-                <div class="step-circle"></div>
-                <div class="step-label">{{ __('messages.emails.completed') }}</div>
-            </div>
-        </div>
-    </div>
-@endsection
-
-@section('footer-message')
-    <p><strong>{{ __('messages.emails.footer.ready') }}</strong></p>
+    @include('emails.order.partials.fulfilment-details', [
+        'order' => $order,
+    ])
 @endsection

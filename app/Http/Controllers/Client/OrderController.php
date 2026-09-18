@@ -26,11 +26,6 @@ use Throwable;
 
 class OrderController extends Controller
 {
-    /**
-     * @param Order $order
-     * @param GetOrder $getOrder
-     * @return InertiaResponse
-     */
     public function orderDetails(Order $order, GetOrder $getOrder): InertiaResponse
     {
         $this->authorize('view', $order);
@@ -42,19 +37,11 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * @return InertiaResponse
-     */
     public function myOrders(): InertiaResponse
     {
         return Inertia::render('client/MyOrders');
     }
 
-    /**
-     * @param Request $request
-     * @param GetOrders $getOrders
-     * @return JsonResponse
-     */
     public function getOrders(Request $request, GetOrders $getOrders): JsonResponse
     {
         $orders = $getOrders->execute(
@@ -65,11 +52,6 @@ class OrderController extends Controller
         return response()->json(OrderResource::collection($orders)->collection);
     }
 
-    /**
-     * @param Order $order
-     * @param GetOrder $getOrder
-     * @return JsonResponse
-     */
     public function getOrder(Order $order, GetOrder $getOrder): JsonResponse
     {
         $this->authorize('view', $order);
@@ -82,9 +64,6 @@ class OrderController extends Controller
     }
 
     /**
-     * @param PlaceOrderRequest $request
-     * @param PlaceOrder $placeOrder
-     * @return JsonResponse
      * @throws Throwable
      */
     public function placeOrder(PlaceOrderRequest $request, PlaceOrder $placeOrder): JsonResponse
@@ -97,18 +76,11 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * @param Order $order
-     * @param GetReorderData $getReorderData
-     * @param GetDeliveryOptions $getDeliveryOptions
-     * @return InertiaResponse
-     */
     public function reorder(
         Order $order,
         GetReorderData $getReorderData,
         GetDeliveryOptions $getDeliveryOptions,
-    ): InertiaResponse
-    {
+    ): InertiaResponse {
         $result = $getReorderData->execute(
             auth()->user(),
             $order,
@@ -124,9 +96,6 @@ class OrderController extends Controller
     }
 
     /**
-     * @param ReorderRequest $request
-     * @param Reorder $reorder
-     * @return JsonResponse
      * @throws Throwable
      */
     public function confirmReorder(ReorderRequest $request, Reorder $reorder): JsonResponse
@@ -140,9 +109,6 @@ class OrderController extends Controller
     }
 
     /**
-     * @param Order $order
-     * @param CancelOrder $cancelOrder
-     * @return JsonResponse
      * @throws Throwable
      */
     public function cancel(Order $order, CancelOrder $cancelOrder): JsonResponse
@@ -156,11 +122,6 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * @param Order $order
-     * @param DeleteOrder $deleteOrder
-     * @return JsonResponse
-     */
     public function destroy(Order $order, DeleteOrder $deleteOrder): JsonResponse
     {
         $this->authorize('delete', $order);

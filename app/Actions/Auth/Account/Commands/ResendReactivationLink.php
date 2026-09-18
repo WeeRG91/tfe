@@ -8,10 +8,6 @@ use Illuminate\Support\Facades\URL;
 
 class ResendReactivationLink
 {
-    /**
-     * @param User $user
-     * @return void
-     */
     public function execute(User $user): void
     {
         $url = URL::temporarySignedRoute(

@@ -11,10 +11,6 @@ readonly class ForceDeleteDish
         private ImageService $imageService,
     ) {}
 
-    /**
-     * @param int $id
-     * @return void
-     */
     public function execute(int $id): void
     {
         $dish = Dish::onlyTrashed()->findOrFail($id);

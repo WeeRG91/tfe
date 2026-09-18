@@ -2,11 +2,11 @@
 
 namespace App\Http\Resources\Api\V1;
 
+use App\Enums\LoyaltyPointTransactionTypeEnum;
+use App\Models\LoyaltyPointTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
-use App\Enums\LoyaltyPointTransactionTypeEnum;
-use App\Models\LoyaltyPointTransaction;
 
 class UserResource extends JsonResource
 {
@@ -31,7 +31,6 @@ class UserResource extends JsonResource
                     LoyaltyPointTransactionTypeEnum::REVERSED => -$transaction->points,
                 }
             );
-
 
         return [
             'id' => $this->id,

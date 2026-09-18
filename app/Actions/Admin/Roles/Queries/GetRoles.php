@@ -7,10 +7,6 @@ use Spatie\Permission\Models\Role;
 
 class GetRoles
 {
-    /**
-     * @param string|null $search
-     * @return CursorPaginator
-     */
     public function execute(?string $search = null): CursorPaginator
     {
         return Role::query()

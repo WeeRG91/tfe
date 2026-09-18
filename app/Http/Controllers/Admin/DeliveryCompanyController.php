@@ -8,9 +8,9 @@ use App\Http\Requests\Admin\DeliveryCompany\UpdateDeliveryCompanyRequest;
 use App\Models\DeliveryCompany;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class DeliveryCompanyController extends Controller
 {
@@ -31,16 +31,14 @@ class DeliveryCompanyController extends Controller
                 'id' => $company->id,
                 'name' => $company->name,
                 'is_active' => $company->is_active,
-                'minimum_advance_days' =>
-                    $company->minimum_advance_days,
+                'minimum_advance_days' => $company->minimum_advance_days,
                 'dates' => $company->deliveryDates
                     ->map(fn ($date) => [
                         'id' => $date->id,
                         'delivery_date' => $date
                             ->delivery_date
                             ->format('Y-m-d'),
-                        'is_available' =>
-                            $date->is_available,
+                        'is_available' => $date->is_available,
                     ])
                     ->values(),
                 'earliest_delivery_date' => $today

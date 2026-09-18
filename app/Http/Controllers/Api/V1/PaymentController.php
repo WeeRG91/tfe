@@ -17,8 +17,7 @@ class PaymentController extends Controller
     public function storePaymentIntent(
         Order $order,
         CreatePaymentIntent $createPaymentIntent,
-    )
-    {
+    ) {
         $this->authorize('pay', $order);
 
         if ($order->payment_method !== PaymentMethodEnum::CARD) {

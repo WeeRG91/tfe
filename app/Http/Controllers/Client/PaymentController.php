@@ -14,15 +14,9 @@ use Inertia\Response as InertiaResponse;
 use Stripe\Exception\ApiErrorException;
 use Throwable;
 
-;
-
 class PaymentController extends Controller
 {
-    /**
-     * @param Order $order
-     * @return JsonResponse|InertiaResponse
-     */
-    public  function payment(Order $order): JsonResponse|InertiaResponse
+    public function payment(Order $order): JsonResponse|InertiaResponse
     {
         if ($order->user_id !== auth()->user()->id) {
             return response()->json([
@@ -38,9 +32,6 @@ class PaymentController extends Controller
     }
 
     /**
-     * @param Order $order
-     * @param CreatePaymentIntent $createPaymentIntent
-     * @return JsonResponse
      * @throws ApiErrorException
      */
     public function createPaymentIntent(Order $order, CreatePaymentIntent $createPaymentIntent): JsonResponse
@@ -56,9 +47,6 @@ class PaymentController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param HandleStripeWebhook $handleStripeWebhook
-     * @return JsonResponse
      * @throws Throwable
      */
     public function stripeWebhook(Request $request, HandleStripeWebhook $handleStripeWebhook): JsonResponse
@@ -70,10 +58,6 @@ class PaymentController extends Controller
         ]);
     }
 
-    /**
-     * @param Order $order
-     * @return JsonResponse|InertiaResponse
-     */
     public function paymentSuccess(Order $order): JsonResponse|InertiaResponse
     {
         if ($order->user_id !== auth()->user()->id) {

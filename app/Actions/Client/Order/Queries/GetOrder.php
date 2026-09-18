@@ -6,10 +6,6 @@ use App\Models\Order;
 
 class GetOrder
 {
-    /**
-     * @param Order $order
-     * @return Order
-     */
     public function execute(Order $order): Order
     {
         return $order->load([

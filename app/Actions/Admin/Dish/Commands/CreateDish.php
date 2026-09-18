@@ -15,11 +15,6 @@ readonly class CreateDish
     ) {}
 
     /**
-     * @param array $data
-     * @param array $files
-     * @param array $meatIds
-     * @param array $ingredientIds
-     * @return Dish
      * @throws Throwable
      */
     public function execute(
@@ -27,8 +22,7 @@ readonly class CreateDish
         array $files,
         array $meatIds,
         array $ingredientIds
-    ): Dish
-    {
+    ): Dish {
         return DB::transaction(function () use (
             $data,
             $files,
@@ -53,8 +47,7 @@ readonly class CreateDish
             $translation->fill([
                 'name' => $data['name'],
 
-                'description' =>
-                    $data['description'] ?? null,
+                'description' => $data['description'] ?? null,
             ]);
 
             $dish->save();
@@ -72,8 +65,7 @@ readonly class CreateDish
                 );
 
                 $dish->update([
-                    'main_image' =>
-                        $dish->mainImage->path,
+                    'main_image' => $dish->mainImage->path,
                 ]);
             }
 

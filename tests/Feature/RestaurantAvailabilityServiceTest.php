@@ -386,13 +386,13 @@ it('is closed between two Tuesday opening periods', function () {
     ]);
 
     foreach ([
-                 '11:00:00' => true,
-                 '14:29:59' => true,
-                 '14:30:00' => false,
-                 '17:59:59' => false,
-                 '18:00:00' => true,
-                 '22:00:00' => false,
-             ] as $time => $expected) {
+        '11:00:00' => true,
+        '14:29:59' => true,
+        '14:30:00' => false,
+        '17:59:59' => false,
+        '18:00:00' => true,
+        '22:00:00' => false,
+    ] as $time => $expected) {
         $dateTime = CarbonImmutable::parse(
             "2026-09-15 {$time}",
             'Europe/Luxembourg',

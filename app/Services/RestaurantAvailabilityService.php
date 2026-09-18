@@ -104,8 +104,7 @@ class RestaurantAvailabilityService
     public function nextOpenAt(
         ?CarbonInterface $from = null,
         ?int $days = null,
-    ): ?CarbonImmutable
-    {
+    ): ?CarbonImmutable {
         $localFrom = $this->toRestaurantTimezone(
             $from ?? CarbonImmutable::now(
                 config('restaurant.timezone'),
@@ -145,7 +144,7 @@ class RestaurantAvailabilityService
 
             if (
                 $schedule === null ||
-                !$schedule->is_open
+                ! $schedule->is_open
             ) {
                 continue;
             }

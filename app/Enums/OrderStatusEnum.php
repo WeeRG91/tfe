@@ -47,7 +47,7 @@ enum OrderStatusEnum: int
 
     public function translatedLabel(): string
     {
-        return __('messages.enums.order_status.' . $this->key());
+        return __('messages.enums.order_status.'.$this->key());
     }
 
     public static function finalStatuses(): array
@@ -76,7 +76,7 @@ enum OrderStatusEnum: int
     {
         return Arr::first(
             self::getStatuses(),
-            fn($item) => $item['value'] === $case->value
+            fn ($item) => $item['value'] === $case->value
         );
     }
 }

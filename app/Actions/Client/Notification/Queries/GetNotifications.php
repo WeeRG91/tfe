@@ -8,11 +8,6 @@ use Illuminate\Contracts\Pagination\CursorPaginator;
 
 class GetNotifications
 {
-    /**
-     * @param User $user
-     * @param string $filter
-     * @return CursorPaginator
-     */
     public function execute(User $user, string $filter = 'all'): CursorPaginator
     {
         return Notification::query()

@@ -7,10 +7,6 @@ use App\Models\Meat;
 
 class GetMeatForEdit
 {
-    /**
-     * @param Meat $meat
-     * @return MeatEditResource
-     */
     public function execute(Meat $meat): MeatEditResource
     {
         $meat->load([

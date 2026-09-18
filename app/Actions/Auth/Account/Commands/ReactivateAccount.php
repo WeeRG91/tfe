@@ -10,19 +10,17 @@ use Illuminate\Support\Facades\Auth;
 class ReactivateAccount
 {
     /**
-     * @param User $user
-     * @param Request $request
      * @return RedirectResponse|void
      */
     public function execute(User $user, Request $request)
     {
-        if (!$user->trashed()) {
+        if (! $user->trashed()) {
             return redirect()->route('login');
         }
 
         $user->restore();
 
-        if (!$user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
 

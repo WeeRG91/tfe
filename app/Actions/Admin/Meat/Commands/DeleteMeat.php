@@ -6,10 +6,6 @@ use App\Models\Meat;
 
 class DeleteMeat
 {
-    /**
-     * @param int $id
-     * @return void
-     */
     public function execute(int $id): void
     {
         $meat = Meat::query()->findOrFail($id);

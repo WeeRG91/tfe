@@ -2,13 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Resources\Admin\User\UserResource;
 use App\Http\Resources\GlobalUserResource;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class HandleInertiaRequests extends Middleware
 {

@@ -15,16 +15,12 @@ readonly class CreateDrink
     ) {}
 
     /**
-     * @param array $data
-     * @param array $files
-     * @return Drink
      * @throws Throwable
      */
     public function execute(
         array $data,
         array $files = []
-    ): Drink
-    {
+    ): Drink {
         return DB::transaction(function () use (
             $data,
             $files
@@ -54,7 +50,7 @@ readonly class CreateDrink
             if ($files !== []) {
                 $this->imageService->upload($drink, $files);
 
-                $drink->update(['main_image' => $drink->mainImage->path,]);
+                $drink->update(['main_image' => $drink->mainImage->path]);
             }
 
             return $drink->refresh();

@@ -9,15 +9,9 @@ use Illuminate\Validation\ValidationException;
 
 class ImageService
 {
-    /**
-     * @param $model
-     * @param array $files
-     * @param string|null $folder
-     * @return void
-     */
-    public function upload($model, array $files, string $folder = null): void
+    public function upload($model, array $files, ?string $folder = null): void
     {
-        $folder ??= 'images/' . Str::snake(class_basename($model));
+        $folder ??= 'images/'.Str::snake(class_basename($model));
 
         foreach ($files as $file) {
             $extension = match ($file->getMimeType()) {
@@ -42,10 +36,6 @@ class ImageService
         }
     }
 
-    /**
-     * @param Image $image
-     * @return void
-     */
     public function delete(Image $image): void
     {
         if (Storage::disk('public')->exists($image->path)) {
@@ -55,10 +45,6 @@ class ImageService
         $image->delete();
     }
 
-    /**
-     * @param Image $image
-     * @return void
-     */
     public function setMainImage(Image $image): void
     {
         $model = $image->imageable;

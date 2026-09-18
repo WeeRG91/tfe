@@ -24,7 +24,7 @@ class ActivateAccountRequest extends FormRequest
     {
         return [
             'password' => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required|string'
+            'password_confirmation' => 'required|string',
         ];
     }
 }

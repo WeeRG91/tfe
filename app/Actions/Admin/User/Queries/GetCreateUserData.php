@@ -7,9 +7,6 @@ use Spatie\Permission\Models\Role;
 
 class GetCreateUserData
 {
-    /**
-     * @return array
-     */
     public function execute(): array
     {
         $roles = Role::with('permissions')

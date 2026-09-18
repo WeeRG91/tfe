@@ -15,12 +15,10 @@ class CancelOrder
 {
     public function __construct(
         private RefundStripeOrder $refundStripeOrder,
-        private FinalizeRefundedOrder $finalizeRefundedOrder,
+        private finalizeRefundedOrder $finalizeRefundedOrder,
     ) {}
 
     /**
-     * @param Order $order
-     * @return void
      * @throws Throwable
      * @throws ValidationException
      */
@@ -28,7 +26,7 @@ class CancelOrder
     {
         if (! in_array($order->status, [
             OrderStatusEnum::PENDING,
-            OrderStatusEnum::CONFIRMED
+            OrderStatusEnum::CONFIRMED,
         ], true)) {
             throw ValidationException::withMessages([
                 'order' => __('messages.orders.cannot_cancel'),

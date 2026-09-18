@@ -13,12 +13,6 @@ class UpdateCartItemQuantity
         protected UpdateCartItemPrice $updatePrice,
     ) {}
 
-    /**
-     * @param Request $request
-     * @param int $cartItemId
-     * @param string $action
-     * @return string
-     */
     public function execute(Request $request, int $cartItemId, string $action): string
     {
         $cart = $this->getOrCreateCart->execute($request);
@@ -28,7 +22,7 @@ class UpdateCartItemQuantity
 
         if ($action === 'increase') {
             $cartItem->update([
-                'quantity' => $cartItem->quantity + 1
+                'quantity' => $cartItem->quantity + 1,
             ]);
         } else {
             if ($cartItem->quantity <= 1) {
@@ -38,7 +32,7 @@ class UpdateCartItemQuantity
             }
 
             $cartItem->update([
-                'quantity' => $cartItem->quantity - 1
+                'quantity' => $cartItem->quantity - 1,
             ]);
         }
 

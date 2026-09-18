@@ -7,10 +7,6 @@ use App\Models\Drink;
 
 class GetDrinkForEdit
 {
-    /**
-     * @param Drink $drink
-     * @return DrinkEditResource
-     */
     public function execute(Drink $drink): DrinkEditResource
     {
         $drink->load([

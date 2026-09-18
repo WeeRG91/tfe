@@ -135,9 +135,9 @@ it('does not reopen outside regular opening hours', function () {
 
 it('continues past adjacent exceptional closures', function () {
     foreach ([
-                 ['15:00:00', '18:00:00'],
-                 ['18:00:00', '20:00:00'],
-             ] as [$start, $end]) {
+        ['15:00:00', '18:00:00'],
+        ['18:00:00', '20:00:00'],
+    ] as [$start, $end]) {
         RestaurantClosure::query()->create([
             'starts_at' => CarbonImmutable::parse(
                 "2026-09-14 {$start}",

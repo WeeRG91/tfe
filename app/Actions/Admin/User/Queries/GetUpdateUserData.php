@@ -8,13 +8,9 @@ use Spatie\Permission\Models\Role;
 
 class GetUpdateUserData
 {
-    /**
-     * @param User $user
-     * @return array
-     */
     public function execute(User $user): array
     {
-        $user->load(['roles', 'roles.permissions', 'permissions',]);
+        $user->load(['roles', 'roles.permissions', 'permissions']);
 
         $roles = Role::with('permissions')
             ->whereNot('name', 'Super Admin')

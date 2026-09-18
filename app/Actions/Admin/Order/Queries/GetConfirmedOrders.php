@@ -15,7 +15,7 @@ class GetConfirmedOrders
                 'items.item',
                 'items.meat',
                 'items.removedIngredients',
-                'address'
+                'address',
             ])
             ->whereNotNull('confirmed_at')
             ->get();

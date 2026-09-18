@@ -16,11 +16,6 @@ class ClientGlobalSearch
         'drink' => Drink::class,
     ];
 
-    /**
-     * @param string $type
-     * @param Collection $items
-     * @return array
-     */
     private function formatItems(string $type, Collection $items): array
     {
         return $items->map(fn ($item) => [
@@ -32,14 +27,10 @@ class ClientGlobalSearch
                 : DrinkCategoryEnum::getCategory($item->category),
             'main_image' => $item->main_image
                 ? Storage::disk('public')->url($item->main_image)
-                : Storage::disk('public')->url("images/picture.png"),
+                : Storage::disk('public')->url('images/picture.png'),
         ])->toArray();
     }
 
-    /**
-     * @param string $query
-     * @return array
-     */
     public function execute(string $query): array
     {
         $results = [];
@@ -48,7 +39,7 @@ class ClientGlobalSearch
             $items = $model::query()
                 ->whereTranslationLike(
                     'name',
-                    '%' . $query . '%',
+                    '%'.$query.'%',
                     app()->getLocale(),
                 )
                 ->limit(5)

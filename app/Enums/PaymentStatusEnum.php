@@ -39,7 +39,7 @@ enum PaymentStatusEnum: int
 
     public function translatedLabel(): string
     {
-        return __('messages.enums.payment_status.' . $this->key());
+        return __('messages.enums.payment_status.'.$this->key());
     }
 
     public static function getPaymentStatuses(): array
@@ -55,7 +55,7 @@ enum PaymentStatusEnum: int
     {
         return Arr::first(
             self::getPaymentStatuses(),
-            fn($item) => $item['value'] === $case->value,
+            fn ($item) => $item['value'] === $case->value,
         );
     }
 

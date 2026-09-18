@@ -6,6 +6,7 @@ use App\Enums\OrderStatusEnum;
 use App\Enums\OrderTypeEnum;
 use App\Enums\PaymentMethodEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Events\OrderPlacedBroadcast;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\DeliveryCompany;
@@ -14,7 +15,6 @@ use App\Models\Order;
 use App\Models\RestaurantHour;
 use App\Models\User;
 use Carbon\CarbonImmutable;
-use App\Events\OrderPlacedBroadcast;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {
@@ -192,12 +192,10 @@ it('allows a future takeaway order while the restaurant is closed', function () 
         ->postJson('/api/v1/checkout/orders', [
             'cart_id' => $cart->id,
             'type' => OrderTypeEnum::TAKEAWAY->value,
-            'pickup_time' =>
-                '2026-09-13T12:00:00+02:00',
+            'pickup_time' => '2026-09-13T12:00:00+02:00',
             'pickup_name' => 'Test Customer',
             'pickup_phone' => '+352 621 000 000',
-            'payment_method' =>
-                PaymentMethodEnum::CASH->value,
+            'payment_method' => PaymentMethodEnum::CASH->value,
         ])
         ->assertCreated();
 
@@ -257,12 +255,10 @@ it('allows company delivery during closure for an available date', function () {
         ->postJson('/api/v1/checkout/orders', [
             'cart_id' => $cart->id,
             'type' => OrderTypeEnum::DELIVERY->value,
-            'delivery_type' =>
-                DeliveryTypeEnum::COMPANY->value,
+            'delivery_type' => DeliveryTypeEnum::COMPANY->value,
             'delivery_company_id' => $company->id,
             'delivery_date' => '2026-09-14',
-            'payment_method' =>
-                PaymentMethodEnum::CASH->value,
+            'payment_method' => PaymentMethodEnum::CASH->value,
         ]);
 
     $response
@@ -292,8 +288,7 @@ it('allows company delivery during closure for an available date', function () {
     $this->assertDatabaseHas('orders', [
         'user_id' => $user->id,
         'type' => OrderTypeEnum::DELIVERY->value,
-        'delivery_type' =>
-            DeliveryTypeEnum::COMPANY->value,
+        'delivery_type' => DeliveryTypeEnum::COMPANY->value,
         'delivery_company_id' => $company->id,
         'delivery_company_name' => 'BMS',
         'address_id' => null,
@@ -362,12 +357,10 @@ it('allows reordering to a company during closure', function () {
             [
                 'order_id' => $originalOrder->id,
                 'type' => OrderTypeEnum::DELIVERY->value,
-                'delivery_type' =>
-                    DeliveryTypeEnum::COMPANY->value,
+                'delivery_type' => DeliveryTypeEnum::COMPANY->value,
                 'delivery_company_id' => $company->id,
                 'delivery_date' => '2026-09-14',
-                'payment_method' =>
-                    PaymentMethodEnum::CASH->value,
+                'payment_method' => PaymentMethodEnum::CASH->value,
                 'used_points' => 0,
             ],
         )
@@ -376,8 +369,7 @@ it('allows reordering to a company during closure', function () {
     $this->assertDatabaseHas('orders', [
         'user_id' => $user->id,
         'type' => OrderTypeEnum::DELIVERY->value,
-        'delivery_type' =>
-            DeliveryTypeEnum::COMPANY->value,
+        'delivery_type' => DeliveryTypeEnum::COMPANY->value,
         'delivery_company_id' => $company->id,
         'delivery_company_name' => 'BMS',
         'address_id' => null,
@@ -446,11 +438,9 @@ it('rejects own address reorder during closure', function () {
             [
                 'order_id' => $originalOrder->id,
                 'type' => OrderTypeEnum::DELIVERY->value,
-                'delivery_type' =>
-                    DeliveryTypeEnum::OWN_ADDRESS->value,
+                'delivery_type' => DeliveryTypeEnum::OWN_ADDRESS->value,
                 'address_id' => $address->id,
-                'payment_method' =>
-                    PaymentMethodEnum::CASH->value,
+                'payment_method' => PaymentMethodEnum::CASH->value,
                 'used_points' => 0,
             ],
         )

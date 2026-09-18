@@ -39,8 +39,7 @@ it('creates a payment intent for the authenticated mobile users card order', fun
             $mock->shouldReceive('execute')
                 ->once()
                 ->withArgs(
-                    fn (Order $candidate): bool =>
-                        $candidate->is($order),
+                    fn (Order $candidate): bool => $candidate->is($order),
                 )
                 ->andReturn([
                     'message' => 'Payment initialized.',

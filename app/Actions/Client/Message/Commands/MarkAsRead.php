@@ -9,11 +9,6 @@ use App\Models\User;
 
 class MarkAsRead
 {
-    /**
-     * @param User $user
-     * @param Chat $chat
-     * @return void
-     */
     public function execute(User $user, Chat $chat): void
     {
         Message::query()

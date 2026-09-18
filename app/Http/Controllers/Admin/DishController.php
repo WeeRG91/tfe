@@ -25,9 +25,6 @@ use Throwable;
 
 class DishController extends Controller
 {
-    /**
-     * @return InertiaResponse
-     */
     public function index(): InertiaResponse
     {
         $this->authorize('viewAny', Dish::class);
@@ -37,11 +34,6 @@ class DishController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param GetPaginatedDishes $query
-     * @return JsonResponse
-     */
     public function getDishes(Request $request, GetPaginatedDishes $query): JsonResponse
     {
         $this->authorize('viewAny', Dish::class);
@@ -51,10 +43,6 @@ class DishController extends Controller
         return response()->json($dishes);
     }
 
-    /**
-     * @param GetDishFormData $query
-     * @return InertiaResponse
-     */
     public function create(GetDishFormData $query): InertiaResponse
     {
         $this->authorize('create', Dish::class);
@@ -62,16 +50,10 @@ class DishController extends Controller
         return Inertia::render('admin/dish/Create', $query->execute());
     }
 
-    /**
-     * @param DishCreateRequest $request
-     * @param CreateDish $command
-     * @return RedirectResponse
-     */
     public function store(
         DishCreateRequest $request,
         CreateDish $command
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('create', Dish::class);
 
         try {
@@ -94,12 +76,6 @@ class DishController extends Controller
         }
     }
 
-    /**
-     * @param Dish $dish
-     * @param GetDishForEdit $query
-     * @param GetDishFormData $formData
-     * @return InertiaResponse
-     */
     public function edit(Dish $dish, GetDishForEdit $query, GetDishFormData $formData): InertiaResponse
     {
         $this->authorize('update', $dish);
@@ -110,13 +86,7 @@ class DishController extends Controller
         ]);
     }
 
-    /**
-     * @param DishUpdateRequest $request
-     * @param Dish $dish
-     * @param updateDish $command
-     * @return RedirectResponse
-     */
-    public function update(DishUpdateRequest $request, Dish $dish, UpdateDish $command): RedirectResponse
+    public function update(DishUpdateRequest $request, Dish $dish, updateDish $command): RedirectResponse
     {
         $this->authorize('update', $dish);
 
@@ -141,11 +111,6 @@ class DishController extends Controller
         }
     }
 
-    /**
-     * @param Dish $dish
-     * @param ToggleDishAvailability $command
-     * @return JsonResponse
-     */
     public function available(Dish $dish, ToggleDishAvailability $command): JsonResponse
     {
         $this->authorize('update', $dish);
@@ -158,11 +123,6 @@ class DishController extends Controller
         ]);
     }
 
-    /**
-     * @param Dish $dish
-     * @param RestoreDish $command
-     * @return JsonResponse
-     */
     public function restore(Dish $dish, RestoreDish $command): JsonResponse
     {
         $this->authorize('update', $dish);
@@ -174,11 +134,6 @@ class DishController extends Controller
         ]);
     }
 
-    /**
-     * @param Dish $dish
-     * @param DeleteDish $command
-     * @return JsonResponse
-     */
     public function destroy(Dish $dish, DeleteDish $command): JsonResponse
     {
         $this->authorize('delete', $dish);
@@ -190,11 +145,6 @@ class DishController extends Controller
         ]);
     }
 
-    /**
-     * @param Dish $dish
-     * @param ForceDeleteDish $command
-     * @return JsonResponse
-     */
     public function forceDelete(Dish $dish, ForceDeleteDish $command): JsonResponse
     {
         $this->authorize('delete', $dish);

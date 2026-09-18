@@ -3,8 +3,8 @@
 use App\Models\DeliveryCompany;
 use App\Models\User;
 use Carbon\CarbonImmutable;
-use Spatie\Permission\Models\Permission;
 use Inertia\Testing\AssertableInertia as Assert;
+use Spatie\Permission\Models\Permission;
 
 beforeEach(function () {
     config()->set(

@@ -24,9 +24,9 @@ class AllergenEditResource extends JsonResource
         $locale = app()->getLocale();
 
         $translation = $allergen->translate(
-                $locale,
-                false
-            );
+            $locale,
+            false
+        );
 
         return [
             'id' => $this->id,
@@ -41,7 +41,7 @@ class AllergenEditResource extends JsonResource
             'images' => $this->images->map(fn ($image) => [
                 'id' => $image->id,
                 'path' => Storage::disk('public')->url($image->path),
-            ])
+            ]),
         ];
     }
 }

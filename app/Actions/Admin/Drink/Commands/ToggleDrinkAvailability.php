@@ -7,16 +7,12 @@ use App\Models\Drink;
 
 class ToggleDrinkAvailability
 {
-    /**
-     * @param int $id
-     * @return DrinkResource
-     */
     public function execute(int $id): DrinkResource
     {
         $drink = Drink::findOrFail($id);
 
         $drink->update([
-            'is_available' => !$drink->is_available,
+            'is_available' => ! $drink->is_available,
         ]);
 
         return new DrinkResource($drink);

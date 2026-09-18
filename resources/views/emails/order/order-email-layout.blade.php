@@ -1,416 +1,522 @@
 <!doctype html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ $title ?? __('messages.emails.order_update') }} - #{{ $order->order_number }}</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>
+        {{ $title ?? __('messages.emails.order_update') }}
+        - #{{ $order->order_number }}
+    </title>
+
     <style>
-        * {
+        body {
+            width: 100% !important;
             margin: 0;
             padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
             line-height: 1.5;
-            color: #333;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px 0;
+            -webkit-text-size-adjust: 100%;
         }
 
-        .container {
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        img {
+            max-width: 100%;
+            border: 0;
+        }
+
+        a {
+            color: #dc2626;
+        }
+
+        .email-wrapper {
+            width: 100%;
+            background-color: #f9fafb;
+        }
+
+        .email-container {
+            width: 100%;
             max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            border-radius: 8px;
+        }
+
+        .email-card {
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
         }
 
-        .header {
-            padding: 24px 30px;
-            text-align: center;
-            color: white;
-        }
-
-        .header-confirmed { background-color: #4caf50; }
-        .header-ready { background-color: #2196f3; }
-        .header-delivering { background-color: #ff9800; }
-        .header-completed { background-color: #9c27b0; }
-        .header-cancelled { background-color: #ff0000; }
-
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        .header p {
-            margin: 5px 0 0;
-            opacity: 0.9;
-            font-size: 14px;
+        .brand {
+            padding: 24px 32px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #dc2626;
+            font-size: 22px;
+            font-weight: 700;
+            text-align: left;
         }
 
         .content {
-            padding: 20px 30px;
+            padding: 32px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-bottom: 16px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .badge-confirmed,
+        .badge-ready,
+        .badge-delivering,
+        .badge-completed {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .email-title {
+            margin: 0;
+            color: #111827;
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .email-subtitle {
+            margin: 8px 0 0;
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .order-reference {
+            margin: 20px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .order-reference strong {
+            color: #374151;
+        }
+
+        .email-body {
+            padding-top: 28px;
         }
 
         .section {
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .section:last-child {
-            border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
+            border-bottom: 0;
         }
 
         .section-title {
+            margin: 0 0 14px;
+            padding: 0;
+            border: 0;
+            color: #111827;
             font-size: 15px;
             font-weight: 700;
-            margin-bottom: 8px;
-            padding-left: 8px;
         }
 
-        .section-title-confirmed { color: #4caf50; border-left: 3px solid #4caf50; }
-        .section-title-ready { color: #2196f3; border-left: 3px solid #2196f3; }
-        .section-title-delivering { color: #ff9800; border-left: 3px solid #ff9800; }
-        .section-title-completed { color: #9c27b0; border-left: 3px solid #9c27b0; }
-        .section-title-cancelled { color: #ff0000; border-left: 3px solid #ff0000; }
+        .section-title-confirmed,
+        .section-title-ready,
+        .section-title-delivering,
+        .section-title-completed,
+        .section-title-cancelled {
+            color: #111827;
+            border: 0;
+        }
 
-        .badge {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            text-align: center;
+        .info-grid {
+            display: table;
             width: 100%;
-            box-sizing: border-box;
-        }
-
-        .badge-confirmed { background-color: #4CAF50; color: white; }
-        .badge-ready { background-color: #2196f3; color: white; }
-        .badge-delivering { background-color: #ff9800; color: white; }
-        .badge-completed { background-color: #9c27b0; color: white; }
-        .badge-cancelled { background-color: #ff0000; color: white; }
-
-        .status-card {
-            background-color: #f9f9f9;
-            border-radius: 6px;
-            padding: 12px;
-            text-align: center;
-            margin-bottom: 12px;
-        }
-
-        .status-icon {
-            font-size: 36px;
-            margin-bottom: 4px;
-        }
-
-        .status-message {
-            font-size: 13px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .info-grid  {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px 12px;
         }
 
         .info-item {
-            margin-bottom: 0;
+            display: table-cell;
+            width: 50%;
+            padding: 0 16px 12px 0;
+            vertical-align: top;
         }
 
         .info-label {
-            font-weight: 600;
-            color: #666;
+            margin-bottom: 3px;
+            color: #6b7280;
             font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
         }
 
         .info-value {
-            font-size: 13px;
-            color: #333;
-            line-height: 1.4;
-        }
-
-        .progress-tracker {
-            margin: 16px 0 12px;
-        }
-
-        .progress-steps {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            position: relative;
-            gap: 8px;
-        }
-
-        .progress-line {
-            position: absolute;
-            top: 16px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #e0e0e0;
-            z-index: 1;
-        }
-
-        .progress-line-active {
-            background: currentColor;
-            height: 100%;
-            width: var(--progress-width, 0%);
-            transition: width 0.3s ease;
-        }
-
-        .step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-            background: white;
-        }
-
-        .step-circle {
-            width: 32px;
-            height: 32px;
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 50%;
-            margin: 0 auto 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 12px;
-            color: #999;
-        }
-
-        .step.completed .step-circle {
-            background: #4CAF50;
-            border-color: #4CAF50;
-            color: white;
-        }
-
-        .step.active .step-circle {
-            border-color: #FF9800;
-            border-width: 2px;
-            color: #FF9800;
-            font-weight: bold;
-        }
-
-        .step-label {
-            font-size: 10px;
-            color: #999;
-            font-weight: 500;
-        }
-
-        .step.completed .step-label,
-        .step.active .step-label {
-            color: #666;
-            font-weight: 600;
+            color: #1f2937;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
         .items-table {
             width: 100%;
-            border-collapse: collapse;
         }
 
         .items-table th {
-            text-align: left;
-            padding: 6px 6px;
-            background-color: #fafafa;
+            padding: 8px 6px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #6b7280;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 600;
+            text-align: left;
             text-transform: uppercase;
-            color: #999;
-            border-bottom: 1px solid #e0e0e0;
         }
 
         .items-table td {
-            padding: 8px 6px;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 12px 6px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #374151;
+            font-size: 13px;
             vertical-align: top;
         }
 
         .item-name {
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: #333;
+            color: #1f2937;
             font-size: 14px;
+            font-weight: 600;
         }
 
         .item-details {
-            font-size: 11px;
-            color: #999;
-            margin-top: 3px;
+            margin-top: 4px;
+            color: #6b7280;
+            font-size: 12px;
         }
 
         .item-details p {
-            margin: 2px 0;
-        }
-
-        .item-details strong {
-            color: #666;
-        }
-
-        .meat-info {
-            color: #ff9800;
+            margin: 3px 0;
         }
 
         .removed-ingredient {
-            color: #f44336;
+            color: #991b1b;
             text-decoration: line-through;
         }
 
         .totals {
-            margin-top: 8px;
+            width: 100%;
         }
 
         .totals-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 3px;
-            font-size: 12px;
+            display: table;
+            width: 100%;
+            margin-bottom: 7px;
+        }
+
+        .totals-label,
+        .totals-value {
+            display: table-cell;
+            font-size: 13px;
         }
 
         .totals-label {
-            font-weight: 500;
-            margin-right: 16px;
-            min-width: 100px;
+            color: #6b7280;
             text-align: left;
-            color: #666;
         }
 
         .totals-value {
-            min-width: 80px;
-            text-align: right;
+            color: #374151;
             font-weight: 500;
+            text-align: right;
         }
 
         .grand-total {
-            font-size: 15px;
-            font-weight: 800;
-            margin-top: 5px;
-            padding-top: 5px;
-            border-top: 1px solid #e0e0e0;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
         }
 
-        .grand-total .totals-label, .grand-total .totals-value {
-            color: #4caf50;
-            font-weight: 800;
+        .grand-total .totals-label,
+        .grand-total .totals-value {
+            color: #111827;
+            font-size: 16px;
+            font-weight: 700;
         }
 
-        .action-button {
-            text-align: center;
-            margin: 12px 0;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 8px 24px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
+        .notes-box,
+        .status-card {
+            padding: 14px 16px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            color: #374151;
             font-size: 13px;
-            background-color: #4caf50;
-            color: white;
         }
 
-        .notes-box {
-            background-color: #fafafa;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 12px;
+        /*
+         * Temporary compatibility for the existing status templates.
+         * We will remove these progress styles when those templates
+         * are simplified in later steps.
+         */
+        .progress-tracker {
+            margin: 24px 0;
+        }
+
+        .progress-steps {
+            display: table;
+            width: 100%;
+        }
+
+        .progress-line {
+            display: none;
+        }
+
+        .step {
+            display: table-cell;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .step-circle {
+            width: 24px;
+            height: 24px;
+            margin: 0 auto 6px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 24px;
+            text-align: center;
+        }
+
+        .step.completed .step-circle {
+            background-color: #16a34a;
+            border-color: #16a34a;
+            color: #ffffff;
+        }
+
+        .step.active .step-circle {
+            border-color: #16a34a;
+            color: #16a34a;
+        }
+
+        .step-label {
+            color: #6b7280;
+            font-size: 10px;
+        }
+
+        .action {
+            padding-top: 28px;
+            text-align: left;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #dc2626;
+            border-radius: 8px;
+            color: #ffffff !important;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.2;
+            text-decoration: none;
         }
 
         .footer {
-            background-color: #f9f9f9;
-            padding: 16px 20px;
-            text-align: center;
-            font-size: 11px;
-            color: #999;
-            border-top: 1px solid #eaeaea;
+            padding: 22px 32px;
+            background-color: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: left;
         }
 
         .footer p {
-            margin: 4px 0;
+            margin: 0 0 6px;
         }
 
-        .footer strong {
-            color: #4caf50;
+        .footer p:last-child {
+            margin-bottom: 0;
         }
 
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
+        .footer-message {
+            margin-bottom: 12px;
+            color: #4b5563;
+        }
+
+        .footer-contact {
+            color: #6b7280;
+            text-decoration: underline;
+        }
+
+        @media only screen and (max-width: 620px) {
+            .email-padding {
+                padding: 12px !important;
             }
-            .container {
-                margin: 0;
+
+            .brand {
+                padding: 20px 22px;
             }
+
             .content {
-                padding: 16px 20px;
+                padding: 24px 22px;
             }
-            .header {
-                padding: 20px;
+
+            .footer {
+                padding: 20px 22px;
             }
-            .info-grid {
-                grid-template-columns: 1fr;
-                gap: 4px;
+
+            .email-title {
+                font-size: 23px;
             }
-            .totals-row {
-                justify-content: space-between;
+
+            .info-item {
+                display: block;
+                width: 100%;
+                padding-right: 0;
             }
-            .totals-label {
-                min-width: auto;
+
+            .button {
+                display: block;
+                text-align: center;
             }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header {{ $headerClass }}">
-            <h1>{{ $headerTitle }}</h1>
-            <p>{{ $headerSubtitle }}</p>
-        </div>
+<div
+    style="
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            color: transparent;
+        "
+>
+    {{ $headerSubtitle }}
+    {{ __('messages.emails.order', [
+        'number' => $order->order_number,
+    ]) }}
+</div>
 
-        <div class="content">
-            <div class="section" style="border-bottom: none; padding-bottom: 0;">
-                <div class="badge {{ $badgeClass }}">
-                    {{ __('messages.emails.order', ['number' => $order->order_number]) }}
-                    •
-                    {{ $order->status->translatedLabel() }}
-                </div>
-            </div>
+<table
+    role="presentation"
+    class="email-wrapper"
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+>
+    <tr>
+        <td
+            class="email-padding"
+            align="center"
+            style="padding: 32px 16px;"
+        >
+            <table
+                role="presentation"
+                class="email-container"
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+            >
+                <tr>
+                    <td class="email-card">
+                        <div class="brand">
+                            {{ config('restaurant.name') }}
+                        </div>
 
-            @yield('status-content')
+                        <div class="content">
+                                <span class="status-badge {{ $badgeClass }}">
+                                    {{ $emailStatus->translatedLabel() }}
+                                </span>
 
-            <div class="action-button">
-                <a href="{{ route('order.order-details', $order) }}" class="btn">
-                    {{ __('messages.emails.view_order') }}
-                </a>
-            </div>
-        </div>
+                            <h1 class="email-title">
+                                {{ $headerTitle }}
+                            </h1>
 
-        <div class="footer">
-            @yield('footer-message')
-            <p style="margin-top: 8px; font-size: 10px;">
-                © {{ date('Y') }} {{ __('messages.emails.restaurant_name') }}
-                •
-                <a href="mailto:hello@yourrestaurant.com" style="color: #999;">
-                    {{ __('messages.emails.contact_us') }}
-                </a>
-            </p>
-        </div>
-    </div>
+                            <p class="email-subtitle">
+                                {{ $headerSubtitle }}
+                            </p>
+
+                            <p class="order-reference">
+                                <strong>
+                                    {{ __('messages.emails.order', [
+                                        'number' => $order->order_number,
+                                    ]) }}
+                                </strong>
+                            </p>
+
+                            <div class="email-body">
+                                @yield('status-content')
+                            </div>
+
+                            <div class="action">
+                                <a
+                                    href="{{ route('order.order-details', $order) }}"
+                                    class="button"
+                                >
+                                    {{ __('messages.emails.view_order') }}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="footer">
+                            @hasSection('footer-message')
+                                <div class="footer-message">
+                                    @yield('footer-message')
+                                </div>
+                            @endif
+
+                            <p>
+                                {{ config('restaurant.name') }}
+                            </p>
+
+                            <p>
+                                <a
+                                    href="mailto:{{ config('restaurant.contact_email') }}"
+                                    class="footer-contact"
+                                >
+                                    {{ config('restaurant.contact_email') }}
+                                </a>
+                            </p>
+
+                            <p>
+                                © {{ now()->year }}
+                                {{ config('restaurant.name') }}
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 </body>
 </html>

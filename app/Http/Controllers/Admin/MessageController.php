@@ -7,7 +7,6 @@ use App\Actions\Admin\Message\Commands\MarkAsRead;
 use App\Actions\Admin\Message\Commands\SendMessage;
 use App\Actions\Admin\Message\Commands\UnsendMessage;
 use App\Actions\Admin\Message\Commands\UpdateMessage;
-use App\Events\MessageSentBroadcast;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Chat\MessageResource;
 use App\Models\Chat;
@@ -18,18 +17,11 @@ use Illuminate\Http\Response as HttpResponse;
 
 class MessageController extends Controller
 {
-    /**
-     * @param Request $request
-     * @param Chat $chat
-     * @param SendMessage $sendMessage
-     * @return JsonResponse
-     */
     public function send(
         Request $request,
         Chat $chat,
         SendMessage $sendMessage,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $validated = $request->validate([
             'content' => 'required|string|max:2000',
         ]);
@@ -43,11 +35,6 @@ class MessageController extends Controller
         return response()->json(new MessageResource($message));
     }
 
-    /**
-     * @param Message $message
-     * @param UnsendMessage $unsendMessage
-     * @return JsonResponse
-     */
     public function unsend(Message $message, UnsendMessage $unsendMessage): JsonResponse
     {
         abort_unless($message->sender_id === auth()->id(), 403);
@@ -60,11 +47,6 @@ class MessageController extends Controller
         return response()->json(new MessageResource($message));
     }
 
-    /**
-     * @param Chat $chat
-     * @param MarkAsRead $markAsRead
-     * @return HttpResponse
-     */
     public function markAsRead(Chat $chat, MarkAsRead $markAsRead): HttpResponse
     {
         $markAsRead->execute(
@@ -75,18 +57,11 @@ class MessageController extends Controller
         return response()->noContent();
     }
 
-    /**
-     * @param Request $request
-     * @param Message $message
-     * @param UpdateMessage $updateMessage
-     * @return JsonResponse
-     */
     public function update(
         Request $request,
         Message $message,
         UpdateMessage $updateMessage
-    ): JsonResponse
-    {
+    ): JsonResponse {
         abort_unless($message->sender_id === auth()->id(), 403);
 
         $validated = $request->validate([
@@ -102,11 +77,6 @@ class MessageController extends Controller
         return response()->json(new MessageResource($message));
     }
 
-    /**
-     * @param Message $message
-     * @param DeleteMessage $deleteMessage
-     * @return JsonResponse
-     */
     public function destroy(Message $message, DeleteMessage $deleteMessage): JsonResponse
     {
         abort_unless($message->sender_id === auth()->id(), 403);

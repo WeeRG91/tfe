@@ -12,9 +12,6 @@ use Throwable;
 class UpdateUser
 {
     /**
-     * @param User $user
-     * @param array $data
-     * @return void
      * @throws Throwable
      */
     public function execute(User $user, array $data): void
@@ -26,7 +23,7 @@ class UpdateUser
             $user->name = $data['name'];
             $user->email = $data['email'];
 
-            if (!empty($data['password'])) {
+            if (! empty($data['password'])) {
                 $user->password = Hash::make($data['password']);
             }
 

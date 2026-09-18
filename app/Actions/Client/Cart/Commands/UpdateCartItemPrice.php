@@ -6,10 +6,6 @@ use App\Models\CartItem;
 
 class UpdateCartItemPrice
 {
-    /**
-     * @param CartItem $item
-     * @return void
-     */
     public function execute(CartItem $item): void
     {
         $basePrice = $item->item->price ?? 0;

@@ -3,7 +3,6 @@
 namespace App\Actions\Client\Cart\Commands;
 
 use App\Actions\Client\Cart\Queries\GetOrCreateCart;
-use App\Models\CartItem;
 use Illuminate\Http\Request;
 
 class RemoveCartItem
@@ -12,11 +11,6 @@ class RemoveCartItem
         protected GetOrCreateCart $getOrCreateCart,
     ) {}
 
-    /**
-     * @param Request $request
-     * @param int $cartItemId
-     * @return string
-     */
     public function execute(Request $request, int $cartItemId): string
     {
         $cart = $this->getOrCreateCart->execute($request);

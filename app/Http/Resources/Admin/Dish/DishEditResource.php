@@ -35,7 +35,7 @@ class DishEditResource extends JsonResource
             'category' => $this->category,
             'price' => $this->price,
             'default_spicy_level' => $this->default_spicy_level,
-            'meats' =>$this->meats->map(fn ($meat) => [
+            'meats' => $this->meats->map(fn ($meat) => [
                 'id' => $meat->id,
             ]),
             'ingredients' => $this->ingredients->map(fn ($ingredient) => [

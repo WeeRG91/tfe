@@ -14,8 +14,6 @@ use Throwable;
 class RefundStripeOrder
 {
     /**
-     * @param Order $order
-     * @return void
      * @throws Throwable
      */
     public function execute(Order $order): void
@@ -26,7 +24,7 @@ class RefundStripeOrder
             ]);
         }
 
-        if (!$order->stripe_payment_intent_id) {
+        if (! $order->stripe_payment_intent_id) {
             throw ValidationException::withMessages([
                 'order' => __('messages.orders.stripe_payment_not_found'),
             ]);
@@ -41,8 +39,7 @@ class RefundStripeOrder
         try {
             $refund = Refund::create(
                 [
-                    'payment_intent' =>
-                        $order->stripe_payment_intent_id,
+                    'payment_intent' => $order->stripe_payment_intent_id,
 
                     'reason' => 'requested_by_customer',
 
@@ -52,8 +49,7 @@ class RefundStripeOrder
                     ],
                 ],
                 [
-                    'idempotency_key' =>
-                        "order-refund-{$order->id}",
+                    'idempotency_key' => "order-refund-{$order->id}",
                 ],
             );
 
@@ -69,8 +65,7 @@ class RefundStripeOrder
         } catch (ApiErrorException $e) {
             logger()->error('Unable to confirm Stripe refund state', [
                 'order_id' => $order->id,
-                'payment_intent_id' =>
-                    $order->stripe_payment_intent_id,
+                'payment_intent_id' => $order->stripe_payment_intent_id,
                 'error' => $e->getMessage(),
             ]);
 

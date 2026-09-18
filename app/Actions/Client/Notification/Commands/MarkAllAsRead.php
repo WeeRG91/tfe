@@ -7,10 +7,6 @@ use App\Models\User;
 
 class MarkAllAsRead
 {
-    /**
-     * @param User $user
-     * @return void
-     */
     public function execute(User $user): void
     {
         Notification::query()

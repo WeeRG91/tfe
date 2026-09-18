@@ -9,11 +9,6 @@ use App\Models\User;
 
 class SendMessage
 {
-    /**
-     * @param User $user
-     * @param string $content
-     * @return Message
-     */
     public function execute(User $user, string $content): Message
     {
         $chat = Chat::query()->firstOrCreate([

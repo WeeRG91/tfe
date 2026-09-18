@@ -4,7 +4,6 @@ namespace App\Actions\Client\Payment\Commands;
 
 use App\Enums\LoyaltyPointTransactionTypeEnum;
 use App\Enums\OrderStatusEnum;
-use App\Enums\PaymentStatusEnum;
 use App\Events\OrderCancelledBroadcast;
 use App\Events\StatusOrderUpdated;
 use App\Models\LoyaltyPointTransaction;
@@ -15,8 +14,6 @@ use Throwable;
 class finalizeRefundedOrder
 {
     /**
-     * @param Order $order
-     * @return void
      * @throws Throwable
      */
     public function execute(Order $order): void
@@ -56,21 +53,19 @@ class finalizeRefundedOrder
                 )
                 ->first();
 
-        if (!$redeemedTransaction) {
+        if (! $redeemedTransaction) {
             return;
         }
 
         LoyaltyPointTransaction::query()->firstOrCreate(
             [
                 'order_id' => $order->id,
-                'type' =>
-                    LoyaltyPointTransactionTypeEnum::REFUNDED->value,
+                'type' => LoyaltyPointTransactionTypeEnum::REFUNDED->value,
             ],
             [
                 'user_id' => $order->user_id,
                 'points' => $redeemedTransaction->points,
-                'description' =>
-                    "Points refunded for order #{$order->order_number}",
+                'description' => "Points refunded for order #{$order->order_number}",
             ],
         );
     }
@@ -86,7 +81,6 @@ class finalizeRefundedOrder
                 )
                 ->first();
 
-
         if (! $earnedTransaction) {
             return;
         }
@@ -94,14 +88,12 @@ class finalizeRefundedOrder
         LoyaltyPointTransaction::query()->firstOrCreate(
             [
                 'order_id' => $order->id,
-                'type' =>
-                    LoyaltyPointTransactionTypeEnum::REVERSED->value,
+                'type' => LoyaltyPointTransactionTypeEnum::REVERSED->value,
             ],
             [
                 'user_id' => $order->user_id,
                 'points' => $earnedTransaction->points,
-                'description' =>
-                    "Points reversed for refunded order #{$order->order_number}",
+                'description' => "Points reversed for refunded order #{$order->order_number}",
             ],
         );
     }

@@ -23,7 +23,7 @@ class RestaurantHoursSeeder extends Seeder
                 ],
             );
 
-            if (!$day->is_open) {
+            if (! $day->is_open) {
                 continue;
             }
 

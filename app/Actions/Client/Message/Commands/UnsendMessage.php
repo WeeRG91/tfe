@@ -8,11 +8,6 @@ use App\Models\User;
 
 class UnsendMessage
 {
-    /**
-     * @param User $user
-     * @param Message $message
-     * @return Message
-     */
     public function execute(User $user, Message $message): Message
     {
         $message->update([

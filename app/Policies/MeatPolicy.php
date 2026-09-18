@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Enums\Permissions\MeatPermissionEnum;
 use App\Models\Meat;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class MeatPolicy
 {

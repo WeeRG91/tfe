@@ -15,18 +15,13 @@ readonly class UpdateDrink
     ) {}
 
     /**
-     * @param Drink $drink
-     * @param array $data
-     * @param array $files
-     * @return Drink
      * @throws Throwable
      */
     public function execute(
         Drink $drink,
         array $data,
         array $files = []
-    ): Drink
-    {
+    ): Drink {
         return DB::transaction(function () use (
             $drink,
             $data,

@@ -11,10 +11,6 @@ readonly class ForceDeleteMeat
         private ImageService $imageService
     ) {}
 
-    /**
-     * @param int $id
-     * @return void
-     */
     public function execute(int $id): void
     {
         $meat = Meat::onlyTrashed()->findOrFail($id);

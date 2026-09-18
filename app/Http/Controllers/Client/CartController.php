@@ -27,44 +27,30 @@ use Inertia\Response as InertiaResponse;
 
 class CartController extends Controller
 {
-    /**
-     * @param Request $request
-     * @param GetOrCreateCart $getOrCreateCart
-     * @return JsonResponse
-     */
     public function getCart(
         Request $request,
         GetOrCreateCart $getOrCreateCart
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $cart = $getOrCreateCart->execute($request);
         $cart->load('user', 'items.item', 'items.meat', 'items.removedIngredients');
 
         return response()->json(new CartResource($cart));
     }
 
-    /**
-     * @return InertiaResponse
-     */
     public function checkout(): InertiaResponse
     {
         return Inertia::render('client/Checkout');
     }
 
-    /**
-     * @param GetDeliveryOptions $getDeliveryOptions
-     * @return InertiaResponse
-     */
     public function placeOrder(
         GetDeliveryOptions $getDeliveryOptions,
-    ): InertiaResponse
-    {
+    ): InertiaResponse {
         $addresses = Address::query()
             ->where('user_id', auth()->user()->id)
             ->orderByDesc('is_default')
             ->get();
 
-        $loyaltyPointTransactions = loyaltyPointTransaction::query()
+        $loyaltyPointTransactions = LoyaltyPointTransaction::query()
             ->with('order:id,order_number')
             ->where('user_id', auth()->user()->id)
             ->orderByDesc('created_at')
@@ -79,16 +65,10 @@ class CartController extends Controller
         ]);
     }
 
-    /**
-     * @param AddDishToCartRequest $request
-     * @param AddDishToCart $addDishToCart
-     * @return JsonResponse
-     */
     public function addDish(
         AddDishToCartRequest $request,
         AddDishToCart $addDishToCart
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $validated = $request->validated();
 
         $item = $addDishToCart->execute($request, $validated);
@@ -100,16 +80,10 @@ class CartController extends Controller
         ]);
     }
 
-    /**
-     * @param AddDrinkToCartRequest $request
-     * @param AddDrinkToCart $addDrinkToCart
-     * @return JsonResponse
-     */
     public function addDrink(
         AddDrinkToCartRequest $request,
         AddDrinkToCart $addDrinkToCart
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $validated = $request->validated();
 
         $item = $addDrinkToCart->execute($request, $validated);
@@ -121,18 +95,11 @@ class CartController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param int $cartItemId
-     * @param RemoveCartItem $removeCartItem
-     * @return JsonResponse
-     */
     public function removeItem(
         Request $request,
         int $cartItemId,
         RemoveCartItem $removeCartItem
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $itemName = $removeCartItem->execute($request, $cartItemId);
 
         return response()->json([
@@ -142,18 +109,11 @@ class CartController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param int $cartItemId
-     * @param UpdateCartItemNotes $updateNotes
-     * @return HttpResponse
-     */
     public function updateNotes(
         Request $request,
         int $cartItemId,
         UpdateCartItemNotes $updateNotes
-    ): HttpResponse
-    {
+    ): HttpResponse {
         $validated = $request->validate([
             'notes' => 'nullable|string|max:1000',
         ]);
@@ -163,18 +123,11 @@ class CartController extends Controller
         return response()->noContent();
     }
 
-    /**
-     * @param Request $request
-     * @param int $cartItemId
-     * @param UpdateCartItemQuantity $updateQuantity
-     * @return JsonResponse|HttpResponse
-     */
     public function updateQuantity(
         Request $request,
         int $cartItemId,
         UpdateCartItemQuantity $updateQuantity
-    ): JsonResponse|HttpResponse
-    {
+    ): JsonResponse|HttpResponse {
         $validated = $request->validate([
             'action' => 'required|string|in:increase,decrease',
         ]);

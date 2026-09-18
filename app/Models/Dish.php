@@ -28,7 +28,7 @@ class Dish extends Model
     {
         return [
             'category' => DishCategoryEnum::class,
-            'default_spicy_level' =>'integer',
+            'default_spicy_level' => 'integer',
         ];
     }
 

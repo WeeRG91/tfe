@@ -22,17 +22,14 @@ class DishRatingUpdatedBroadcast implements ShouldBroadcast
         public Dish $dish,
         public ?DishRating $rating = null,
         public ?int $deletedReviewId = null
-    )
-    {}
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.
-     *
-     * @return Channel
      */
     public function broadcastOn(): Channel
     {
-        return new channel('dish.rating');
+        return new Channel('dish.rating');
     }
 
     public function broadcastWith(): array

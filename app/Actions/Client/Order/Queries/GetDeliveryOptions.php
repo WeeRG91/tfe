@@ -55,8 +55,7 @@ class GetDeliveryOptions
                     return [
                         'id' => $company->id,
                         'name' => $company->name,
-                        'minimum_advance_days' =>
-                            $company->minimum_advance_days,
+                        'minimum_advance_days' => $company->minimum_advance_days,
                         'dates' => $dates,
                     ];
                 })

@@ -11,10 +11,6 @@ readonly class ForceDeleteAllergen
         private ImageService $imageService
     ) {}
 
-    /**
-     * @param int $id
-     * @return void
-     */
     public function execute(int $id): void
     {
         $allergen = Allergen::onlyTrashed()->findOrFail($id);

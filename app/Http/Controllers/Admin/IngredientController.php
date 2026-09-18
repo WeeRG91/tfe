@@ -24,9 +24,6 @@ use Throwable;
 
 class IngredientController extends Controller
 {
-    /**
-     * @return Response
-     */
     public function index(): Response
     {
         $this->authorize('viewAny', Ingredient::class);
@@ -41,11 +38,6 @@ class IngredientController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param GetPaginatedIngredients $query
-     * @return JsonResponse
-     */
     public function getIngredients(Request $request, GetPaginatedIngredients $query): JsonResponse
     {
         $this->authorize('viewAny', Ingredient::class);
@@ -55,10 +47,6 @@ class IngredientController extends Controller
         return response()->json($ingredients);
     }
 
-    /**
-     * @param GetIngredientFormData $query
-     * @return Response
-     */
     public function create(GetIngredientFormData $query): Response
     {
         $this->authorize('create', Ingredient::class);
@@ -66,16 +54,10 @@ class IngredientController extends Controller
         return Inertia::render('admin/ingredient/Create', $query->execute());
     }
 
-    /**
-     * @param IngredientCreateRequest $request
-     * @param CreateIngredient $command
-     * @return RedirectResponse
-     */
     public function store(
         IngredientCreateRequest $request,
         CreateIngredient $command
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('create', Ingredient::class);
 
         try {
@@ -96,16 +78,10 @@ class IngredientController extends Controller
         }
     }
 
-    /**
-     * @param IngredientCreateRequest $request
-     * @param CreateIngredient $command
-     * @return RedirectResponse
-     */
     public function quickCreate(
         IngredientCreateRequest $request,
         CreateIngredient $command
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('create', Ingredient::class);
 
         try {
@@ -135,18 +111,11 @@ class IngredientController extends Controller
         }
     }
 
-    /**
-     * @param Ingredient $ingredient
-     * @param GetIngredientFormData $formData
-     * @param GetIngredientForEdit $query
-     * @return Response
-     */
     public function edit(
         Ingredient $ingredient,
         GetIngredientFormData $formData,
         GetIngredientForEdit $query
-    ): Response
-    {
+    ): Response {
         $this->authorize('update', $ingredient);
 
         return Inertia::render('admin/ingredient/Edit', [
@@ -155,18 +124,11 @@ class IngredientController extends Controller
         ]);
     }
 
-    /**
-     * @param IngredientUpdateRequest $request
-     * @param Ingredient $ingredient
-     * @param UpdateIngredient $command
-     * @return RedirectResponse
-     */
     public function update(
         IngredientUpdateRequest $request,
         Ingredient $ingredient,
         UpdateIngredient $command
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('update', $ingredient);
 
         try {
@@ -188,11 +150,6 @@ class IngredientController extends Controller
         }
     }
 
-    /**
-     * @param Ingredient $ingredient
-     * @param RestoreIngredient $command
-     * @return JsonResponse
-     */
     public function restore(Ingredient $ingredient, RestoreIngredient $command): JsonResponse
     {
         $this->authorize('restore', $ingredient);
@@ -204,11 +161,6 @@ class IngredientController extends Controller
         ]);
     }
 
-    /**
-     * @param Ingredient $ingredient
-     * @param DeleteIngredient $command
-     * @return JsonResponse
-     */
     public function destroy(Ingredient $ingredient, DeleteIngredient $command): JsonResponse
     {
         $this->authorize('delete', $ingredient);
@@ -220,11 +172,6 @@ class IngredientController extends Controller
         ]);
     }
 
-    /**
-     * @param Ingredient $ingredient
-     * @param ForceDeleteIngredient $command
-     * @return JsonResponse
-     */
     public function forceDelete(Ingredient $ingredient, ForceDeleteIngredient $command): JsonResponse
     {
         $this->authorize('delete', $ingredient);

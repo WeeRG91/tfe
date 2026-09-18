@@ -10,15 +10,13 @@ use Throwable;
 class DeleteUser
 {
     /**
-     * @param User $user
-     * @return void
      * @throws Throwable
      */
     public function execute(User $user): void
     {
         if ($user->hasRole('Super Admin')) {
             throw ValidationException::withMessages([
-                'user' => "You can't delete Super Admin."
+                'user' => "You can't delete Super Admin.",
             ]);
         }
 

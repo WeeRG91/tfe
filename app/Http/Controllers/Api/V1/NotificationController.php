@@ -65,8 +65,7 @@ class NotificationController extends Controller
         Request $request,
         int $notificationId,
         MarkAsRead $markAsRead,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $notification = Notification::query()
             ->where('user_id', $request->user()->id)
             ->with('notifiable')

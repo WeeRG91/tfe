@@ -15,18 +15,13 @@ readonly class UpdateMeat
     ) {}
 
     /**
-     * @param Meat $meat
-     * @param array $data
-     * @param array $files
-     * @return Meat
      * @throws Throwable
      */
     public function execute(
         Meat $meat,
         array $data,
         array $files = []
-    ): Meat
-    {
+    ): Meat {
         return DB::transaction(function () use (
             $meat,
             $data,

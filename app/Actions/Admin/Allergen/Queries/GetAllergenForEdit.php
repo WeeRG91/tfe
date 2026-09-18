@@ -7,10 +7,6 @@ use App\Models\Allergen;
 
 class GetAllergenForEdit
 {
-    /**
-     * @param Allergen $allergen
-     * @return AllergenEditResource
-     */
     public function execute(Allergen $allergen): AllergenEditResource
     {
         $allergen->load([

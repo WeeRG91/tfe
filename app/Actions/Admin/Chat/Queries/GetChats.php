@@ -7,9 +7,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class GetChats
 {
-    /**
-     * @return Collection
-     */
     public function execute(): Collection
     {
         return Chat::with(['user', 'latestMessage'])

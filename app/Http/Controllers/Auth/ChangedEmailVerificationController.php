@@ -13,7 +13,7 @@ class ChangedEmailVerificationController extends Controller
 {
     public function store(User $user)
     {
-        if (!$user->hasVerifiedEmail()) {
+        if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
 
@@ -36,7 +36,7 @@ class ChangedEmailVerificationController extends Controller
                 ->whereNull('email_verified_at')
                 ->first();
 
-            if (!$user) {
+            if (! $user) {
                 return back()->withErrors([
                     'error' => __('messages.account.not_found'),
                 ]);

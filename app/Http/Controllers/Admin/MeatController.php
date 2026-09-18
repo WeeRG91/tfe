@@ -22,9 +22,6 @@ use Throwable;
 
 class MeatController extends Controller
 {
-    /**
-     * @return InertiaResponse
-     */
     public function index(): InertiaResponse
     {
         $this->authorize('viewAny', Meat::class);
@@ -33,8 +30,6 @@ class MeatController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param GetPaginatedMeats $query
      * @return JsonResponse
      */
     public function getMeats(Request $request, GetPaginatedMeats $query)
@@ -46,9 +41,6 @@ class MeatController extends Controller
         return response()->json($meats);
     }
 
-    /**
-     * @return InertiaResponse
-     */
     public function create(): InertiaResponse
     {
         $this->authorize('create', Meat::class);
@@ -56,11 +48,6 @@ class MeatController extends Controller
         return Inertia::render('admin/meat/Create');
     }
 
-    /**
-     * @param MeatCreateRequest $request
-     * @param CreateMeat $command
-     * @return RedirectResponse
-     */
     public function store(MeatCreateRequest $request, CreateMeat $command): RedirectResponse
     {
         $this->authorize('create', Meat::class);
@@ -83,16 +70,10 @@ class MeatController extends Controller
         }
     }
 
-    /**
-     * @param MeatCreateRequest $request
-     * @param CreateMeat $command
-     * @return RedirectResponse
-     */
     public function quickCreate(
         MeatCreateRequest $request,
         CreateMeat $command
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('create', Meat::class);
 
         try {
@@ -122,11 +103,6 @@ class MeatController extends Controller
         }
     }
 
-    /**
-     * @param Meat $meat
-     * @param GetMeatForEdit $query
-     * @return InertiaResponse
-     */
     public function edit(Meat $meat, GetMeatForEdit $query): InertiaResponse
     {
         $this->authorize('update', $meat);
@@ -136,18 +112,11 @@ class MeatController extends Controller
         ]);
     }
 
-    /**
-     * @param MeatUpdateRequest $request
-     * @param Meat $meat
-     * @param UpdateMeat $command
-     * @return RedirectResponse
-     */
     public function update(
         MeatUpdateRequest $request,
         Meat $meat,
         UpdateMeat $command
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('update', $meat);
 
         try {
@@ -169,11 +138,6 @@ class MeatController extends Controller
         }
     }
 
-    /**
-     * @param Meat $meat
-     * @param RestoreMeat $command
-     * @return JsonResponse
-     */
     public function restore(Meat $meat, RestoreMeat $command): JsonResponse
     {
         $this->authorize('restore', $meat);
@@ -185,11 +149,6 @@ class MeatController extends Controller
         ]);
     }
 
-    /**
-     * @param Meat $meat
-     * @param DeleteMeat $command
-     * @return JsonResponse
-     */
     public function destroy(Meat $meat, DeleteMeat $command): JsonResponse
     {
         $this->authorize('delete', $meat);
@@ -201,11 +160,6 @@ class MeatController extends Controller
         ]);
     }
 
-    /**
-     * @param Meat $meat
-     * @param ForceDeleteMeat $command
-     * @return JsonResponse
-     */
     public function forceDelete(Meat $meat, ForceDeleteMeat $command): JsonResponse
     {
         $this->authorize('delete', $meat);

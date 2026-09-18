@@ -6,18 +6,11 @@ use Spatie\Permission\Models\Role;
 
 class UpdateRole
 {
-    /**
-     * @param Role $role
-     * @param string $name
-     * @param array $permissions
-     * @return Role
-     */
     public function execute(
         Role $role,
         string $name,
         array $permissions = []
-    ): Role
-    {
+    ): Role {
         $role->update([
             'name' => $name,
         ]);

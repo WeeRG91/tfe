@@ -7,7 +7,6 @@ use App\Enums\PaymentStatusEnum;
 use App\Enums\Permissions\OrderPermissionEnum;
 use App\Models\Order;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class OrderPolicy
 {
@@ -52,9 +51,9 @@ class OrderPolicy
         ], true);
 
         return $canBeCancelled && (
-                $order->user_id === $user->id ||
-                $user->can(OrderPermissionEnum::ORDER_CANCEL->value)
-            );
+            $order->user_id === $user->id ||
+            $user->can(OrderPermissionEnum::ORDER_CANCEL->value)
+        );
     }
 
     public function pay(User $user, Order $order): bool

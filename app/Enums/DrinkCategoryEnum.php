@@ -22,8 +22,8 @@ enum DrinkCategoryEnum: int
             self::SMOOTHIE => 'smoothie',
             self::BEER => 'beer',
             self::WINE => 'wine',
-            self::COCKTAIL=> 'cocktail',
-            self::MOCKTAIL=> 'mocktail',
+            self::COCKTAIL => 'cocktail',
+            self::MOCKTAIL => 'mocktail',
         };
     }
 
@@ -35,8 +35,8 @@ enum DrinkCategoryEnum: int
             self::SMOOTHIE => 'drink.categories.smoothie',
             self::BEER => 'drink.categories.beer',
             self::WINE => 'drink.categories.wine',
-            self::COCKTAIL=> 'drink.categories.cocktail',
-            self::MOCKTAIL=> 'drink.categories.mocktail',
+            self::COCKTAIL => 'drink.categories.cocktail',
+            self::MOCKTAIL => 'drink.categories.mocktail',
         };
     }
 
@@ -55,7 +55,7 @@ enum DrinkCategoryEnum: int
 
     public function translatedLabel(): string
     {
-        return __('messages.enums.drink_category.' . $this->key());
+        return __('messages.enums.drink_category.'.$this->key());
     }
 
     public static function getColor(self $case): string
@@ -86,7 +86,7 @@ enum DrinkCategoryEnum: int
     {
         return Arr::first(
             self::getCategories(),
-            fn($item) => $item['value'] === $case->value
+            fn ($item) => $item['value'] === $case->value
         );
     }
 }

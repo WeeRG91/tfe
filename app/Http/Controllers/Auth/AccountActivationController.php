@@ -17,10 +17,6 @@ use Throwable;
 
 class AccountActivationController extends Controller
 {
-    /**
-     * @param User $user
-     * @return RedirectResponse|Response
-     */
     public function show(User $user): RedirectResponse|Response
     {
         if ($user->hasVerifiedEmail()) {
@@ -36,18 +32,11 @@ class AccountActivationController extends Controller
         ]);
     }
 
-    /**
-     * @param ActivateAccountRequest $request
-     * @param User $user
-     * @param ActivateAccount $activateAccount
-     * @return RedirectResponse
-     */
     public function store(
         ActivateAccountRequest $request,
         User $user,
         ActivateAccount $activateAccount
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         try {
             $activateAccount->execute(
                 $user,
@@ -65,19 +54,11 @@ class AccountActivationController extends Controller
         }
     }
 
-    /**
-     * @return Response
-     */
     public function expiredActivation(): Response
     {
         return Inertia::render('auth/account-activation/Expired');
     }
 
-    /**
-     * @param Request $request
-     * @param SendActivationLink $sendActivationLink
-     * @return RedirectResponse
-     */
     public function resendActivation(Request $request, SendActivationLink $sendActivationLink): RedirectResponse
     {
         $validated = $request->validate([
@@ -89,7 +70,7 @@ class AccountActivationController extends Controller
                 ->whereNull('email_verified_at')
                 ->first();
 
-            if (!$user) {
+            if (! $user) {
                 return back()->withErrors([
                     'error' => __('messages.account.not_found'),
                 ]);
@@ -101,7 +82,7 @@ class AccountActivationController extends Controller
                 ]);
             }
 
-           $sendActivationLink->execute($user);
+            $sendActivationLink->execute($user);
 
             return back()->with(
                 'message',
@@ -116,18 +97,11 @@ class AccountActivationController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     * @param User $user
-     * @param ReactivateAccount $reactivateAccount
-     * @return RedirectResponse
-     */
     public function reactivate(
         Request $request,
         User $user,
         ReactivateAccount $reactivateAccount
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         try {
             $reactivateAccount->execute(
                 $user,
@@ -144,19 +118,11 @@ class AccountActivationController extends Controller
         }
     }
 
-    /**
-     * @return Response
-     */
     public function expiredReactivation(): Response
     {
         return Inertia::render('auth/account-reactivation/Expired');
     }
 
-    /**
-     * @param Request $request
-     * @param ResendReactivationLink $resendReactivationLink
-     * @return RedirectResponse
-     */
     public function resendReactivation(Request $request, ResendReactivationLink $resendReactivationLink): RedirectResponse
     {
         $validated = $request->validate([
@@ -169,7 +135,7 @@ class AccountActivationController extends Controller
                 ->whereNull('email_verified_at')
                 ->first();
 
-            if (!$user) {
+            if (! $user) {
                 return back()->withErrors([
                     'error' => __('messages.account.not_found'),
                 ]);

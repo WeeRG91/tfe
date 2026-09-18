@@ -13,9 +13,6 @@ use Inertia\Response as InertiaResponse;
 
 class LoyaltyPointTransactionController extends Controller
 {
-    /**
-     * @return InertiaResponse
-     */
     public function myPoints(): InertiaResponse
     {
         $availablePoints = LoyaltyPointTransaction::query()
@@ -29,16 +26,10 @@ class LoyaltyPointTransactionController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param GetLoyaltyPointTransactions $getLoyaltyPointTransactions
-     * @return JsonResponse
-     */
     public function getLoyaltyPointTransactions(
         Request $request,
         GetLoyaltyPointTransactions $getLoyaltyPointTransactions
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $transactions = $getLoyaltyPointTransactions->execute(
             auth()->id(),
             $request->input('filter', 'all')

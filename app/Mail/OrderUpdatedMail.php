@@ -30,7 +30,7 @@ class OrderUpdatedMail extends Mailable
     {
         return new Envelope(
             subject: $this->getSubject()
-                . " - #{$this->order->order_number}",
+                ." - #{$this->order->order_number}",
         );
     }
 
@@ -43,6 +43,7 @@ class OrderUpdatedMail extends Mailable
             view: $this->getView(),
             with: [
                 'order' => $this->order,
+                'emailStatus' => $this->status,
             ],
         );
     }
@@ -60,16 +61,11 @@ class OrderUpdatedMail extends Mailable
     private function getSubject(): string
     {
         return match ($this->status) {
-            OrderStatusEnum::CONFIRMED =>
-                __('messages.emails.subjects.confirmed'),
-            OrderStatusEnum::READY =>
-                __('messages.emails.subjects.ready'),
-            OrderStatusEnum::DELIVERING =>
-                __('messages.emails.subjects.delivering'),
-            OrderStatusEnum::COMPLETED =>
-                __('messages.emails.subjects.completed'),
-            OrderStatusEnum::CANCELLED =>
-                __('messages.emails.subjects.cancelled'),
+            OrderStatusEnum::CONFIRMED => __('messages.emails.subjects.confirmed'),
+            OrderStatusEnum::READY => __('messages.emails.subjects.ready'),
+            OrderStatusEnum::DELIVERING => __('messages.emails.subjects.delivering'),
+            OrderStatusEnum::COMPLETED => __('messages.emails.subjects.completed'),
+            OrderStatusEnum::CANCELLED => __('messages.emails.subjects.cancelled'),
             default => __('messages.emails.order_update'),
         };
     }
@@ -77,16 +73,11 @@ class OrderUpdatedMail extends Mailable
     private function getView(): string
     {
         return match ($this->status) {
-            OrderStatusEnum::CONFIRMED =>
-                'emails.order.order-confirmed',
-            OrderStatusEnum::READY =>
-                'emails.order.order-ready',
-            OrderStatusEnum::DELIVERING =>
-                'emails.order.order-delivering',
-            OrderStatusEnum::COMPLETED =>
-                'emails.order.order-completed',
-            OrderStatusEnum::CANCELLED =>
-                'emails.order.order-cancelled',
+            OrderStatusEnum::CONFIRMED => 'emails.order.order-confirmed',
+            OrderStatusEnum::READY => 'emails.order.order-ready',
+            OrderStatusEnum::DELIVERING => 'emails.order.order-delivering',
+            OrderStatusEnum::COMPLETED => 'emails.order.order-completed',
+            OrderStatusEnum::CANCELLED => 'emails.order.order-cancelled',
             default => throw new \LogicException(
                 'Unsupported order email status.',
             ),

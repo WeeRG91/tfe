@@ -43,7 +43,7 @@ readonly class PlaceOrder
                     false,
                 );
 
-            if (!$isFutureTakeaway && !$isCompanyDelivery) {
+            if (! $isFutureTakeaway && ! $isCompanyDelivery) {
                 $this->availability
                     ->assertCanAcceptOrders();
             }

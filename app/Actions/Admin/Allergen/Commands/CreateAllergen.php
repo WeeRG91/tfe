@@ -15,16 +15,12 @@ readonly class CreateAllergen
     ) {}
 
     /**
-     * @param array $data
-     * @param array $files
-     * @return Allergen
      * @throws Throwable
      */
     public function execute(
         array $data,
         array $files
-    ): Allergen
-    {
+    ): Allergen {
         return DB::transaction(function () use (
             $data, $files
         ) {

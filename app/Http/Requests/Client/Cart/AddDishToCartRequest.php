@@ -29,8 +29,8 @@ class AddDishToCartRequest extends FormRequest
             'item_type' => ['required', new Enum(ItemTypeEnum::class)],
             'meat_id' => [
                 'nullable',
-                'required_if:item_type,' . ItemTypeEnum::DISH->value,
-                'exists:meats,id'
+                'required_if:item_type,'.ItemTypeEnum::DISH->value,
+                'exists:meats,id',
             ],
             'quantity' => ['required', 'integer', 'min:1', 'max:50'],
             'spicy_level' => ['required', 'integer', 'between:0,3'],

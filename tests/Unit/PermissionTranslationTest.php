@@ -14,8 +14,9 @@ use App\Enums\Permissions\PermissionCategoryEnum;
 use App\Enums\Permissions\RolePermissionEnum;
 use App\Enums\Permissions\UserPermissionEnum;
 use App\Services\PermissionEnumResolver;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class);
+uses(TestCase::class);
 
 it('has a translated label for every permission and category in every supported locale', function () {
     $permissionEnums = [

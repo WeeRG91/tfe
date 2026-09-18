@@ -12,8 +12,6 @@ use Stripe\Stripe;
 class CreatePaymentIntent
 {
     /**
-     * @param Order $order
-     * @return array
      * @throws ApiErrorException
      */
     public function execute(Order $order): array
@@ -58,21 +56,18 @@ class CreatePaymentIntent
                         ],
                     ],
                     [
-                        'idempotency_key' =>
-                            "order-payment-{$order->id}",
+                        'idempotency_key' => "order-payment-{$order->id}",
                     ],
                 );
 
                 $order->update([
-                    'stripe_payment_intent_id' =>
-                        $paymentIntent->id,
+                    'stripe_payment_intent_id' => $paymentIntent->id,
                 ]);
             }
         } catch (ApiErrorException $e) {
             logger()->error('Stripe PaymentIntent error', [
                 'order_id' => $order->id,
-                'stripe_payment_intent_id' =>
-                    $order->stripe_payment_intent_id,
+                'stripe_payment_intent_id' => $order->stripe_payment_intent_id,
                 'error' => $e->getMessage(),
             ]);
 

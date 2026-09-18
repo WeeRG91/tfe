@@ -11,12 +11,6 @@ use Illuminate\Validation\ValidationException;
 class HandleLoyaltyPoints
 {
     /**
-     * @param User $user
-     * @param Order $order
-     * @param int $usedPoints
-     * @param float $finalTotal
-     * @param bool $isCash
-     * @return void
      * @throws ValidationException
      */
     public function execute(
@@ -25,8 +19,7 @@ class HandleLoyaltyPoints
         int $usedPoints,
         float $finalTotal,
         bool $isCash
-    ): void
-    {
+    ): void {
         $lockedUser = User::query()
             ->whereKey($user->id)
             ->lockForUpdate()
@@ -46,7 +39,7 @@ class HandleLoyaltyPoints
                 'order_id' => $order->id,
                 'points' => $usedPoints,
                 'type' => LoyaltyPointTransactionTypeEnum::REDEEMED->value,
-                'description' => 'Used points for order #' . $order->order_number,
+                'description' => 'Used points for order #'.$order->order_number,
             ]);
         }
 
@@ -58,7 +51,7 @@ class HandleLoyaltyPoints
                 'order_id' => $order->id,
                 'points' => $earnedPoints,
                 'type' => LoyaltyPointTransactionTypeEnum::EARNED->value,
-                'description' => 'Points earned from order #' . $order->order_number,
+                'description' => 'Points earned from order #'.$order->order_number,
             ]);
         }
     }
@@ -68,16 +61,13 @@ class HandleLoyaltyPoints
         return (int) $user->loyaltyPointTransactions()
             ->get()
             ->sum(
-                fn (LoyaltyPointTransaction $transaction) =>
-                    match ($transaction->type) {
-                        LoyaltyPointTransactionTypeEnum::EARNED,
-                        LoyaltyPointTransactionTypeEnum::REFUNDED, =>
-                            $transaction->points,
+                fn (LoyaltyPointTransaction $transaction) => match ($transaction->type) {
+                    LoyaltyPointTransactionTypeEnum::EARNED,
+                    LoyaltyPointTransactionTypeEnum::REFUNDED, => $transaction->points,
 
-                        LoyaltyPointTransactionTypeEnum::REDEEMED,
-                        LoyaltyPointTransactionTypeEnum::REVERSED =>
-                        -$transaction->points,
-                    }
+                    LoyaltyPointTransactionTypeEnum::REDEEMED,
+                    LoyaltyPointTransactionTypeEnum::REVERSED => -$transaction->points,
+                }
             );
     }
 }

@@ -29,9 +29,6 @@ use Throwable;
 
 class UserController extends Controller
 {
-    /**
-     * @return Response
-     */
     public function index(): Response
     {
         $this->authorize('viewAny', User::class);
@@ -39,11 +36,6 @@ class UserController extends Controller
         return Inertia::render('admin/user/Index');
     }
 
-    /**
-     * @param Request $request
-     * @param GetUsers $getUsers
-     * @return JsonResponse
-     */
     public function getUsers(Request $request, GetUsers $getUsers): JsonResponse
     {
         $this->authorize('viewAny', User::class);
@@ -61,11 +53,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * @param User $user
-     * @param GetUser $getUser
-     * @return Response
-     */
     public function show(User $user, GetUser $getUser): Response
     {
         $this->authorize('view', $user);
@@ -77,10 +64,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * @param GetCreateUserData $getCreateUserData
-     * @return Response
-     */
     public function create(GetCreateUserData $getCreateUserData): Response
     {
         $this->authorize('create', User::class);
@@ -93,11 +76,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * @param CreateUserRequest $request
-     * @param CreateUser $createUser
-     * @return RedirectResponse
-     */
     public function store(CreateUserRequest $request, CreateUser $createUser): RedirectResponse
     {
         $this->authorize('create', User::class);
@@ -117,11 +95,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * @param User $user
-     * @param GetUpdateUserData $getUpdateUserData
-     * @return Response
-     */
     public function edit(User $user, GetUpdateUserData $getUpdateUserData): Response
     {
         $this->authorize('update', $user);
@@ -135,18 +108,11 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * @param UpdateUserRequest $request
-     * @param User $user
-     * @param UpdateUser $updateUser
-     * @return RedirectResponse
-     */
     public function update(
         UpdateUserRequest $request,
         User $user,
         UpdateUser $updateUser
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $this->authorize('update', $user);
 
         try {
@@ -165,11 +131,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * @param User $user
-     * @param InactivateUser $inactivateUser
-     * @return JsonResponse|RedirectResponse
-     */
     public function inactivate(User $user, InactivateUser $inactivateUser): JsonResponse|RedirectResponse
     {
         $this->authorize('update', $user);
@@ -189,11 +150,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * @param User $user
-     * @param ReactivateUser $reactivateUser
-     * @return JsonResponse|RedirectResponse
-     */
     public function reactivate(User $user, ReactivateUser $reactivateUser): JsonResponse|RedirectResponse
     {
         $this->authorize('update', $user);
@@ -213,11 +169,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * @param User $user
-     * @param DeleteUser $deleteUser
-     * @return JsonResponse|RedirectResponse
-     */
     public function destroy(User $user, DeleteUser $deleteUser): JsonResponse|RedirectResponse
     {
         $this->authorize('delete', $user);

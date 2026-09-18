@@ -14,11 +14,6 @@ class AddDrinkToCart
         protected UpdateCartItemPrice $updatePrice,
     ) {}
 
-    /**
-     * @param Request $request
-     * @param array $data
-     * @return CartItem
-     */
     public function execute(Request $request, array $data): CartItem
     {
         $cart = $this->getOrCreateCart->execute($request);
@@ -30,7 +25,7 @@ class AddDrinkToCart
 
         if ($existingItem) {
             $existingItem->update([
-                'quantity' => $existingItem->quantity + $data['quantity']
+                'quantity' => $existingItem->quantity + $data['quantity'],
             ]);
             $existingItem->load('item', 'meat');
 
@@ -50,6 +45,6 @@ class AddDrinkToCart
 
         $this->updatePrice->execute($item);
 
-       return $item;
+        return $item;
     }
 }

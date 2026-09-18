@@ -9,10 +9,6 @@ use Illuminate\Http\Request;
 
 class GetPaginatedMeats extends BaseCursorPagination
 {
-    /**
-     * @param Request $request
-     * @return array
-     */
     public function execute(Request $request): array
     {
         $query = Meat::query()

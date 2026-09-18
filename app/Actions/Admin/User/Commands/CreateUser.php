@@ -11,8 +11,6 @@ use Throwable;
 class CreateUser
 {
     /**
-     * @param array $data
-     * @return User
      * @throws Throwable
      */
     public function execute(array $data): User

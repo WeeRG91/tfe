@@ -44,7 +44,7 @@ enum LoyaltyPointTransactionTypeEnum: int
     {
         return Arr::first(
             self::getStatuses(),
-            fn($item) => $item['value'] === $case->value
+            fn ($item) => $item['value'] === $case->value
         );
     }
 }

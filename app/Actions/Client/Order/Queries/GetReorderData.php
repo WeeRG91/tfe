@@ -8,11 +8,6 @@ use App\Models\User;
 
 class GetReorderData
 {
-    /**
-     * @param User $user
-     * @param Order $order
-     * @return array
-     */
     public function execute(User $user, Order $order): array
     {
         $order->load([

@@ -27,7 +27,7 @@ enum PaymentMethodEnum: int
 
     public function translatedLabel(): string
     {
-        return __('messages.enums.payment_method.' . $this->key());
+        return __('messages.enums.payment_method.'.$this->key());
     }
 
     public static function values(): array
@@ -44,11 +44,11 @@ enum PaymentMethodEnum: int
         ], self::cases());
     }
 
-    public static function getPaymentMethod(self $case):array
+    public static function getPaymentMethod(self $case): array
     {
         return Arr::first(
             self::getPaymentMethods(),
-            fn($item) => $item['value'] === $case->value,
+            fn ($item) => $item['value'] === $case->value,
         );
     }
 }

@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'name' => env('RESTAURANT_NAME', 'Restaurant'),
+
+    'contact_email' => env('RESTAURANT_CONTACT_EMAIL', 'hello@example.com'),
+
     /*
    |--------------------------------------------------------------------------
    | Restaurant timezone

@@ -11,10 +11,6 @@ readonly class ForceDeleteDrink
         private ImageService $imageService
     ) {}
 
-    /**
-     * @param int $id
-     * @return void
-     */
     public function execute(int $id): void
     {
         $drink = Drink::onlyTrashed()->findOrFail($id);

@@ -8,10 +8,6 @@ use App\Models\User;
 
 class GetChat
 {
-    /**
-     * @param User $user
-     * @return array
-     */
     public function execute(User $user): array
     {
         $chat = Chat::query()

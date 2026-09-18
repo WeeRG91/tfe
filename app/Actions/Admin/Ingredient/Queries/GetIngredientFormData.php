@@ -6,9 +6,6 @@ use App\Models\Allergen;
 
 class GetIngredientFormData
 {
-    /**
-     * @return array
-     */
     public function execute(): array
     {
         return [

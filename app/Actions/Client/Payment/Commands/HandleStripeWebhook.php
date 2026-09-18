@@ -18,13 +18,12 @@ use Throwable;
 readonly class HandleStripeWebhook
 {
     public function __construct(
-        private FinalizeRefundedOrder
-        $finalizeRefundedOrder,
+        private FinalizeRefundedOrder $finalizeRefundedOrder,
     ) {}
 
     /**
-     * @param Request $request
      * @return string[]
+     *
      * @throws Throwable
      */
     public function execute(Request $request): array
@@ -32,7 +31,7 @@ readonly class HandleStripeWebhook
         $payload = $request->getContent();
         $signature = $request->header('stripe-signature');
 
-        if (!$signature) {
+        if (! $signature) {
             return [
                 'message' => __('messages.payment.missing_signature'),
             ];
@@ -81,18 +80,13 @@ readonly class HandleStripeWebhook
     }
 
     /**
-     * @param string $eventId
-     * @param string $eventType
-     * @param object $paymentIntent
-     * @return void
      * @throws Throwable
      */
     private function handleSuccess(
         string $eventId,
         string $eventType,
         object $paymentIntent
-    ): void
-    {
+    ): void {
         DB::transaction(function () use (
             $eventId,
             $eventType,
@@ -145,14 +139,12 @@ readonly class HandleStripeWebhook
                 LoyaltyPointTransaction::query()->firstOrCreate(
                     [
                         'order_id' => $order->id,
-                        'type' =>
-                            LoyaltyPointTransactionTypeEnum::EARNED->value,
+                        'type' => LoyaltyPointTransactionTypeEnum::EARNED->value,
                     ],
                     [
                         'user_id' => $order->user_id,
                         'points' => $earnedPoints,
-                        'description' =>
-                            "Points earned from order #{$order->order_number}",
+                        'description' => "Points earned from order #{$order->order_number}",
                     ],
                 );
             }
@@ -176,20 +168,14 @@ readonly class HandleStripeWebhook
         event(new OrderPlacedBroadcast($order));
     }
 
-
     /**
-     * @param string $eventId
-     * @param string $eventType
-     * @param object $paymentIntent
-     * @return void
      * @throws Throwable
      */
     private function handleFailure(
         string $eventId,
         string $eventType,
         object $paymentIntent
-    ): void
-    {
+    ): void {
         DB::transaction(function () use (
             $eventId,
             $eventType,
@@ -254,18 +240,13 @@ readonly class HandleStripeWebhook
     }
 
     /**
-     * @param string $eventId
-     * @param string $eventType
-     * @param object $refund
-     * @return void
      * @throws Throwable
      */
     private function handleRefundUpdate(
         string $eventId,
         string $eventType,
         object $refund
-    ): void
-    {
+    ): void {
         DB::transaction(
             function () use (
                 $eventId,

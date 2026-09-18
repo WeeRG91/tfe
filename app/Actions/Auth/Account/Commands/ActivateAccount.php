@@ -9,19 +9,12 @@ use Illuminate\Support\Facades\Hash;
 
 class ActivateAccount
 {
-    /**
-     * @param User $user
-     * @param string $password
-     * @param Request $request
-     * @return void
-     */
     public function execute(
         User $user,
         string $password,
         Request $request
-    ): void
-    {
-        if (!$user->hasVerifiedEmail()) {
+    ): void {
+        if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
 

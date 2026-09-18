@@ -21,16 +21,16 @@ class DatabaseSeeder extends Seeder
         User::factory()
             ->withoutTwoFactor()
             ->create([
-            'name' => 'Admin Restaurant',
-            'email' => 'admin@example.com',
-        ]);
+                'name' => 'Admin Restaurant',
+                'email' => 'admin@example.com',
+            ]);
 
         User::factory()
             ->withoutTwoFactor()
             ->create([
-            'name' => 'Super Admin',
-            'email' => 'super_admin@example.com',
-        ]);
+                'name' => 'Super Admin',
+                'email' => 'super_admin@example.com',
+            ]);
 
         $this->call([
             RestaurantHoursSeeder::class,

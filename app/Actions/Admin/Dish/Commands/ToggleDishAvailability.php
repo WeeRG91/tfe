@@ -7,16 +7,12 @@ use App\Models\Dish;
 
 class ToggleDishAvailability
 {
-    /**
-     * @param int $id
-     * @return DishResource
-     */
     public function execute(int $id): DishResource
     {
         $dish = Dish::findOrFail($id);
 
         $dish->update([
-            'is_available' => !$dish->is_available,
+            'is_available' => ! $dish->is_available,
         ]);
 
         return new DishResource($dish);

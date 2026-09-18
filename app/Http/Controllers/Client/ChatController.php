@@ -10,11 +10,6 @@ use Illuminate\Http\JsonResponse;
 
 class ChatController extends Controller
 {
-
-    /**
-     * @param GetChat $getChat
-     * @return JsonResponse
-     */
     public function getChat(GetChat $getChat): JsonResponse
     {
         $result = $getChat->execute(auth()->user());

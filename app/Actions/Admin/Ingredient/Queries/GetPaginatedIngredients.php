@@ -9,10 +9,6 @@ use Illuminate\Http\Request;
 
 class GetPaginatedIngredients extends BaseCursorPagination
 {
-    /**
-     * @param Request $request
-     * @return array
-     */
     public function execute(Request $request): array
     {
         $query = Ingredient::query()

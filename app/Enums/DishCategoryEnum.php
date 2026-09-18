@@ -24,6 +24,7 @@ enum DishCategoryEnum: int
             self::VEGETARIAN => 'vegetarian',
         };
     }
+
     public function translationKey(): string
     {
         return match ($this) {
@@ -50,7 +51,7 @@ enum DishCategoryEnum: int
 
     public function translatedLabel(): string
     {
-        return __('messages.enums.dish_category.' . $this->key());
+        return __('messages.enums.dish_category.'.$this->key());
     }
 
     public static function getColor(self $case): string
@@ -80,7 +81,7 @@ enum DishCategoryEnum: int
     {
         return Arr::first(
             self::getCategories(),
-            fn($item) => $item['value'] === $case->value
+            fn ($item) => $item['value'] === $case->value
         );
     }
 }

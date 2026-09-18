@@ -8,11 +8,6 @@ use Illuminate\Contracts\Pagination\CursorPaginator;
 
 class GetLoyaltyPointTransactions
 {
-    /**
-     * @param int $userId
-     * @param string $filter
-     * @return CursorPaginator
-     */
     public function execute(int $userId, string $filter = 'all'): CursorPaginator
     {
         return LoyaltyPointTransaction::query()

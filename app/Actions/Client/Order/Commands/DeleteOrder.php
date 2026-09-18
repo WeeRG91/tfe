@@ -6,10 +6,6 @@ use App\Models\Order;
 
 class DeleteOrder
 {
-    /**
-     * @param Order $order
-     * @return void
-     */
     public function execute(Order $order): void
     {
         $order->delete();

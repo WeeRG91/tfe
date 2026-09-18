@@ -7,10 +7,6 @@ use Illuminate\Validation\ValidationException;
 
 class InactivateUser
 {
-    /**
-     * @param User $user
-     * @return void
-     */
     public function execute(User $user): void
     {
         if ($user->hasRole('Super Admin')) {

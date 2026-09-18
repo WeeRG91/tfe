@@ -13,16 +13,10 @@ use Illuminate\Http\JsonResponse;
 
 class AddressController extends Controller
 {
-    /**
-     * @param CreateAddressRequest $request
-     * @param CreateAddress $createAddress
-     * @return JsonResponse
-     */
     public function store(
         CreateAddressRequest $request,
         CreateAddress $createAddress
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $result = $createAddress->execute($request->validated());
 
         return response()->json([
@@ -31,18 +25,11 @@ class AddressController extends Controller
         ]);
     }
 
-    /**
-     * @param UpdateAddressRequest $request
-     * @param int $addressId
-     * @param UpdateAddress $updateAddress
-     * @return JsonResponse
-     */
     public function update(
         UpdateAddressRequest $request,
         int $addressId,
         UpdateAddress $updateAddress
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $result = $updateAddress->execute(
             $addressId,
             $request->validated()
@@ -54,16 +41,10 @@ class AddressController extends Controller
         ]);
     }
 
-    /**
-     * @param int $addressId
-     * @param DeleteAddress $deleteAddress
-     * @return JsonResponse
-     */
     public function destroy(
         int $addressId,
         DeleteAddress $deleteAddress
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $result = $deleteAddress->execute($addressId);
 
         return response()->json([

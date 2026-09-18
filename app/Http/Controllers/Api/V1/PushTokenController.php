@@ -14,8 +14,7 @@ class PushTokenController extends Controller
 {
     public function store(
         StorePushTokenRequest $request,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $validated = $request->validated();
 
         $pushToken = ExpoPushToken::query()
@@ -23,7 +22,7 @@ class PushTokenController extends Controller
                 'token' => $validated['token'],
             ]);
 
-        $wasRecentlyCreated = !$pushToken->exists;
+        $wasRecentlyCreated = ! $pushToken->exists;
 
         $pushToken->fill([
             'user_id' => $request->user()->id,
@@ -39,8 +38,7 @@ class PushTokenController extends Controller
 
     public function destroy(
         DestroyPushTokenRequest $request,
-    ): Response
-    {
+    ): Response {
         ExpoPushToken::query()
             ->where('user_id', $request->user()->id)
             ->where('token', $request->validated('token'))

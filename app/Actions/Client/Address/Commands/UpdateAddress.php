@@ -7,11 +7,6 @@ use App\Models\Address;
 
 class UpdateAddress
 {
-    /**
-     * @param int $addressId
-     * @param array $data
-     * @return array
-     */
     public function execute(int $addressId, array $data): array
     {
         $existingAddress = Address::query()->findOrFail($addressId);
@@ -31,7 +26,7 @@ class UpdateAddress
             ];
         }
 
-        if (!empty($data['is_default'])) {
+        if (! empty($data['is_default'])) {
             Address::query()
                 ->where('user_id', $user->id)
                 ->where('id', '!=', $addressId)

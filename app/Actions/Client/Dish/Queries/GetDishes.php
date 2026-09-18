@@ -10,10 +10,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GetDishes extends BaseCursorPagination
 {
-    /**
-     * @param Request $request
-     * @return AnonymousResourceCollection
-     */
     public function execute(Request $request): AnonymousResourceCollection
     {
         $query = Dish::query()

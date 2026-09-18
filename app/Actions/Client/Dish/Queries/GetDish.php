@@ -7,17 +7,13 @@ use App\Models\Dish;
 
 class GetDish
 {
-    /**
-     * @param Dish $dish
-     * @return DishDetailResource
-     */
     public function execute(Dish $dish): DishDetailResource
     {
         $dish->load([
-                'ingredients.allergen',
-                'meats',
-                'ratings',
-            ])
+            'ingredients.allergen',
+            'meats',
+            'ratings',
+        ])
             ->loadAvg('ratings', 'rating')
             ->loadCount('ratings');
 

@@ -9,11 +9,6 @@ use Illuminate\Http\Request;
 
 class ClientGlobalSearchController extends Controller
 {
-    /**
-     * @param Request $request
-     * @param ClientGlobalSearch $search
-     * @return JsonResponse
-     */
     public function search(Request $request, ClientGlobalSearch $search): JsonResponse
     {
         $data = $request->validate([

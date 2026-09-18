@@ -17,11 +17,11 @@ class SetLocale
 
         $fallback = config('app.fallback_locale');
 
-        if (!in_array($fallback, $supportedLocales, true)) {
+        if (! in_array($fallback, $supportedLocales, true)) {
             $fallback = config('app.locale', 'en');
         }
 
-        if (!in_array($locale, $supportedLocales, true)) {
+        if (! in_array($locale, $supportedLocales, true)) {
             $locale = $fallback;
         }
 

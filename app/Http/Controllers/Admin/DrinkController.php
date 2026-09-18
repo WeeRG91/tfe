@@ -25,9 +25,6 @@ use Throwable;
 
 class DrinkController extends Controller
 {
-    /**
-     * @return InertiaResponse
-     */
     public function index(): InertiaResponse
     {
         $this->authorize('viewAny', Drink::class);
@@ -37,11 +34,6 @@ class DrinkController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param GetPaginatedDrinks $query
-     * @return JsonResponse
-     */
     public function getDrinks(Request $request, GetPaginatedDrinks $query): JsonResponse
     {
         $this->authorize('viewAny', Drink::class);
@@ -51,10 +43,6 @@ class DrinkController extends Controller
         return response()->json($drinks);
     }
 
-    /**
-     * @param GetDrinkFormData $query
-     * @return InertiaResponse
-     */
     public function create(GetDrinkFormData $query): InertiaResponse
     {
         $this->authorize('create', Drink::class);
@@ -62,11 +50,6 @@ class DrinkController extends Controller
         return Inertia::render('admin/drink/Create', $query->execute());
     }
 
-    /**
-     * @param DrinkCreateRequest $request
-     * @param CreateDrink $command
-     * @return RedirectResponse
-     */
     public function store(DrinkCreateRequest $request, CreateDrink $command): RedirectResponse
     {
         $this->authorize('create', Drink::class);
@@ -90,18 +73,11 @@ class DrinkController extends Controller
 
     }
 
-    /**
-     * @param Drink $drink
-     * @param GetDrinkForEdit $query
-     * @param GetDrinkFormData $formData
-     * @return InertiaResponse
-     */
     public function edit(
         Drink $drink,
         GetDrinkForEdit $query,
         GetDrinkFormData $formData
-    ): InertiaResponse
-    {
+    ): InertiaResponse {
         $this->authorize('update', $drink);
 
         return Inertia::render('admin/drink/Edit', [
@@ -110,12 +86,6 @@ class DrinkController extends Controller
         ]);
     }
 
-    /**
-     * @param DrinkUpdateRequest $request
-     * @param Drink $drink
-     * @param UpdateDrink $command
-     * @return RedirectResponse
-     */
     public function update(DrinkUpdateRequest $request, Drink $drink, UpdateDrink $command): RedirectResponse
     {
         $this->authorize('update', $drink);
@@ -139,11 +109,6 @@ class DrinkController extends Controller
         }
     }
 
-    /**
-     * @param Drink $drink
-     * @param ToggleDrinkAvailability $command
-     * @return JsonResponse
-     */
     public function available(Drink $drink, ToggleDrinkAvailability $command): JsonResponse
     {
         $this->authorize('update', $drink);
@@ -156,11 +121,6 @@ class DrinkController extends Controller
         ]);
     }
 
-    /**
-     * @param Drink $drink
-     * @param RestoreDrink $command
-     * @return JsonResponse
-     */
     public function restore(Drink $drink, RestoreDrink $command): JsonResponse
     {
         $this->authorize('restore', $drink);
@@ -172,11 +132,6 @@ class DrinkController extends Controller
         ]);
     }
 
-    /**
-     * @param Drink $drink
-     * @param DeleteDrink $command
-     * @return JsonResponse
-     */
     public function destroy(Drink $drink, DeleteDrink $command): JsonResponse
     {
         $this->authorize('delete', $drink);
@@ -188,11 +143,6 @@ class DrinkController extends Controller
         ]);
     }
 
-    /**
-     * @param Drink $drink
-     * @param ForceDeleteDrink $command
-     * @return JsonResponse
-     */
     public function forceDelete(Drink $drink, ForceDeleteDrink $command): JsonResponse
     {
         $this->authorize('delete', $drink);

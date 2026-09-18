@@ -9,13 +9,9 @@ use Illuminate\Validation\ValidationException;
 
 class ReactivateUser
 {
-    /**
-     * @param User $user
-     * @return void
-     */
     public function execute(User $user): void
     {
-        if (!$user->trashed()) {
+        if (! $user->trashed()) {
             throw ValidationException::withMessages([
                 'user' => __('messages.errors.user_already_active'),
             ]);
@@ -25,7 +21,7 @@ class ReactivateUser
             'reactivate.reactivate',
             now()->addDay(),
             [
-                'user' => $user
+                'user' => $user,
             ]
         );
 

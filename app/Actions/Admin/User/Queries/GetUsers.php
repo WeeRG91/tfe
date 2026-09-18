@@ -8,10 +8,6 @@ use Illuminate\Http\Request;
 
 class GetUsers
 {
-    /**
-     * @param Request $request
-     * @return CursorPaginator
-     */
     public function execute(Request $request): CursorPaginator
     {
         return User::withTrashed()

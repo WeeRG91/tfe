@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PushTokenController;
+use App\Http\Controllers\Client\RestaurantAvailabilityController;
 use App\Http\Middleware\SetApiLocale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -116,10 +117,10 @@ Route::prefix('v1')
             ->middleware(['auth:sanctum', 'throttle:30,1'])
             ->name('cart.items.notes.update');
         Route::post('cart/items/dishes', [CartController::class, 'storeDish'])
-            ->middleware(['auth:sanctum' ,'throttle:30,1'])
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
             ->name('cart.items.dishes.store');
         Route::post('cart/items/drinks', [CartController::class, 'storeDrink'])
-            ->middleware(['auth:sanctum' ,'throttle:30,1'])
+            ->middleware(['auth:sanctum', 'throttle:30,1'])
             ->name('cart.items.drinks.store');
         Route::delete('cart/items/{cartItemId}', [CartController::class, 'destroyItem'])
             ->whereNumber('cartItemId')
@@ -185,7 +186,7 @@ Route::prefix('v1')
             ->middleware(['auth:sanctum', 'throttle:20,1'])
             ->name('push-tokens.destroy');
 
-        Route::get('restaurant/availability', \App\Http\Controllers\Client\RestaurantAvailabilityController::class)
+        Route::get('restaurant/availability', RestaurantAvailabilityController::class)
             ->name('restaurant.availability');
     });
 

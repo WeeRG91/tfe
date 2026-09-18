@@ -34,8 +34,7 @@ class DishReviewController extends Controller
     public function store(
         StoreDishReviewRequest $request,
         Dish $dish,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $user = $request->user();
 
         $hasCompleteOrder = $user->orders()
@@ -81,7 +80,7 @@ class DishReviewController extends Controller
             rating: $rating,
         ));
 
-        return (new  DishReviewResource($rating))
+        return (new DishReviewResource($rating))
             ->additional([
                 'meta' => [
                     'rating' => $this->ratingSummary($dish),
@@ -95,8 +94,7 @@ class DishReviewController extends Controller
         UpdateDishReviewRequest $request,
         Dish $dish,
         int $reviewId,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         /** @var DishRating $rating */
         $rating = $dish->ratings()
             ->where('id', $reviewId)
@@ -119,11 +117,11 @@ class DishReviewController extends Controller
             rating: $rating,
         ));
 
-        return (new  DishReviewResource($rating))
+        return (new DishReviewResource($rating))
             ->additional([
                 'meta' => [
                     'rating' => $this->ratingSummary($dish),
-                ]
+                ],
             ])
             ->response();
     }
@@ -132,8 +130,7 @@ class DishReviewController extends Controller
         Request $request,
         Dish $dish,
         int $reviewId,
-    ): Response
-    {
+    ): Response {
         /** @var DishRating $rating */
         $rating = $dish->ratings()
             ->where('id', $reviewId)
@@ -156,8 +153,7 @@ class DishReviewController extends Controller
     public function eligibility(
         Request $request,
         Dish $dish,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $user = $request->user();
 
         /** @var DishRating|null $existingReview */

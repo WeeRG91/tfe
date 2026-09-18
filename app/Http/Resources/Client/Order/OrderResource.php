@@ -37,12 +37,10 @@ class OrderResource extends JsonResource
             'pickup_phone' => $this->pickup_phone,
             'delivery_address' => $this->whenLoaded('address', fn () => new AddressResource($this->address)),
             'delivery_type' => $this->delivery_type?->value,
-            'delivery_company' =>
-                $this->delivery_company_name
+            'delivery_company' => $this->delivery_company_name
                     ? [
-                    'id' => $this->delivery_company_id,
-                    'name' =>
-                        $this->delivery_company_name,
+                        'id' => $this->delivery_company_id,
+                        'name' => $this->delivery_company_name,
                     ]
                     : null,
             'delivery_date' => $this->delivery_date?->format('Y-m-d'),

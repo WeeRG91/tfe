@@ -11,8 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
 {
     /**
-     *@param Request $request
-     * @return RedirectResponse|Response
+     * @param  Request  $request
      */
     public function toResponse($request): RedirectResponse|Response
     {

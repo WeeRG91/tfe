@@ -88,8 +88,7 @@ class CheckoutController extends Controller
                     ],
                 ],
                 'delivery_fee' => '2.00',
-                'delivery_options' =>
-                    $getDeliveryOptions->execute(),
+                'delivery_options' => $getDeliveryOptions->execute(),
             ],
         ]);
     }
@@ -100,8 +99,7 @@ class CheckoutController extends Controller
     public function storeOrder(
         PlaceOrderRequest $request,
         PlaceOrder $placeOrder,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $result = $placeOrder->execute($request->validated());
 
         if ($result['order'] === null) {

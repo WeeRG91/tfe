@@ -7,21 +7,13 @@ use App\Enums\OrderTypeEnum;
 
 class CalculateOrderAmounts
 {
-    /**
-     * @param float $itemsTotalIncVat
-     * @param array $vatBreakdown
-     * @param int $usedPoints
-     * @param int $type
-     * @return array
-     */
     public function execute(
         float $itemsTotalIncVat,
         array $vatBreakdown,
         int $usedPoints,
         int $type,
         ?string $deliveryType,
-    ): array
-    {
+    ): array {
         $rewards = [
             300 => 5,
             550 => 10,

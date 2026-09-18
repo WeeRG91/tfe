@@ -11,12 +11,6 @@ class UpdateCartItemNotes
         protected GetOrCreateCart $getOrCreateCart,
     ) {}
 
-    /**
-     * @param Request $request
-     * @param int $cartItemId
-     * @param string|null $notes
-     * @return void
-     */
     public function execute(Request $request, int $cartItemId, ?string $notes): void
     {
         $cart = $this->getOrCreateCart->execute($request);

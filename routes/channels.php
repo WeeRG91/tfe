@@ -16,7 +16,9 @@ Broadcast::channel('user.{id}', function ($user, $id) {
 Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
     $chat = Chat::query()->find($chatId);
 
-    if (!$chat) return false;
+    if (! $chat) {
+        return false;
+    }
 
     return (int) $user->id === (int) $chat->user_id || $user->can(ChatPermissionEnum::CHAT_VIEW->value);
 });

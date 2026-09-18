@@ -7,10 +7,6 @@ use App\Models\Dish;
 
 class GetDishForEdit
 {
-    /**
-     * @param Dish $dish
-     * @return DishEditResource
-     */
     public function execute(Dish $dish): DishEditResource
     {
         $dish->load([

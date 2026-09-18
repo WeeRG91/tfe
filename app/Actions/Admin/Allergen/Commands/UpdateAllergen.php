@@ -15,18 +15,13 @@ readonly class UpdateAllergen
     ) {}
 
     /**
-     * @param Allergen $allergen
-     * @param array $data
-     * @param array $files
-     * @return Allergen
      * @throws Throwable
      */
     public function execute(
         Allergen $allergen,
         array $data,
         array $files = []
-    ): Allergen
-    {
+    ): Allergen {
         return DB::transaction(function () use (
             $allergen,
             $data,
@@ -53,7 +48,7 @@ readonly class UpdateAllergen
 
             Ingredient::query()
                 ->where('allergen_id', $allergen->id)
-                ->update(['allergen_id' => null,]);
+                ->update(['allergen_id' => null]);
 
             $ingredientIds = $data['ingredients'] ?? [];
 

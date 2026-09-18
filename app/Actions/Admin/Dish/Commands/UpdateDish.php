@@ -14,14 +14,7 @@ readonly class UpdateDish
         private ImageService $imageService,
     ) {}
 
-
     /**
-     * @param Dish $dish
-     * @param array $data
-     * @param array $files
-     * @param array $meatIds
-     * @param array $ingredientIds
-     * @return Dish
      * @throws Throwable
      */
     public function execute(
@@ -30,8 +23,7 @@ readonly class UpdateDish
         array $files,
         array $meatIds,
         array $ingredientIds
-    ): Dish
-    {
+    ): Dish {
         return DB::transaction(function () use (
             $dish,
             $data,
@@ -55,8 +47,7 @@ readonly class UpdateDish
             $translation->fill([
                 'name' => $data['name'],
 
-                'description' =>
-                    $data['description'] ?? null,
+                'description' => $data['description'] ?? null,
             ]);
 
             $dish->save();
@@ -74,8 +65,7 @@ readonly class UpdateDish
                 );
 
                 $dish->update([
-                    'main_image' =>
-                        $dish->mainImage->path,
+                    'main_image' => $dish->mainImage->path,
                 ]);
             }
 

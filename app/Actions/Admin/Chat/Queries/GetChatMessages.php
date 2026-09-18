@@ -7,10 +7,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class GetChatMessages
 {
-    /**
-     * @param Chat $chat
-     * @return Collection
-     */
     public function execute(Chat $chat): Collection
     {
         return $chat->messages()

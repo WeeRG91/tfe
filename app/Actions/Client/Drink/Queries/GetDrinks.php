@@ -10,10 +10,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GetDrinks extends BaseCursorPagination
 {
-    /**
-     * @param Request $request
-     * @return AnonymousResourceCollection
-     */
     public function execute(Request $request): AnonymousResourceCollection
     {
         $query = Drink::query();
