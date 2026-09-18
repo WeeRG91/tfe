@@ -4,7 +4,6 @@ import { useOrderStatusActionFlow } from '@/composables/useOrderStatusActionFlow
 import { getSpicyLevelLabels } from '@/lib/const';
 import {
     formatAddress,
-    formatTime,
     getOrderStatusIcon,
     getOrderStatusVariant,
     getOrderTypeIcon,
@@ -609,12 +608,7 @@ watch(
                                             v-if="order.pickup_time"
                                             class="text-xs text-gray-500"
                                         >
-                                            {{
-                                                t(
-                                                    'confirmedOrder.details.customer.pickupBy',
-                                                )
-                                            }}:
-                                            {{ formatTime(order.pickup_time) }}
+                                            {{ formatDate(order.pickup_time) }}
                                         </p>
                                     </div>
                                 </div>

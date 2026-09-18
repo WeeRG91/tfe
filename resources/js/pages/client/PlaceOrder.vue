@@ -26,7 +26,7 @@ import { DeliveryOptionsType, DeliveryTypeEnum } from '@/types/delivery';
 import { OrderTypeEnum, OrderTypeType } from '@/types/order';
 import { PaymentMethodType } from '@/types/payment';
 import { LoyaltyPointTransactionType } from '@/types/point';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
@@ -50,6 +50,7 @@ const {
     refresh: refreshPickupAvailability,
     isAvailableSlot,
 } = usePickupAvailability();
+const page = usePage();
 
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
@@ -60,7 +61,7 @@ const selectedOrderTypeValue = ref<OrderTypeEnum | null>(null);
 const selectedAddressId = ref<number | null>(null);
 const paymentMethod = ref<number | null>(null);
 const pickupTime = ref<string>('');
-const pickupName = ref<string>('');
+const pickupName = ref<string>(page.props.auth.user?.name ?? '');
 const pickupPhone = ref<string>('');
 const tableNumber = ref<string>('');
 const notes = ref<string>('');
