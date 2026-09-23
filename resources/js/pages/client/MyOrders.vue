@@ -123,13 +123,13 @@ watch(selectedStatusValue, async () => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-6">
-                <p class="text-sm tracking-widest text-red-500 uppercase">
+                <p class="text-sm tracking-widest text-primary uppercase">
                     [ {{ t('order.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     {{ t('order.title') }}
                 </h1>
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="mt-1 text-sm text-muted-foreground">
                     {{ t('order.description') }}
                 </p>
             </div>
@@ -139,11 +139,11 @@ watch(selectedStatusValue, async () => {
                     v-for="filter in filterOptions"
                     :key="filter.value"
                     @click="selectedStatusValue = filter.value"
-                    class="rounded-full border px-4 py-1 text-sm transition-all duration-500"
+                    class="rounded-full border px-4 py-1 text-sm transition-colors"
                     :class="
                         selectedStatusValue === filter.value
-                            ? 'border-red-500 bg-red-500 text-white hover:bg-red-600'
-                            : 'text-gray-600 hover:bg-gray-100'
+                            ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
+                            : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     "
                 >
                     {{ filter.label }}
@@ -165,7 +165,7 @@ watch(selectedStatusValue, async () => {
                         v-if="groupedOrders.active.length"
                         :title="t('order.filters.active')"
                         :icon="Clock"
-                        icon-color="amber"
+                        tone="warning"
                         :orders="groupedOrders.active"
                     />
                 </template>
@@ -177,7 +177,7 @@ watch(selectedStatusValue, async () => {
                         v-if="groupedOrders.completed.length"
                         :title="t('order.filters.completed')"
                         :icon="Star"
-                        icon-color="emerald"
+                        tone="success"
                         :orders="groupedOrders.completed"
                     />
                 </template>
@@ -189,7 +189,7 @@ watch(selectedStatusValue, async () => {
                         v-if="groupedOrders.cancelled.length"
                         :title="t('order.filters.cancelled')"
                         :icon="XCircle"
-                        icon-color="red"
+                        tone="destructive"
                         :orders="groupedOrders.cancelled"
                     />
                 </template>

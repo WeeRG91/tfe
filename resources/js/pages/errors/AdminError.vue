@@ -96,10 +96,10 @@ const goBack = () => {
     <Head :title="`${status} - ${errorContent.title}`" />
 
     <section
-        class="relative flex h-screen w-full items-center justify-center overflow-hidden px-6 py-16 md:px-8"
+        class="relative flex h-screen w-full items-center justify-center overflow-hidden bg-background px-6 py-16 text-foreground md:px-8"
     >
         <div
-            class="animate-pulse-grid absolute inset-0 bg-[linear-gradient(to_right,#6b72801a_1px,transparent_1px),linear-gradient(to_bottom,#6b72801a_1px,transparent_1px)] bg-[size:24px_24px]"
+            class="animate-pulse-grid error-grid absolute inset-0"
         ></div>
 
         <div
@@ -107,7 +107,7 @@ const goBack = () => {
         >
             <div class="order-2 text-center lg:order-1 lg:text-left">
                 <div
-                    class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-gray-200 bg-gray-50 px-5 py-2.5 text-sm font-semibold lg:mb-8"
+                    class="mb-6 inline-flex items-center gap-2.5 rounded-full border border-border bg-muted px-5 py-2.5 text-sm font-semibold lg:mb-8"
                 >
                     <component :is="errorContent.icon" class="h-4 w-4" />
                     <span>
@@ -122,13 +122,13 @@ const goBack = () => {
                 </p>
 
                 <h1
-                    class="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl md:text-5xl lg:mx-0 lg:mt-6"
+                    class="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:mx-0 lg:mt-6"
                 >
                     {{ errorContent.title }}
                 </h1>
 
                 <p
-                    class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-gray-600 sm:text-lg lg:mx-0 lg:mt-5"
+                    class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg lg:mx-0 lg:mt-5"
                 >
                     {{ errorContent.description }}
                 </p>
@@ -138,7 +138,7 @@ const goBack = () => {
                 >
                     <Link
                         href="/public"
-                        class="group inline-flex items-center justify-center gap-2 rounded-xl bg-gray-800 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:bg-gray-950 hover:shadow-lg focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none sm:px-7 sm:py-3.5"
+                        class="group inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-md transition-all duration-300 hover:bg-primary/90 hover:shadow-lg focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none sm:px-7 sm:py-3.5"
                     >
                         <Home
                             class="h-4 w-4 transition-transform group-hover:-translate-x-1"
@@ -148,7 +148,7 @@ const goBack = () => {
                     <button
                         type="button"
                         @click="goBack"
-                        class="group inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-300 hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:outline-none sm:px-7 sm:py-3.5"
+                        class="group inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-semibold text-card-foreground shadow-sm transition-all duration-300 hover:border-primary/50 hover:bg-accent hover:text-accent-foreground focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none sm:px-7 sm:py-3.5"
                     >
                         <ArrowLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-1.5"
@@ -158,14 +158,14 @@ const goBack = () => {
                 </div>
 
                 <div
-                    class="mt-8 flex items-center justify-center gap-2 text-sm text-gray-400 lg:mt-10 lg:justify-start"
+                    class="mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground lg:mt-10 lg:justify-start"
                 >
                     <HelpCircle class="h-4 w-4" />
                     <span>
                         {{ t('errors.needAssistance') }}
                         <a
                             href="/support"
-                            class="font-medium text-gray-800 transition-colors hover:text-gray-950"
+                            class="font-medium text-foreground transition-colors hover:text-primary"
                         >
                             {{ t('errors.contactSupport') }}
                         </a>
@@ -178,19 +178,19 @@ const goBack = () => {
                     class="relative mx-auto aspect-square max-w-sm lg:max-w-md"
                 >
                     <div
-                        class="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/5 to-amber-500/5"
+                        class="absolute inset-0 rounded-full bg-gradient-to-r from-destructive/10 to-warning/10"
                     ></div>
 
                     <div
-                        class="absolute inset-0 rounded-full border border-red-200"
+                        class="absolute inset-0 rounded-full border border-destructive/25"
                     ></div>
 
                     <div
-                        class="absolute inset-8 rounded-full border border-red-100"
+                        class="absolute inset-8 rounded-full border border-destructive/15"
                     ></div>
 
                     <div
-                        class="absolute inset-0 flex items-center justify-center rounded-full bg-white shadow-lg"
+                        class="absolute inset-0 flex items-center justify-center rounded-full bg-card shadow-lg"
                     >
                         <span
                             class="text-8xl font-black md:text-9xl lg:text-[10rem]"
@@ -207,6 +207,13 @@ const goBack = () => {
 <style scoped>
 section {
     animation: fade-in 0.4s ease-out;
+}
+
+.error-grid {
+    background-image:
+        linear-gradient(to right, var(--border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 24px 24px;
 }
 
 @keyframes fade-in {

@@ -6,6 +6,7 @@ import LayoutHeader from '@/components/client/clientLayout/LayoutHeader.vue';
 import RestaurantClosedModal from '@/components/client/clientLayout/RestaurantClosedModal.vue';
 import RestaurantClosureBanner from '@/components/client/clientLayout/RestaurantClosureBanner.vue';
 import NotificationsDrawer from '@/components/client/notification/NotificationsDrawer.vue';
+import { useAppearance } from '@/composables/useAppearance';
 import { useCartStore } from '@/stores/cart';
 import { useNotificationStore } from '@/stores/notification';
 import { useRestaurantStore } from '@/stores/restaurant';
@@ -15,6 +16,8 @@ import { router, usePage } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+
+useAppearance('client');
 
 const page = usePage<AppPageProps>();
 const user = computed(() => page.props.auth?.user);
@@ -156,7 +159,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="flex min-h-screen flex-col bg-white text-gray-900">
+    <div class="flex min-h-screen flex-col bg-background text-foreground">
         <LayoutHeader
             :user="user"
             :cart-item-count="items.length"
@@ -173,10 +176,10 @@ onUnmounted(() => {
         <div class="relative flex-1">
             <div class="pointer-events-none absolute inset-0 overflow-hidden">
                 <div
-                    class="absolute -top-24 -right-24 h-110 w-110 rounded-full bg-red-300/20 blur-3xl"
+                    class="absolute -top-24 -right-24 h-110 w-110 rounded-full bg-primary/10 blur-3xl"
                 ></div>
                 <div
-                    class="absolute -bottom-24 -left-24 h-110 w-110 rounded-full bg-yellow-200/20 blur-3xl"
+                    class="absolute -bottom-24 -left-24 h-110 w-110 rounded-full bg-accent/20 blur-3xl"
                 ></div>
             </div>
 

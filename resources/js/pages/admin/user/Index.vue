@@ -239,7 +239,7 @@ onUnmounted(() => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="user-board-scroll flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <div
                 class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
@@ -263,10 +263,6 @@ onUnmounted(() => {
                             "
                             @click="changeFilter(UserFilterEnum.ACTIVE)"
                             class="flex-1 cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:w-25 sm:flex-none sm:text-sm"
-                            :class="
-                                filter !== UserFilterEnum.ACTIVE &&
-                                'hover:bg-gray-100 dark:hover:bg-gray-800'
-                            "
                         >
                             {{ t('admin.filters.active') }}
                         </Button>
@@ -275,16 +271,11 @@ onUnmounted(() => {
                             size="sm"
                             :variant="
                                 filter === UserFilterEnum.INACTIVE
-                                    ? 'default'
+                                    ? 'destructive'
                                     : 'outline'
                             "
                             @click="changeFilter(UserFilterEnum.INACTIVE)"
                             class="flex-1 cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:w-25 sm:flex-none sm:text-sm"
-                            :class="[
-                                filter === UserFilterEnum.INACTIVE
-                                    ? 'bg-rose-600 hover:bg-rose-700 dark:bg-rose-600'
-                                    : 'hover:bg-gray-100 dark:hover:bg-gray-800',
-                            ]"
                         >
                             {{ t('admin.filters.inactive') }}
                         </Button>
@@ -357,7 +348,7 @@ onUnmounted(() => {
                 <div
                     v-for="u in users"
                     :key="u.id"
-                    class="mb-2 overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-200 hover:border-primary/50 dark:border-sidebar-border"
+                    class="mb-2 overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-200 hover:border-primary/50"
                 >
                     <div
                         @click="showUser(u.id)"
@@ -373,7 +364,7 @@ onUnmounted(() => {
 
                             <div
                                 v-else
-                                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white"
+                                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold"
                                 :class="getUserAvatarColor(u.id)"
                             >
                                 {{ getInitials(u.name) }}
@@ -391,11 +382,11 @@ onUnmounted(() => {
                                         {{ u.email }}
                                         <ShieldCheck
                                             v-if="u.email_verified_at"
-                                            class="ml-1 inline h-3.5 w-3.5 text-green-500"
+                                            class="ml-1 inline h-3.5 w-3.5 text-success"
                                         />
                                         <CircleAlert
                                             v-else
-                                            class="ml-1 inline h-3.5 w-3.5 text-yellow-500"
+                                            class="ml-1 inline h-3.5 w-3.5 text-warning"
                                         />
                                     </span>
                                 </div>
@@ -480,7 +471,7 @@ onUnmounted(() => {
                         class="flex w-full items-center gap-2 rounded-sm px-3 py-1.5 text-sm"
                         :class="
                             currentUser?.roles[0]?.name === 'Admin'
-                                ? 'cursor-not-allowed text-gray-300'
+                                ? 'cursor-not-allowed text-muted-foreground/50'
                                 : 'cursor-pointer text-destructive hover:bg-destructive/10'
                         "
                     >
@@ -499,7 +490,7 @@ onUnmounted(() => {
                         class="flex w-full items-center gap-2 rounded-sm px-3 py-1.5 text-sm"
                         :class="
                             currentUser?.roles[0]?.name === 'Admin'
-                                ? 'cursor-not-allowed text-gray-300'
+                                ? 'cursor-not-allowed text-muted-foreground/50'
                                 : 'cursor-pointer hover:bg-accent'
                         "
                     >
@@ -521,7 +512,7 @@ onUnmounted(() => {
                         class="flex w-full items-center gap-2 rounded-sm px-3 py-1.5 text-sm"
                         :class="
                             currentUser?.roles[0]?.name === 'Admin'
-                                ? 'cursor-not-allowed text-gray-300'
+                                ? 'cursor-not-allowed text-muted-foreground/50'
                                 : 'cursor-pointer text-destructive hover:bg-destructive/10'
                         "
                     >
@@ -542,3 +533,28 @@ onUnmounted(() => {
         </div>
     </AdminLayout>
 </template>
+
+<style scoped>
+.user-board-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) var(--muted);
+}
+
+.user-board-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.user-board-scroll::-webkit-scrollbar-track {
+    background: var(--muted);
+    border-radius: 4px;
+}
+
+.user-board-scroll::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 4px;
+}
+
+.user-board-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
+}
+</style>

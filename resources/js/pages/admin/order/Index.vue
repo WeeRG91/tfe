@@ -45,7 +45,7 @@ const columns = computed(() => [
         key: 'confirmed',
         title: t('confirmedOrder.columns.confirmed'),
         icon: Clock,
-        color: 'blue',
+        headerClass: 'bg-info text-info-foreground',
         orders: (confirmedOrders.value ?? []).filter(
             (o) =>
                 o.confirmed_at &&
@@ -61,7 +61,7 @@ const columns = computed(() => [
         key: 'preparing',
         title: t('confirmedOrder.columns.preparing'),
         icon: Package,
-        color: 'yellow',
+        headerClass: 'bg-warning text-warning-foreground',
         orders: (confirmedOrders.value ?? []).filter(
             (o) => o.prepare_at && !o.ready_at,
         ),
@@ -71,7 +71,7 @@ const columns = computed(() => [
         key: 'ready',
         title: t('confirmedOrder.columns.ready'),
         icon: Truck,
-        color: 'purple',
+        headerClass: 'bg-success text-success-foreground',
         orders: (confirmedOrders.value ?? []).filter(
             (o) =>
                 (o.ready_at || o.delivered_at) &&
@@ -187,7 +187,7 @@ onMounted(async () => {
                     >
                         <button
                             @click="openCompletedModal"
-                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 sm:w-auto"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-success px-3 py-2 text-sm font-medium text-success-foreground transition-colors hover:bg-success/90 sm:w-auto"
                         >
                             <CheckCircle :size="16" />
                             <span class="whitespace-nowrap">
@@ -200,7 +200,7 @@ onMounted(async () => {
                         </button>
                         <button
                             @click="openCancelledModal"
-                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 sm:w-auto"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-destructive px-3 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 sm:w-auto"
                         >
                             <CircleX :size="16" />
                             <span class="whitespace-nowrap">
@@ -213,7 +213,7 @@ onMounted(async () => {
                         </button>
                         <button
                             @click="refreshOrders"
-                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sidebar-border/70 px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent sm:w-auto"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-card-foreground transition-colors hover:bg-accent hover:text-accent-foreground sm:w-auto"
                         >
                             <RefreshCw :size="16" />
                             {{ t('confirmedOrder.buttons.refresh') }}
@@ -226,30 +226,31 @@ onMounted(async () => {
                 <div
                     v-for="column in columns"
                     :key="column.key"
-                    class="overflow-hidden rounded-lg border border-sidebar-border/70 bg-card"
+                    class="overflow-hidden rounded-lg border border-border bg-card"
                 >
                     <button
+                        type="button"
                         @click="toggleColumn(column.key)"
-                        class="w-full p-3 transition-colors hover:bg-sidebar-accent/50"
+                        class="w-full p-3 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        :class="column.headerClass"
                     >
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <component
                                     :is="column.icon"
                                     :size="18"
-                                    :class="`text-${column.color}-600 dark:text-${column.color}-400`"
+                                    class="shrink-0"
                                 />
-                                <h3
-                                    :class="`font-semibold text-${column.color}-800 dark:text-${column.color}-800`"
-                                >
+                                <h3 class="font-semibold">
                                     {{ column.title }}
                                 </h3>
                                 <span
-                                    :class="`rounded-full text-xs font-medium text-${column.color}-800 dark:bg-${column.color}-800`"
+                                    class="rounded-full border border-current px-2 py-0.5 text-xs font-medium"
                                 >
                                     {{ column.orders.length }}
                                 </span>
                             </div>
+
                             <component
                                 :is="
                                     isColumnExpanded(column.key)
@@ -257,14 +258,14 @@ onMounted(async () => {
                                         : ChevronDown
                                 "
                                 :size="18"
-                                class="text-muted-foreground"
+                                class="text-current"
                             />
                         </div>
                     </button>
 
                     <div
                         v-show="isColumnExpanded(column.key)"
-                        class="border-t border-sidebar-border/50 p-3"
+                        class="border-t border-border p-3"
                     >
                         <div class="flex flex-col gap-3">
                             <OrderCard
@@ -279,7 +280,7 @@ onMounted(async () => {
 
                             <div
                                 v-if="column.orders.length === 0"
-                                class="rounded-lg border border-dashed border-sidebar-border/70 p-6 text-center"
+                                class="rounded-lg border border-dashed border-border bg-muted p-6 text-center"
                             >
                                 <p class="text-sm text-muted-foreground">
                                     {{ column.emptyText }}
@@ -291,7 +292,7 @@ onMounted(async () => {
             </div>
 
             <div
-                class="hidden grid-cols-1 gap-4 overflow-x-auto md:grid md:grid-cols-3 lg:gap-6"
+                class="order-board-scroll hidden grid-cols-1 gap-4 overflow-x-auto md:grid md:grid-cols-3 lg:gap-6"
                 style="min-width: 600px"
             >
                 <div
@@ -300,19 +301,20 @@ onMounted(async () => {
                     class="flex flex-col gap-3"
                 >
                     <div
-                        :class="`flex items-center justify-between rounded-lg p-3 bg-${column.color}-100 dark:bg-${column.color}-950/30`"
+                        class="flex items-center justify-between rounded-lg p-3"
+                        :class="column.headerClass"
                     >
                         <div class="flex items-center gap-2">
                             <component
                                 :is="column.icon"
                                 :size="20"
-                                :class="`text-${column.color}-600 dark:text-${column.color}-400`"
+                                class="shrink-0"
                             />
-                            <h3 :class="`font-semibold text-gray-900`">
+                            <h3 class="font-semibold">
                                 {{ column.title }}
                             </h3>
                             <span
-                                :class="`rounded-full px-2 py-0.5 text-xs font-medium bg-${column.color}-200 text-${column.color}-800 dark:bg-${column.color}-800 dark:text-${column.color}-100`"
+                                class="rounded-full border border-current px-2 py-0.5 text-xs font-medium"
                             >
                                 {{ column.orders.length }}
                             </span>
@@ -332,7 +334,7 @@ onMounted(async () => {
 
                         <div
                             v-if="column.orders.length === 0"
-                            class="rounded-lg border border-dashed border-sidebar-border/70 p-8 text-center"
+                            class="rounded-lg border border-dashed border-border bg-muted p-8 text-center"
                         >
                             <p class="text-sm text-muted-foreground">
                                 {{ column.emptyText }}
@@ -349,21 +351,21 @@ onMounted(async () => {
             @click.self="closeCompletedModal"
         >
             <div
-                class="relative mx-2 w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-900"
+                class="relative mx-2 w-full max-w-4xl rounded-lg border border-border bg-card text-card-foreground shadow-xl"
             >
                 <div
-                    class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
+                    class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-border bg-card px-6 py-4"
                 >
                     <div class="flex items-center gap-3">
-                        <CheckCircle :size="24" class="text-green-600" />
+                        <CheckCircle :size="24" class="text-success" />
                         <div>
                             <h2
-                                class="text-xl font-semibold text-gray-900 dark:text-white"
+                                class="text-xl font-semibold text-card-foreground"
                             >
                                 {{ t('confirmedOrder.modals.completedTitle') }}
                             </h2>
                             <p
-                                class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                                class="flex items-center gap-2 text-sm text-muted-foreground"
                             >
                                 <span>
                                     {{
@@ -377,7 +379,7 @@ onMounted(async () => {
                     </div>
                     <button
                         @click="closeCompletedModal"
-                        class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
+                        class="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                     >
                         <X :size="20" />
                     </button>
@@ -396,7 +398,7 @@ onMounted(async () => {
                         />
                         <div
                             v-if="completedOrders.length === 0"
-                            class="rounded-lg border border-dashed border-sidebar-border/70 p-8 text-center"
+                            class="rounded-lg border border-dashed border-border bg-muted p-8 text-center"
                         >
                             <p class="text-sm text-muted-foreground">
                                 {{ t('confirmedOrder.emptyStates.completed') }}
@@ -413,21 +415,21 @@ onMounted(async () => {
             @click.self="closeCancelledModal"
         >
             <div
-                class="relative mx-2 w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-900"
+                class="relative mx-2 w-full max-w-4xl rounded-lg border border-border bg-card text-card-foreground shadow-xl"
             >
                 <div
-                    class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
+                    class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-border bg-card px-6 py-4"
                 >
                     <div class="flex items-center gap-3">
-                        <CircleX :size="24" class="text-red-600" />
+                        <CircleX :size="24" class="text-destructive" />
                         <div>
                             <h2
-                                class="text-xl font-semibold text-gray-900 dark:text-white"
+                                class="text-xl font-semibold text-card-foreground"
                             >
                                 {{ t('confirmedOrder.modals.cancelledTitle') }}
                             </h2>
                             <p
-                                class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                                class="flex items-center gap-2 text-sm text-muted-foreground"
                             >
                                 <span>
                                     {{
@@ -441,7 +443,7 @@ onMounted(async () => {
                     </div>
                     <button
                         @click="closeCancelledModal"
-                        class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
+                        class="rounded-lg p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                     >
                         <X :size="20" />
                     </button>
@@ -482,5 +484,28 @@ onMounted(async () => {
 
 .modal-scroll::-webkit-scrollbar {
     display: none;
+}
+
+.order-board-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) var(--muted);
+}
+
+.order-board-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.order-board-scroll::-webkit-scrollbar-track {
+    background: var(--muted);
+    border-radius: 4px;
+}
+
+.order-board-scroll::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 4px;
+}
+
+.order-board-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
 }
 </style>

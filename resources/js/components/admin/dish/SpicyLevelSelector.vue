@@ -19,30 +19,22 @@ const levels = computed(() => [
     {
         value: 0,
         label: t('dish.spicyLevel.noSpicy'),
-        bg: 'bg-green-400',
-        text: 'text-green-500',
-        border: 'border-green-500',
+        selectedClass: 'border-success bg-success text-success-foreground',
     },
     {
         value: 1,
         label: t('dish.spicyLevel.mild'),
-        bg: 'bg-yellow-400',
-        text: 'text-yellow-500',
-        border: 'border-yellow-500',
+        selectedClass: 'border-warning bg-warning text-warning-foreground',
     },
     {
         value: 2,
         label: t('dish.spicyLevel.spicy'),
-        bg: 'bg-orange-400',
-        text: 'text-orange-500',
-        border: 'border-orange-500',
+        selectedClass: 'border-primary bg-primary text-primary-foreground',
     },
     {
         value: 3,
         label: t('dish.spicyLevel.hot'),
-        bg: 'bg-red-400',
-        text: 'text-red-500',
-        border: 'border-red-500',
+        selectedClass: 'border-destructive bg-destructive text-destructive-foreground',
     },
 ]);
 
@@ -68,25 +60,18 @@ const selectedLevel = computed({
                 class="group relative flex items-center justify-center gap-1.5 rounded-lg border-2 px-2 py-2.5 transition-all duration-200 active:scale-95 sm:min-w-[80px] sm:flex-1 sm:px-3"
                 :class="[
                     selectedLevel === level.value
-                        ? `${level.bg} ${level.border} text-white shadow-md`
-                        : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600',
+                        ? `${level.selectedClass} shadow-md`
+                        : 'border-border bg-card text-card-foreground hover:border-primary/50 hover:bg-accent',
                     disabled && 'cursor-not-allowed opacity-60',
                 ]"
             >
-                <span
-                    class="text-xs font-medium"
-                    :class="
-                        selectedLevel === level.value
-                            ? 'text-white'
-                            : 'text-muted-foreground'
-                    "
-                >
+                <span class="text-xs font-medium">
                     {{ level.label }}
                 </span>
             </button>
         </div>
 
-        <p class="text-sm text-red-500">
+        <p class="text-sm text-destructive">
             {{ error }}
         </p>
     </div>

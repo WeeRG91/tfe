@@ -165,26 +165,26 @@ const resendVerification = () => {
             <button
                 v-if="!isEditing"
                 @click="isEditing = true"
-                class="rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100"
+                class="rounded-lg bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
             >
                 {{ t('profile.infoTab.editProfile') }}
             </button>
         </div>
 
         <div v-if="mustVerifyEmail && !user.email_verified_at" class="mb-4">
-            <div class="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-                <p class="text-sm text-yellow-800">
+            <div class="rounded-lg border border-warning/20 bg-warning/10 p-4">
+                <p class="text-sm text-foreground">
                     {{ t('profile.infoTab.verification.unverified') }}
                     <button
                         @click="resendVerification"
-                        class="font-medium text-yellow-900 underline decoration-yellow-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-yellow-700"
+                        class="font-medium text-warning underline decoration-warning/40 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-warning"
                     >
                         {{ t('profile.infoTab.verification.resend') }}
                     </button>
                 </p>
                 <div
                     v-if="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
+                    class="mt-2 text-sm font-medium text-success"
                 >
                     {{ t('profile.infoTab.verification.sent') }}
                 </div>
@@ -197,7 +197,7 @@ const resendVerification = () => {
                     <div class="sticky top-6">
                         <div class="relative mx-auto h-32 w-32 flex-shrink-0">
                             <div
-                                class="h-full w-full overflow-hidden rounded-full border-2 border-gray-200 bg-gray-100"
+                                class="h-full w-full overflow-hidden rounded-full border-2 border-border bg-muted"
                             >
                                 <img
                                     v-if="photoPreview"
@@ -207,7 +207,7 @@ const resendVerification = () => {
                                 />
                                 <div
                                     v-else
-                                    class="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400"
+                                    class="flex h-full w-full items-center justify-center bg-muted text-muted-foreground"
                                 >
                                     <User class="h-20 w-20" />
                                 </div>
@@ -220,7 +220,7 @@ const resendVerification = () => {
                                 <button
                                     type="button"
                                     @click="triggerFileInput"
-                                    class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-600"
+                                    class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-colors hover:bg-primary/90"
                                     title="Change photo"
                                 >
                                     <Camera class="h-5 w-5" />
@@ -231,7 +231,7 @@ const resendVerification = () => {
                                     type="button"
                                     :disabled="isRemovingPhoto"
                                     :title="t('profile.infoTab.photo.remove')"
-                                    class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                    class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-lg transition-colors hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-50"
                                     @click="showRemovePhotoModal = true"
                                 >
                                     <Trash2 class="h-5 w-5" />
@@ -242,13 +242,13 @@ const resendVerification = () => {
                         <div class="mt-4 text-center">
                             <p
                                 v-if="isEditing"
-                                class="mt-1 text-xs text-gray-500"
+                                class="mt-1 text-xs text-muted-foreground"
                             >
                                 {{ t('profile.infoTab.photo.requirements') }}
                             </p>
                             <p
                                 v-if="updateForm.errors.avatar"
-                                class="mt-1.5 text-xs text-red-500"
+                                class="mt-1.5 text-xs text-destructive"
                             >
                                 {{ updateForm.errors.avatar }}
                             </p>
@@ -267,7 +267,7 @@ const resendVerification = () => {
                 <div class="space-y-5 md:col-span-2">
                     <div>
                         <label
-                            class="mb-1.5 block text-sm font-medium text-gray-700"
+                            class="mb-1.5 block text-sm font-medium text-card-foreground"
                         >
                             {{ t('profile.infoTab.form.fullName') }}
                         </label>
@@ -275,15 +275,15 @@ const resendVerification = () => {
                             <div
                                 class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                             >
-                                <User class="h-5 w-5 text-gray-400" />
+                                <User class="h-5 w-5 text-muted-foreground" />
                             </div>
                             <input
                                 v-model="updateForm.name"
                                 type="text"
                                 :disabled="!isEditing"
-                                class="w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-sm transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50"
+                                class="w-full rounded-lg border border-input bg-background py-2.5 pr-4 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-muted-foreground"
                                 :class="{
-                                    'border-red-500 ring-2 ring-red-500/20':
+                                    'border-destructive ring-2 ring-destructive/20':
                                         updateForm.errors.name,
                                 }"
                                 :placeholder="
@@ -295,7 +295,7 @@ const resendVerification = () => {
                         </div>
                         <p
                             v-if="updateForm.errors.name"
-                            class="mt-1.5 text-xs text-red-500"
+                            class="mt-1.5 text-xs text-destructive"
                         >
                             {{ updateForm.errors.name }}
                         </p>
@@ -303,7 +303,7 @@ const resendVerification = () => {
 
                     <div>
                         <label
-                            class="mb-1.5 block text-sm font-medium text-gray-700"
+                            class="mb-1.5 block text-sm font-medium text-card-foreground"
                         >
                             {{ t('profile.infoTab.form.email') }}
                         </label>
@@ -311,15 +311,15 @@ const resendVerification = () => {
                             <div
                                 class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                             >
-                                <Mail class="h-5 w-5 text-gray-400" />
+                                <Mail class="h-5 w-5 text-muted-foreground" />
                             </div>
                             <input
                                 v-model="updateForm.email"
                                 type="email"
                                 :disabled="!isEditing"
-                                class="w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-sm transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50"
+                                class="w-full rounded-lg border border-input bg-background py-2.5 pr-4 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-muted-foreground"
                                 :class="{
-                                    'border-red-500 ring-2 ring-red-500/20':
+                                    'border-destructive ring-2 ring-destructive/20':
                                         updateForm.errors.email,
                                 }"
                                 :placeholder="
@@ -329,7 +329,7 @@ const resendVerification = () => {
                         </div>
                         <p
                             v-if="updateForm.errors.email"
-                            class="mt-1.5 text-xs text-red-500"
+                            class="mt-1.5 text-xs text-destructive"
                         >
                             {{ updateForm.errors.email }}
                         </p>
@@ -341,7 +341,7 @@ const resendVerification = () => {
                             :disabled="
                                 updateForm.processing || !updateForm.isDirty
                             "
-                            class="flex items-center gap-2 rounded-lg bg-red-500 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                            class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <Save
                                 v-if="!updateForm.processing"
@@ -349,7 +349,7 @@ const resendVerification = () => {
                             />
                             <span
                                 v-if="updateForm.processing"
-                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"
+                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/20 border-t-primary-foreground"
                             ></span>
                             {{
                                 updateForm.processing
@@ -360,7 +360,7 @@ const resendVerification = () => {
                         <button
                             type="button"
                             @click="cancelEdit"
-                            class="rounded-lg border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                            class="rounded-lg border border-input bg-background px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
                             {{ t('profile.infoTab.form.cancel') }}
                         </button>
@@ -369,16 +369,16 @@ const resendVerification = () => {
             </div>
         </form>
 
-        <div class="border-t border-gray-200 pt-6">
-            <h2 class="text-xl font-semibold text-red-600 md:text-2xl">
+        <div class="border-t border-border pt-6">
+            <h2 class="text-xl font-semibold text-destructive md:text-2xl">
                 {{ t('profile.infoTab.delete.title') }}
             </h2>
-            <p class="mt-2 text-sm text-gray-600">
+            <p class="mt-2 text-sm text-muted-foreground">
                 {{ t('profile.infoTab.delete.description') }}
             </p>
             <button
                 @click="openDeleteModal"
-                class="mt-4 flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 hover:text-red-700"
+                class="mt-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/15"
             >
                 <Trash2 class="h-4 w-4" />
                 {{ t('profile.infoTab.delete.button') }}

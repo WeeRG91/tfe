@@ -37,7 +37,7 @@ const submit = () => {
     >
         <div
             v-if="status === 'verification-link-sent'"
-            class="mb-4 text-center text-sm font-medium text-green-600"
+            class="mb-4 text-center text-sm font-medium text-success"
         >
             {{ t('verifyEmail.messages.verificationLinkSent') }}
         </div>
@@ -46,12 +46,12 @@ const submit = () => {
             <button
                 type="submit"
                 :disabled="verifyForm.processing"
-                class="group w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
+                class="group w-full rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary disabled:hover:shadow-none"
             >
                 <span class="flex items-center justify-center gap-2">
                     <span
                         v-if="verifyForm.processing"
-                        class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                        class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                     ></span>
                     <span v-else>
                         {{ t('auth.buttons.resendVerificationEmail') }}
@@ -63,13 +63,13 @@ const submit = () => {
         <template #footer>
             <div class="space-y-6">
                 <div
-                    class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
+                    class="rounded-2xl border border-border bg-muted/50 p-4 backdrop-blur-sm"
                 >
-                    <p class="text-center text-sm text-gray-500">
+                    <p class="text-center text-sm text-muted-foreground">
                         {{ t('auth.links.needHelp') }}
                         <Link
                             href="/contact"
-                            class="font-medium text-gray-900 transition-colors hover:text-gray-600"
+                            class="font-medium text-foreground transition-colors hover:text-foreground"
                         >
                             {{ t('auth.links.contactSupport') }}
                         </Link>
@@ -79,7 +79,7 @@ const submit = () => {
                 <div class="flex items-center justify-center gap-8">
                     <Link
                         :href="login()"
-                        class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
+                        class="group flex items-center gap-1.5 text-sm text-muted-foreground transition-all hover:text-foreground"
                     >
                         <MoveLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
@@ -87,11 +87,11 @@ const submit = () => {
                         {{ t('auth.links.backToSignIn') }}
                     </Link>
 
-                    <div class="h-4 w-px bg-gray-200"></div>
+                    <div class="h-4 w-px bg-border"></div>
 
                     <Link
                         href="/"
-                        class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
+                        class="group flex items-center gap-1.5 text-sm text-muted-foreground transition-all hover:text-foreground"
                     >
                         {{ t('auth.links.goToHome') }}
                         <MoveRight

@@ -15,6 +15,7 @@ import {
     MoreHorizontal,
     Send,
     SquarePen,
+    X,
 } from 'lucide-vue-next';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -405,25 +406,13 @@ watch(messageMenuId, (id) => {
     <div ref="chatBubbleRef" class="fixed right-6 bottom-6 z-40">
         <button
             @click="toggleChat"
-            class="relative flex h-14 w-14 items-center justify-center rounded-full bg-red-600 text-white shadow-lg transition-all hover:scale-105 hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+            class="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:scale-105 hover:bg-primary/90 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus:outline-none"
             :class="{ hidden: isOpen }"
         >
-            <svg
-                class="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-            </svg>
+            <MessageCircleMore class="size-6" />
             <span
                 v-if="unreadCount > 0 && !isOpen"
-                class="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
+                class="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground"
             >
                 {{ unreadCount > 9 ? '9+' : unreadCount }}
             </span>
@@ -432,71 +421,49 @@ watch(messageMenuId, (id) => {
         <div
             v-if="isOpen && currentChat"
             @click="markAsRead(currentChat.id)"
-            class="absolute right-0 bottom-0 mb-2 flex h-[500px] w-[380px] flex-col rounded-lg bg-white shadow-2xl transition-all duration-300"
+            class="absolute right-0 bottom-0 mb-2 flex h-[min(500px,calc(100vh-7rem))] w-[calc(100vw-3rem)] max-w-[380px] flex-col overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-2xl transition-all duration-300"
         >
             <div
-                class="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-red-600 to-red-700 px-4 py-3"
+                class="flex items-center justify-between border-b border-primary/20 bg-primary px-4 py-3 text-primary-foreground"
             >
                 <div class="flex items-center space-x-3">
                     <div class="relative">
                         <div
-                            class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20"
+                            class="flex h-8 w-8 items-center justify-center rounded-full bg-primary-foreground/15"
                         >
-                            <svg
-                                class="h-4 w-4 text-white"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                                />
-                            </svg>
+                            <MessageCircleMore
+                                class="h-4 w-4 text-primary-foreground"
+                            />
                         </div>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-white">
+                        <h3 class="font-semibold text-primary-foreground">
                             {{ t('chatBubble.title') }}
                         </h3>
-                        <p class="text-xs text-red-100">
+                        <p class="text-xs text-primary-foreground/70">
                             {{ t('chatBubble.subtitle') }}
                         </p>
                     </div>
                 </div>
                 <button
                     @click="closeChat()"
-                    class="rounded-full p-1 text-white/80 transition-colors hover:bg-white/20 hover:text-white"
+                    class="rounded-full p-1 text-primary-foreground/80 transition-colors hover:bg-primary-foreground/15 hover:text-primary-foreground"
                 >
-                    <svg
-                        class="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
-                    </svg>
+                    <X class="size-5" />
                 </button>
             </div>
 
             <div
                 ref="messagesContainer"
-                class="flex-1 overflow-y-auto bg-gray-50 p-4"
+                class="flex-1 overflow-y-auto bg-muted/40 p-4"
             >
                 <div
                     v-if="!currentChat || messages?.length === 0"
                     class="flex h-full items-center justify-center"
                 >
-                    <div class="text-center text-gray-500">
+                    <div class="text-center text-muted-foreground">
                         <MessageCircleMore
-                            class="mx-auto h-12 w-12 text-gray-400"
+                            class="mx-auto h-12 w-12 text-muted-foreground/70"
                         />
                         <p class="mt-2">
                             {{ t('chatBubble.emptyStates.noMessages') }}
@@ -518,7 +485,7 @@ watch(messageMenuId, (id) => {
                             class="relative my-4 flex justify-center"
                         >
                             <span
-                                class="rounded-full bg-gray-200 px-3 py-1 text-xs text-gray-600"
+                                class="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground"
                             >
                                 {{ formatDate(msg.created_at) }}
                             </span>
@@ -545,7 +512,7 @@ watch(messageMenuId, (id) => {
                                         msg.edited_at &&
                                         !(msg.unsent_at || msg.deleted_at)
                                     "
-                                    class="mb-1 text-xs text-gray-400"
+                                    class="mb-1 text-xs text-muted-foreground"
                                 >
                                     {{
                                         t('chatBubble.labels.modifiedAt', {
@@ -559,17 +526,17 @@ watch(messageMenuId, (id) => {
                                         'group relative rounded-lg px-4 py-2 text-sm',
 
                                         {
-                                            'rounded-bl-none bg-white text-gray-800 shadow-sm':
+                                            'rounded-bl-none border border-border bg-card text-card-foreground shadow-sm':
                                                 msg.is_from_restaurant &&
                                                 !msg.unsent_at &&
                                                 !msg.deleted_at,
 
-                                            'rounded-br-none bg-red-600 text-white shadow-sm':
+                                            'rounded-br-none bg-primary text-primary-foreground shadow-sm':
                                                 !msg.is_from_restaurant &&
                                                 !msg.unsent_at &&
                                                 !msg.deleted_at,
 
-                                            'bg-gray-100 text-gray-500 italic':
+                                            'bg-muted text-muted-foreground italic':
                                                 msg.unsent_at || msg.deleted_at,
                                         },
                                     ]"
@@ -591,7 +558,7 @@ watch(messageMenuId, (id) => {
                                             @click.stop="
                                                 openMenu($event, msg.id)
                                             "
-                                            class="rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                                            class="rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                         >
                                             <MoreHorizontal class="h-5 w-5" />
                                         </button>
@@ -608,8 +575,8 @@ watch(messageMenuId, (id) => {
                                         :class="[
                                             'mt-1 text-right text-xs',
                                             msg.is_from_restaurant
-                                                ? 'text-gray-400'
-                                                : 'text-red-200',
+                                                ? 'text-muted-foreground'
+                                                : 'text-primary-foreground/70',
                                         ]"
                                     >
                                         {{ formatTime(msg.created_at) }}
@@ -625,7 +592,7 @@ watch(messageMenuId, (id) => {
                             currentChat.latest_message.read_at &&
                             !currentChat.latest_message.is_from_restaurant
                         "
-                        class="mt-1 flex justify-end text-xs text-gray-400"
+                        class="mt-1 flex justify-end text-xs text-muted-foreground"
                     >
                         {{
                             t('chatBubble.labels.readAt', {
@@ -638,7 +605,7 @@ watch(messageMenuId, (id) => {
                 </div>
             </div>
 
-            <div class="border-t border-gray-200 bg-white p-3">
+            <div class="border-t border-border bg-card p-3">
                 <div class="flex items-end gap-2">
                     <div class="flex-1">
                         <div
@@ -648,12 +615,12 @@ watch(messageMenuId, (id) => {
                             <div class="flex items-center gap-2">
                                 <button
                                     @click.stop="cancelEditing()"
-                                    class="text-xs text-gray-400 hover:text-gray-600"
+                                    class="text-xs text-muted-foreground hover:text-foreground"
                                 >
                                     {{ t('chatBubble.actions.cancel') }}
                                 </button>
                             </div>
-                            <span class="text-xs text-gray-400">
+                            <span class="text-xs text-muted-foreground">
                                 {{ t('chatBubble.labels.editingInstructions') }}
                             </span>
                         </div>
@@ -662,7 +629,7 @@ watch(messageMenuId, (id) => {
                             @keydown="handleKeyDown"
                             :placeholder="t('chatBubble.placeholders.message')"
                             rows="1"
-                            class="block w-full resize-none rounded-lg border border-gray-200 px-4 py-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
+                            class="block w-full resize-none rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
                             style="min-height: 42px; max-height: 120px"
                             :disabled="isSending || isEditing"
                         ></textarea>
@@ -671,7 +638,7 @@ watch(messageMenuId, (id) => {
                         v-if="editingMessageId"
                         @click="updateMessage()"
                         :disabled="!messageInput.trim()"
-                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-600 text-white transition-colors hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-colors hover:bg-primary/90 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <Check v-if="!isEditing" class="h-5 w-5" />
                         <Loader v-else class="h-5 w-5 animate-spin" />
@@ -680,7 +647,7 @@ watch(messageMenuId, (id) => {
                         v-else
                         @click="sendMessage"
                         :disabled="!messageInput.trim()"
-                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-600 text-white transition-colors hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-colors hover:bg-primary/90 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <Send v-if="!isSending" class="h-5 w-5" />
                         <Loader v-else class="h-5 w-5 animate-spin" />
@@ -694,13 +661,13 @@ watch(messageMenuId, (id) => {
             v-if="messageMenuId !== null"
             ref="messageMenuDropdownRef"
             @click.stop
-            class="fixed z-50 w-48 rounded-md border bg-white py-1 shadow-lg"
+            class="fixed z-50 w-48 rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-lg"
             :style="dropdownStyle"
         >
             <button
                 v-if="!isUnsentOrRemoved"
                 @click="startEditing(messageMenuId)"
-                class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="flex w-full items-center rounded-sm px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground"
             >
                 <SquarePen class="mr-2 h-4 w-4" />
                 {{ t('chatBubble.actions.edit') }}
@@ -708,7 +675,7 @@ watch(messageMenuId, (id) => {
             <button
                 v-if="!isUnsentOrRemoved"
                 @click="unsendMessage(messageMenuId)"
-                class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="flex w-full items-center rounded-sm px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground"
             >
                 <MessageCircleOff class="mr-2 h-4 w-4" />
                 {{ t('chatBubble.actions.unsend') }}
@@ -716,7 +683,7 @@ watch(messageMenuId, (id) => {
             <button
                 v-if="!isUnsentOrRemoved"
                 @click="removeMessage(messageMenuId)"
-                class="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                class="flex w-full items-center rounded-sm px-4 py-2 text-sm text-destructive hover:bg-destructive/10"
             >
                 <CircleX class="mr-2 h-4 w-4" />
                 {{ t('chatBubble.actions.remove') }}

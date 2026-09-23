@@ -41,7 +41,9 @@ const selectType = (value: OrderTypeEnum) => {
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <h2
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
@@ -59,10 +61,10 @@ const selectType = (value: OrderTypeEnum) => {
                 :class="[
                     'flex items-center justify-center gap-2 rounded-lg border-2 p-4 transition-all',
                     isTypeDisabled(orderType.value)
-                        ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400 opacity-60'
+                        ? 'cursor-not-allowed border-border bg-muted text-muted-foreground opacity-60'
                         : props.modelValue === orderType.value
-                          ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200 hover:border-red-200',
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border hover:border-primary/40 hover:bg-accent/40',
                 ]"
             >
                 <component
@@ -70,10 +72,10 @@ const selectType = (value: OrderTypeEnum) => {
                     class="h-5 w-5"
                     :class="
                         isTypeDisabled(orderType.value)
-                            ? 'text-gray-400'
+                            ? 'text-muted-foreground'
                             : props.modelValue === orderType.value
-                              ? 'text-red-500'
-                              : 'text-gray-400'
+                              ? 'text-primary'
+                              : 'text-muted-foreground'
                     "
                 />
                 <div class="flex flex-col items-start">
@@ -83,7 +85,7 @@ const selectType = (value: OrderTypeEnum) => {
 
                     <span
                         v-if="isTypeDisabled(orderType.value)"
-                        class="text-xs font-normal text-gray-500"
+                        class="text-xs font-normal text-muted-foreground"
                     >
                         {{ t('cart.orderType.unavailableWhileClosed') }}
                     </span>

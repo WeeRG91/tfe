@@ -396,7 +396,7 @@ const deleteClosure = async (): Promise<void> => {
                 >
                     <div class="flex items-center gap-3">
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600"
+                            class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground"
                         >
                             <CalendarClock class="h-5 w-5" />
                         </div>
@@ -417,7 +417,7 @@ const deleteClosure = async (): Promise<void> => {
                     <button
                         type="button"
                         :disabled="isSavingHours"
-                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
                         @click="saveRegularHours"
                     >
                         <Loader2
@@ -456,7 +456,7 @@ const deleteClosure = async (): Promise<void> => {
                                 <input
                                     v-model="day.is_open"
                                     type="checkbox"
-                                    class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+                                    class="h-4 w-4 rounded border-border text-primary focus:ring-ring"
                                     @change="ensureOpenTimes(day)"
                                 />
 
@@ -476,7 +476,7 @@ const deleteClosure = async (): Promise<void> => {
                             <div v-if="day.is_open" class="flex-1 space-y-4">
                                 <p
                                     v-if="errorFor(index, 'periods')"
-                                    class="text-xs text-red-600"
+                                    class="text-xs text-destructive"
                                 >
                                     {{ errorFor(index, 'periods') }}
                                 </p>
@@ -504,7 +504,7 @@ const deleteClosure = async (): Promise<void> => {
                                             v-if="periodIndex === 1"
                                             type="button"
                                             :disabled="isSavingHours"
-                                            class="text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-60"
+                                            class="text-sm font-medium text-destructive hover:text-destructive/80 disabled:opacity-60"
                                             @click="removeSecondPeriod(day)"
                                         >
                                             {{
@@ -533,9 +533,9 @@ const deleteClosure = async (): Promise<void> => {
                                                 v-model="period.opens_at"
                                                 type="time"
                                                 step="900"
-                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                                 :class="{
-                                                    'border-red-500':
+                                                    'border-destructive':
                                                         periodErrorFor(
                                                             index,
                                                             periodIndex,
@@ -552,7 +552,7 @@ const deleteClosure = async (): Promise<void> => {
                                                         'opens_at',
                                                     )
                                                 "
-                                                class="mt-1 text-xs text-red-600"
+                                                class="mt-1 text-xs text-destructive"
                                             >
                                                 {{
                                                     periodErrorFor(
@@ -581,9 +581,9 @@ const deleteClosure = async (): Promise<void> => {
                                                 v-model="period.closes_at"
                                                 type="time"
                                                 step="900"
-                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                                 :class="{
-                                                    'border-red-500':
+                                                    'border-destructive':
                                                         periodErrorFor(
                                                             index,
                                                             periodIndex,
@@ -600,7 +600,7 @@ const deleteClosure = async (): Promise<void> => {
                                                         'closes_at',
                                                     )
                                                 "
-                                                class="mt-1 text-xs text-red-600"
+                                                class="mt-1 text-xs text-destructive"
                                             >
                                                 {{
                                                     periodErrorFor(
@@ -629,9 +629,9 @@ const deleteClosure = async (): Promise<void> => {
                                                 v-model="period.last_pickup_at"
                                                 type="time"
                                                 step="900"
-                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                                 :class="{
-                                                    'border-red-500':
+                                                    'border-destructive':
                                                         periodErrorFor(
                                                             index,
                                                             periodIndex,
@@ -648,7 +648,7 @@ const deleteClosure = async (): Promise<void> => {
                                                         'last_pickup_at',
                                                     )
                                                 "
-                                                class="mt-1 text-xs text-red-600"
+                                                class="mt-1 text-xs text-destructive"
                                             >
                                                 {{
                                                     periodErrorFor(
@@ -666,7 +666,7 @@ const deleteClosure = async (): Promise<void> => {
                                     v-if="day.periods.length < 2"
                                     type="button"
                                     :disabled="isSavingHours"
-                                    class="text-sm font-medium text-red-600 hover:text-red-700 disabled:opacity-60"
+                                    class="text-sm font-medium text-destructive hover:text-destructive/80 disabled:opacity-60"
                                     @click="addPeriod(day)"
                                 >
                                     {{
@@ -693,7 +693,7 @@ const deleteClosure = async (): Promise<void> => {
             <section class="rounded-xl border bg-background">
                 <div class="flex items-center gap-3 border-b p-5">
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600"
+                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning text-warning-foreground"
                     >
                         <CalendarX2 class="h-5 w-5" />
                     </div>
@@ -715,7 +715,7 @@ const deleteClosure = async (): Promise<void> => {
                     @submit.prevent="saveClosure"
                 >
                     <div class="flex items-center gap-3">
-                        <CalendarPlus class="h-5 w-5 text-amber-600" />
+                        <CalendarPlus class="h-5 w-5 text-warning" />
 
                         <div>
                             <h3 class="font-medium">
@@ -750,7 +750,7 @@ const deleteClosure = async (): Promise<void> => {
                             class="rounded-lg border px-4 py-2 text-sm font-medium transition"
                             :class="
                                 closureForm.is_all_day
-                                    ? 'border-red-600 bg-red-50 text-red-700'
+                                    ? 'border-primary bg-primary text-primary-foreground'
                                     : 'bg-background hover:bg-muted'
                             "
                             @click="closureForm.is_all_day = true"
@@ -763,7 +763,7 @@ const deleteClosure = async (): Promise<void> => {
                             class="rounded-lg border px-4 py-2 text-sm font-medium transition"
                             :class="
                                 !closureForm.is_all_day
-                                    ? 'border-red-600 bg-red-50 text-red-700'
+                                    ? 'border-primary bg-primary text-primary-foreground'
                                     : 'bg-background hover:bg-muted'
                             "
                             @click="closureForm.is_all_day = false"
@@ -792,15 +792,15 @@ const deleteClosure = async (): Promise<void> => {
                                 id="closure-start-date"
                                 v-model="closureForm.starts_on"
                                 type="date"
-                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-red-500': closureError('starts_on'),
+                                    'border-destructive': closureError('starts_on'),
                                 }"
                             />
 
                             <p
                                 v-if="closureError('starts_on')"
-                                class="mt-1 text-xs text-red-600"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ closureError('starts_on') }}
                             </p>
@@ -823,15 +823,15 @@ const deleteClosure = async (): Promise<void> => {
                                 v-model="closureForm.ends_on"
                                 type="date"
                                 :min="closureForm.starts_on || undefined"
-                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-red-500': closureError('ends_on'),
+                                    'border-destructive': closureError('ends_on'),
                                 }"
                             />
 
                             <p
                                 v-if="closureError('ends_on')"
-                                class="mt-1 text-xs text-red-600"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ closureError('ends_on') }}
                             </p>
@@ -854,15 +854,15 @@ const deleteClosure = async (): Promise<void> => {
                                 v-model="closureForm.starts_at"
                                 type="datetime-local"
                                 step="900"
-                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-red-500': closureError('starts_at'),
+                                    'border-destructive': closureError('starts_at'),
                                 }"
                             />
 
                             <p
                                 v-if="closureError('starts_at')"
-                                class="mt-1 text-xs text-red-600"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ closureError('starts_at') }}
                             </p>
@@ -884,15 +884,15 @@ const deleteClosure = async (): Promise<void> => {
                                 type="datetime-local"
                                 step="900"
                                 :min="closureForm.starts_at || undefined"
-                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-red-500': closureError('ends_at'),
+                                    'border-destructive': closureError('ends_at'),
                                 }"
                             />
 
                             <p
                                 v-if="closureError('ends_at')"
-                                class="mt-1 text-xs text-red-600"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ closureError('ends_at') }}
                             </p>
@@ -922,9 +922,9 @@ const deleteClosure = async (): Promise<void> => {
                                         'restaurantSchedule.closures.internalReason',
                                     )
                                 "
-                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-red-500': closureError('reason'),
+                                    'border-destructive': closureError('reason'),
                                 }"
                             />
 
@@ -936,7 +936,7 @@ const deleteClosure = async (): Promise<void> => {
 
                             <p
                                 v-if="closureError('reason')"
-                                class="mt-1 text-xs text-red-600"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ closureError('reason') }}
                             </p>
@@ -964,9 +964,9 @@ const deleteClosure = async (): Promise<void> => {
                                         'restaurantSchedule.closures.messagePlaceholder',
                                     )
                                 "
-                                class="w-full resize-none rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                class="w-full resize-none rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-red-500':
+                                    'border-destructive':
                                         closureError('public_message'),
                                 }"
                             ></textarea>
@@ -987,7 +987,7 @@ const deleteClosure = async (): Promise<void> => {
 
                             <p
                                 v-if="closureError('public_message')"
-                                class="mt-1 text-xs text-red-600"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ closureError('public_message') }}
                             </p>
@@ -1013,7 +1013,7 @@ const deleteClosure = async (): Promise<void> => {
                         <button
                             type="submit"
                             :disabled="isSavingClosure"
-                            class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             <Loader2
                                 v-if="isSavingClosure"
@@ -1079,7 +1079,7 @@ const deleteClosure = async (): Promise<void> => {
 
                             <div class="flex flex-wrap items-center gap-2">
                                 <span
-                                    class="w-fit rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700"
+                                    class="w-fit rounded-full bg-warning px-2.5 py-1 text-xs font-medium text-warning-foreground"
                                 >
                                     {{
                                         closure.is_all_day
@@ -1103,7 +1103,7 @@ const deleteClosure = async (): Promise<void> => {
 
                                 <button
                                     type="button"
-                                    class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-red-200 px-2.5 text-xs font-medium text-red-600 transition hover:bg-red-50"
+                                    class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-destructive/50 px-2.5 text-xs font-medium text-destructive transition hover:bg-destructive/10"
                                     @click="requestClosureDeletion(closure)"
                                 >
                                     <Trash2 class="h-3.5 w-3.5" />

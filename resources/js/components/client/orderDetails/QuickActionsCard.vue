@@ -23,7 +23,9 @@ const { t } = useI18n();
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <div class="space-y-3">
             <button
                 v-if="
@@ -33,7 +35,7 @@ const { t } = useI18n();
                     ].includes(orderToShow.status.value)
                 "
                 @click="emit('print')"
-                class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-all hover:border-primary hover:bg-accent hover:text-accent-foreground"
             >
                 <Printer class="h-4 w-4" />
                 {{ t('order.quickActionsCard.printOrderSummary') }}
@@ -41,7 +43,7 @@ const { t } = useI18n();
             <button
                 v-if="orderToShow.status.value === OrderStatusEnum.CANCELLED"
                 @click="emit('remove', orderToShow.id)"
-                class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-all hover:border-destructive hover:bg-destructive/10 hover:text-destructive"
             >
                 <Trash class="h-4 w-4" />
                 {{ t('order.quickActionsCard.removeOrder') }}
@@ -49,7 +51,7 @@ const { t } = useI18n();
             <button
                 v-if="orderToShow.status.value === OrderStatusEnum.PENDING"
                 @click="emit('remove', orderToShow.id)"
-                class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border border-primary bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
             >
                 <CreditCard class="h-4 w-4" />
                 <span>{{ t('order.orderCard.completeOrder') }}</span>
@@ -60,7 +62,7 @@ const { t } = useI18n();
                     orderToShow.status.value === OrderStatusEnum.CONFIRMED
                 "
                 @click="emit('remove', orderToShow.id)"
-                class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-all hover:border-destructive hover:bg-destructive/10 hover:text-destructive"
             >
                 <XCircle class="h-4 w-4" />
                 <span>{{ t('order.orderCard.cancelOrder') }}</span>
@@ -68,7 +70,7 @@ const { t } = useI18n();
 
             <a
                 :href="menu.dish().url"
-                class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-red-500 hover:bg-red-50"
+                class="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-all hover:border-primary hover:bg-accent hover:text-accent-foreground"
             >
                 <ShoppingBag class="h-4 w-4" />
                 {{ t('order.quickActionsCard.continueShopping') }}
@@ -76,18 +78,22 @@ const { t } = useI18n();
         </div>
     </div>
 
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <div class="text-center">
-            <h3 class="font-medium text-gray-800">
+            <h3 class="font-medium text-card-foreground">
                 {{ t('order.quickActionsCard.needHelp') }}
             </h3>
-            <p class="mt-1 text-xs text-gray-500">
+            <p class="mt-1 text-xs text-muted-foreground">
                 {{ t('order.quickActionsCard.contactSupport') }}
             </p>
-            <p class="mt-2 text-sm font-medium text-red-600">
+            <p class="mt-2 text-sm font-medium text-primary">
                 📞 +1 (555) 123-4567
             </p>
-            <p class="text-xs text-gray-500">support@yourrestaurant.com</p>
+            <p class="text-xs text-muted-foreground">
+                support@yourrestaurant.com
+            </p>
         </div>
     </div>
 </template>

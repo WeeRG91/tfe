@@ -249,13 +249,13 @@ watch(activeFilter, () => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-6">
-                <p class="text-sm tracking-widest text-red-500 uppercase">
+                <p class="text-sm tracking-widest text-primary uppercase">
                     [ {{ t('notification.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     {{ t('notification.title') }}
                 </h1>
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="mt-1 text-sm text-muted-foreground">
                     {{ t('notification.description') }}
                 </p>
             </div>
@@ -268,8 +268,8 @@ watch(activeFilter, () => {
                     class="rounded-full border px-4 py-1 text-sm transition-all duration-500"
                     :class="
                         activeFilter === filter.value
-                            ? 'border-red-500 bg-red-500 text-white hover:bg-red-600'
-                            : 'text-gray-600 hover:bg-gray-100'
+                            ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
+                            : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     "
                 >
                     {{ filter.label }}
@@ -282,7 +282,7 @@ watch(activeFilter, () => {
                 >
                     <button
                         @click.stop="toggleDropdown"
-                        class="rounded-full p-2 text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600"
+                        class="rounded-full p-2 text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-accent-foreground"
                         :aria-label="t('notification.menu.moreOptions')"
                     >
                         <MoreHorizontal class="h-5 w-5" />
@@ -291,12 +291,12 @@ watch(activeFilter, () => {
                     <Transition name="dropdown-fade">
                         <div
                             v-if="showDropdown"
-                            class="ring-opacity-5 absolute top-full right-0 z-50 mt-2 w-48 origin-top-right rounded-lg bg-white py-1 shadow-lg ring-1 ring-gray-100 focus:outline-none"
+                            class="absolute top-full right-0 z-50 mt-2 w-48 origin-top-right rounded-lg border border-border bg-popover py-1 text-popover-foreground shadow-lg focus:outline-none"
                             @click.stop
                         >
                             <button
                                 @click.stop="markAllAsRead"
-                                class="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                                class="flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
                             >
                                 <CheckCheck class="h-4 w-4" />
                                 <span>{{
@@ -311,7 +311,7 @@ watch(activeFilter, () => {
                                         () => deleteAll(),
                                     )
                                 "
-                                class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                                class="flex w-full items-center gap-3 px-4 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
                             >
                                 <Trash2 class="h-4 w-4" />
                                 <span>{{
@@ -331,7 +331,7 @@ watch(activeFilter, () => {
                     :key="dateLabel"
                     class="space-y-3"
                 >
-                    <h3 class="text-sm font-semibold text-gray-400">
+                    <h3 class="text-sm font-semibold text-muted-foreground">
                         {{ dateLabel }}
                     </h3>
 

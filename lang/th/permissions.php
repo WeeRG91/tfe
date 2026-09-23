@@ -17,6 +17,7 @@ return [
     ],
     'permissions' => [
         'admin' => ['access' => 'เข้าถึงแผงผู้ดูแลระบบ'],
+        'theme' => ['manage' => 'จัดการธีมของร้านอาหาร'],
         'dashboard' => ['view' => 'ดูแดชบอร์ด'],
         'allergen' => [
             'view' => 'ดูสารก่อภูมิแพ้',

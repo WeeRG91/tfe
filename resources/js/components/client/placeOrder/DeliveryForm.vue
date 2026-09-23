@@ -134,7 +134,9 @@ const onDeliveryDateChange = (event: Event) => {
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <div class="mb-4 flex items-center justify-between">
             <h2 class="flex items-center gap-2 text-lg font-semibold uppercase">
                 <MapPin class="h-5 w-5" />
@@ -146,7 +148,7 @@ const onDeliveryDateChange = (event: Event) => {
                     props.addresses.length > 0
                 "
                 @click="emit('addAddress')"
-                class="inline-flex items-center gap-2 rounded-full bg-red-500 p-1 text-sm text-white transition hover:bg-red-600"
+                class="inline-flex items-center gap-2 rounded-full bg-primary p-1 text-sm text-primary-foreground transition hover:bg-primary/90"
                 title="Add new address"
             >
                 <Plus class="h-4 w-4" />
@@ -163,10 +165,10 @@ const onDeliveryDateChange = (event: Event) => {
                 :class="[
                     'group relative flex min-h-52 flex-col overflow-hidden rounded-2xl border-2 p-5 text-left transition-all duration-200',
                     props.deliveryType === DeliveryTypeEnum.OWN_ADDRESS
-                        ? 'border-red-500 bg-red-50/70 shadow-md'
-                        : 'border-gray-200 bg-white hover:-translate-y-0.5 hover:border-red-300 hover:shadow-md',
+                        ? 'border-primary bg-primary/10 shadow-md'
+                        : 'border-border bg-background hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md',
                     !props.restaurantOpen &&
-                        'cursor-not-allowed opacity-50 hover:translate-y-0 hover:border-gray-200 hover:shadow-none',
+                        'cursor-not-allowed opacity-50 hover:translate-y-0 hover:border-border hover:shadow-none',
                 ]"
                 @click="selectOwnAddressDelivery"
             >
@@ -175,8 +177,8 @@ const onDeliveryDateChange = (event: Event) => {
                         :class="[
                             'flex h-11 w-11 items-center justify-center rounded-xl transition-colors',
                             props.deliveryType === DeliveryTypeEnum.OWN_ADDRESS
-                                ? 'bg-red-500 text-white'
-                                : 'bg-red-50 text-red-500 group-hover:bg-red-100',
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-primary/10 text-primary group-hover:bg-primary/15',
                         ]"
                     >
                         <Truck class="h-5 w-5" />
@@ -186,8 +188,8 @@ const onDeliveryDateChange = (event: Event) => {
                         :class="[
                             'flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors',
                             props.deliveryType === DeliveryTypeEnum.OWN_ADDRESS
-                                ? 'border-red-500 bg-red-500'
-                                : 'border-gray-300 bg-white',
+                                ? 'border-primary bg-primary'
+                                : 'border-input bg-background',
                         ]"
                     >
                         <Check
@@ -195,17 +197,17 @@ const onDeliveryDateChange = (event: Event) => {
                                 props.deliveryType ===
                                 DeliveryTypeEnum.OWN_ADDRESS
                             "
-                            class="h-3.5 w-3.5 text-white"
+                            class="h-3.5 w-3.5 text-primary-foreground"
                         />
                     </div>
                 </div>
 
                 <div class="mt-5 flex-1">
-                    <h3 class="font-semibold text-gray-900">
+                    <h3 class="font-semibold text-card-foreground">
                         {{ t('cart.orderType.deliveryForm.ownAddress') }}
                     </h3>
 
-                    <p class="mt-2 text-sm leading-6 text-gray-600">
+                    <p class="mt-2 text-sm leading-6 text-muted-foreground">
                         {{
                             t(
                                 'cart.orderType.deliveryForm.ownAddressDescription',
@@ -221,10 +223,10 @@ const onDeliveryDateChange = (event: Event) => {
                 </div>
 
                 <div
-                    class="mt-5 flex w-full items-center justify-between border-t border-gray-200 pt-4"
+                    class="mt-5 flex w-full items-center justify-between border-t border-border pt-4"
                 >
                     <span
-                        class="text-xs font-medium tracking-wide text-gray-500 uppercase"
+                        class="text-xs font-medium tracking-wide text-muted-foreground uppercase"
                     >
                         {{ t('cart.orderType.deliveryForm.deliveryFee') }}
                     </span>
@@ -233,8 +235,8 @@ const onDeliveryDateChange = (event: Event) => {
                         :class="[
                             'font-semibold',
                             props.restaurantOpen
-                                ? 'text-red-600'
-                                : 'text-gray-500',
+                                ? 'text-primary'
+                                : 'text-muted-foreground',
                         ]"
                     >
                         {{
@@ -260,10 +262,10 @@ const onDeliveryDateChange = (event: Event) => {
                 :class="[
                     'group relative flex min-h-52 flex-col overflow-hidden rounded-2xl border-2 p-5 text-left transition-all duration-200',
                     props.deliveryType === DeliveryTypeEnum.COMPANY
-                        ? 'border-red-500 bg-red-50/70 shadow-md'
-                        : 'border-gray-200 bg-white hover:-translate-y-0.5 hover:border-red-300 hover:shadow-md',
+                        ? 'border-primary bg-primary/10 shadow-md'
+                        : 'border-border bg-background hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md',
                     !companyDeliveryAvailable &&
-                        'cursor-not-allowed opacity-50 hover:translate-y-0 hover:border-gray-200 hover:shadow-none',
+                        'cursor-not-allowed opacity-50 hover:translate-y-0 hover:border-border hover:shadow-none',
                 ]"
                 @click="selectCompanyDelivery"
             >
@@ -272,8 +274,8 @@ const onDeliveryDateChange = (event: Event) => {
                         :class="[
                             'flex h-11 w-11 items-center justify-center rounded-xl transition-colors',
                             props.deliveryType === DeliveryTypeEnum.COMPANY
-                                ? 'bg-red-500 text-white'
-                                : 'bg-red-50 text-red-500 group-hover:bg-red-100',
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-primary/10 text-primary group-hover:bg-primary/15',
                         ]"
                     >
                         <Building2 class="h-5 w-5" />
@@ -283,25 +285,25 @@ const onDeliveryDateChange = (event: Event) => {
                         :class="[
                             'flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors',
                             props.deliveryType === DeliveryTypeEnum.COMPANY
-                                ? 'border-red-500 bg-red-500'
-                                : 'border-gray-300 bg-white',
+                                ? 'border-primary bg-primary'
+                                : 'border-input bg-background',
                         ]"
                     >
                         <Check
                             v-if="
                                 props.deliveryType === DeliveryTypeEnum.COMPANY
                             "
-                            class="h-3.5 w-3.5 text-white"
+                            class="h-3.5 w-3.5 text-primary-foreground"
                         />
                     </div>
                 </div>
 
                 <div class="mt-5 flex-1">
-                    <h3 class="font-semibold text-gray-900">
+                    <h3 class="font-semibold text-card-foreground">
                         {{ t('cart.orderType.deliveryForm.company') }}
                     </h3>
 
-                    <p class="mt-2 text-sm leading-6 text-gray-600">
+                    <p class="mt-2 text-sm leading-6 text-muted-foreground">
                         {{
                             t('cart.orderType.deliveryForm.companyDescription')
                         }}
@@ -309,10 +311,10 @@ const onDeliveryDateChange = (event: Event) => {
                 </div>
 
                 <div
-                    class="mt-5 flex w-full items-center justify-between border-t border-gray-200 pt-4"
+                    class="mt-5 flex w-full items-center justify-between border-t border-border pt-4"
                 >
                     <span
-                        class="text-xs font-medium tracking-wide text-gray-500 uppercase"
+                        class="text-xs font-medium tracking-wide text-muted-foreground uppercase"
                     >
                         {{ t('cart.orderType.deliveryForm.deliveryFee') }}
                     </span>
@@ -321,8 +323,8 @@ const onDeliveryDateChange = (event: Event) => {
                         :class="[
                             'font-semibold',
                             companyDeliveryAvailable
-                                ? 'text-green-600'
-                                : 'text-gray-500',
+                                ? 'text-success'
+                                : 'text-muted-foreground',
                         ]"
                     >
                         {{
@@ -343,16 +345,16 @@ const onDeliveryDateChange = (event: Event) => {
                     :class="[
                         'overflow-hidden rounded-xl transition-all duration-200',
                         props.selectedAddressId === addr.id
-                            ? 'shadow-lg ring-2 ring-red-500'
-                            : 'border border-gray-200 hover:shadow-md',
+                            ? 'shadow-lg ring-2 ring-primary'
+                            : 'border border-border hover:shadow-md',
                     ]"
                 >
                     <div
                         :class="[
                             'p-5',
                             props.selectedAddressId === addr.id
-                                ? 'bg-gradient-to-r from-red-50 to-red-50/30'
-                                : 'bg-white hover:bg-gray-50/50',
+                                ? 'bg-primary/10'
+                                : 'bg-card hover:bg-accent/40',
                         ]"
                     >
                         <div class="flex items-start justify-between">
@@ -367,8 +369,8 @@ const onDeliveryDateChange = (event: Event) => {
                                                 'rounded-full p-1',
                                                 props.selectedAddressId ===
                                                 addr.id
-                                                    ? 'bg-red-100'
-                                                    : 'bg-gray-100',
+                                                    ? 'bg-primary/15'
+                                                    : 'bg-muted',
                                             ]"
                                         >
                                             <User
@@ -376,20 +378,20 @@ const onDeliveryDateChange = (event: Event) => {
                                                     'h-4 w-4',
                                                     props.selectedAddressId ===
                                                     addr.id
-                                                        ? 'text-red-600'
-                                                        : 'text-gray-500',
+                                                        ? 'text-primary'
+                                                        : 'text-muted-foreground',
                                                 ]"
                                             />
                                         </div>
                                         <span
-                                            class="font-semibold text-gray-800"
+                                            class="font-semibold text-card-foreground"
                                             >{{ addr.first_name }}
                                             {{ addr.last_name }}</span
                                         >
                                     </div>
                                     <span
                                         v-if="addr.is_default"
-                                        class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700"
+                                        class="inline-flex items-center gap-1 rounded-full bg-info/10 px-2.5 py-0.5 text-xs font-medium text-info"
                                     >
                                         <Star class="h-3 w-3" />
                                         {{
@@ -401,17 +403,17 @@ const onDeliveryDateChange = (event: Event) => {
                                 </div>
 
                                 <div
-                                    class="mt-3 space-y-1.5 text-sm text-gray-600"
+                                    class="mt-3 space-y-1.5 text-sm text-muted-foreground"
                                 >
                                     <div class="flex items-center gap-2">
                                         <Phone
-                                            class="h-3.5 w-3.5 text-gray-400"
+                                            class="h-3.5 w-3.5 text-muted-foreground"
                                         />
                                         <span>{{ addr.phone }}</span>
                                     </div>
                                     <div class="flex items-start gap-2">
                                         <MapPin
-                                            class="mt-0.5 h-3.5 w-3.5 text-gray-400"
+                                            class="mt-0.5 h-3.5 w-3.5 text-muted-foreground"
                                         />
                                         <div class="flex flex-col">
                                             <span>{{ addr.street }}</span>
@@ -428,7 +430,7 @@ const onDeliveryDateChange = (event: Event) => {
                             <div class="ml-4 flex items-center gap-1">
                                 <button
                                     @click.stop="emit('editAddress', addr)"
-                                    class="rounded-lg p-2 text-gray-400 transition-all hover:bg-gray-100 hover:text-blue-600"
+                                    class="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-info/10 hover:text-info"
                                     title="Edit address"
                                 >
                                     <Edit class="h-4 w-4" />
@@ -436,13 +438,13 @@ const onDeliveryDateChange = (event: Event) => {
 
                                 <span
                                     v-if="props.deletingAddressId === addr.id"
-                                    class="m-2 h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent"
+                                    class="m-2 h-4 w-4 animate-spin rounded-full border-2 border-destructive border-t-transparent"
                                 ></span>
 
                                 <button
                                     v-else
                                     @click.stop="emit('deleteAddress', addr.id)"
-                                    class="rounded-lg p-2 text-gray-400 transition-all hover:bg-red-50 hover:text-red-600"
+                                    class="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                                     title="Delete address"
                                 >
                                     <Trash class="h-4 w-4" />
@@ -450,9 +452,11 @@ const onDeliveryDateChange = (event: Event) => {
 
                                 <div
                                     v-if="props.selectedAddressId === addr.id"
-                                    class="ml-1 rounded-full bg-red-500 p-1"
+                                    class="ml-1 rounded-full bg-primary p-1"
                                 >
-                                    <Check class="h-4 w-4 text-white" />
+                                    <Check
+                                        class="h-4 w-4 text-primary-foreground"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -462,15 +466,15 @@ const onDeliveryDateChange = (event: Event) => {
 
             <div
                 v-else
-                class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center"
+                class="rounded-lg border-2 border-dashed border-border bg-muted/20 p-8 text-center"
             >
-                <MapPin class="mx-auto h-12 w-12 text-gray-400" />
-                <p class="mt-2 text-sm text-gray-600">
+                <MapPin class="mx-auto h-12 w-12 text-muted-foreground" />
+                <p class="mt-2 text-sm text-muted-foreground">
                     {{ t('cart.orderType.deliveryForm.noAddresses') }}
                 </p>
                 <button
                     @click="emit('addAddress')"
-                    class="mt-3 inline-flex items-center gap-2 rounded-md bg-red-500 px-4 py-2 text-sm text-white transition hover:bg-red-600"
+                    class="mt-3 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition hover:bg-primary/90"
                 >
                     <Home class="h-4 w-4" />
                     {{ t('cart.orderType.deliveryForm.addNewAddress') }}
@@ -480,12 +484,12 @@ const onDeliveryDateChange = (event: Event) => {
 
         <div
             v-if="props.deliveryType === DeliveryTypeEnum.COMPANY"
-            class="space-y-5 rounded-xl border border-gray-200 bg-gray-50 p-5"
+            class="space-y-5 rounded-xl border border-border bg-muted/40 p-5"
         >
             <div>
                 <label
                     for="delivery-company"
-                    class="mb-2 block text-sm font-medium text-gray-700"
+                    class="mb-2 block text-sm font-medium text-foreground"
                 >
                     {{ t('cart.orderType.deliveryForm.selectCompany') }}
                 </label>
@@ -493,7 +497,7 @@ const onDeliveryDateChange = (event: Event) => {
                 <select
                     id="delivery-company"
                     :value="props.selectedCompanyId ?? ''"
-                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 focus:border-red-500 focus:ring-red-500"
+                    class="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-foreground focus:border-ring focus:ring-ring"
                     @change="onCompanyChange"
                 >
                     <option value="">
@@ -517,7 +521,7 @@ const onDeliveryDateChange = (event: Event) => {
             <div v-if="selectedCompany">
                 <label
                     for="company-delivery-date"
-                    class="mb-2 block text-sm font-medium text-gray-700"
+                    class="mb-2 block text-sm font-medium text-foreground"
                 >
                     {{ t('cart.orderType.deliveryForm.selectDate') }}
                 </label>
@@ -525,7 +529,7 @@ const onDeliveryDateChange = (event: Event) => {
                 <select
                     id="company-delivery-date"
                     :value="props.deliveryDate"
-                    class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-gray-900 focus:border-red-500 focus:ring-red-500"
+                    class="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-foreground focus:border-ring focus:ring-ring"
                     @change="onDeliveryDateChange"
                 >
                     <option value="">
@@ -550,7 +554,7 @@ const onDeliveryDateChange = (event: Event) => {
                     </option>
                 </select>
 
-                <p class="mt-2 text-sm text-gray-500">
+                <p class="mt-2 text-sm text-muted-foreground">
                     {{
                         t('cart.orderType.deliveryForm.minimumAdvance', {
                             days: selectedCompany.minimum_advance_days,
@@ -561,7 +565,7 @@ const onDeliveryDateChange = (event: Event) => {
 
             <p
                 v-if="availableCompanies.length === 0"
-                class="text-sm text-gray-600"
+                class="text-sm text-muted-foreground"
             >
                 {{ t('cart.orderType.deliveryForm.noCompanyDates') }}
             </p>

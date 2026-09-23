@@ -1,36 +1,68 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
-            (function() {
-                const appearance = '{{ $appearance ?? "system" }}';
+            (function () {
+                const context = {{ Illuminate\Support\Js::from($themeContext ?? []) }};
+                const initialTheme = context['initialTheme'];
 
-                if (appearance === 'system') {
-                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-                    if (prefersDark) {
-                        document.documentElement.classList.add('dark');
-                    }
+                if (!initialTheme) {
+                    return;
                 }
+
+                let theme = initialTheme;
+
+                if (context['selection'] === 'system') {
+                    const prefersDark = window.matchMedia(
+                        '(prefers-color-scheme: dark)',
+                    ).matches;
+
+                    const systemLightTheme = context['systemLightTheme'];
+                    const systemDarkTheme = context['systemDarkTheme'];
+
+                    theme = prefersDark
+                        ? systemDarkTheme ?? systemLightTheme
+                        : systemLightTheme;
+                }
+
+                if (!theme) {
+                    return;
+                }
+
+                const root = document.documentElement;
+
+                root.dataset.theme = theme.key;
+                root.dataset.themeMode = theme.mode;
+
+                root.classList.toggle('dark', theme.mode === 'dark');
+                root.style.colorScheme = theme.mode;
+                root.style.setProperty('--radius', theme.radius);
+
+                Object.entries(theme.colors ?? {}).forEach(
+                    ([colorKey, value]) => {
+                        const cssVariable = colorKey
+                            .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+                            .replace(/([a-zA-Z])(\d+)/g, '$1-$2')
+                            .toLowerCase();
+
+                        root.style.setProperty(`--${cssVariable}`, value);
+                    },
+                );
             })();
         </script>
 
-        {{-- Inline style to set the HTML background color based on our theme in app.css --}}
         <style>
             html {
-                background-color: oklch(1 0 0);
-            }
-
-            html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: var(--background, oklch(1 0 0));
+                color: var(--foreground, oklch(0.145 0 0));
             }
         </style>
 
+        <!--suppress HtmlUnknownAttribute -->
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <link rel="icon" href="/favicon.ico" sizes="any">

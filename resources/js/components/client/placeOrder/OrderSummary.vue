@@ -24,7 +24,9 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <h2
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
@@ -36,7 +38,7 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
             <div
                 v-for="item in items"
                 :key="item.id"
-                class="border-b border-gray-100 pb-2 last:border-0"
+                class="border-b border-border pb-2 last:border-0"
             >
                 <div class="flex justify-between text-sm">
                     <div class="flex-1">
@@ -45,18 +47,18 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                         </div>
                         <div
                             v-if="item.spicy_level"
-                            class="mt-1 text-xs text-gray-600"
+                            class="mt-1 text-xs text-muted-foreground"
                         >
                             <span class="font-medium"
                                 >{{ t('common.spicyLevel.title') }}:</span
                             >
-                            <span class="ml-0.5 text-gray-500">
+                            <span class="ml-0.5 text-muted-foreground">
                                 {{ spicyLevelLabels[item.spicy_level] }}
                             </span>
                         </div>
                         <div
                             v-if="item.meat"
-                            class="mt-1 text-xs text-gray-600"
+                            class="mt-1 text-xs text-muted-foreground"
                         >
                             <span class="font-medium"
                                 >{{ t('cart.orderSummary.meat') }}:</span
@@ -64,16 +66,16 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                             {{ item.meat.name }}
                             <span
                                 v-if="item.meat.extra_price > 0"
-                                class="text-gray-500"
+                                class="text-muted-foreground"
                             >
                                 (+€{{ formatPrice(item.meat.extra_price) }})
                             </span>
                         </div>
                         <div
                             v-if="item.removed_ingredients?.length > 0"
-                            class="mt-1 text-xs text-gray-500"
+                            class="mt-1 text-xs text-muted-foreground"
                         >
-                            <span class="font-medium text-gray-600"
+                            <span class="font-medium text-muted-foreground"
                                 >{{ t('cart.orderSummary.without') }}:</span
                             >
                             <span class="ml-1">
@@ -91,51 +93,55 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                 </div>
             </div>
 
-            <div class="mt-3 space-y-1 border-t pt-3">
+            <div class="mt-3 space-y-1 border-border pt-3">
                 <div
                     v-if="vat12Total"
-                    class="flex justify-between text-sm text-gray-600"
+                    class="flex justify-between pt-2 text-sm text-primary"
                 >
                     <span>{{ t('cart.orderSummary.vat12') }}</span>
                     <span>€{{ formatPrice(vat12Total) }}</span>
                 </div>
                 <div
                     v-if="vat21Total"
-                    class="flex justify-between text-sm text-gray-600"
+                    class="flex justify-between pt-2 text-sm text-primary"
                 >
                     <span>{{ t('cart.orderSummary.vat21') }}</span>
                     <span>€{{ formatPrice(vat21Total) }}</span>
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
+                <div
+                    class="flex justify-between border-t border-primary/20 pt-2 text-sm text-primary"
+                >
                     <span>{{ t('cart.orderSummary.totalVat') }}</span>
                     <span>€{{ formatPrice(totalVat) }}</span>
                 </div>
-                <div class="flex justify-between text-sm text-gray-600">
+                <div
+                    class="flex justify-between border-t border-primary/20 pt-2 text-sm text-primary"
+                >
                     <span>{{ t('cart.orderSummary.subtotal') }}</span>
                     <span>€{{ formatPrice(subtotal) }}</span>
                 </div>
                 <div
                     v-if="deliveryFee > 0"
-                    class="flex justify-between border-t border-red-100 pt-2 text-sm text-red-600"
+                    class="flex justify-between border-t border-primary/20 pt-2 text-sm text-primary"
                 >
                     <span>{{ t('cart.orderSummary.deliveryFee') }}</span>
                     <span>+€{{ formatPrice(deliveryFee) }}</span>
                 </div>
                 <div
                     v-if="discountAmount > 0"
-                    class="flex justify-between border-t border-green-100 pt-2 text-sm text-green-600"
+                    class="flex justify-between border-t border-success/20 pt-2 text-sm text-success"
                 >
                     <span>{{ t('cart.orderSummary.loyaltyDiscount') }}</span>
                     <span>-€{{ formatPrice(discountAmount) }}</span>
                 </div>
                 <div class="flex justify-between pt-2 text-base font-semibold">
                     <span>{{ t('cart.orderSummary.total') }}</span>
-                    <span class="text-red-500"
+                    <span class="text-primary"
                         >€{{ formatPrice(totalIncVat) }}</span
                     >
                 </div>
                 <div
-                    class="mt-2 flex justify-between border-t border-gray-100 pt-2 text-xs text-amber-600"
+                    class="mt-2 flex justify-between border-t border-border pt-2 text-xs text-warning"
                 >
                     <span>🌟 {{ t('cart.orderSummary.pointsToEarn') }}</span>
                     <span class="font-medium">

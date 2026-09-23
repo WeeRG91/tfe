@@ -5,6 +5,22 @@ export default {
     },
     invalidDate: 'Ongültegen Datum',
     language: 'Sprooch',
+    appearance: {
+        open: 'Theema änneren',
+        title: 'Wielt Äert Erscheinungsbild',
+        description:
+            'Benotzt d’Restauranttheema, suivéiert Ärem Apparat oder wielt Äert eegent Theema.',
+        themes: 'Verfügbar Theemen',
+        restaurantDefault: {
+            title: 'Restaurantstandard',
+            description:
+                'D’Theema benotzen, dat vum Restaurant ausgewielt gouf.',
+        },
+        system: {
+            title: 'System',
+            description: 'Dem Erscheinungsbild vun dësem Apparat suivéieren.',
+        },
+    },
     orderStatus: {
         pending: 'Waart op Bestätegung',
         confirmed: 'Bestätegt',

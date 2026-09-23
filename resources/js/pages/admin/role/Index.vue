@@ -269,7 +269,7 @@ onUnmounted(() => {
             <div v-else-if="roles.length > 0">
                 <div v-for="r in roles" :key="r.id" class="mb-2">
                     <div
-                        class="overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-200 hover:border-primary/50 dark:border-sidebar-border"
+                        class="overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-200 hover:border-primary/50"
                     >
                         <div
                             class="flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-accent/5"
@@ -366,7 +366,7 @@ onUnmounted(() => {
                                             <span
                                                 v-for="permission in permissions"
                                                 :key="permission.id"
-                                                class="inline-flex items-center rounded-md bg-gray-500/10 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-gray-500/20 dark:text-gray-400"
+                                                class="inline-flex items-center rounded-md bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
                                             >
                                                 {{ permission.name }}
                                             </span>
@@ -412,7 +412,7 @@ onUnmounted(() => {
                                 class="flex w-full items-center gap-2 rounded-sm px-3 py-1.5 text-sm"
                                 :class="
                                     r.name === 'Admin'
-                                        ? 'cursor-not-allowed text-gray-300'
+                                        ? 'cursor-not-allowed text-muted-foreground/50'
                                         : 'cursor-pointer text-destructive hover:bg-destructive/10'
                                 "
                             >

@@ -51,7 +51,7 @@ const submit = () => {
     >
         <div
             v-if="status"
-            class="mb-4 rounded-2xl border border-green-100 bg-green-50/50 p-4 text-center text-sm font-medium text-green-700 backdrop-blur-sm"
+            class="mb-4 rounded-2xl border border-success/50 bg-success/10 p-4 text-center text-sm font-medium text-foreground backdrop-blur-sm"
         >
             {{ status }}
         </div>
@@ -60,7 +60,7 @@ const submit = () => {
             <div>
                 <label
                     for="email"
-                    class="mb-1.5 block text-sm font-medium text-gray-700"
+                    class="mb-1.5 block text-sm font-medium text-foreground"
                 >
                     {{ t('login.fields.email') }}
                 </label>
@@ -69,16 +69,16 @@ const submit = () => {
                     v-model="loginForm.email"
                     type="email"
                     placeholder="email@example.com"
-                    class="w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-2.5 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                    class="w-full rounded-xl border border-border bg-background/50 px-4 py-2.5 text-sm text-foreground backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground focus:border-ring focus:bg-background focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                     :class="{
-                        'border-red-300 focus:border-red-400':
+                        'border-destructive focus:border-destructive':
                             loginForm.errors.email,
                     }"
                     required
                 />
                 <p
                     v-if="loginForm.errors.email"
-                    class="mt-1.5 text-sm text-red-500"
+                    class="mt-1.5 text-sm text-destructive"
                 >
                     {{ loginForm.errors.email }}
                 </p>
@@ -87,7 +87,7 @@ const submit = () => {
             <div>
                 <label
                     for="password"
-                    class="mb-1.5 block text-sm font-medium text-gray-700"
+                    class="mb-1.5 block text-sm font-medium text-foreground"
                 >
                     {{ t('login.fields.password') }}
                 </label>
@@ -97,9 +97,9 @@ const submit = () => {
                         v-model="loginForm.password"
                         :type="showPassword ? 'text' : 'password'"
                         :placeholder="t('login.placeholders.password')"
-                        class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full rounded-xl border border-border bg-background/50 py-2.5 pr-12 pl-4 text-sm text-foreground backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground focus:border-ring focus:bg-background focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         :class="{
-                            'border-red-300 focus:border-red-400':
+                            'border-destructive focus:border-destructive':
                                 loginForm.errors.password,
                         }"
                         required
@@ -107,7 +107,7 @@ const submit = () => {
                     <button
                         type="button"
                         @click="showPassword = !showPassword"
-                        class="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-gray-400 transition-colors hover:text-gray-600"
+                        class="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-muted-foreground transition-colors hover:text-foreground"
                         aria-label="Toggle password visibility"
                     >
                         <Eye v-if="showPassword" class="h-5 w-5" />
@@ -116,7 +116,7 @@ const submit = () => {
                 </div>
                 <p
                     v-if="loginForm.errors.password"
-                    class="mt-1.5 text-sm text-red-500"
+                    class="mt-1.5 text-sm text-destructive"
                 >
                     {{ loginForm.errors.password }}
                 </p>
@@ -131,9 +131,9 @@ const submit = () => {
                         id="remember"
                         v-model="loginForm.remember"
                         :tabindex="3"
-                        class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-0 focus:ring-offset-0"
+                        class="h-4 w-4 rounded border-border text-foreground focus:ring-0 focus:ring-offset-0"
                     />
-                    <span class="text-sm text-gray-600">
+                    <span class="text-sm text-muted-foreground">
                         {{ t('login.fields.rememberMe') }}
                     </span>
                 </Label>
@@ -142,12 +142,12 @@ const submit = () => {
             <button
                 type="submit"
                 :disabled="loginForm.processing"
-                class="group w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
+                class="group w-full rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary disabled:hover:shadow-none"
             >
                 <span class="flex items-center justify-center gap-2">
                     <span
                         v-if="loginForm.processing"
-                        class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                        class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                     ></span>
                     <span v-else>{{ t('auth.buttons.login') }}</span>
                 </span>
@@ -157,13 +157,13 @@ const submit = () => {
         <template #footer>
             <div class="space-y-6">
                 <div
-                    class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
+                    class="rounded-2xl border border-border bg-muted/50 p-4 backdrop-blur-sm"
                 >
-                    <p class="text-center text-sm text-gray-500">
+                    <p class="text-center text-sm text-muted-foreground">
                         {{ t('auth.links.needHelp') }}
                         <Link
                             href="/contact"
-                            class="font-medium text-gray-900 transition-colors hover:text-gray-600"
+                            class="font-medium text-foreground transition-colors hover:text-foreground"
                         >
                             {{ t('auth.links.contactSupport') }}
                         </Link>
@@ -174,7 +174,7 @@ const submit = () => {
                     <Link
                         :href="request()"
                         v-if="canResetPassword"
-                        class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
+                        class="group flex items-center gap-1.5 text-sm text-muted-foreground transition-all hover:text-foreground"
                     >
                         <MoveLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
@@ -184,12 +184,12 @@ const submit = () => {
 
                     <div
                         v-if="canResetPassword"
-                        class="h-4 w-px bg-gray-200"
+                        class="h-4 w-px bg-border"
                     ></div>
 
                     <Link
                         :href="register()"
-                        class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
+                        class="group flex items-center gap-1.5 text-sm text-muted-foreground transition-all hover:text-foreground"
                     >
                         {{ t('auth.links.createAccount') }}
                         <MoveRight

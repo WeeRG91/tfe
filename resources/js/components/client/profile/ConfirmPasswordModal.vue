@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios';
-import { Eye, EyeOff, Shield, X } from 'lucide-vue-next';
+import { Eye, EyeOff, Loader, Shield, X } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
@@ -71,6 +71,9 @@ const content = computed(() => {
             };
     }
 });
+
+const isDestructiveAction = computed(() => props.action === 'disable-2fa');
+
 const resetForm = () => {
     password.value = '';
     passwordError.value = '';
@@ -159,28 +162,39 @@ watch(
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
             @click.self="closeModal"
         >
-            <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div
+                class="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl"
+            >
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="rounded-full bg-red-100 p-2.5 text-red-600">
+                        <div
+                            class="rounded-full p-2.5"
+                            :class="
+                                isDestructiveAction
+                                    ? 'bg-destructive/10 text-destructive'
+                                    : 'bg-primary/10 text-primary'
+                            "
+                        >
                             <component :is="content.icon" class="h-5 w-5" />
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900">
+                            <h3
+                                class="text-lg font-semibold text-card-foreground"
+                            >
                                 {{ content.title }}
                             </h3>
-                            <p class="mt-0.5 text-sm text-gray-500">
+                            <p class="mt-0.5 text-sm text-muted-foreground">
                                 {{ content.description }}
                             </p>
                         </div>
                     </div>
                     <button
                         @click="closeModal"
-                        class="rounded-lg p-1 hover:bg-gray-100"
+                        class="rounded-lg p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         :disabled="isConfirming"
                         type="button"
                     >
-                        <X class="h-5 w-5 text-gray-500" />
+                        <X class="h-5 w-5" />
                     </button>
                 </div>
 
@@ -192,15 +206,15 @@ watch(
                         <input
                             id="confirm-password-modal"
                             v-model="password"
-                            type="password"
+                            :type="showPassword ? 'text' : 'password'"
                             :placeholder="
                                 t(
                                     'profile.confirmPasswordModal.passwordPlaceholder',
                                 )
                             "
-                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-10 text-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:outline-none"
+                            class="w-full rounded-lg border border-input bg-background px-4 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                             :class="{
-                                'border-red-500 focus:ring-red-200':
+                                'border-destructive ring-2 ring-destructive/20':
                                     passwordError,
                             }"
                             @keyup="handleKeyup"
@@ -209,7 +223,7 @@ watch(
                         />
                         <button
                             @click="showPassword = !showPassword"
-                            class="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             type="button"
                             :disabled="isConfirming"
                         >
@@ -217,7 +231,10 @@ watch(
                             <EyeOff v-else class="h-4 w-4" />
                         </button>
                     </div>
-                    <p v-if="passwordError" class="mt-1.5 text-sm text-red-500">
+                    <p
+                        v-if="passwordError"
+                        class="mt-1.5 text-sm text-destructive"
+                    >
                         {{ passwordError }}
                     </p>
                 </div>
@@ -225,7 +242,7 @@ watch(
                 <div class="mt-6 flex gap-3">
                     <button
                         @click="closeModal"
-                        class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                        class="flex-1 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                         :disabled="isConfirming"
                         type="button"
                     >
@@ -234,33 +251,21 @@ watch(
                     <button
                         @click="confirmPassword"
                         :disabled="isConfirming || !password"
-                        class="flex-1 rounded-lg bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                         type="button"
+                        :class="
+                            isDestructiveAction
+                                ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                                : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        "
                     >
                         <span
                             v-if="isConfirming"
                             class="flex items-center justify-center gap-2"
                         >
-                            <svg
-                                class="h-4 w-4 animate-spin"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <circle
-                                    class="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    stroke-width="4"
-                                ></circle>
-                                <path
-                                    class="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                            </svg>
+                            <Loader
+                                class="animate-spin text-primary-foreground"
+                            />
                             {{ t('profile.confirmPasswordModal.confirming') }}
                         </span>
                         <span v-else>{{ content.confirmText }}</span>

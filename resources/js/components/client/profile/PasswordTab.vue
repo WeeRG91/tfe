@@ -48,28 +48,30 @@ const updatePassword = () => {
             <h2 class="text-xl font-semibold md:text-2xl">
                 {{ t('profile.passwordTab.title') }}
             </h2>
-            <p class="mt-1 text-sm text-gray-500">
+            <p class="mt-1 text-sm text-muted-foreground">
                 {{ t('profile.passwordTab.desciption') }}
             </p>
         </div>
 
         <form @submit.prevent="updatePassword" class="space-y-4">
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700">
+                <label
+                    class="mb-1.5 block text-sm font-medium text-card-foreground"
+                >
                     {{ t('profile.passwordTab.form.currentPassword') }}
                 </label>
                 <div class="relative">
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                     >
-                        <Lock class="h-5 w-5 text-gray-400" />
+                        <Lock class="h-5 w-5 text-muted-foreground" />
                     </div>
                     <input
                         v-model="passwordForm.current_password"
                         :type="showCurrentPassword ? 'text' : 'password'"
-                        class="w-full rounded-lg border border-gray-300 bg-white py-2 pr-12 pl-10 text-sm transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                        class="w-full rounded-lg border border-input bg-background py-2 pr-12 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                         :class="{
-                            'border-red-500 ring-2 ring-red-500/20':
+                            'border-destructive ring-2 ring-destructive/20':
                                 passwordForm.errors.current_password,
                         }"
                         :placeholder="
@@ -81,7 +83,7 @@ const updatePassword = () => {
                     <button
                         type="button"
                         @click="showCurrentPassword = !showCurrentPassword"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
                     >
                         <Eye v-if="!showCurrentPassword" class="h-5 w-5" />
                         <EyeOff v-else class="h-5 w-5" />
@@ -89,28 +91,30 @@ const updatePassword = () => {
                 </div>
                 <p
                     v-if="passwordForm.errors.current_password"
-                    class="mt-1.5 text-xs text-red-500"
+                    class="mt-1.5 text-xs text-destructive"
                 >
                     {{ passwordForm.errors.current_password }}
                 </p>
             </div>
 
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700">
+                <label
+                    class="mb-1.5 block text-sm font-medium text-card-foreground"
+                >
                     {{ t('profile.passwordTab.form.newPassword') }}
                 </label>
                 <div class="relative">
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                     >
-                        <Lock class="h-5 w-5 text-gray-400" />
+                        <Lock class="h-5 w-5 text-muted-foreground" />
                     </div>
                     <input
                         v-model="passwordForm.password"
                         :type="showNewPassword ? 'text' : 'password'"
-                        class="w-full rounded-lg border border-gray-300 bg-white py-2 pr-12 pl-10 text-sm transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                        class="w-full rounded-lg border border-input bg-background py-2 pr-12 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                         :class="{
-                            'border-red-500 ring-2 ring-red-500/20':
+                            'border-destructive ring-2 ring-destructive/20':
                                 passwordForm.errors.password,
                         }"
                         :placeholder="
@@ -120,7 +124,7 @@ const updatePassword = () => {
                     <button
                         type="button"
                         @click="showNewPassword = !showNewPassword"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
                     >
                         <Eye v-if="!showNewPassword" class="h-5 w-5" />
                         <EyeOff v-else class="h-5 w-5" />
@@ -128,7 +132,7 @@ const updatePassword = () => {
                 </div>
                 <p
                     v-if="passwordForm.errors.password"
-                    class="mt-1.5 text-xs text-red-500"
+                    class="mt-1.5 text-xs text-destructive"
                 >
                     {{ passwordForm.errors.password }}
                 </p>
@@ -146,11 +150,11 @@ const updatePassword = () => {
                         />
                     </div>
                     <div
-                        class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-gray-400"
+                        class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-muted-foreground"
                     >
                         <span
                             :class="{
-                                'text-emerald-500': passwordChecks.length,
+                                'text-success': passwordChecks.length,
                             }"
                             class="transition-colors duration-200"
                         >
@@ -163,7 +167,7 @@ const updatePassword = () => {
                         </span>
                         <span
                             :class="{
-                                'text-emerald-500': passwordChecks.uppercase,
+                                'text-success': passwordChecks.uppercase,
                             }"
                             class="transition-colors duration-200"
                         >
@@ -176,7 +180,7 @@ const updatePassword = () => {
                         </span>
                         <span
                             :class="{
-                                'text-emerald-500': passwordChecks.lowercase,
+                                'text-success': passwordChecks.lowercase,
                             }"
                             class="transition-colors duration-200"
                         >
@@ -189,7 +193,7 @@ const updatePassword = () => {
                         </span>
                         <span
                             :class="{
-                                'text-emerald-500': passwordChecks.number,
+                                'text-success': passwordChecks.number,
                             }"
                             class="transition-colors duration-200"
                         >
@@ -200,7 +204,7 @@ const updatePassword = () => {
                         </span>
                         <span
                             :class="{
-                                'text-emerald-500': passwordChecks.symbol,
+                                'text-success': passwordChecks.symbol,
                             }"
                             class="transition-colors duration-200"
                         >
@@ -214,21 +218,23 @@ const updatePassword = () => {
             </div>
 
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700">
+                <label
+                    class="mb-1.5 block text-sm font-medium text-card-foreground"
+                >
                     {{ t('profile.passwordTab.form.confirmPassword') }}
                 </label>
                 <div class="relative">
                     <div
                         class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
                     >
-                        <Lock class="h-5 w-5 text-gray-400" />
+                        <Lock class="h-5 w-5 text-muted-foreground" />
                     </div>
                     <input
                         v-model="passwordForm.password_confirmation"
                         :type="showConfirmPassword ? 'text' : 'password'"
-                        class="w-full rounded-lg border border-gray-300 bg-white py-2 pr-12 pl-10 text-sm transition-colors focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                        class="w-full rounded-lg border border-input bg-background py-2 pr-12 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                         :class="{
-                            'border-red-500 ring-2 ring-red-500/20':
+                            'border-destructive ring-2 ring-destructive/20':
                                 passwordForm.errors.password_confirmation,
                         }"
                         :placeholder="
@@ -240,7 +246,7 @@ const updatePassword = () => {
                     <button
                         type="button"
                         @click="showConfirmPassword = !showConfirmPassword"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
                     >
                         <Eye v-if="!showConfirmPassword" class="h-5 w-5" />
                         <EyeOff v-else class="h-5 w-5" />
@@ -248,7 +254,7 @@ const updatePassword = () => {
                 </div>
                 <p
                     v-if="passwordForm.errors.password_confirmation"
-                    class="mt-1.5 text-xs text-red-500"
+                    class="mt-1.5 text-xs text-destructive"
                 >
                     {{ passwordForm.errors.password_confirmation }}
                 </p>
@@ -257,12 +263,12 @@ const updatePassword = () => {
             <button
                 type="submit"
                 :disabled="passwordForm.processing"
-                class="flex items-center gap-2 rounded-lg bg-red-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                class="flex items-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
                 <Save v-if="!passwordForm.processing" class="h-4 w-4" />
                 <span
                     v-if="passwordForm.processing"
-                    class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"
+                    class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/20 border-t-primary-foreground"
                 ></span>
                 {{
                     passwordForm.processing

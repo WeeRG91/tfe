@@ -185,9 +185,7 @@ const submit = () => {
             class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4"
         >
             <form @submit.prevent="submit" class="space-y-6">
-                <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
-                >
+                <div class="rounded-xl border border-sidebar-border/70 p-6">
                     <h3 class="mb-4 text-lg font-semibold text-foreground">
                         {{ t('user.form.sections.userInformation') }}
                     </h3>
@@ -204,7 +202,7 @@ const submit = () => {
                                 id="user-name"
                                 v-model="userForm.name"
                                 type="text"
-                                class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
+                                class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 :placeholder="
                                     t('user.form.placeholders.fullName')
                                 "
@@ -212,7 +210,7 @@ const submit = () => {
                             />
                             <p
                                 v-if="userForm.errors.name"
-                                class="mt-2 text-sm text-red-600 dark:text-red-400"
+                                class="mt-2 text-sm text-destructive"
                             >
                                 {{ userForm.errors.name }}
                             </p>
@@ -229,7 +227,7 @@ const submit = () => {
                                 id="user-email"
                                 v-model="userForm.email"
                                 type="email"
-                                class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
+                                class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
                                 :placeholder="
                                     t('user.form.placeholders.emailAddress')
                                 "
@@ -237,7 +235,7 @@ const submit = () => {
                             />
                             <p
                                 v-if="userForm.errors.email"
-                                class="mt-2 text-sm text-red-600 dark:text-red-400"
+                                class="mt-2 text-sm text-destructive"
                             >
                                 {{ userForm.errors.email }}
                             </p>
@@ -247,7 +245,7 @@ const submit = () => {
 
                 <div
                     v-if="can(RolePermissionEnum.ROLE_UPDATE)"
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+                    class="rounded-xl border border-sidebar-border/70 p-6"
                 >
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold text-foreground">
@@ -268,7 +266,7 @@ const submit = () => {
                         <select
                             id="user-role"
                             v-model="userForm.role"
-                            class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
+                            class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
                             required
                         >
                             <option :value="null">
@@ -284,7 +282,7 @@ const submit = () => {
                         </select>
                         <p
                             v-if="userForm.errors.role"
-                            class="mt-2 text-sm text-red-600 dark:text-red-400"
+                            class="mt-2 text-sm text-destructive"
                         >
                             {{ userForm.errors.role }}
                         </p>
@@ -293,7 +291,7 @@ const submit = () => {
 
                 <div
                     v-if="can(RolePermissionEnum.ROLE_UPDATE)"
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+                    class="rounded-xl border border-sidebar-border/70 p-6"
                 >
                     <div class="mb-6 flex items-center justify-between">
                         <div>
@@ -319,7 +317,7 @@ const submit = () => {
                                 permissions, category
                             ) in groupedPermissions"
                             :key="category"
-                            class="overflow-hidden rounded-lg border border-sidebar-border/50 transition-all duration-200 hover:border-sidebar-border/70 dark:border-sidebar-border"
+                            class="overflow-hidden rounded-lg border border-sidebar-border/50 transition-all duration-200 hover:border-sidebar-border/70"
                         >
                             <div
                                 @click="toggleCategory(category)"
@@ -405,7 +403,7 @@ const submit = () => {
 
                     <p
                         v-if="userForm.errors.permissions"
-                        class="mt-4 text-sm text-red-600 dark:text-red-400"
+                        class="mt-4 text-sm text-destructive"
                     >
                         {{ userForm.errors.permissions }}
                     </p>
@@ -414,7 +412,7 @@ const submit = () => {
                 <div class="flex justify-end gap-4">
                     <Link
                         :href="user.index().url"
-                        class="flex items-center justify-center rounded-lg border border-sidebar-border/70 px-6 py-2.5 text-foreground transition-all duration-200 hover:border-sidebar-border hover:bg-muted/50 sm:w-32 dark:border-sidebar-border"
+                        class="flex items-center justify-center rounded-lg border border-sidebar-border/70 px-6 py-2.5 text-foreground transition-all duration-200 hover:border-sidebar-border hover:bg-muted/50 sm:w-32"
                     >
                         {{ t('admin.buttons.cancel') }}
                     </Link>

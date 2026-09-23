@@ -357,13 +357,13 @@ onMounted(() => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
-                <p class="text-sm tracking-widest text-red-500 uppercase">
+                <p class="text-sm tracking-widest text-primary uppercase">
                     [ Secure Checkout ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     Place Your Order
                 </h1>
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="mt-1 text-sm text-muted-foreground">
                     Complete your order details below
                 </p>
             </div>

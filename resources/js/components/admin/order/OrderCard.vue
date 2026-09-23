@@ -10,13 +10,13 @@ import { DeliveryTypeEnum } from '@/types/delivery';
 import { OrderStatusEnum, OrderType, OrderTypeEnum } from '@/types/order';
 import { OrderPermissionEnum } from '@/types/permission';
 import {
+    Building2,
     ChevronDown,
     ChevronUp,
     Coffee,
     LoaderCircle,
     MapPin,
     User,
-    Building2,
 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -272,7 +272,7 @@ watch(
                         v-for="(btn, index) in orderStatusActions"
                         :key="index"
                         @click="btn.action"
-                        class="flex-1 rounded-md px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white transition-colors md:px-3"
+                        class="flex-1 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors md:px-3"
                         :class="btn.class"
                     >
                         <span
@@ -300,7 +300,7 @@ watch(
                                 () => cancelOrder(),
                             )
                         "
-                        class="flex-1 rounded-md bg-red-500 px-2 py-1.5 text-xs font-medium whitespace-nowrap text-white transition-colors hover:bg-red-700 md:px-3"
+                        class="flex-1 rounded-md bg-destructive px-3 py-2 text-sm font-medium whitespace-nowrap text-destructive-foreground transition-colors hover:bg-destructive/90"
                     >
                         <span>
                             {{
@@ -315,7 +315,7 @@ watch(
                 <button
                     v-if="can(OrderPermissionEnum.ORDER_VIEW)"
                     @click="openOrderDetails(order)"
-                    class="rounded-md border border-sidebar-border/70 px-2 py-1.5 text-xs font-medium whitespace-nowrap transition-colors hover:bg-sidebar-accent md:px-3"
+                    class="rounded-md border border-sidebar-border/70 px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors hover:bg-sidebar-accent md:px-3"
                 >
                     {{ t('confirmedOrder.orderCard.details') }}
                 </button>
@@ -412,7 +412,7 @@ watch(
                         v-for="(btn, index) in orderStatusActions"
                         :key="index"
                         @click="btn.action"
-                        class="flex-1 rounded-md px-3 py-2 text-sm font-medium text-white transition-colors"
+                        class="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors"
                         :class="btn.class"
                     >
                         <span
@@ -429,11 +429,27 @@ watch(
                 </div>
 
                 <button
+                    v-if="order.status.value === OrderStatusEnum.CONFIRMED"
+                    @click="
+                        openConfirmModal(
+                            t('confirmedOrder.orderCard.cancelConfirmation'),
+                            'destructive',
+                            () => cancelOrder(),
+                        )
+                    "
+                    class="flex-1 rounded-md bg-destructive px-3 py-2 text-sm font-medium whitespace-nowrap text-destructive-foreground transition-colors hover:bg-destructive/90"
+                >
+                    <span>
+                        {{ t('confirmedOrder.orderCard.actions.cancelOrder') }}
+                    </span>
+                </button>
+
+                <button
                     v-if="can(OrderPermissionEnum.ORDER_VIEW)"
                     @click="openOrderDetails(order)"
                     class="w-full rounded-md border border-sidebar-border/70 px-3 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent"
                 >
-                    {{ t('confirmedOrder.orderCard.viewFullDetails') }}
+                    {{ t('confirmedOrder.orderCard.details') }}
                 </button>
             </div>
         </div>

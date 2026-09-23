@@ -10,7 +10,7 @@ const { message } = useRestaurantClosureMessage();
 <template>
     <section
         v-if="restaurantStore.isClosed"
-        class="closure-banner border-b border-amber-200 text-amber-950"
+        class="closure-banner border-b border-warning/30 bg-gradient-to-r from-warning/10 via-warning/15 to-warning/10 text-foreground shadow-sm shadow-warning/10"
         role="status"
         aria-live="polite"
         aria-atomic="true"
@@ -34,7 +34,7 @@ const { message } = useRestaurantClosureMessage();
                             class="banner-message flex shrink-0 items-center gap-3 text-sm font-medium"
                         >
                             <span
-                                class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-600"
+                                class="h-1.5 w-1.5 shrink-0 rounded-full bg-warning"
                             />
 
                             {{ message }}
@@ -47,12 +47,6 @@ const { message } = useRestaurantClosureMessage();
 </template>
 
 <style scoped>
-.closure-banner {
-    background: linear-gradient(110deg, #fff7ed 0%, #fef3c7 50%, #fffbeb 100%);
-
-    box-shadow: 0 3px 12px rgb(180 83 9 / 6%);
-}
-
 .banner-window {
     width: 100%;
     container-type: inline-size;
@@ -68,7 +62,6 @@ const { message } = useRestaurantClosureMessage();
 
 .banner-group {
     min-width: 100vw;
-    min-width: 100cqw;
 }
 
 .banner-track {

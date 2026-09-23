@@ -68,15 +68,16 @@ export const formatAddress = (address: any) => {
 
 export const getOrderStatusVariant = (status: OrderStatusEnum) => {
     const variants: Record<OrderStatusEnum, string> = {
-        [OrderStatusEnum.PENDING]: 'bg-yellow-100 text-yellow-800',
-        [OrderStatusEnum.CONFIRMED]: 'bg-blue-100 text-blue-800',
-        [OrderStatusEnum.PREPARING]: 'bg-yellow-100 text-yellow-800',
-        [OrderStatusEnum.READY]: 'bg-purple-100 text-purple-800',
-        [OrderStatusEnum.DELIVERING]: 'bg-purple-100 text-purple-800',
-        [OrderStatusEnum.COMPLETED]: 'bg-green-100 text-green-800',
-        [OrderStatusEnum.CANCELLED]: 'bg-red-100 text-red-800',
+        [OrderStatusEnum.PENDING]: 'bg-warning/10 text-warning',
+        [OrderStatusEnum.CONFIRMED]: 'bg-info/10 text-info',
+        [OrderStatusEnum.PREPARING]: 'bg-warning/10 text-warning',
+        [OrderStatusEnum.READY]: 'bg-primary/10 text-primary',
+        [OrderStatusEnum.DELIVERING]: 'bg-info/10 text-info',
+        [OrderStatusEnum.COMPLETED]: 'bg-success/10 text-success',
+        [OrderStatusEnum.CANCELLED]: 'bg-destructive/10 text-destructive',
     };
-    return variants[status] || 'bg-gray-100 text-gray-800';
+
+    return variants[status] || 'bg-muted text-muted-foreground';
 };
 
 export const getOrderStatusIcon = (status: OrderStatusEnum) => {
@@ -111,14 +112,15 @@ export const getPaymentMethodIcon = (method: PaymentMethodEnum) => {
 
 export const getPaymentStatusVariant = (status: PaymentStatusEnum) => {
     const variants: Record<PaymentStatusEnum, string> = {
-        [PaymentStatusEnum.PENDING]: 'bg-yellow-100 text-yellow-800',
-        [PaymentStatusEnum.PAID]: 'bg-green-100 text-green-800',
-        [PaymentStatusEnum.FAILED]: 'bg-red-100 text-red-800',
-        [PaymentStatusEnum.REFUND_PENDING]: 'bg-yellow-100 text-yellow-800',
-        [PaymentStatusEnum.REFUNDED]: 'bg-orange-100 text-orange-800',
-        [PaymentStatusEnum.REFUND_FAILED]: 'bg-red-100 text-red-800',
+        [PaymentStatusEnum.PENDING]: 'bg-warning/10 text-warning',
+        [PaymentStatusEnum.PAID]: 'bg-success/10 text-success',
+        [PaymentStatusEnum.FAILED]: 'bg-destructive/10 text-destructive',
+        [PaymentStatusEnum.REFUND_PENDING]: 'bg-warning/10 text-warning',
+        [PaymentStatusEnum.REFUNDED]: 'bg-info/10 text-info',
+        [PaymentStatusEnum.REFUND_FAILED]: 'bg-destructive/10 text-destructive',
     };
-    return variants[status] || 'bg-gray-100 text-gray-800';
+
+    return variants[status] || 'bg-muted text-muted-foreground';
 };
 
 export const getPaymentStatusIcon = (status: PaymentStatusEnum) => {
@@ -133,7 +135,7 @@ export const getPaymentStatusIcon = (status: PaymentStatusEnum) => {
         [PaymentStatusEnum.REFUNDED]: CheckCircle,
         [PaymentStatusEnum.REFUND_FAILED]: AlertCircle,
     };
-    return variants[status] || 'bg-gray-100 text-gray-800';
+    return variants[status] || AlertCircle;
 };
 
 export const getNotificationIcon = (type: NotificationTypeEnum) => {
@@ -156,32 +158,34 @@ export const getNotificationIcon = (type: NotificationTypeEnum) => {
 
 export const getNotificationIconBgColor = (type: NotificationTypeEnum) => {
     const colors: Record<NotificationTypeEnum, string> = {
-        [NotificationTypeEnum.ORDER_CONFIRMED]: 'bg-green-100',
-        [NotificationTypeEnum.ORDER_READY]: 'bg-blue-100',
-        [NotificationTypeEnum.ORDER_DELIVERING]: 'bg-yellow-100',
-        [NotificationTypeEnum.ORDER_COMPLETED]: 'bg-purple-100',
-        [NotificationTypeEnum.ORDER_CANCELLED]: 'bg-red-100',
-        [NotificationTypeEnum.DISH_CREATED]: 'bg-blue-100',
-        [NotificationTypeEnum.DRINK_CREATED]: 'bg-blue-100',
-        [NotificationTypeEnum.PROMOTION_CREATED]: 'bg-pink-100',
-        [NotificationTypeEnum.SYSTEM_ANNOUNCEMENT]: 'bg-red-100',
+        [NotificationTypeEnum.ORDER_CONFIRMED]: 'bg-success/10',
+        [NotificationTypeEnum.ORDER_READY]: 'bg-info/10',
+        [NotificationTypeEnum.ORDER_DELIVERING]: 'bg-warning/10',
+        [NotificationTypeEnum.ORDER_COMPLETED]: 'bg-success/10',
+        [NotificationTypeEnum.ORDER_CANCELLED]: 'bg-destructive/10',
+        [NotificationTypeEnum.DISH_CREATED]: 'bg-primary/10',
+        [NotificationTypeEnum.DRINK_CREATED]: 'bg-info/10',
+        [NotificationTypeEnum.PROMOTION_CREATED]: 'bg-accent',
+        [NotificationTypeEnum.SYSTEM_ANNOUNCEMENT]: 'bg-destructive/10',
     };
-    return colors[type] || 'bg-gray-100';
+
+    return colors[type] || 'bg-muted';
 };
 
 export const getNotificationIconColor = (type: NotificationTypeEnum) => {
     const colors: Record<NotificationTypeEnum, string> = {
-        [NotificationTypeEnum.ORDER_CONFIRMED]: 'text-green-600',
-        [NotificationTypeEnum.ORDER_READY]: 'text-blue-600',
-        [NotificationTypeEnum.ORDER_DELIVERING]: 'text-yellow-600',
-        [NotificationTypeEnum.ORDER_COMPLETED]: 'text-purple-600',
-        [NotificationTypeEnum.ORDER_CANCELLED]: 'text-red-600',
-        [NotificationTypeEnum.DISH_CREATED]: 'text-blue-600',
-        [NotificationTypeEnum.DRINK_CREATED]: 'text-blue-600',
-        [NotificationTypeEnum.PROMOTION_CREATED]: 'text-pink-600',
-        [NotificationTypeEnum.SYSTEM_ANNOUNCEMENT]: 'text-red-600',
+        [NotificationTypeEnum.ORDER_CONFIRMED]: 'text-success',
+        [NotificationTypeEnum.ORDER_READY]: 'text-info',
+        [NotificationTypeEnum.ORDER_DELIVERING]: 'text-warning',
+        [NotificationTypeEnum.ORDER_COMPLETED]: 'text-success',
+        [NotificationTypeEnum.ORDER_CANCELLED]: 'text-destructive',
+        [NotificationTypeEnum.DISH_CREATED]: 'text-primary',
+        [NotificationTypeEnum.DRINK_CREATED]: 'text-info',
+        [NotificationTypeEnum.PROMOTION_CREATED]: 'text-accent-foreground',
+        [NotificationTypeEnum.SYSTEM_ANNOUNCEMENT]: 'text-destructive',
     };
-    return colors[type] || 'text-gray-600';
+
+    return colors[type] || 'text-muted-foreground';
 };
 
 export const notificationRoutes: Record<
@@ -204,16 +208,24 @@ export const getInitials = (name: string) => {
 
 export const getUserAvatarColor = (userId: number) => {
     const colors = [
-        'bg-blue-500',
-        'bg-green-500',
-        'bg-purple-500',
-        'bg-pink-500',
-        'bg-yellow-500',
-        'bg-indigo-500',
-        'bg-red-500',
-        'bg-teal-500',
+        'bg-primary text-primary-foreground',
+        'bg-secondary text-secondary-foreground',
+        'bg-accent text-accent-foreground',
     ];
     return colors[userId % colors.length];
+};
+
+export const getCategoryBadgeColor = (categoryValue: number): string => {
+    const colors = [
+        'bg-primary text-primary-foreground',
+        'bg-secondary text-secondary-foreground',
+        'bg-accent text-accent-foreground',
+        'bg-info text-info-foreground',
+        'bg-success text-success-foreground',
+        'bg-warning text-warning-foreground',
+    ];
+
+    return colors[(categoryValue - 1) % colors.length] ?? colors[0]!;
 };
 
 export const getTotalPoints = (transactions: LoyaltyPointTransactionType[]) => {

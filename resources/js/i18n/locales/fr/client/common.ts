@@ -5,6 +5,21 @@ export default {
     },
     invalidDate: 'Date invalide',
     language: 'Langue',
+    appearance: {
+        open: 'Changer de thème',
+        title: 'Choisissez votre apparence',
+        description:
+            'Utilisez le thème du restaurant, suivez votre appareil ou choisissez votre propre thème.',
+        themes: 'Thèmes disponibles',
+        restaurantDefault: {
+            title: 'Thème du restaurant',
+            description: 'Utiliser le thème sélectionné par le restaurant.',
+        },
+        system: {
+            title: 'Système',
+            description: 'Suivre l’apparence de cet appareil.',
+        },
+    },
     orderStatus: {
         pending: 'En attente',
         confirmed: 'Confirmée',

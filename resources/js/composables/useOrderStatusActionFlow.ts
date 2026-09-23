@@ -64,7 +64,7 @@ export function useOrderStatusActionFlow(
                 label: t('confirmedOrder.orderCard.actions.startPreparing'),
                 action: () =>
                     updateStatus(nextStatus!, ActionEnum.STARTPREPARING),
-                class: 'bg-blue-500 hover:bg-blue-700',
+                class: 'bg-info text-info-foreground hover:bg-info/90',
             });
         }
 
@@ -73,14 +73,14 @@ export function useOrderStatusActionFlow(
                 id: ActionEnum.MARKASREADY,
                 label: t('confirmedOrder.orderCard.actions.markAsReady'),
                 action: () => updateStatus(nextStatus!, ActionEnum.MARKASREADY),
-                class: 'bg-yellow-500 hover:bg-yellow-700',
+                class: 'bg-warning text-warning-foreground hover:bg-warning/90',
             });
 
             actions.push({
                 id: ActionEnum.UNDO,
                 label: t('confirmedOrder.orderCard.actions.undo'),
                 action: () => updateStatus(previousStatus!, ActionEnum.UNDO),
-                class: 'bg-gray-500 hover:bg-gray-600',
+                class: 'bg-secondary text-secondary-foreground hover:bg-secondary/90',
             });
         }
 
@@ -93,7 +93,7 @@ export function useOrderStatusActionFlow(
                     ),
                     action: () =>
                         updateStatus(nextStatus!, ActionEnum.STARTDELIVERING),
-                    class: 'bg-purple-500 hover:bg-purple-700',
+                    class: 'bg-info text-info-foreground hover:bg-info/90',
                 });
             } else {
                 actions.push({
@@ -101,7 +101,7 @@ export function useOrderStatusActionFlow(
                     label: t('confirmedOrder.orderCard.actions.completeOrder'),
                     action: () =>
                         updateStatus(nextStatus!, ActionEnum.COMPLETEORDER),
-                    class: 'bg-purple-500 hover:bg-purple-700',
+                    class: 'bg-success text-success-foreground hover:bg-success/90',
                 });
             }
 
@@ -109,7 +109,7 @@ export function useOrderStatusActionFlow(
                 id: ActionEnum.UNDO,
                 label: t('confirmedOrder.orderCard.actions.undo'),
                 action: () => updateStatus(previousStatus!, ActionEnum.UNDO),
-                class: 'bg-gray-500 hover:bg-gray-600',
+                class: 'bg-secondary text-secondary-foreground hover:bg-secondary/90',
             });
         }
 
@@ -119,14 +119,14 @@ export function useOrderStatusActionFlow(
                 label: t('confirmedOrder.orderCard.actions.completeOrder'),
                 action: () =>
                     updateStatus(nextStatus!, ActionEnum.COMPLETEORDER),
-                class: 'bg-purple-500 hover:bg-purple-700',
+                class: 'bg-success text-success-foreground hover:bg-success/90',
             });
 
             actions.push({
                 id: ActionEnum.UNDO,
                 label: t('confirmedOrder.orderCard.actions.undo'),
                 action: () => updateStatus(previousStatus!, ActionEnum.UNDO),
-                class: 'bg-gray-500 hover:bg-gray-600',
+                class: 'bg-secondary text-secondary-foreground hover:bg-secondary/90',
             });
         }
 

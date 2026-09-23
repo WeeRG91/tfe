@@ -88,7 +88,7 @@ const deleteNotification = () => {
         @click="handleNotificationClick"
         class="group flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-all duration-200 hover:shadow-sm"
         :class="[
-            isRead ? 'bg-white' : 'border-l-4 border-l-red-500 bg-red-50/30',
+            isRead ? 'bg-card' : 'border-l-4 border-l-primary bg-primary/5',
             notification.read_at ? 'opacity-80' : '',
         ]"
     >
@@ -105,16 +105,16 @@ const deleteNotification = () => {
 
         <div class="flex-1 space-y-1">
             <div class="flex flex-wrap items-start justify-between gap-2">
-                <h4 class="font-medium text-gray-900">
+                <h4 class="font-medium text-card-foreground">
                     {{ getNotificationTitle(notification) }}
                 </h4>
-                <span class="text-xs text-gray-400">
+                <span class="text-xs text-muted-foreground">
                     {{ formatDateForHumans(notification.created_at) }}
                 </span>
             </div>
 
             <div class="flex flex-wrap items-start justify-between gap-2">
-                <p class="text-sm text-gray-600">
+                <p class="text-sm text-muted-foreground">
                     {{ getNotificationMessage(notification) }}
                 </p>
                 <div
@@ -123,7 +123,7 @@ const deleteNotification = () => {
                     <button
                         v-if="!notification.read_at"
                         @click.stop="markAsRead"
-                        class="rounded-md p-1.5 text-blue-600 transition-colors hover:bg-blue-50"
+                        class="rounded-md p-1.5 text-primary transition-colors hover:bg-accent"
                         :title="t('notification.notificationItem.markAsRead')"
                     >
                         <CheckCircle2 class="h-4 w-4" />
@@ -142,7 +142,7 @@ const deleteNotification = () => {
                                 () => deleteNotification(),
                             )
                         "
-                        class="rounded-md p-1.5 text-red-600 transition-colors hover:bg-red-50"
+                        class="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10"
                         :title="t('notification.notificationItem.delete')"
                     >
                         <Trash2 class="h-4 w-4" />

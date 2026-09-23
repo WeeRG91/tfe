@@ -51,7 +51,7 @@ const message = computed(() => {
                         {{ message }}
                     </p>
 
-                    <p class="font-medium text-gray-700">
+                    <p class="font-medium text-foreground">
                         {{
                             companyDeliveryEnabled
                                 ? t(

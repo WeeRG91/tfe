@@ -32,7 +32,9 @@ const { t } = useI18n();
 
 <template>
     <Dialog :open="props.open" @update:open="props.onClose">
-        <DialogContent class="max-w-2xl">
+        <DialogContent
+            class="max-w-2xl border-border bg-card text-card-foreground"
+        >
             <DialogHeader>
                 <DialogTitle>
                     {{ t('confirmModal.title') }}
@@ -51,24 +53,32 @@ const { t } = useI18n();
                     v-if="type === 'destructive'"
                     variant="destructive"
                     class="w-24"
+                    :disabled="isLoading"
                     @click="confirm"
                 >
                     <span
                         v-if="isLoading"
                         class="flex items-center justify-center"
                     >
-                        <Loader class="animate-spin text-muted-foreground" />
+                        <Loader
+                            class="animate-spin text-destructive-foreground"
+                        />
                     </span>
                     <span v-else>
                         {{ t('confirmModal.confirm') }}
                     </span>
                 </Button>
-                <Button v-if="type === 'info'" @click="confirm" class="w-24">
+                <Button
+                    v-if="type === 'info'"
+                    class="w-24"
+                    :disabled="isLoading"
+                    @click="confirm"
+                >
                     <span
                         v-if="isLoading"
                         class="flex items-center justify-center"
                     >
-                        <Loader class="animate-spin text-muted-foreground" />
+                        <Loader class="animate-spin text-primary-foreground" />
                     </span>
                     <span v-else>
                         {{ t('confirmModal.confirm') }}

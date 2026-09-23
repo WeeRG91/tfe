@@ -107,11 +107,11 @@ const handlePasswordInput = (event: Event) => {
                             />
                         </div>
                         <div
-                            class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-gray-400"
+                            class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-muted-foreground"
                         >
                             <span
                                 :class="{
-                                    'text-emerald-500': passwordChecks.length,
+                                    'text-success': passwordChecks.length,
                                 }"
                                 class="transition-colors duration-200"
                             >
@@ -124,7 +124,7 @@ const handlePasswordInput = (event: Event) => {
                             </span>
                             <span
                                 :class="{
-                                    'text-emerald-500':
+                                    'text-success':
                                         passwordChecks.uppercase,
                                 }"
                                 class="transition-colors duration-200"
@@ -138,7 +138,7 @@ const handlePasswordInput = (event: Event) => {
                             </span>
                             <span
                                 :class="{
-                                    'text-emerald-500':
+                                    'text-success':
                                         passwordChecks.lowercase,
                                 }"
                                 class="transition-colors duration-200"
@@ -152,7 +152,7 @@ const handlePasswordInput = (event: Event) => {
                             </span>
                             <span
                                 :class="{
-                                    'text-emerald-500': passwordChecks.number,
+                                    'text-success': passwordChecks.number,
                                 }"
                                 class="transition-colors duration-200"
                             >
@@ -165,7 +165,7 @@ const handlePasswordInput = (event: Event) => {
                             </span>
                             <span
                                 :class="{
-                                    'text-emerald-500': passwordChecks.symbol,
+                                    'text-success': passwordChecks.symbol,
                                 }"
                                 class="transition-colors duration-200"
                             >
@@ -213,7 +213,7 @@ const handlePasswordInput = (event: Event) => {
                         >
                             <p
                                 v-show="recentlySuccessful"
-                                class="text-sm text-neutral-600"
+                                class="text-sm text-muted-foreground"
                             >
                                 {{ t('setting.password.messages.saved') }}
                             </p>

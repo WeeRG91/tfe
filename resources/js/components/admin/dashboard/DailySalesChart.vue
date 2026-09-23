@@ -6,6 +6,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { computed } from 'vue';
 import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
+import type { ChartColors } from '@/composables/useChartColors';
 
 use([CanvasRenderer, LineChart, GridComponent, TooltipComponent]);
 
@@ -15,6 +16,7 @@ const props = defineProps<{
         sales: number;
     }[];
     periodLabel: string;
+    chartColors: ChartColors;
 }>();
 
 const { t, locale } = useI18n();
@@ -28,8 +30,12 @@ const currencyFormatter = computed(
 );
 
 const option = computed<EChartsCoreOption>(() => ({
+    color: props.chartColors.series,
     tooltip: {
         trigger: 'axis',
+        backgroundColor: props.chartColors.tooltipBackground,
+        borderColor: props.chartColors.gridLine,
+        textStyle: { color: props.chartColors.tooltipText },
         valueFormatter: (value: unknown) =>
             currencyFormatter.value.format(Number(value)),
     },
@@ -45,15 +51,23 @@ const option = computed<EChartsCoreOption>(() => ({
         boundaryGap: false,
         data: props.dailySales.map((day) => day.date),
         axisLabel: {
+            color: props.chartColors.axisText,
             formatter: (value: string) => value.slice(5),
             interval: Math.max(0, Math.ceil(props.dailySales.length / 7) - 1),
+        },
+        axisLine: {
+            lineStyle: { color: props.chartColors.gridLine },
         },
     },
     yAxis: {
         type: 'value',
         min: 0,
         axisLabel: {
+            color: props.chartColors.axisText,
             formatter: (value: number) => `${value} €`,
+        },
+        splitLine: {
+            lineStyle: { color: props.chartColors.gridLine },
         },
     },
     series: [

@@ -6,6 +6,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { computed } from 'vue';
 import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
+import type { ChartColors } from '@/composables/useChartColors';
 
 use([CanvasRenderer, PieChart, LegendComponent, TooltipComponent]);
 
@@ -15,6 +16,7 @@ const props = defineProps<{
         count: number;
     }[];
     periodLabel: string;
+    chartColors: ChartColors;
 }>();
 
 const { t } = useI18n();
@@ -30,8 +32,12 @@ type TypeTooltipPoint = {
 };
 
 const option = computed<EChartsCoreOption>(() => ({
+    color: props.chartColors.series,
     tooltip: {
         trigger: 'item',
+        backgroundColor: props.chartColors.tooltipBackground,
+        borderColor: props.chartColors.gridLine,
+        textStyle: { color: props.chartColors.tooltipText },
         formatter: (params: unknown) => {
             const point = params as TypeTooltipPoint;
 
@@ -44,6 +50,7 @@ const option = computed<EChartsCoreOption>(() => ({
     },
     legend: {
         bottom: 0,
+        textStyle: { color: props.chartColors.axisText },
     },
     series: [
         {

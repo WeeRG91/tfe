@@ -361,13 +361,13 @@ onMounted(() => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
-                <p class="text-sm tracking-widest text-red-500 uppercase">
+                <p class="text-sm tracking-widest text-primary uppercase">
                     [ {{ t('cart.placeOrderPage.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     {{ t('cart.placeOrderPage.title') }}
                 </h1>
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="mt-1 text-sm text-muted-foreground">
                     {{ t('cart.placeOrderPage.description') }}
                 </p>
             </div>

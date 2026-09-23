@@ -145,17 +145,19 @@ watch(
             ></div>
 
             <div
-                class="relative mx-4 w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-2xl"
+                class="relative mx-4 w-full max-w-lg overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-2xl"
             >
                 <div
-                    class="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4"
+                    class="flex items-center justify-between border-b border-primary/20 bg-primary px-6 py-4 text-primary-foreground"
                 >
                     <div class="flex items-center gap-3">
-                        <div class="rounded-full bg-white/20 p-2">
-                            <Home class="h-5 w-5 text-white" />
+                        <div class="rounded-full bg-primary-foreground/15 p-2">
+                            <Home class="h-5 w-5 text-primary-foreground" />
                         </div>
                         <div>
-                            <h2 class="text-xl font-semibold text-white">
+                            <h2
+                                class="text-xl font-semibold text-primary-foreground"
+                            >
                                 {{
                                     addressToEdit
                                         ? t(
@@ -166,7 +168,9 @@ watch(
                                           )
                                 }}
                             </h2>
-                            <p class="mt-0.5 text-xs text-white/80">
+                            <p
+                                class="mt-0.5 text-xs text-primary-foreground/80"
+                            >
                                 {{
                                     addressToEdit
                                         ? t(
@@ -181,7 +185,7 @@ watch(
                     </div>
                     <button
                         @click="closeModal"
-                        class="rounded-full p-1 text-white/80 transition hover:bg-white/20 hover:text-white"
+                        class="rounded-full p-1 text-primary-foreground/80 transition-colors hover:bg-primary-foreground/15 hover:text-primary-foreground"
                     >
                         <X class="h-5 w-5" />
                     </button>
@@ -191,7 +195,7 @@ watch(
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <label
-                                class="mb-1.5 block text-sm font-medium text-gray-700"
+                                class="mb-1.5 block text-sm font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -199,21 +203,21 @@ watch(
                                     )
                                 }}
                                 <span
-                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    class="text-sm text-destructive sm:text-[18px]"
                                     >*</span
                                 >
                             </label>
                             <div class="relative">
                                 <User
-                                    class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                    class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                                 />
                                 <input
                                     v-model="first_name"
                                     type="text"
                                     required
-                                    class="w-full rounded-lg border border-gray-300 py-2.5 pr-3 pl-10 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                                    class="w-full rounded-lg border border-input bg-background py-2.5 pr-3 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                                     :class="{
-                                        'border-red-500':
+                                        'border-destructive':
                                             form.errors.first_name,
                                     }"
                                     :placeholder="
@@ -225,7 +229,7 @@ watch(
                             </div>
                             <p
                                 v-if="form.errors.first_name"
-                                class="mt-1 text-xs text-red-500"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ form.errors.first_name }}
                             </p>
@@ -233,7 +237,7 @@ watch(
 
                         <div>
                             <label
-                                class="mb-1.5 block text-sm font-medium text-gray-700"
+                                class="mb-1.5 block text-sm font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -241,21 +245,22 @@ watch(
                                     )
                                 }}
                                 <span
-                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    class="text-sm text-destructive sm:text-[18px]"
                                     >*</span
                                 >
                             </label>
                             <div class="relative">
                                 <User
-                                    class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                    class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                                 />
                                 <input
                                     v-model="last_name"
                                     type="text"
                                     required
-                                    class="w-full rounded-lg border border-gray-300 py-2.5 pr-3 pl-10 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                                    class="w-full rounded-lg border border-input bg-background py-2.5 pr-3 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                                     :class="{
-                                        'border-red-500': form.errors.last_name,
+                                        'border-destructive':
+                                            form.errors.last_name,
                                     }"
                                     :placeholder="
                                         t(
@@ -266,7 +271,7 @@ watch(
                             </div>
                             <p
                                 v-if="form.errors.last_name"
-                                class="mt-1 text-xs text-red-500"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ form.errors.last_name }}
                             </p>
@@ -275,33 +280,36 @@ watch(
 
                     <div>
                         <label
-                            class="mb-1.5 block text-sm font-medium text-gray-700"
+                            class="mb-1.5 block text-sm font-medium text-card-foreground"
                         >
                             {{
                                 t(
                                     'cart.orderType.deliveryForm.addressModal.phoneNumber',
                                 )
                             }}
-                            <span class="text-sm text-red-500 sm:text-[18px]"
+                            <span
+                                class="text-sm text-destructive sm:text-[18px]"
                                 >*</span
                             >
                         </label>
                         <div class="relative">
                             <Phone
-                                class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                             />
                             <input
                                 v-model="phone"
                                 type="tel"
                                 required
-                                class="w-full rounded-lg border border-gray-300 py-2.5 pr-3 pl-10 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
-                                :class="{ 'border-red-500': form.errors.phone }"
+                                class="w-full rounded-lg border border-input bg-background py-2.5 pr-3 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
+                                :class="{
+                                    'border-destructive': form.errors.phone,
+                                }"
                                 placeholder="+32 123 456 789"
                             />
                         </div>
                         <p
                             v-if="form.errors.phone"
-                            class="mt-1 text-xs text-red-500"
+                            class="mt-1 text-xs text-destructive"
                         >
                             {{ form.errors.phone }}
                         </p>
@@ -309,28 +317,29 @@ watch(
 
                     <div>
                         <label
-                            class="mb-1.5 block text-sm font-medium text-gray-700"
+                            class="mb-1.5 block text-sm font-medium text-card-foreground"
                         >
                             {{
                                 t(
                                     'cart.orderType.deliveryForm.addressModal.streetAddress',
                                 )
                             }}
-                            <span class="text-sm text-red-500 sm:text-[18px]"
+                            <span
+                                class="text-sm text-destructive sm:text-[18px]"
                                 >*</span
                             >
                         </label>
                         <div class="relative">
                             <MapPin
-                                class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                             />
                             <input
                                 v-model="street"
                                 type="text"
                                 required
-                                class="w-full rounded-lg border border-gray-300 py-2.5 pr-3 pl-10 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                                class="w-full rounded-lg border border-input bg-background py-2.5 pr-3 pl-10 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                                 :class="{
-                                    'border-red-500': form.errors.street,
+                                    'border-destructive': form.errors.street,
                                 }"
                                 :placeholder="
                                     t(
@@ -341,7 +350,7 @@ watch(
                         </div>
                         <p
                             v-if="form.errors.street"
-                            class="mt-1 text-xs text-red-500"
+                            class="mt-1 text-xs text-destructive"
                         >
                             {{ form.errors.street }}
                         </p>
@@ -350,7 +359,7 @@ watch(
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div>
                             <label
-                                class="mb-1.5 block text-sm font-medium text-gray-700"
+                                class="mb-1.5 block text-sm font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -358,7 +367,7 @@ watch(
                                     )
                                 }}
                                 <span
-                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    class="text-sm text-destructive sm:text-[18px]"
                                     >*</span
                                 >
                             </label>
@@ -366,8 +375,10 @@ watch(
                                 v-model="city"
                                 type="text"
                                 required
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
-                                :class="{ 'border-red-500': form.errors.city }"
+                                class="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
+                                :class="{
+                                    'border-destructive': form.errors.city,
+                                }"
                                 :placeholder="
                                     t(
                                         'cart.orderType.deliveryForm.addressModal.cityPlaceholder',
@@ -376,7 +387,7 @@ watch(
                             />
                             <p
                                 v-if="form.errors.city"
-                                class="mt-1 text-xs text-red-500"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ form.errors.city }}
                             </p>
@@ -384,7 +395,7 @@ watch(
 
                         <div>
                             <label
-                                class="mb-1.5 block text-sm font-medium text-gray-700"
+                                class="mb-1.5 block text-sm font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -392,7 +403,7 @@ watch(
                                     )
                                 }}
                                 <span
-                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    class="text-sm text-destructive sm:text-[18px]"
                                     >*</span
                                 >
                             </label>
@@ -400,15 +411,16 @@ watch(
                                 v-model="postal_code"
                                 type="text"
                                 required
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                                class="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                                 :class="{
-                                    'border-red-500': form.errors.postal_code,
+                                    'border-destructive':
+                                        form.errors.postal_code,
                                 }"
                                 placeholder="1000"
                             />
                             <p
                                 v-if="form.errors.postal_code"
-                                class="mt-1 text-xs text-red-500"
+                                class="mt-1 text-xs text-destructive"
                             >
                                 {{ form.errors.postal_code }}
                             </p>
@@ -416,7 +428,7 @@ watch(
 
                         <div>
                             <label
-                                class="mb-1.5 block text-sm font-medium text-gray-700"
+                                class="mb-1.5 block text-sm font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -424,13 +436,13 @@ watch(
                                     )
                                 }}
                                 <span
-                                    class="text-sm text-red-500 sm:text-[18px]"
+                                    class="text-sm text-destructive sm:text-[18px]"
                                     >*</span
                                 >
                             </label>
                             <select
                                 v-model="country"
-                                class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                                class="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground transition-colors focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                             >
                                 <option value="Belgium">
                                     {{
@@ -439,36 +451,22 @@ watch(
                                         )
                                     }}
                                 </option>
-                                <option value="France">
-                                    {{
-                                        t(
-                                            'cart.orderType.deliveryForm.addressModal.countries.france',
-                                        )
-                                    }}
-                                </option>
-                                <option value="Luxembourg">
-                                    {{
-                                        t(
-                                            'cart.orderType.deliveryForm.addressModal.countries.luxembourg',
-                                        )
-                                    }}
-                                </option>
                             </select>
                         </div>
                     </div>
 
                     <div
-                        class="flex items-center gap-3 rounded-lg bg-blue-50 p-3"
+                        class="flex items-center gap-3 rounded-lg border border-info/20 bg-info/10 p-3"
                     >
                         <input
                             v-model="is_default"
                             type="checkbox"
                             id="is_default"
-                            class="h-4 w-4 rounded border-gray-300 text-red-500 focus:ring-red-500"
+                            class="h-4 w-4 rounded border-input accent-primary focus:ring-ring"
                         />
                         <label
                             for="is_default"
-                            class="cursor-pointer text-sm text-gray-700"
+                            class="cursor-pointer text-sm text-foreground"
                         >
                             {{
                                 t(
@@ -478,11 +476,11 @@ watch(
                         </label>
                     </div>
 
-                    <div class="flex gap-3 border-t border-gray-200 pt-4">
+                    <div class="flex gap-3 border-t border-border pt-4">
                         <button
                             type="button"
                             @click="closeModal"
-                            class="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                            class="flex-1 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
                             {{
                                 t(
@@ -493,14 +491,14 @@ watch(
                         <button
                             type="submit"
                             :disabled="is_loading"
-                            class="flex-1 rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:from-red-600 hover:to-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            class="flex-1 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <span
                                 v-if="is_loading"
                                 class="flex items-center justify-center gap-2"
                             >
                                 <span
-                                    class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                    class="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                                 ></span>
                                 {{
                                     addressToEdit
@@ -528,9 +526,9 @@ watch(
 
                     <div
                         v-if="Object.keys(form.errors).length > 0"
-                        class="rounded-lg bg-red-50 p-3"
+                        class="rounded-lg border border-destructive/30 bg-destructive/10 p-3"
                     >
-                        <p class="text-xs text-red-600">
+                        <p class="text-xs text-destructive">
                             {{
                                 t(
                                     'cart.orderType.deliveryForm.addressModal.validationMessage',

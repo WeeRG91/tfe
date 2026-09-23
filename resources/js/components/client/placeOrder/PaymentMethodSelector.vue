@@ -42,7 +42,9 @@ const selectMethod = (value: number) => {
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <h2
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
@@ -58,8 +60,8 @@ const selectMethod = (value: number) => {
                 :class="[
                     'flex items-center justify-center gap-3 rounded-lg border-2 p-4 transition-all',
                     props.modelValue === method.value
-                        ? 'border-red-500 bg-red-50'
-                        : 'border-gray-200 hover:border-red-200',
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border hover:border-primary/40 hover:bg-accent/40',
                 ]"
             >
                 <span class="text-2xl">
@@ -69,7 +71,7 @@ const selectMethod = (value: number) => {
                     <div class="font-medium">
                         {{ t(`common.paymentMethod.${method.key}`) }}
                     </div>
-                    <div class="text-xs text-gray-500">
+                    <div class="text-xs text-muted-foreground">
                         {{ getPaymentDescription(method.value) }}
                     </div>
                 </div>

@@ -16,7 +16,7 @@ const emit = defineEmits<{
 
 <template>
     <div
-        class="group flex h-full overflow-hidden rounded-md border bg-white transition-all duration-300"
+        class="group flex h-full overflow-hidden rounded-md border border-border bg-card text-card-foreground transition-all duration-300"
         :class="{
             'opacity-60 grayscale hover:opacity-70':
                 props.drink.is_available === DrinkAvailabilityEnum.UNAVAILABLE,
@@ -47,7 +47,7 @@ const emit = defineEmits<{
                 <h3
                     class="text-md leading-tight font-semibold uppercase transition-colors"
                     :class="{
-                        'text-gray-400':
+                        'text-muted-foreground':
                             props.drink.is_available ===
                             DrinkAvailabilityEnum.UNAVAILABLE,
                     }"
@@ -57,10 +57,10 @@ const emit = defineEmits<{
                 <span
                     class="font-semibold whitespace-nowrap transition-colors"
                     :class="{
-                        'text-gray-400':
+                        'text-muted-foreground':
                             props.drink.is_available ===
                             DrinkAvailabilityEnum.UNAVAILABLE,
-                        'text-red-500':
+                        'text-primary':
                             props.drink.is_available ===
                             DrinkAvailabilityEnum.AVAILABLE,
                     }"
@@ -72,10 +72,10 @@ const emit = defineEmits<{
             <p
                 class="mt-1 line-clamp-3 text-sm transition-colors"
                 :class="{
-                    'text-gray-400':
+                    'text-muted-foreground/25':
                         props.drink.is_available ===
                         DrinkAvailabilityEnum.UNAVAILABLE,
-                    'text-gray-600':
+                    'text-muted-foreground':
                         props.drink.is_available ===
                         DrinkAvailabilityEnum.AVAILABLE,
                 }"
@@ -88,10 +88,10 @@ const emit = defineEmits<{
                     <span
                         class="text-xs tracking-widest uppercase transition-colors"
                         :class="{
-                            'text-gray-400':
+                            'text-muted-foreground/25':
                                 props.drink.is_available ===
                                 DrinkAvailabilityEnum.UNAVAILABLE,
-                            'text-gray-500':
+                            'text-muted-foreground':
                                 props.drink.is_available ===
                                 DrinkAvailabilityEnum.AVAILABLE,
                         }"
@@ -105,7 +105,7 @@ const emit = defineEmits<{
                             DrinkAvailabilityEnum.AVAILABLE
                         "
                         @click.stop="emit('add', props.drink)"
-                        class="cursor-pointer text-sm text-red-500 transition-all duration-300 hover:translate-x-1 hover:text-red-600"
+                        class="cursor-pointer text-sm font-medium text-primary transition-all duration-300 hover:translate-x-1 hover:text-primary/80"
                     >
                         {{ t('drinks.card.add') }}
                         <span
@@ -117,7 +117,7 @@ const emit = defineEmits<{
                     <button
                         v-else
                         disabled
-                        class="cursor-not-allowed text-sm text-gray-400"
+                        class="cursor-not-allowed text-sm text-muted-foreground"
                     >
                         {{ t('drinks.card.unavailable') }}
                     </button>

@@ -219,69 +219,71 @@ watch(flatResults, () => {
             <div
                 class="relative w-full max-w-2xl animate-in duration-200 zoom-in-95 fade-in slide-in-from-top-4"
             >
-                <div class="overflow-hidden rounded-2xl bg-white shadow-2xl">
+                <div
+                    class="overflow-hidden rounded-2xl border border-border bg-popover text-popover-foreground shadow-2xl"
+                >
                     <div
-                        class="border-b border-gray-100 px-4 py-4 sm:px-6 sm:py-5"
+                        class="border-b border-border px-4 py-4 sm:px-6 sm:py-5"
                     >
                         <div class="flex items-center justify-between gap-2">
                             <div
-                                class="flex items-center gap-2 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-lg font-semibold text-transparent sm:text-xl"
+                                class="flex items-center gap-2 text-lg font-semibold text-popover-foreground sm:text-xl"
                             >
                                 <Sparkles
-                                    class="h-4 w-4 text-red-600 sm:h-5 sm:w-5"
+                                    class="h-4 w-4 text-primary sm:h-5 sm:w-5"
                                 />
                                 {{ t('search.title') }}
                             </div>
 
                             <button
                                 @click="props.onClose"
-                                class="rounded-full p-2 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
+                                class="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                             >
                                 <X class="h-5 w-5" />
                             </button>
                         </div>
-                        <p class="mt-1 text-xs text-gray-500 sm:text-sm">
+                        <p
+                            class="mt-1 text-xs text-muted-foreground sm:text-sm"
+                        >
                             {{ t('search.subtitle') }}
                         </p>
                     </div>
 
                     <div
-                        class="border-b border-gray-100 bg-gray-50/50 px-4 py-4 sm:px-6 sm:py-5"
+                        class="border-b border-border bg-muted/40 px-4 py-4 sm:px-6 sm:py-5"
                     >
                         <div class="relative">
                             <Search
-                                class="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-gray-400 sm:h-4 sm:w-4"
+                                class="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground sm:h-4 sm:w-4"
                             />
                             <input
                                 ref="inputRef"
                                 v-model="query"
                                 type="text"
                                 :placeholder="t('search.placeholder')"
-                                class="h-10 w-full rounded-xl border border-gray-200 bg-white pr-9 pl-9 text-sm text-gray-900 transition-all duration-200 placeholder:text-gray-400 focus:border-gray-300 focus:ring-2 focus:ring-gray-200 focus:outline-none sm:h-12 sm:pr-10 sm:pl-10 sm:text-base"
+                                class="h-10 w-full rounded-xl border border-input bg-background pr-9 pl-9 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30 focus:outline-none sm:h-12 sm:pr-10 sm:pl-10 sm:text-base"
                             />
                             <button
                                 v-if="query"
                                 @click="clearSearch"
-                                class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-0.5 transition-colors hover:bg-gray-100 sm:right-3"
+                                class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground sm:right-3"
                             >
-                                <X
-                                    class="h-3.5 w-3.5 text-gray-400 sm:h-4 sm:w-4"
-                                />
+                                <X class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </button>
                         </div>
                     </div>
 
                     <div
-                        class="scrollable max-h-[50vh] overflow-y-auto bg-white sm:max-h-[460px]"
+                        class="scrollable max-h-[50vh] overflow-y-auto bg-popover sm:max-h-[460px]"
                     >
                         <div
                             v-if="isLoading"
                             class="flex flex-col items-center justify-center gap-3 py-12 sm:py-16"
                         >
                             <Loader
-                                class="h-6 w-6 animate-spin text-gray-500 sm:h-8 sm:w-8"
+                                class="h-6 w-6 animate-spin text-primary sm:h-8 sm:w-8"
                             />
-                            <p class="text-xs text-gray-500 sm:text-sm">
+                            <p class="text-xs text-muted-foreground sm:text-sm">
                                 {{ t('search.searching') }}
                             </p>
                         </div>
@@ -291,13 +293,13 @@ watch(flatResults, () => {
                             class="flex flex-col items-center justify-center gap-3 py-12 sm:py-16"
                         >
                             <div
-                                class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 sm:h-16 sm:w-16"
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-muted sm:h-16 sm:w-16"
                             >
                                 <Search
-                                    class="h-6 w-6 text-gray-400 sm:h-8 sm:w-8"
+                                    class="h-6 w-6 text-muted-foreground sm:h-8 sm:w-8"
                                 />
                             </div>
-                            <p class="text-xs text-gray-500 sm:text-sm">
+                            <p class="text-xs text-muted-foreground sm:text-sm">
                                 {{ t('search.startTyping') }}
                             </p>
                         </div>
@@ -307,21 +309,23 @@ watch(flatResults, () => {
                             class="flex flex-col items-center justify-center gap-3 py-12 sm:py-16"
                         >
                             <p
-                                class="text-sm font-medium text-gray-700 sm:text-base"
+                                class="text-sm font-medium text-popover-foreground sm:text-base"
                             >
                                 {{ t('search.noResults') }}
                             </p>
-                            <p class="text-xs text-gray-500 sm:text-sm">
+                            <p class="text-xs text-muted-foreground sm:text-sm">
                                 {{ t('search.tryDifferentKeywords') }}
                             </p>
                         </div>
 
-                        <div v-else class="divide-y divide-gray-100">
+                        <div v-else class="divide-y divide-border">
                             <div
                                 v-if="results !== null && !isLoading"
-                                class="bg-gray-50/50 px-4 py-2 sm:px-6 sm:py-3"
+                                class="bg-muted/40 px-4 py-2 sm:px-6 sm:py-3"
                             >
-                                <p class="text-[10px] text-gray-500 sm:text-xs">
+                                <p
+                                    class="text-[10px] text-muted-foreground sm:text-xs"
+                                >
                                     {{
                                         t(
                                             'search.foundResults',
@@ -338,14 +342,14 @@ watch(flatResults, () => {
                             >
                                 <div class="px-4 py-2 sm:px-6 sm:py-3">
                                     <h3
-                                        class="flex items-center gap-2 text-[10px] font-semibold tracking-wider text-gray-500 uppercase sm:text-xs"
+                                        class="flex items-center gap-2 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase sm:text-xs"
                                     >
                                         <span>{{
                                             type.key === 'dish' ? '🍽️' : '🍹'
                                         }}</span>
                                         <span>{{ type.label }}</span>
                                         <span
-                                            class="ml-auto text-[10px] text-gray-400 sm:text-xs"
+                                            class="ml-auto text-[10px] text-muted-foreground sm:text-xs"
                                             >{{
                                                 results![type.key].length
                                             }}</span
@@ -372,8 +376,8 @@ watch(flatResults, () => {
                                         :class="[
                                             'group relative flex cursor-pointer items-center justify-between gap-2 rounded-lg p-2 transition-all duration-150 sm:gap-3 sm:p-3',
                                             isSelected(item)
-                                                ? 'scale-[1.02] bg-gradient-to-r from-gray-50 to-gray-100'
-                                                : 'hover:scale-[1.02] hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100',
+                                                ? 'scale-[1.02] bg-accent text-accent-foreground ring-1 ring-ring/20'
+                                                : 'hover:scale-[1.02] hover:bg-accent/60 hover:text-accent-foreground',
                                         ]"
                                         :style="{
                                             animationDelay: `${index * 30}ms`,
@@ -391,7 +395,7 @@ watch(flatResults, () => {
                                                 />
                                                 <div
                                                     v-else
-                                                    class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 sm:h-12 sm:w-12"
+                                                    class="flex h-10 w-10 items-center justify-center rounded-lg bg-muted sm:h-12 sm:w-12"
                                                 >
                                                     <span
                                                         class="text-base sm:text-xl"
@@ -409,14 +413,14 @@ watch(flatResults, () => {
                                                     :class="[
                                                         'truncate text-xs font-medium transition-colors sm:text-sm',
                                                         isSelected(item)
-                                                            ? 'text-blue-600'
-                                                            : 'text-gray-900 group-hover:text-blue-600',
+                                                            ? 'text-primary'
+                                                            : 'text-popover-foreground group-hover:text-primary',
                                                     ]"
                                                 >
                                                     {{ item.name }}
                                                 </p>
                                                 <p
-                                                    class="mt-0.5 text-[10px] text-gray-500 sm:text-xs"
+                                                    class="mt-0.5 text-[10px] text-muted-foreground sm:text-xs"
                                                 >
                                                     {{
                                                         t(
@@ -436,11 +440,11 @@ watch(flatResults, () => {
                                             ]"
                                         >
                                             <span
-                                                class="text-[10px] text-gray-400 sm:text-xs"
+                                                class="text-[10px] text-muted-foreground sm:text-xs"
                                                 >Enter</span
                                             >
                                             <CornerDownLeft
-                                                class="h-3 w-3 text-gray-400 sm:h-4 sm:w-4"
+                                                class="h-3 w-3 text-muted-foreground sm:h-4 sm:w-4"
                                             />
                                         </div>
                                     </div>
@@ -450,23 +454,23 @@ watch(flatResults, () => {
                     </div>
 
                     <div
-                        class="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 bg-gray-50/50 px-4 py-2 text-[10px] text-gray-500 sm:px-6 sm:py-3 sm:text-xs"
+                        class="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-muted/40 px-4 py-2 text-[10px] text-muted-foreground sm:px-6 sm:py-3 sm:text-xs"
                     >
                         <div class="flex items-center gap-2 sm:gap-3">
                             <div class="flex items-center gap-1">
                                 <kbd
-                                    class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
+                                    class="rounded border border-input bg-background px-1 py-0.5 font-mono text-[8px] text-foreground shadow-xs sm:px-1.5 sm:py-0.5 sm:text-[10px]"
                                     >↑</kbd
                                 >
                                 <kbd
-                                    class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
+                                    class="rounded border border-input bg-background px-1 py-0.5 font-mono text-[8px] text-foreground shadow-xs sm:px-1.5 sm:py-0.5 sm:text-[10px]"
                                     >↓</kbd
                                 >
                                 <span>{{ t('search.keyboard.navigate') }}</span>
                             </div>
                             <div class="flex items-center gap-1">
                                 <kbd
-                                    class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
+                                    class="rounded border border-input bg-background px-1 py-0.5 font-mono text-[8px] text-foreground shadow-xs sm:px-1.5 sm:py-0.5 sm:text-[10px]"
                                     >Enter</kbd
                                 >
                                 <span>{{ t('search.keyboard.select') }}</span>
@@ -474,7 +478,7 @@ watch(flatResults, () => {
                         </div>
                         <div class="flex items-center gap-1">
                             <kbd
-                                class="rounded border border-gray-300 bg-white px-1 py-0.5 font-mono text-[8px] sm:px-1.5 sm:py-0.5 sm:text-[10px]"
+                                class="rounded border border-input bg-background px-1 py-0.5 font-mono text-[8px] text-foreground shadow-xs sm:px-1.5 sm:py-0.5 sm:text-[10px]"
                                 >Esc</kbd
                             >
                             <span>{{ t('search.keyboard.close') }}</span>
@@ -487,23 +491,23 @@ watch(flatResults, () => {
 </template>
 
 <style scoped>
-.scrollable::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+.scrollable {
+    scrollbar-color: var(--border) var(--muted);
+    scrollbar-width: thin;
 }
 
 .scrollable::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--muted);
     border-radius: 10px;
 }
 
 .scrollable::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: var(--border);
     border-radius: 10px;
 }
 
 .scrollable::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: var(--muted-foreground);
 }
 
 .fixed {

@@ -124,53 +124,53 @@ onUnmounted(() => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-8">
-                <p class="mb-1 text-sm tracking-widest text-red-500 uppercase">
+                <p class="mb-1 text-sm tracking-widest text-primary uppercase">
                     [ Payment Details ]
                 </p>
                 <div
                     v-if="isPending"
-                    class="rounded-lg border border-yellow-200 bg-yellow-50 p-5"
+                    class="rounded-lg border border-warning/20 bg-warning/10 p-5"
                 >
-                    <h1 class="text-2xl font-semibold text-yellow-800">
+                    <h1 class="text-2xl font-semibold text-warning">
                         Confirming your payment…
                     </h1>
-                    <p class="mt-2 text-sm text-yellow-700">
+                    <p class="mt-2 text-sm text-foreground">
                         Please wait while we receive confirmation from Stripe.
                         Do not close this page.
                     </p>
                 </div>
                 <div
                     v-else-if="isPaid"
-                    class="rounded-lg border border-green-200 bg-green-50 p-5"
+                    class="rounded-lg border border-success/20 bg-success/10 p-5"
                 >
-                    <h1 class="text-2xl font-semibold text-green-800">
+                    <h1 class="text-2xl font-semibold text-success">
                         Payment successful
                     </h1>
-                    <p class="mt-2 text-green-700">
+                    <p class="mt-2 text-foreground">
                         Thank you for your order. Your payment has been
                         confirmed.
                     </p>
-                    <p class="mt-1 text-sm text-green-700">
+                    <p class="mt-1 text-sm text-foreground">
                         A confirmation email has been sent to your registered
                         email address.
                     </p>
                 </div>
                 <div
                     v-else-if="hasFailed"
-                    class="rounded-lg border border-red-200 bg-red-50 p-5"
+                    class="rounded-lg border border-destructive/20 bg-destructive/10 p-5"
                 >
-                    <h1 class="text-2xl font-semibold text-red-800">
+                    <h1 class="text-2xl font-semibold text-destructive">
                         Payment unsuccessful
                     </h1>
 
-                    <p class="mt-2 text-sm text-red-700">
+                    <p class="mt-2 text-sm text-foreground">
                         We could not complete your payment. Your order has not
                         been confirmed.
                     </p>
 
                     <Link
                         :href="paymentOrder.payment(paidOrder.id).url"
-                        class="mt-4 inline-flex rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                        class="mt-4 inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                     >
                         Try payment again
                     </Link>
@@ -180,23 +180,23 @@ onUnmounted(() => {
             <div class="flex flex-col gap-6 lg:flex-row">
                 <div class="flex-1">
                     <div class="space-y-6">
-                        <div class="rounded-lg border bg-white p-6">
+                        <div class="rounded-lg border border-border bg-card p-6 text-card-foreground">
                             <div
                                 class="flex flex-wrap items-center justify-between gap-3"
                             >
                                 <div>
-                                    <p class="text-sm text-gray-500">
+                                    <p class="text-sm text-muted-foreground">
                                         Order Number
                                     </p>
-                                    <p class="text-2xl font-bold text-gray-800">
+                                    <p class="text-2xl font-bold text-card-foreground">
                                         #{{ paidOrder.order_number }}
                                     </p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-sm text-gray-500">
+                                    <p class="text-sm text-muted-foreground">
                                         Order at
                                     </p>
-                                    <p class="font-medium text-gray-700">
+                                    <p class="font-medium text-card-foreground">
                                         {{ paidOrder.created_at }}
                                     </p>
                                 </div>

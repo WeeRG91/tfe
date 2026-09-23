@@ -108,26 +108,26 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
 
 <template>
     <div
-        class="rounded-lg border bg-white shadow-sm transition-all hover:shadow-md"
+        class="rounded-lg border border-border bg-card text-card-foreground shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
     >
         <div
             @click="toggleDetails"
-            class="cursor-pointer p-4 transition-colors hover:bg-gray-50"
+            class="cursor-pointer p-4 transition-colors hover:bg-accent/30"
         >
             <div class="flex flex-col gap-3">
                 <div class="flex items-start justify-between">
                     <div class="flex flex-1 items-center gap-3">
                         <div
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100"
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted"
                         >
                             <component
                                 :is="getOrderTypeIcon(orderToShow.type.value)"
-                                class="h-5 w-5 text-gray-600"
+                                class="h-5 w-5 text-muted-foreground"
                             />
                         </div>
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <p class="font-semibold text-gray-800">
+                                <p class="font-semibold text-card-foreground">
                                     #{{ orderToShow.order_number }}
                                 </p>
                                 <span
@@ -153,16 +153,16 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                                     }}
                                 </span>
                             </div>
-                            <p class="text-xs text-gray-500">
+                            <p class="text-xs text-muted-foreground">
                                 {{ formatDate(orderToShow.created_at) }}
                             </p>
                         </div>
                     </div>
                     <div class="shrink-0 text-right">
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs text-muted-foreground">
                             {{ t('order.orderCard.total') }}
                         </p>
-                        <p class="text-lg font-bold text-red-500">
+                        <p class="text-lg font-bold text-primary">
                             €{{ formatPrice(orderToShow.total_inc_vat) }}
                         </p>
                     </div>
@@ -170,7 +170,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
 
                 <div class="mt-2">
                     <div
-                        class="mb-1 flex justify-between text-xs text-gray-600"
+                        class="mb-1 flex justify-between text-xs text-muted-foreground"
                     >
                         <span>{{ t('order.orderCard.orderProgress') }}</span>
                         <span
@@ -181,9 +181,9 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                             }}%</span
                         >
                     </div>
-                    <div class="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                    <div class="h-1.5 overflow-hidden rounded-full bg-muted">
                         <div
-                            class="h-full rounded-full bg-gradient-to-r from-amber-500 to-red-500 transition-all duration-500"
+                            class="h-full rounded-full bg-gradient-to-r from-warning to-primary transition-all duration-500"
                             :style="{
                                 width: `${getOrderStatusProgress(orderToShow.status?.value)}%`,
                             }"
@@ -192,7 +192,9 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                 </div>
 
                 <div class="flex items-center justify-between pt-1">
-                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <div
+                        class="flex items-center gap-2 text-xs text-muted-foreground"
+                    >
                         <component
                             :is="getOrderTypeIcon(orderToShow.type.value)"
                             class="h-3 w-3"
@@ -202,36 +204,38 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         }}</span>
                     </div>
                     <ChevronDown
-                        class="h-4 w-4 text-gray-400 transition-transform duration-200"
+                        class="h-4 w-4 text-muted-foreground transition-transform duration-200"
                         :class="{ 'rotate-180': isExpanded }"
                     />
                 </div>
             </div>
         </div>
 
-        <div v-show="isExpanded" class="border-t border-gray-100">
-            <div class="space-y-4 bg-gray-50 p-4">
+        <div v-show="isExpanded" class="border-t border-border">
+            <div class="space-y-4 bg-muted/30 p-4">
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div class="flex items-start gap-2 rounded-lg bg-white p-3">
-                        <User class="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                    <div
+                        class="flex items-start gap-2 rounded-lg border border-border bg-card p-3"
+                    >
+                        <User class="mt-0.5 h-4 w-4 shrink-0 text-info" />
                         <div>
                             <p
-                                class="text-xs font-semibold text-gray-500 uppercase"
+                                class="text-xs font-semibold text-muted-foreground uppercase"
                             >
                                 {{ t('order.orderCard.customer') }}
                             </p>
-                            <p class="text-sm font-medium text-gray-800">
+                            <p class="text-sm font-medium text-card-foreground">
                                 {{
                                     orderToShow.user?.name ||
                                     t('order.orderCard.guest')
                                 }}
                             </p>
-                            <p class="text-xs text-gray-500">
+                            <p class="text-xs text-muted-foreground">
                                 {{ orderToShow.user?.email }}
                             </p>
                             <p
                                 v-if="orderToShow.pickup_phone"
-                                class="flex items-center gap-1 text-xs text-gray-500"
+                                class="flex items-center gap-1 text-xs text-muted-foreground"
                             >
                                 <Phone class="h-3 w-3" />
                                 {{ orderToShow.pickup_phone }}
@@ -239,22 +243,24 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-2 rounded-lg bg-white p-3">
+                    <div
+                        class="flex items-start gap-2 rounded-lg border border-border bg-card p-3"
+                    >
                         <component
                             :is="
                                 getPaymentMethodIcon(
                                     orderToShow.payment_method.value,
                                 )
                             "
-                            class="mt-0.5 h-4 w-4 shrink-0 text-purple-500"
+                            class="mt-0.5 h-4 w-4 shrink-0 text-primary"
                         />
                         <div>
                             <p
-                                class="text-xs font-semibold text-gray-500 uppercase"
+                                class="text-xs font-semibold text-muted-foreground uppercase"
                             >
                                 {{ t('order.orderCard.payment') }}
                             </p>
-                            <p class="text-sm text-gray-700">
+                            <p class="text-sm text-card-foreground">
                                 {{
                                     t(
                                         `common.paymentMethod.${orderToShow.payment_method.key}`,
@@ -288,20 +294,20 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
 
                     <div v-if="orderToShow.notes" class="sm:col-span-2">
                         <div
-                            class="flex items-start gap-2 rounded-lg bg-amber-50 p-3"
+                            class="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3"
                         >
                             <MessageCircle
-                                class="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
+                                class="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3"
                             />
                             <div>
                                 <p
-                                    class="text-xs font-semibold text-amber-700 uppercase"
+                                    class="text-xs font-semibold text-warning uppercase"
                                 >
                                     {{
                                         t('order.orderCard.specialInstructions')
                                     }}
                                 </p>
-                                <p class="text-sm text-gray-600 italic">
+                                <p class="text-sm text-muted-foreground italic">
                                     "{{ orderToShow.notes }}"
                                 </p>
                             </div>
@@ -318,7 +324,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                         @click.stop="
                             router.visit(order.orderDetails(orderToShow.id).url)
                         "
-                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-primary/40 bg-background px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50 sm:w-40"
                     >
                         <NotebookText class="h-4 w-4" />
                         <span>{{ t('order.orderCard.seeDetails') }}</span>
@@ -338,7 +344,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                                 () => cancelOrder(),
                             )
                         "
-                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-destructive/40 bg-background px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50 sm:w-40"
                     >
                         <XCircle class="h-4 w-4" />
                         <span>{{ t('order.orderCard.cancelOrder') }}</span>
@@ -354,7 +360,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                                 paymentOrder.payment(orderToShow.id).url,
                             )
                         "
-                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-primary/40 bg-background px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50 sm:w-40"
                     >
                         <CreditCard class="h-4 w-4" />
                         <span>{{ t('order.orderCard.completeOrder') }}</span>
@@ -372,7 +378,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                                 () => removeOrder(),
                             )
                         "
-                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-all hover:bg-red-50 disabled:opacity-50 sm:w-40"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-destructive/40 bg-background px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50 sm:w-40"
                     >
                         <XCircle class="h-4 w-4" />
                         <span>{{ t('order.orderCard.removeOrder') }}</span>
@@ -390,7 +396,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
                                 order.reorder(props.orderToShow.id).url,
                             )
                         "
-                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-500 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-red-600 disabled:opacity-50 sm:w-40"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50 sm:w-40"
                     >
                         <Repeat class="h-4 w-4" />
                         <span>{{ t('order.orderCard.reorder') }}</span>

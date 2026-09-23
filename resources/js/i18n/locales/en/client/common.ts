@@ -5,6 +5,21 @@ export default {
     },
     invalidDate: 'Invalid date',
     language: 'Language',
+    appearance: {
+        open: 'Change theme',
+        title: 'Choose your appearance',
+        description:
+            'Use the restaurant theme, follow your device, or choose your own theme.',
+        themes: 'Available themes',
+        restaurantDefault: {
+            title: 'Restaurant default',
+            description: "Use the restaurant's selected theme.",
+        },
+        system: {
+            title: 'System',
+            description: 'Follow the appearance of this device.',
+        },
+    },
     orderStatus: {
         pending: 'Pending',
         confirmed: 'Confirmed',

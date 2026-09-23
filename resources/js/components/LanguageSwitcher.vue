@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
     <div ref="dropdownRef" class="relative">
         <button
             type="button"
-            class="flex min-h-10 items-center gap-2 rounded-lg px-2.5 py-2 text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-11 sm:px-3"
+            class="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             :aria-label="$t('common.language')"
             :aria-expanded="isOpen"
             :disabled="isChangingLocale"
@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
             <img
                 :src="availableLocales[currentLocale].flag"
                 :alt="availableLocales[currentLocale].label"
-                class="h-5 w-7 shrink-0 rounded-sm object-cover shadow-sm"
+                class="h-4 w-6 shrink-0 rounded-sm object-cover shadow-sm"
             />
         </button>
 
@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
                 v-if="isOpen"
                 role="menu"
                 :aria-label="$t('common.language')"
-                class="absolute top-full right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl ring-1 ring-black/5 sm:w-56"
+                class="absolute top-full right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-xl ring-1 ring-border/50 sm:w-56"
             >
                 <div class="p-1.5 sm:p-2">
                     <button
@@ -124,11 +124,11 @@ onBeforeUnmount(() => {
                         role="menuitemradio"
                         :aria-checked="locale === currentLocale"
                         :disabled="isChangingLocale"
-                        class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:bg-red-50 focus-visible:text-red-600 disabled:cursor-not-allowed disabled:opacity-60 sm:gap-3"
+                        class="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 sm:gap-3"
                         :class="{
-                            'bg-red-50 font-medium text-red-600':
+                            'bg-primary/10 font-medium text-primary':
                                 locale === currentLocale,
-                            'text-gray-700': locale !== currentLocale,
+                            'text-popover-foreground': locale !== currentLocale,
                         }"
                         @click="changeLocale(locale)"
                     >
@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
 
                         <Check
                             v-if="locale === currentLocale"
-                            class="h-4 w-4 shrink-0 text-red-500"
+                            class="h-4 w-4 shrink-0 text-primary"
                         />
                     </button>
                 </div>

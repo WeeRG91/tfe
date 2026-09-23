@@ -19,7 +19,7 @@ import {
     User,
     Building2,
 } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDateFormatter } from '@/composables/useDateFormatter';
 import { DeliveryTypeEnum } from '@/types/delivery';
@@ -38,6 +38,53 @@ const elements = ref<any>(null);
 const isLoading = ref<boolean>(false);
 const isInitializing = ref<boolean>(true);
 const paymentError = ref<string | null>(null);
+let themeObserver: MutationObserver | null = null;
+
+const getThemeColor = (variable: string): string => {
+    return getComputedStyle(document.documentElement)
+        .getPropertyValue(variable)
+        .trim();
+};
+
+const getStripeAppearance = () => ({
+    theme: 'stripe' as const,
+    variables: {
+        colorPrimary: getThemeColor('--primary'),
+        colorBackground: getThemeColor('--card'),
+        colorText: getThemeColor('--card-foreground'),
+        colorDanger: getThemeColor('--destructive'),
+        fontFamily: getComputedStyle(document.body).fontFamily,
+        borderRadius: getThemeColor('--radius'),
+        spacingUnit: '4px',
+    },
+    rules: {
+        '.Input': {
+            borderColor: getThemeColor('--input'),
+            backgroundColor: getThemeColor('--background'),
+            color: getThemeColor('--foreground'),
+            boxShadow: 'none',
+        },
+        '.Input:focus': {
+            borderColor: getThemeColor('--ring'),
+            boxShadow: `0 0 0 1px ${getThemeColor('--ring')}`,
+        },
+        '.Label': {
+            color: getThemeColor('--foreground'),
+        },
+        '.Tab': {
+            borderColor: getThemeColor('--border'),
+            backgroundColor: getThemeColor('--background'),
+            color: getThemeColor('--foreground'),
+        },
+        '.Tab:hover': {
+            borderColor: getThemeColor('--primary'),
+        },
+        '.Tab--selected': {
+            borderColor: getThemeColor('--primary'),
+            color: getThemeColor('--primary'),
+        },
+    },
+});
 
 const initPayment = async () => {
     isInitializing.value = true;
@@ -62,6 +109,7 @@ const initPayment = async () => {
 
         elements.value = stripe.value.elements({
             clientSecret: data.client_secret,
+            appearance: getStripeAppearance(),
         });
 
         const paymentElement = elements.value.create('payment');
@@ -109,6 +157,21 @@ const pay = async () => {
 
 onMounted(() => {
     initPayment();
+
+    themeObserver = new MutationObserver(() => {
+        elements.value?.update({
+            appearance: getStripeAppearance(),
+        });
+    });
+
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme', 'data-theme-mode', 'class', 'style'],
+    });
+});
+
+onUnmounted(() => {
+    themeObserver?.disconnect();
 });
 </script>
 
@@ -118,13 +181,13 @@ onMounted(() => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
-                <p class="text-sm tracking-widest text-red-500 uppercase">
+                <p class="text-sm tracking-widest text-primary uppercase">
                     [ {{ t('payment.secureCheckout') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     {{ t('payment.completePayment') }}
                 </h1>
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="mt-1 text-sm text-muted-foreground">
                     {{ t('payment.stripePowered') }}
                 </p>
             </div>
@@ -132,22 +195,24 @@ onMounted(() => {
             <div class="flex flex-col gap-6 lg:flex-row">
                 <div class="flex-1">
                     <div class="space-y-6">
-                        <div class="rounded-lg border bg-white p-6">
+                        <div
+                            class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+                        >
                             <div
                                 class="flex flex-wrap items-center justify-between gap-3"
                             >
                                 <div>
-                                    <p class="text-sm text-gray-500">
+                                    <p class="text-sm text-muted-foreground">
                                         {{ t('payment.order.orderNumber') }}
                                     </p>
                                     <p
-                                        class="text-xl font-semibold text-gray-800"
+                                        class="text-xl font-semibold text-card-foreground"
                                     >
                                         #{{ props.order.order_number }}
                                     </p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-sm text-gray-500">
+                                    <p class="text-sm text-muted-foreground">
                                         {{ t('payment.order.status') }}
                                     </p>
                                     <span
@@ -168,7 +233,9 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="rounded-lg border bg-white p-6">
+                        <div
+                            class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+                        >
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
@@ -176,7 +243,7 @@ onMounted(() => {
                                     :is="
                                         getOrderTypeIcon(props.order.type.value)
                                     "
-                                    class="h-5 w-5 text-red-500"
+                                    class="h-5 w-5 text-primary"
                                 />
                                 {{ t('payment.order.orderDetails') }}
                             </h2>
@@ -184,7 +251,7 @@ onMounted(() => {
                             <div class="space-y-4">
                                 <div class="flex items-start gap-3">
                                     <div
-                                        class="flex-shrink-0 rounded-lg bg-red-50 p-2"
+                                        class="flex-shrink-0 rounded-lg bg-primary/10 p-2"
                                     >
                                         <component
                                             :is="
@@ -192,15 +259,17 @@ onMounted(() => {
                                                     props.order.type.value,
                                                 )
                                             "
-                                            class="h-5 w-5 text-red-500"
+                                            class="h-5 w-5 text-primary"
                                         />
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
                                             {{ t('payment.order.orderType') }}
                                         </p>
                                         <p
-                                            class="font-medium text-gray-800 capitalize"
+                                            class="font-medium text-card-foreground capitalize"
                                         >
                                             {{
                                                 t(
@@ -213,7 +282,7 @@ onMounted(() => {
                                                 props.order.type.value ===
                                                 OrderTypeEnum.DINEIN
                                             "
-                                            class="mt-1 text-sm text-gray-600"
+                                            class="mt-1 text-sm text-muted-foreground"
                                         >
                                             {{ t('payment.order.table') }}:
                                             {{ props.order.table_number }}
@@ -223,7 +292,7 @@ onMounted(() => {
                                                 props.order.type.value ===
                                                 OrderTypeEnum.TAKEAWAY
                                             "
-                                            class="mt-1 text-sm text-gray-600"
+                                            class="mt-1 text-sm text-muted-foreground"
                                         >
                                             {{ t('payment.order.pickup') }}:
                                             {{ props.order.pickup_time }}
@@ -239,22 +308,26 @@ onMounted(() => {
                                     class="flex items-start gap-3"
                                 >
                                     <div
-                                        class="flex-shrink-0 rounded-lg bg-red-50 p-2"
+                                        class="flex-shrink-0 rounded-lg bg-primary/10 p-2"
                                     >
-                                        <User class="h-5 w-5 text-red-500" />
+                                        <User class="h-5 w-5 text-primary" />
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
                                             {{ t('payment.order.customer') }}
                                         </p>
-                                        <p class="font-medium text-gray-800">
+                                        <p
+                                            class="font-medium text-card-foreground"
+                                        >
                                             {{
                                                 props.order.pickup_name || 'N/A'
                                             }}
                                         </p>
                                         <p
                                             v-if="props.order.pickup_phone"
-                                            class="text-sm text-gray-600"
+                                            class="text-sm text-muted-foreground"
                                         >
                                             {{ props.order.pickup_phone }}
                                         </p>
@@ -270,19 +343,23 @@ onMounted(() => {
                                     class="flex items-start gap-3"
                                 >
                                     <div
-                                        class="flex-shrink-0 rounded-lg bg-red-50 p-2"
+                                        class="flex-shrink-0 rounded-lg bg-primary/10 p-2"
                                     >
-                                        <MapPin class="h-5 w-5 text-red-500" />
+                                        <MapPin class="h-5 w-5 text-primary" />
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
                                             {{
                                                 t(
                                                     'payment.order.deliveryAddress',
                                                 )
                                             }}
                                         </p>
-                                        <p class="font-medium text-gray-800">
+                                        <p
+                                            class="font-medium text-card-foreground"
+                                        >
                                             {{
                                                 props.order.delivery_address
                                                     .first_name
@@ -292,19 +369,25 @@ onMounted(() => {
                                                     .last_name
                                             }}
                                         </p>
-                                        <p class="text-sm text-gray-600">
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
                                             {{
                                                 props.order.delivery_address
                                                     .phone
                                             }}
                                         </p>
-                                        <p class="text-sm text-gray-600">
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
                                             {{
                                                 props.order.delivery_address
                                                     .street
                                             }}
                                         </p>
-                                        <p class="text-sm text-gray-600">
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
                                             {{
                                                 props.order.delivery_address
                                                     .postal_code
@@ -330,15 +413,17 @@ onMounted(() => {
                                     class="flex items-start gap-3"
                                 >
                                     <div
-                                        class="flex-shrink-0 rounded-lg bg-red-50 p-2"
+                                        class="flex-shrink-0 rounded-lg bg-primary/10 p-2"
                                     >
                                         <Building2
-                                            class="h-5 w-5 text-red-500"
+                                            class="h-5 w-5 text-primary"
                                         />
                                     </div>
 
                                     <div>
-                                        <p class="text-sm text-gray-500">
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
                                             {{
                                                 t(
                                                     'payment.order.deliveryCompany',
@@ -346,7 +431,9 @@ onMounted(() => {
                                             }}
                                         </p>
 
-                                        <p class="font-medium text-gray-800">
+                                        <p
+                                            class="font-medium text-card-foreground"
+                                        >
                                             {{
                                                 props.order.delivery_company
                                                     .name
@@ -355,7 +442,7 @@ onMounted(() => {
 
                                         <p
                                             v-if="props.order.delivery_date"
-                                            class="mt-1 text-sm text-gray-600"
+                                            class="mt-1 text-sm text-muted-foreground"
                                         >
                                             {{
                                                 t('payment.order.deliveryDate')
@@ -371,11 +458,13 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="rounded-lg border bg-white p-6">
+                        <div
+                            class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+                        >
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <Soup class="h-5 w-5 text-red-500" />
+                                <Soup class="h-5 w-5 text-primary" />
                                 {{ t('payment.order.orderItems') }}
                             </h2>
 
@@ -383,7 +472,7 @@ onMounted(() => {
                                 <div
                                     v-for="item in props.order.items"
                                     :key="item.id"
-                                    class="border-b border-gray-100 pb-3 last:border-0"
+                                    class="border-b border-border pb-3 last:border-0"
                                 >
                                     <div class="flex justify-between text-sm">
                                         <div class="flex-1">
@@ -392,7 +481,7 @@ onMounted(() => {
                                                 {{ item.item.name }}
                                             </div>
                                             <div
-                                                class="mt-1 text-xs text-gray-500"
+                                                class="mt-1 text-xs text-muted-foreground"
                                             >
                                                 {{
                                                     t(
@@ -407,7 +496,7 @@ onMounted(() => {
                                             </div>
                                             <div
                                                 v-if="item.meat"
-                                                class="mt-1 text-xs text-gray-500"
+                                                class="mt-1 text-xs text-muted-foreground"
                                             >
                                                 {{ t('payment.item.meat') }}:
                                                 {{ item.meat.name }}
@@ -416,7 +505,7 @@ onMounted(() => {
                                                         item.meat.extra_price >
                                                         0
                                                     "
-                                                    class="text-gray-500"
+                                                    class="text-muted-foreground"
                                                 >
                                                     (+€{{
                                                         formatPrice(
@@ -432,7 +521,7 @@ onMounted(() => {
                                                     item.removed_ingredients
                                                         .length > 0
                                                 "
-                                                class="mt-1 text-xs text-gray-500"
+                                                class="mt-1 text-xs text-muted-foreground"
                                             >
                                                 {{ t('payment.item.without') }}:
                                                 {{
@@ -443,7 +532,7 @@ onMounted(() => {
                                             </div>
                                             <div
                                                 v-if="item.notes"
-                                                class="mt-1 text-xs text-gray-500"
+                                                class="mt-1 text-xs text-muted-foreground"
                                             >
                                                 {{ t('payment.item.notes') }}:
                                                 {{ item.notes }}
@@ -462,12 +551,12 @@ onMounted(() => {
 
                             <div
                                 v-if="props.order.notes"
-                                class="mt-4 rounded-md bg-yellow-50 p-3"
+                                class="mt-4 rounded-md border border-warning/20 bg-warning/10 p-3"
                             >
-                                <p class="text-xs font-medium text-yellow-700">
+                                <p class="text-xs font-medium text-warning">
                                     {{ t('payment.item.notes') }}
                                 </p>
-                                <p class="text-sm text-yellow-800">
+                                <p class="text-sm text-card-foreground">
                                     {{ props.order.notes }}
                                 </p>
                             </div>
@@ -477,21 +566,21 @@ onMounted(() => {
 
                 <div class="lg:w-96">
                     <div class="sticky space-y-6 sm:top-20">
-                        <div class="rounded-lg border bg-white p-6">
+                        <div
+                            class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+                        >
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <HandCoins class="h-5 w-5 text-red-500" />
+                                <HandCoins class="h-5 w-5 text-primary" />
                                 {{ t('payment.summary.paymentSummary') }}
                             </h2>
 
-                            <div
-                                class="space-y-2 border-b border-gray-100 pb-4"
-                            >
+                            <div class="space-y-2 border-b border-border pb-4">
                                 <div
                                     v-for="vat in props.order.vat_breakdown"
                                     :key="vat.vat_rate"
-                                    class="flex justify-between text-sm text-gray-600"
+                                    class="flex justify-between text-sm text-muted-foreground"
                                 >
                                     <span>
                                         {{
@@ -505,7 +594,7 @@ onMounted(() => {
                                     >
                                 </div>
                                 <div
-                                    class="flex justify-between text-sm text-gray-600"
+                                    class="flex justify-between text-sm text-muted-foreground"
                                 >
                                     <span>
                                         {{ t('payment.summary.totalVat') }}
@@ -517,7 +606,7 @@ onMounted(() => {
                                     </span>
                                 </div>
                                 <div
-                                    class="flex justify-between text-sm text-gray-600"
+                                    class="flex justify-between text-sm text-muted-foreground"
                                 >
                                     <span>
                                         {{ t('payment.summary.subtotal') }}
@@ -533,7 +622,7 @@ onMounted(() => {
                                         props.order.type.value === 3 &&
                                         props.order.delivery_fee
                                     "
-                                    class="flex justify-between text-sm text-red-600"
+                                    class="flex justify-between text-sm text-primary"
                                 >
                                     <span>
                                         {{ t('payment.summary.deliveryFee') }}
@@ -548,7 +637,7 @@ onMounted(() => {
                                 </div>
                                 <div
                                     v-if="props.order.discount_total"
-                                    class="flex justify-between text-sm text-green-600"
+                                    class="flex justify-between text-sm text-success"
                                 >
                                     <span>
                                         {{ t('payment.summary.discount') }}
@@ -569,7 +658,7 @@ onMounted(() => {
                                 <span>
                                     {{ t('payment.summary.totalAmount') }}
                                 </span>
-                                <span class="text-red-500"
+                                <span class="text-primary"
                                     >€{{
                                         formatPrice(props.order.total_inc_vat)
                                     }}</span
@@ -577,11 +666,13 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <div class="rounded-lg border bg-white p-6">
+                        <div
+                            class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+                        >
                             <h2
                                 class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
                             >
-                                <CreditCard class="h-5 w-5 text-red-500" />
+                                <CreditCard class="h-5 w-5 text-primary" />
                                 {{ t('payment.payment.paymentDetails') }}
                             </h2>
 
@@ -593,17 +684,17 @@ onMounted(() => {
                             <div
                                 v-if="paymentError"
                                 role="alert"
-                                class="mb-4 rounded-lg border border-red-200 bg-red-50 p-4"
+                                class="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 p-4"
                             >
-                                <p class="font-medium text-red-800">
+                                <p class="font-medium text-destructive">
                                     {{
                                         t('payment.payment.paymentUnsuccessful')
                                     }}
                                 </p>
-                                <p class="mt-1 text-sm text-red-700">
+                                <p class="mt-1 text-sm text-destructive">
                                     {{ paymentError }}
                                 </p>
-                                <p class="mt-2 text-xs text-red-600">
+                                <p class="mt-2 text-xs text-destructive">
                                     {{ t('payment.payment.notCharged') }}
                                 </p>
                             </div>
@@ -614,14 +705,14 @@ onMounted(() => {
                                     isLoading || isInitializing || !stripe
                                 "
                                 @click="pay"
-                                class="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 py-3 text-sm text-white transition-all hover:shadow-md hover:shadow-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+                                class="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-primary to-primary/80 py-3 text-sm text-primary-foreground transition-all hover:shadow-md hover:shadow-primary/20 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 <span
                                     class="relative z-10 flex items-center justify-center gap-2 font-semibold"
                                 >
                                     <span
                                         v-if="isLoading || isInitializing"
-                                        class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                        class="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                                     ></span>
                                     <CreditCard v-else class="h-4 w-4" />
 
@@ -643,11 +734,13 @@ onMounted(() => {
                                     </span>
                                 </span>
                                 <div
-                                    class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-red-600 to-red-700 transition-transform duration-300 group-hover:translate-x-0"
+                                    class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-primary/90 to-primary transition-transform duration-300 group-hover:translate-x-0"
                                 ></div>
                             </button>
 
-                            <div class="mt-4 text-center text-xs text-gray-500">
+                            <div
+                                class="mt-4 text-center text-xs text-muted-foreground"
+                            >
                                 <p>{{ t('payment.stripePowered') }}</p>
                                 <p class="mt-1">
                                     {{ t('payment.payment.termsAgreement') }}

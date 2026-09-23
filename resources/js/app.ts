@@ -28,6 +28,12 @@ createInertiaApp({
             props.initialPage.props.fallbackLocale,
         );
 
+        initializeTheme(
+            props.initialPage.props.theme.surface,
+            props.initialPage.props.theme.restaurantDefaultKey,
+            props.initialPage.props.theme.customThemes,
+        );
+
         createApp({
             render: () =>
                 h(Fragment, [
@@ -46,8 +52,6 @@ createInertiaApp({
             .mount(el);
     },
     progress: {
-        color: '#4B5563',
+        color: 'var(--primary)',
     },
 });
-
-initializeTheme();

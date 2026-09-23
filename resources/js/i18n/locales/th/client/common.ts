@@ -5,6 +5,21 @@ export default {
     },
     invalidDate: 'วันที่ไม่ถูกต้อง',
     language: 'ภาษา',
+    appearance: {
+        open: 'เปลี่ยนธีม',
+        title: 'เลือกรูปแบบการแสดงผล',
+        description:
+            'ใช้ธีมของร้านอาหาร ตามการตั้งค่าของอุปกรณ์ หรือเลือกธีมของคุณเอง',
+        themes: 'ธีมที่มีให้เลือก',
+        restaurantDefault: {
+            title: 'ธีมเริ่มต้นของร้านอาหาร',
+            description: 'ใช้ธีมที่ร้านอาหารเลือกไว้',
+        },
+        system: {
+            title: 'ตามระบบ',
+            description: 'ใช้รูปแบบการแสดงผลตามอุปกรณ์นี้',
+        },
+    },
     orderTypes: {
         dinein: 'รับประทานที่ร้าน',
         takeaway: 'สั่งกลับบ้าน',

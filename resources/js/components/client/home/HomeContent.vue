@@ -140,7 +140,7 @@ const goToSlide = (index: number) => {
         <Transition name="fade-slide" mode="out-in">
             <p
                 :key="slides[currentIndex].word"
-                class="mb-4 text-sm tracking-widest text-red-500 uppercase"
+                class="mb-4 text-sm tracking-widest text-primary uppercase"
             >
                 [ {{ slides[currentIndex].word }} ]
             </p>
@@ -151,7 +151,7 @@ const goToSlide = (index: number) => {
             <Transition name="fade-slide" mode="out-in">
                 <span
                     :key="slides[currentIndex].title"
-                    class="inline-block text-red-500"
+                    class="inline-block text-primary"
                 >
                     {{ slides[currentIndex].title }}
                 </span>
@@ -161,7 +161,7 @@ const goToSlide = (index: number) => {
         <Transition name="fade-slide" mode="out-in">
             <p
                 :key="slides[currentIndex].description"
-                class="mb-6 max-w-2xl text-gray-600"
+                class="mb-6 max-w-2xl text-muted-foreground"
             >
                 {{ slides[currentIndex].description }}
             </p>
@@ -184,12 +184,12 @@ const goToSlide = (index: number) => {
                 />
 
                 <div
-                    class="absolute inset-0 flex flex-col justify-end bg-black/10 p-6"
+                    class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/10 to-transparent p-6"
                 >
                     <Transition name="fade-slide" mode="out-in">
                         <p
                             :key="slides[currentIndex].word"
-                            class="mb-2 text-xs tracking-widest text-red-500 uppercase sm:text-sm"
+                            class="mb-2 w-fit rounded-full bg-primary px-2.5 py-1 text-xs tracking-widest text-primary-foreground uppercase sm:text-sm"
                         >
                             [ {{ slides[currentIndex].word }} ]
                         </p>
@@ -220,7 +220,7 @@ const goToSlide = (index: number) => {
                     class="h-24 w-40 flex-shrink-0 cursor-pointer rounded-md object-cover transition-all duration-300 ease-in-out"
                     :class="[
                         index === virtualIndex
-                            ? 'scale-105 opacity-100 ring-2 ring-white'
+                            ? 'scale-105 opacity-100 ring-2 ring-primary ring-offset-2 ring-offset-background'
                             : 'opacity-50 grayscale hover:opacity-70 hover:grayscale-0',
                     ]"
                 />

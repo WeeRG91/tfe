@@ -37,26 +37,26 @@ watch(value, (val) => emit('update:modelValue', val));
                 :min="min || 0"
                 :max="max || 1000000"
                 :step="step || 0.1"
-                class="peer block w-full appearance-none rounded-lg border-1 bg-transparent px-2.5 pt-4 pb-2.5 text-sm text-gray-900 focus:ring-0 focus:outline-none dark:text-white"
+                class="peer block w-full appearance-none rounded-lg border-1 bg-transparent px-2.5 pt-4 pb-2.5 text-sm text-foreground focus:ring-0 focus:outline-none"
                 :class="
                     props.error
-                        ? 'border-red-500'
-                        : 'border-gray-300 focus:border-blue-600 dark:border-gray-600 dark:focus:border-blue-500'
+                        ? 'border-destructive'
+                        : 'border-border focus:border-ring'
                 "
             />
             <label
                 :for="id"
-                class="absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-white px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4 dark:bg-[#0a0a0a]"
+                class="absolute start-1 top-2 z-10 origin-[0] -translate-y-4 scale-75 transform bg-background px-2 text-sm duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
                 :class="
                     props.error
-                        ? 'text-red-500'
-                        : 'text-gray-500 peer-focus:text-blue-600 dark:text-gray-400 peer-focus:dark:text-blue-500'
+                        ? 'text-destructive'
+                        : 'text-muted-foreground peer-focus:text-foreground'
                 "
             >
                 {{ label }}
             </label>
         </div>
-        <span v-if="props.error" class="text-sm text-red-500">{{
+        <span v-if="props.error" class="text-sm text-destructive">{{
             props.error
         }}</span>
     </div>

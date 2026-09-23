@@ -79,7 +79,7 @@ const ordersConfirmed = computed(() =>
                                 item.title === t('layout.navigation.orders') &&
                                 ordersConfirmed.length > 0
                             "
-                            class="rounded-full bg-red-600 px-2 py-1 text-[10px] text-white"
+                            class="rounded-full bg-sidebar-primary px-2 py-1 text-[10px] text-sidebar-primary-foreground"
                         >
                             {{ ordersConfirmed.length }}
                         </span>
@@ -90,7 +90,7 @@ const ordersConfirmed = computed(() =>
                                     t('layout.navigation.messages') &&
                                 unreadCount > 0
                             "
-                            class="rounded-full bg-red-600 px-2 py-1 text-[10px] text-white"
+                            class="rounded-full bg-sidebar-primary px-2 py-1 text-[10px] text-sidebar-primary-foreground"
                         >
                             {{ unreadCount }}
                         </span>

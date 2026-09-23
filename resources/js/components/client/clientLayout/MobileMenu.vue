@@ -60,29 +60,29 @@ const handleLogout = () => {
         <Transition name="slide">
             <div
                 v-if="open"
-                class="fixed top-0 right-0 z-50 h-full w-full max-w-xs bg-white shadow-2xl"
+                class="fixed top-0 right-0 z-50 h-full w-full max-w-xs bg-card text-card-foreground shadow-2xl"
             >
                 <div class="flex h-full flex-col">
                     <div
-                        class="flex items-center justify-between border-b border-gray-100 p-6"
+                        class="flex items-center justify-between border-b border-border p-6"
                     >
                         <div
-                            class="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-2xl font-bold text-transparent"
+                            class="text-2xl font-bold text-primary"
                         >
                             Restaurant
                         </div>
                         <button
                             @click="emit('close')"
-                            class="rounded-full p-2 text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600"
+                            class="rounded-full p-2 text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-accent-foreground"
                         >
                             <X class="h-5 w-5" />
                         </button>
                     </div>
 
-                    <div v-if="user" class="border-b border-gray-100 p-4">
+                    <div v-if="user" class="border-b border-border p-4">
                         <div class="flex items-center gap-3">
                             <div
-                                class="relative h-12 w-12 overflow-hidden rounded-full bg-gradient-to-r from-red-500 to-red-600"
+                                class="relative h-12 w-12 overflow-hidden rounded-full bg-primary"
                             >
                                 <img
                                     v-if="user.avatar"
@@ -92,16 +92,16 @@ const handleLogout = () => {
                                 />
                                 <div
                                     v-else
-                                    class="flex h-full w-full items-center justify-center text-white"
+                                    class="flex h-full w-full items-center justify-center text-primary-foreground"
                                 >
                                     <User class="h-6 w-6" />
                                 </div>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-semibold text-gray-900">
+                                <p class="text-sm font-semibold text-card-foreground">
                                     {{ user.name }}
                                 </p>
-                                <p class="text-xs text-gray-500">
+                                <p class="text-xs text-muted-foreground">
                                     {{ user.email }}
                                 </p>
                             </div>
@@ -113,9 +113,9 @@ const handleLogout = () => {
                             <a
                                 @click="emit('close')"
                                 :href="clientProfile.edit().url"
-                                class="flex items-center gap-4 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+                                class="flex items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
                             >
-                                <div class="rounded-lg bg-gray-100 p-2">
+                                <div class="rounded-lg bg-muted p-2">
                                     <User class="h-5 w-5" />
                                 </div>
                                 <span class="font-medium">{{
@@ -129,11 +129,11 @@ const handleLogout = () => {
                                 :class="[
                                     'flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-200',
                                     currentPath.startsWith(order.myOrders().url)
-                                        ? 'bg-red-50 text-red-600 shadow-sm'
-                                        : 'text-gray-700 hover:bg-red-50 hover:text-red-600',
+                                        ? 'bg-accent text-accent-foreground shadow-sm'
+                                        : 'text-card-foreground hover:bg-accent hover:text-accent-foreground',
                                 ]"
                             >
-                                <div class="rounded-lg bg-gray-100 p-2">
+                                <div class="rounded-lg bg-muted p-2">
                                     <NotepadText class="h-5 w-5" />
                                 </div>
                                 <span class="font-medium">{{
@@ -145,12 +145,12 @@ const handleLogout = () => {
                                 :href="loyaltyPointTransaction.myPoints().url"
                                 :class="[
                                     'flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-200',
-                                    currentPath.startsWith(order.myOrders().url)
-                                        ? 'bg-red-50 text-red-600 shadow-sm'
-                                        : 'text-gray-700 hover:bg-red-50 hover:text-red-600',
+                                    currentPath.startsWith(loyaltyPointTransaction.myPoints().url)
+                                        ? 'bg-accent text-accent-foreground shadow-sm'
+                                        : 'text-card-foreground hover:bg-accent hover:text-accent-foreground',
                                 ]"
                             >
-                                <div class="rounded-lg bg-gray-100 p-2">
+                                <div class="rounded-lg bg-muted p-2">
                                     <NotepadText class="h-5 w-5" />
                                 </div>
                                 <span class="font-medium">{{
@@ -161,13 +161,13 @@ const handleLogout = () => {
 
                         <a
                             :href="cart.checkout().url"
-                            class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+                            class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
                         >
-                            <div class="relative rounded-lg bg-gray-100 p-2">
+                            <div class="relative rounded-lg bg-muted p-2">
                                 <ShoppingCart class="h-5 w-5" />
                                 <span
                                     v-if="cartItemCount > 0"
-                                    class="absolute -top-1 -right-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
+                                    class="absolute -top-1 -right-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground"
                                 >
                                     {{
                                         cartItemCount > 9 ? '9+' : cartItemCount
@@ -182,13 +182,13 @@ const handleLogout = () => {
                         <a
                             v-if="user"
                             :href="notification.myNotifications().url"
-                            class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+                            class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
                         >
-                            <div class="relative rounded-lg bg-gray-100 p-2">
+                            <div class="relative rounded-lg bg-muted p-2">
                                 <Bell class="h-5 w-5" />
                                 <span
                                     v-if="unreadNotificationsCount > 0"
-                                    class="absolute -top-1 -right-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
+                                    class="absolute -top-1 -right-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground"
                                 >
                                     {{
                                         unreadNotificationsCount > 9
@@ -208,16 +208,16 @@ const handleLogout = () => {
                             :class="[
                                 'flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-200',
                                 currentPath.startsWith(menu.dish().url)
-                                    ? 'bg-red-50 text-red-600 shadow-sm'
-                                    : 'text-gray-700 hover:bg-red-50 hover:text-red-600',
+                                    ? 'bg-accent text-accent-foreground shadow-sm'
+                                    : 'text-card-foreground hover:bg-accent hover:text-accent-foreground',
                             ]"
                         >
                             <div
                                 :class="[
                                     'rounded-lg p-2 transition-all duration-200',
                                     currentPath.startsWith(menu.dish().url)
-                                        ? 'bg-red-100'
-                                        : 'bg-gray-100',
+                                        ? 'bg-primary/10'
+                                        : 'bg-muted',
                                 ]"
                             >
                                 <HandPlatter class="h-5 w-5" />
@@ -233,16 +233,16 @@ const handleLogout = () => {
                             :class="[
                                 'flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-200',
                                 currentPath.startsWith(menu.drink().url)
-                                    ? 'bg-red-50 text-red-600 shadow-sm'
-                                    : 'text-gray-700 hover:bg-red-50 hover:text-red-600',
+                                    ? 'bg-accent text-accent-foreground shadow-sm'
+                                    : 'text-card-foreground hover:bg-accent hover:text-accent-foreground',
                             ]"
                         >
                             <div
                                 :class="[
                                     'rounded-lg p-2 transition-all duration-200',
                                     currentPath.startsWith(menu.drink().url)
-                                        ? 'bg-red-100'
-                                        : 'bg-gray-100',
+                                        ? 'bg-primary/10'
+                                        : 'bg-muted',
                                 ]"
                             >
                                 <Wine class="h-5 w-5" />
@@ -255,9 +255,9 @@ const handleLogout = () => {
                         <a
                             @click="emit('close')"
                             href="#"
-                            class="flex items-center gap-4 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+                            class="flex items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
                         >
-                            <div class="rounded-lg bg-gray-100 p-2">
+                            <div class="rounded-lg bg-muted p-2">
                                 <Info class="h-5 w-5" />
                             </div>
                             <span class="font-medium">{{
@@ -268,9 +268,9 @@ const handleLogout = () => {
                         <a
                             @click="emit('close')"
                             href="#"
-                            class="flex items-center gap-4 rounded-xl px-4 py-3 text-gray-700 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+                            class="flex items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
                         >
-                            <div class="rounded-lg bg-gray-100 p-2">
+                            <div class="rounded-lg bg-muted p-2">
                                 <Phone class="h-5 w-5" />
                             </div>
                             <span class="font-medium">{{
@@ -279,11 +279,11 @@ const handleLogout = () => {
                         </a>
                     </nav>
 
-                    <div class="border-t border-gray-100 p-6">
+                    <div class="border-t border-border p-6">
                         <button
                             v-if="!user"
                             @click="handleLogin"
-                            class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-red-600 px-4 py-3 font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700"
+                            class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-medium text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90"
                         >
                             <LogIn class="h-5 w-5" />
                             {{ t('navigation.userMenu.signIn') }}
@@ -291,7 +291,7 @@ const handleLogout = () => {
                         <button
                             v-else
                             @click="handleLogout"
-                            class="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-3 font-medium text-red-600 shadow-sm transition-all duration-200 hover:bg-red-50"
+                            class="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-3 font-medium text-card-foreground shadow-sm transition-all duration-200 hover:bg-accent hover:text-accent-foreground"
                         >
                             <LogOut class="h-5 w-5" />
                             {{ t('navigation.userMenu.signOut') }}

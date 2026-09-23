@@ -262,7 +262,7 @@ const deleteDeliveryDate = async () => {
 
                         <p
                             v-if="companyErrors.name"
-                            class="mt-1 text-xs text-red-600"
+                            class="mt-1 text-xs text-destructive"
                         >
                             {{ companyErrors.name[0] }}
                         </p>
@@ -287,7 +287,7 @@ const deleteDeliveryDate = async () => {
 
                         <p
                             v-if="companyErrors.minimum_advance_days"
-                            class="mt-1 text-xs text-red-600"
+                            class="mt-1 text-xs text-destructive"
                         >
                             {{ companyErrors.minimum_advance_days[0] }}
                         </p>
@@ -369,8 +369,8 @@ const deleteDeliveryDate = async () => {
                             class="rounded-full px-2.5 py-1 text-xs font-medium"
                             :class="
                                 company.is_active
-                                    ? 'bg-emerald-100 text-emerald-700'
-                                    : 'bg-gray-100 text-gray-600'
+                                    ? 'bg-success text-success-foreground'
+                                    : 'bg-secondary text-secondary-foreground'
                             "
                         >
                             {{
@@ -412,7 +412,7 @@ const deleteDeliveryDate = async () => {
 
                                 <p
                                     v-if="deliveryDateErrors[company.id]"
-                                    class="mt-1 text-xs text-red-600"
+                                    class="mt-1 text-xs text-destructive"
                                 >
                                     {{ deliveryDateErrors[company.id] }}
                                 </p>
@@ -460,8 +460,8 @@ const deleteDeliveryDate = async () => {
                                         class="text-xs"
                                         :class="
                                             date.is_available
-                                                ? 'text-emerald-600'
-                                                : 'text-gray-400'
+                                                ? 'text-success'
+                                                : 'text-muted-foreground'
                                         "
                                     >
                                         {{
@@ -501,7 +501,7 @@ const deleteDeliveryDate = async () => {
 
                                     <button
                                         type="button"
-                                        class="rounded-md border border-red-200 p-1.5 text-red-600 hover:bg-red-50"
+                                        class="rounded-md border border-destructive/50 p-1.5 text-destructive hover:bg-destructive/10"
                                         :title="
                                             t('deliveryCompanies.deleteDate')
                                         "

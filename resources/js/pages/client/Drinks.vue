@@ -75,7 +75,7 @@ watch(selectedCategory, () => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
-                <p class="text-sm tracking-widest text-red-500 uppercase">
+                <p class="text-sm tracking-widest text-primary uppercase">
                     [ {{ t('drinks.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
@@ -86,11 +86,11 @@ watch(selectedCategory, () => {
             <div class="mb-8 flex flex-wrap items-center gap-4">
                 <button
                     @click="selectedCategory = null"
-                    class="rounded-full border px-4 py-1 text-sm transition-all duration-500"
+                    class="rounded-full border px-4 py-1 text-sm transition-colors"
                     :class="
                         selectedCategory
-                            ? 'text-gray-600 hover:bg-gray-100'
-                            : 'border-red-500 bg-red-500 text-white hover:bg-red-600'
+                            ? 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                            : 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
                     "
                 >
                     {{ t('drinks.categories.all') }}
@@ -103,8 +103,8 @@ watch(selectedCategory, () => {
                     class="rounded-full border px-4 py-1 text-sm transition-all duration-500"
                     :class="
                         selectedCategory === category.value
-                            ? 'border-red-500 bg-red-500 text-white hover:bg-red-600'
-                            : 'text-gray-600 hover:bg-gray-100'
+                            ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
+                            : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     "
                 >
                     {{ t(`drinks.categories.${category.key}`) }}

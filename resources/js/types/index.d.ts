@@ -14,6 +14,12 @@ import {
     UserPermissionEnum,
 } from '@/types/permission';
 import { SearchResultEnum } from '@/types/search';
+import {
+    ThemeDefinition,
+    ThemeKey,
+    ThemeSelection,
+    ThemeSurface,
+} from '@/types/theme';
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
 
@@ -36,11 +42,19 @@ export interface NavItem {
     permission?: string;
 }
 
+export interface ThemePageProps {
+    surface: ThemeSurface;
+    selection: ThemeSelection;
+    restaurantDefaultKey: ThemeKey;
+    customThemes: ThemeDefinition[];
+}
+
 export type AppPageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
     name: string;
     quote: { message: string; author: string };
+    theme: ThemePageProps;
     features: {
         companyDelivery: boolean;
     };

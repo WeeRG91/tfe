@@ -91,13 +91,13 @@ const handleRemoveItem = async (cartItemId: number) => {
     <ClientLayout>
         <section class="mx-auto max-w-6xl px-6 py-4">
             <div class="mb-4">
-                <p class="text-sm tracking-widest text-red-500 uppercase">
+                <p class="text-sm tracking-widest text-primary uppercase">
                     [ {{ t('cart.checkoutPage.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     {{ t('cart.checkoutPage.title') }}
                 </h1>
-                <p class="mt-1 text-sm text-gray-600">
+                <p class="mt-1 text-sm text-muted-foreground">
                     {{ t('cart.checkoutPage.description') }}
                 </p>
             </div>
@@ -118,17 +118,17 @@ const handleRemoveItem = async (cartItemId: number) => {
                                 class="sticky top-0 z-10 py-1.5 backdrop-blur-sm"
                             >
                                 <div class="flex items-center gap-2">
-                                    <Utensils class="h-4 w-4 text-red-500" />
+                                    <Utensils class="h-4 w-4 text-primary" />
                                     <h2
-                                        class="text-sm font-semibold tracking-wide text-gray-700 uppercase"
+                                        class="text-sm font-semibold tracking-wide text-foreground uppercase"
                                     >
                                         {{ t('cart.checkoutPage.dishes') }}
                                     </h2>
-                                    <span class="text-xs text-gray-400">
+                                    <span class="text-xs text-muted-foreground">
                                         {{ dishItems.length }}
                                     </span>
                                 </div>
-                                <div class="mt-0.5 h-0.5 w-10 bg-red-500"></div>
+                                <div class="mt-0.5 h-0.5 w-10 bg-primary"></div>
                             </div>
 
                             <div class="space-y-3">
@@ -153,19 +153,17 @@ const handleRemoveItem = async (cartItemId: number) => {
                                 class="sticky top-0 z-10 py-1.5 backdrop-blur-sm"
                             >
                                 <div class="flex items-center gap-2">
-                                    <Coffee class="h-4 w-4 text-blue-500" />
+                                    <Coffee class="h-4 w-4 text-info" />
                                     <h2
-                                        class="text-sm font-semibold tracking-wide text-gray-700 uppercase"
+                                        class="text-sm font-semibold tracking-wide text-foreground uppercase"
                                     >
                                         {{ t('cart.checkoutPage.drinks') }}
                                     </h2>
-                                    <span class="text-xs text-gray-400">
+                                    <span class="text-xs text-muted-foreground">
                                         {{ drinkItems.length }}
                                     </span>
                                 </div>
-                                <div
-                                    class="mt-0.5 h-0.5 w-10 bg-blue-500"
-                                ></div>
+                                <div class="mt-0.5 h-0.5 w-10 bg-info"></div>
                             </div>
 
                             <div class="space-y-3">
@@ -189,7 +187,7 @@ const handleRemoveItem = async (cartItemId: number) => {
 
                 <div v-if="items.length" class="lg:w-80">
                     <div
-                        class="sticky rounded-lg border bg-white p-4 sm:top-20"
+                        class="sticky rounded-lg border border-border bg-card p-4 text-card-foreground shadow-sm sm:top-20"
                     >
                         <h2 class="mb-3 text-lg font-semibold uppercase">
                             {{ t('cart.checkoutPage.orderSummary') }}
@@ -199,7 +197,7 @@ const handleRemoveItem = async (cartItemId: number) => {
                             <span>{{
                                 t('cart.checkoutPage.totalIncludingVat')
                             }}</span>
-                            <span class="text-red-500"
+                            <span class="text-primary"
                                 >€{{ formatPrice(subtotal) }}</span
                             >
                         </div>
@@ -211,13 +209,13 @@ const handleRemoveItem = async (cartItemId: number) => {
                                         'cart.checkoutPage.specialInstructionsPlaceholder',
                                     )
                                 "
-                                class="w-full rounded-md border p-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
+                                class="w-full rounded-md border border-input bg-background p-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
                                 rows="2"
                             ></textarea>
 
                             <button
                                 @click="$inertia.visit('/cart/place-order')"
-                                class="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 py-2 text-sm text-white transition-all hover:shadow-md hover:shadow-red-200"
+                                class="group relative w-full overflow-hidden rounded-lg bg-primary py-2 text-sm text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-md"
                             >
                                 <span
                                     class="relative z-10 flex items-center justify-center gap-2 font-semibold"
@@ -226,12 +224,14 @@ const handleRemoveItem = async (cartItemId: number) => {
                                     {{ t('cart.checkoutPage.placeOrder') }}
                                 </span>
                                 <div
-                                    class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-red-600 to-red-700 transition-transform duration-300 group-hover:translate-x-0"
+                                    class="absolute inset-0 -translate-x-full transform bg-primary-foreground/10 transition-transform duration-300 group-hover:translate-x-0"
                                 ></div>
                             </button>
                         </div>
 
-                        <div class="mt-3 text-center text-xs text-gray-500">
+                        <div
+                            class="mt-3 text-center text-xs text-muted-foreground"
+                        >
                             <p>{{ t('cart.checkoutPage.agreementText') }}</p>
                             <p>{{ t('cart.checkoutPage.termsAndPrivacy') }}</p>
                         </div>

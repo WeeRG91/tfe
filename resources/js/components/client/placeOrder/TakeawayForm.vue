@@ -131,7 +131,9 @@ watch(
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <h2
             class="mb-5 flex items-center gap-2 text-lg font-semibold uppercase"
         >
@@ -141,14 +143,16 @@ watch(
 
         <div class="space-y-5">
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700">
+                <label
+                    class="mb-1.5 block text-sm font-medium text-card-foreground"
+                >
                     {{ t('cart.orderType.takeawayForm.pickupName') }}
-                    <span class="text-red-500">*</span>
+                    <span class="text-destructive">*</span>
                 </label>
 
                 <div class="relative">
                     <User
-                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                     />
 
                     <input
@@ -159,7 +163,7 @@ watch(
                                 'cart.orderType.takeawayForm.pickupNamePlaceholder',
                             )
                         "
-                        class="w-full rounded-md border border-gray-300 py-2.5 pr-3 pl-10 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
+                        class="w-full rounded-md border border-input bg-background py-2.5 pr-3 pl-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
                         @input="
                             emit(
                                 'update:pickupName',
@@ -171,14 +175,16 @@ watch(
             </div>
 
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700">
+                <label
+                    class="mb-1.5 block text-sm font-medium text-card-foreground"
+                >
                     {{ t('cart.orderType.takeawayForm.pickupPhone') }}
-                    <span class="text-red-500">*</span>
+                    <span class="text-destructive">*</span>
                 </label>
 
                 <div class="relative">
                     <Phone
-                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                     />
 
                     <input
@@ -189,7 +195,7 @@ watch(
                                 'cart.orderType.takeawayForm.pickupPhonePlaceholder',
                             )
                         "
-                        class="w-full rounded-md border border-gray-300 py-2.5 pr-3 pl-10 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
+                        class="w-full rounded-md border border-input bg-background py-2.5 pr-3 pl-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
                         @input="
                             emit(
                                 'update:pickupPhone',
@@ -199,7 +205,7 @@ watch(
                     />
                 </div>
 
-                <p class="mt-1 text-xs text-gray-500">
+                <p class="mt-1 text-xs text-muted-foreground">
                     {{ t('cart.orderType.takeawayForm.pickupPhoneHelper') }}
                 </p>
             </div>
@@ -207,7 +213,7 @@ watch(
             <div
                 v-if="availabilityLoading"
                 role="status"
-                class="rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600"
+                class="rounded-xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground"
             >
                 {{ t('restaurant.pickupLoading') }}
             </div>
@@ -215,13 +221,13 @@ watch(
             <div
                 v-else-if="availabilityError"
                 role="alert"
-                class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+                class="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
             >
                 <p>{{ t('restaurant.pickupError') }}</p>
 
                 <button
                     type="button"
-                    class="mt-3 rounded-lg border border-red-300 px-3 py-2 font-semibold hover:bg-red-100"
+                    class="mt-3 rounded-lg border border-destructive/40 px-3 py-2 font-semibold transition-colors hover:bg-destructive/10"
                     @click="emit('retry')"
                 >
                     {{ t('restaurant.retry') }}
@@ -233,13 +239,15 @@ watch(
                     !availabilityLoading && !availabilityError && availability
                 "
             >
-                <div class="border-t pt-5">
+                <div class="border-t border-border pt-5">
                     <div class="mb-3 flex items-center gap-2">
-                        <CalendarDays class="h-4 w-4 text-red-500" />
+                        <CalendarDays class="h-4 w-4 text-primary" />
 
-                        <label class="text-sm font-semibold text-gray-800">
+                        <label
+                            class="text-sm font-semibold text-card-foreground"
+                        >
                             {{ t('cart.orderType.takeawayForm.selectDate') }}
-                            <span class="text-red-500">*</span>
+                            <span class="text-destructive">*</span>
                         </label>
                     </div>
 
@@ -257,8 +265,8 @@ watch(
                             class="flex min-h-20 flex-col items-center justify-center rounded-xl border-2 px-2 py-2 transition-all"
                             :class="[
                                 selectedDate === date.value
-                                    ? 'border-red-500 bg-red-50 text-red-700 shadow-sm'
-                                    : 'border-gray-200 bg-white text-gray-700 hover:border-red-200 hover:bg-red-50/40',
+                                    ? 'border-primary bg-primary/10 text-primary shadow-sm'
+                                    : 'border-border bg-background text-foreground hover:border-primary/40 hover:bg-accent/40',
                                 !date.available
                                     ? 'cursor-not-allowed opacity-40'
                                     : 'cursor-pointer',
@@ -289,18 +297,20 @@ watch(
                         class="mb-3 flex flex-wrap items-center justify-between gap-2"
                     >
                         <div class="flex items-center gap-2">
-                            <Clock3 class="h-4 w-4 text-red-500" />
+                            <Clock3 class="h-4 w-4 text-primary" />
 
-                            <label class="text-sm font-semibold text-gray-800">
+                            <label
+                                class="text-sm font-semibold text-card-foreground"
+                            >
                                 {{
                                     t('cart.orderType.takeawayForm.selectTime')
                                 }}
-                                <span class="text-red-500">*</span>
+                                <span class="text-destructive">*</span>
                             </label>
                         </div>
 
                         <span
-                            class="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600"
+                            class="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground"
                         >
                             {{
                                 t('restaurant.pickupTimezone', {
@@ -324,8 +334,8 @@ watch(
                             class="rounded-lg border-2 px-3 py-2.5 text-sm font-semibold transition-all"
                             :class="
                                 pickupTime === slot.value
-                                    ? 'border-red-500 bg-red-500 text-white shadow-sm'
-                                    : 'border-gray-200 bg-white text-gray-700 hover:border-red-300 hover:bg-red-50'
+                                    ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                                    : 'border-border bg-background text-foreground hover:border-primary/40 hover:bg-accent'
                             "
                             @click="selectTime(slot.value)"
                         >
@@ -335,12 +345,12 @@ watch(
 
                     <div
                         v-else
-                        class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
+                        class="rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-foreground"
                     >
                         {{ t('cart.orderType.takeawayForm.noSlots') }}
                     </div>
 
-                    <p class="mt-2 text-xs text-gray-500">
+                    <p class="mt-2 text-xs text-muted-foreground">
                         {{ t('restaurant.pickupHelp') }}
                     </p>
                 </div>
@@ -348,16 +358,16 @@ watch(
                 <Transition name="selection">
                     <div
                         v-if="selectedPickupLabel"
-                        class="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800"
+                        class="flex items-center gap-3 rounded-xl border border-info/30 bg-info/10 p-3 text-sm text-foreground"
                     >
                         <div
-                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-info/15 text-info"
                         >
                             <CalendarDays class="h-4 w-4" />
                         </div>
 
                         <div>
-                            <p class="text-xs font-medium text-blue-600">
+                            <p class="text-xs font-medium text-info">
                                 {{ t('cart.orderType.takeawayForm.readyAt') }}
                             </p>
 

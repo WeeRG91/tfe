@@ -17,6 +17,7 @@ return [
     ],
     'permissions' => [
         'admin' => ['access' => 'Op den Administratiounsberäich zougräifen'],
+        'theme' => ['manage' => 'Restaurant-Theeme verwalten'],
         'dashboard' => ['view' => 'Den Dashboard ukucken'],
         'allergen' => [
             'view' => 'Allergener ukucken',

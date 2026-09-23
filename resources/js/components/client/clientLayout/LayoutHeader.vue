@@ -61,7 +61,7 @@ watch(mobileMenuOpen, (isOpen) => {
 
 <template>
     <header
-        class="sticky top-0 z-30 border-b bg-white/95 shadow-sm backdrop-blur-sm"
+        class="sticky top-0 z-30 border-b border-border bg-background/95 shadow-sm backdrop-blur-sm"
     >
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
@@ -69,7 +69,7 @@ watch(mobileMenuOpen, (isOpen) => {
                     <a
                         href="/"
                         @click="scrollToTop"
-                        class="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-2xl font-bold text-transparent transition-all hover:from-red-600 hover:to-red-700"
+                        class="text-2xl font-bold text-primary transition-colors hover:text-primary/80"
                     >
                         Restaurant
                     </a>
@@ -91,7 +91,7 @@ watch(mobileMenuOpen, (isOpen) => {
 
                     <button
                         @click="toggleMobileMenu"
-                        class="flex items-center justify-center rounded-lg p-2 text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-600 md:hidden"
+                        class="flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground md:hidden"
                     >
                         <Menu class="h-5 w-5" />
                     </button>

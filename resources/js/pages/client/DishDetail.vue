@@ -3,14 +3,14 @@ import AnimatedButton from '@/components/AnimatedButton.vue';
 import AddDishToCartModal from '@/components/client/cart/AddDishToCartModal.vue';
 import { useDateFormatter } from '@/composables/useDateFormatter';
 import ClientLayout from '@/layouts/ClientLayout.vue';
-import { getInitials, getUserAvatarColor } from '@/lib/utils';
+import { getInitials } from '@/lib/utils';
 import rating from '@/routes/rating';
 import { useDishStore } from '@/stores/dish';
 import { ClientDishType } from '@/types/dish';
 import { ReviewResultType, ReviewType } from '@/types/rating';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Flame, X } from 'lucide-vue-next';
+import { Flame, X, EllipsisVertical } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
@@ -281,16 +281,16 @@ onUnmounted(() => {
             class="relative mx-auto flex h-full w-full max-w-7xl flex-col px-4 py-12 sm:px-6 lg:px-8 lg:py-16"
         >
             <div
-                class="relative z-10 mb-6 flex items-center gap-2 text-sm text-gray-500"
+                class="relative z-10 mb-6 flex items-center gap-2 text-sm text-muted-foreground"
             >
                 <button
                     @click="$inertia.visit('/menu/dishes')"
-                    class="cursor-pointer transition-colors hover:text-red-500"
+                    class="cursor-pointer transition-colors hover:text-primary"
                 >
                     {{ t('menu.dishDetail.menu') }}
                 </button>
                 <span>/</span>
-                <span class="font-medium text-gray-900">
+                <span class="font-medium text-foreground">
                     {{ props.dish.name }}
                 </span>
                 <div
@@ -305,12 +305,12 @@ onUnmounted(() => {
                         :class="[
                             i <= dish.default_spicy_level
                                 ? [
-                                      'text-green-500',
-                                      'text-yellow-500',
-                                      'text-orange-500',
-                                      'text-red-500',
+                                      'text-success',
+                                      'text-warning',
+                                      'text-primary',
+                                      'text-destructive',
                                   ][i]
-                                : 'text-gray-300',
+                                : 'text-muted-foreground/30',
                         ]"
                     />
                 </div>
@@ -319,7 +319,7 @@ onUnmounted(() => {
             <div
                 class="relative z-10 grid flex-1 gap-10 lg:grid-cols-2 lg:gap-12"
             >
-                <div class="overflow-hidden rounded-2xl bg-gray-100 shadow-lg">
+                <div class="overflow-hidden rounded-2xl bg-muted shadow-lg">
                     <img
                         :src="props.dish.main_image"
                         :alt="props.dish.name"
@@ -330,8 +330,7 @@ onUnmounted(() => {
                 <div class="flex flex-col">
                     <div class="mb-4 flex flex-wrap items-center gap-3">
                         <span
-                            class="rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm"
-                            :class="[props.dish.category.color, 'text-white']"
+                            class="rounded-full bg-secondary px-4 py-1.5 text-sm font-semibold text-secondary-foreground shadow-sm"
                         >
                             {{ props.dish.category.label }}
                         </span>
@@ -339,7 +338,9 @@ onUnmounted(() => {
                         <div class="ml-auto flex items-center gap-2">
                             <div class="flex items-center gap-2">
                                 <div class="relative inline-block">
-                                    <div class="flex text-lg text-gray-300">
+                                    <div
+                                        class="flex text-lg text-muted-foreground/25"
+                                    >
                                         <span
                                             v-for="star in 5"
                                             :key="`bg-${star}`"
@@ -348,7 +349,7 @@ onUnmounted(() => {
                                     </div>
 
                                     <div
-                                        class="absolute top-0 left-0 overflow-hidden text-lg whitespace-nowrap text-yellow-400"
+                                        class="absolute top-0 left-0 overflow-hidden text-lg whitespace-nowrap text-warning"
                                         :style="{
                                             width: `${ratingPercentage}%`,
                                         }"
@@ -361,12 +362,12 @@ onUnmounted(() => {
                                     </div>
                                 </div>
 
-                                <span class="font-semibold text-gray-900">
+                                <span class="font-semibold text-foreground">
                                     {{ (ratingAverage ?? 0).toFixed(1) }}
                                 </span>
                             </div>
 
-                            <span class="text-sm text-gray-400">
+                            <span class="text-sm text-muted-foreground">
                                 ({{ ratingCount ?? 0 }}
                                 {{ t('menu.dishDetail.reviews') }})
                             </span>
@@ -374,23 +375,23 @@ onUnmounted(() => {
                     </div>
 
                     <h1
-                        class="mb-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl"
+                        class="mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
                     >
                         {{ props.dish.name }}
                     </h1>
 
-                    <div class="mb-6 border-l-4 border-gray-200 pl-4">
-                        <p class="leading-relaxed text-gray-600">
+                    <div class="mb-6 border-l-4 border-primary/30 pl-4">
+                        <p class="leading-relaxed text-muted-foreground">
                             {{ props.dish.description }}
                         </p>
                     </div>
 
                     <div class="mb-8 flex items-baseline gap-2">
                         <span
-                            class="text-3xl font-bold text-red-600 sm:text-4xl"
+                            class="text-3xl font-bold text-primary sm:text-4xl"
                             >€ {{ props.dish.price.toFixed(2) }}</span
                         >
-                        <span class="text-sm text-gray-400">
+                        <span class="text-sm text-muted-foreground">
                             {{ t('menu.dishDetail.includesVat') }}
                         </span>
                     </div>
@@ -398,12 +399,12 @@ onUnmounted(() => {
                     <div v-if="props.dish.ingredients.length" class="mb-8">
                         <div class="mb-4 flex items-center gap-2">
                             <span
-                                class="text-sm font-semibold tracking-wide text-gray-400 uppercase"
+                                class="text-sm font-semibold tracking-wide text-muted-foreground uppercase"
                             >
                                 {{ t('menu.dishDetail.ingredients') }}
                             </span>
                             <div
-                                class="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"
+                                class="h-px flex-1 bg-gradient-to-r from-border to-transparent"
                             ></div>
                         </div>
 
@@ -417,7 +418,7 @@ onUnmounted(() => {
                                     <img
                                         :src="ingredient.main_image"
                                         :alt="ingredient.name"
-                                        class="h-14 w-14 rounded-full border-2 border-white object-cover shadow-md ring-1 ring-gray-200 transition-all duration-300 group-hover:shadow-lg"
+                                        class="h-14 w-14 rounded-full border-2 border-background object-cover shadow-md ring-1 ring-border transition-all duration-300 group-hover:shadow-lg group-hover:ring-primary/40"
                                     />
 
                                     <div
@@ -426,12 +427,12 @@ onUnmounted(() => {
                                     >
                                         <div class="group/allergen relative">
                                             <div
-                                                class="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-amber-300 text-xs font-bold text-white shadow-md transition-transform hover:scale-110"
+                                                class="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-warning text-xs font-bold text-warning-foreground shadow-md transition-transform hover:scale-110"
                                             >
                                                 !
                                             </div>
                                             <div
-                                                class="pointer-events-none absolute bottom-full left-1/2 z-20 mb-3 flex w-max -translate-x-1/2 translate-y-2 scale-95 items-center gap-2 rounded-xl bg-white px-3 py-1.5 text-xs font-medium text-gray-800 opacity-0 shadow-xl transition-all duration-200 group-hover/allergen:translate-y-0 group-hover/allergen:scale-100 group-hover/allergen:opacity-100"
+                                                class="pointer-events-none absolute bottom-full left-1/2 z-20 mb-3 flex w-max -translate-x-1/2 translate-y-2 scale-95 items-center gap-2 rounded-xl border border-border bg-popover px-3 py-1.5 text-xs font-medium text-popover-foreground opacity-0 shadow-xl transition-all duration-200 group-hover/allergen:translate-y-0 group-hover/allergen:scale-100 group-hover/allergen:opacity-100"
                                             >
                                                 <img
                                                     :src="
@@ -458,7 +459,7 @@ onUnmounted(() => {
                                     </div>
                                 </div>
                                 <div
-                                    class="text-center text-xs font-medium text-gray-600 group-hover:text-gray-900"
+                                    class="text-center text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground"
                                 >
                                     {{ ingredient.name }}
                                 </div>
@@ -475,7 +476,7 @@ onUnmounted(() => {
                         />
 
                         <button
-                            class="inline-flex cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md active:scale-95"
+                            class="inline-flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium text-foreground shadow-sm transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-md active:scale-95"
                             @click="$inertia.visit('/menu/dishes')"
                         >
                             {{ t('menu.dishDetail.backToMenu') }}
@@ -484,31 +485,33 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <div class="mt-16 border-t border-gray-200 pt-12">
+            <div class="mt-16 border-t border-border pt-12">
                 <div
                     class="mb-8 flex flex-wrap items-center justify-between gap-4"
                 >
                     <div>
                         <h2
-                            class="flex items-center gap-2 text-2xl font-bold text-gray-900"
+                            class="flex items-center gap-2 text-2xl font-bold text-foreground"
                         >
                             {{ t('menu.dishDetail.reviewSection.title') }}
                             <span
-                                class="inline-flex items-center justify-center rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-semibold text-red-600"
+                                class="inline-flex items-center justify-center rounded-full bg-primary/10 px-2.5 py-0.5 text-sm font-semibold text-primary"
                             >
                                 {{ ratingCount || 0 }}
                             </span>
                         </h2>
                         <div class="mt-1 flex items-center gap-3">
                             <div class="relative inline-block">
-                                <div class="flex text-2xl text-gray-300">
+                                <div
+                                    class="flex text-2xl text-muted-foreground/25"
+                                >
                                     <span v-for="star in 5" :key="`bg-${star}`"
                                         >★</span
                                     >
                                 </div>
 
                                 <div
-                                    class="absolute inset-0 overflow-hidden text-2xl whitespace-nowrap text-yellow-400"
+                                    class="absolute inset-0 overflow-hidden text-2xl whitespace-nowrap text-warning"
                                     :style="{
                                         width: `${ratingPercentage}%`,
                                     }"
@@ -519,7 +522,7 @@ onUnmounted(() => {
                                 </div>
                             </div>
 
-                            <span class="text-lg font-semibold text-gray-900">
+                            <span class="text-lg font-semibold text-foreground">
                                 {{ (ratingAverage ?? 0).toFixed(1) }}
                             </span>
                         </div>
@@ -529,21 +532,21 @@ onUnmounted(() => {
                         v-if="canWriteReview"
                         type="button"
                         @click="toggleReviewForm"
-                        class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-red-200 transition-all hover:shadow-xl hover:shadow-red-300 active:scale-95"
+                        class="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl active:scale-95"
                     >
                         {{ t('menu.dishDetail.reviewSection.writeReview') }}
                     </button>
 
                     <div
                         v-else-if="user && hasExistingReview"
-                        class="flex items-center gap-2 rounded-full bg-green-50 px-4 py-2 text-sm font-medium text-green-700"
+                        class="flex items-center gap-2 rounded-full bg-success/10 px-4 py-2 text-sm font-medium text-success"
                     >
                         {{ t('menu.dishDetail.reviewSection.alreadyReviewed') }}
                     </div>
 
                     <div
                         v-else-if="user"
-                        class="flex w-sm items-center justify-center rounded-xl border border-amber-200 bg-amber-50 px-5 py-3 text-[13px] text-amber-800"
+                        class="flex w-sm items-center justify-center rounded-xl border border-warning/30 bg-warning/10 px-5 py-3 text-[13px] text-foreground"
                     >
                         <span>{{
                             t('menu.dishDetail.reviewSection.notEligible')
@@ -553,11 +556,11 @@ onUnmounted(() => {
 
                 <div
                     v-if="showReviewForm"
-                    class="mb-8 overflow-hidden rounded-xl bg-white p-5 shadow-md ring-1 ring-gray-100"
+                    class="mb-8 overflow-hidden rounded-xl border border-border bg-card p-5 text-card-foreground shadow-md"
                 >
                     <div class="mb-4 flex items-center justify-between">
                         <h3
-                            class="flex items-center gap-2 text-base font-semibold text-gray-900"
+                            class="flex items-center gap-2 text-base font-semibold text-card-foreground"
                         >
                             {{
                                 t(
@@ -567,7 +570,7 @@ onUnmounted(() => {
                         </h3>
                         <button
                             @click="toggleReviewForm"
-                            class="rounded-full p-1 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
+                            class="rounded-full p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
                             <X class="h-4 w-4" />
                         </button>
@@ -576,7 +579,7 @@ onUnmounted(() => {
                     <form @submit.prevent="submitReview" class="space-y-4">
                         <div>
                             <label
-                                class="mb-1.5 block text-xs font-medium text-gray-700"
+                                class="mb-1.5 block text-xs font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -596,8 +599,8 @@ onUnmounted(() => {
                                     :class="
                                         star <=
                                         (hoveredStars || reviewForm.rating)
-                                            ? 'text-yellow-400 drop-shadow-sm'
-                                            : 'text-gray-300 hover:text-gray-400'
+                                            ? 'text-warning drop-shadow-sm'
+                                            : 'text-muted-foreground/30 hover:text-muted-foreground/60'
                                     "
                                 >
                                     ★
@@ -608,7 +611,7 @@ onUnmounted(() => {
                         <div>
                             <label
                                 for="review"
-                                class="mb-1.5 block text-xs font-medium text-gray-700"
+                                class="mb-1.5 block text-xs font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -620,7 +623,7 @@ onUnmounted(() => {
                                 id="review"
                                 v-model="reviewForm.review"
                                 rows="3"
-                                class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm transition-all focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none"
+                                class="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30 focus:outline-none"
                                 :placeholder="
                                     t(
                                         'menu.dishDetail.reviewSection.reviewPlaceholder',
@@ -633,7 +636,7 @@ onUnmounted(() => {
                             <button
                                 type="submit"
                                 :disabled="isSubmitting"
-                                class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-700 hover:shadow-md active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-md active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <span
                                     v-if="isSubmitting"
@@ -656,7 +659,7 @@ onUnmounted(() => {
                             <button
                                 type="button"
                                 @click="toggleReviewForm"
-                                class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-800 active:scale-95"
+                                class="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground active:scale-95"
                             >
                                 {{ t('menu.dishDetail.reviewSection.cancel') }}
                             </button>
@@ -666,11 +669,11 @@ onUnmounted(() => {
 
                 <div
                     v-if="showEditForm && editingReview"
-                    class="mb-8 overflow-hidden rounded-xl bg-white p-5 shadow-md ring-1 ring-blue-100"
+                    class="mb-8 overflow-hidden rounded-xl border border-info/30 bg-card p-5 text-card-foreground shadow-md"
                 >
                     <div class="mb-4 flex items-center justify-between">
                         <h3
-                            class="flex items-center gap-2 text-base font-semibold text-gray-900"
+                            class="flex items-center gap-2 text-2xl font-bold text-foreground"
                         >
                             {{
                                 t(
@@ -680,7 +683,7 @@ onUnmounted(() => {
                         </h3>
                         <button
                             @click="cancelEdit"
-                            class="rounded-full p-1 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
+                            class="rounded-full p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
                             <X class="h-4 w-4" />
                         </button>
@@ -689,7 +692,7 @@ onUnmounted(() => {
                     <form @submit.prevent="updateReview" class="space-y-4">
                         <div>
                             <label
-                                class="mb-1.5 block text-xs font-medium text-gray-700"
+                                class="mb-1.5 block text-xs font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -709,8 +712,8 @@ onUnmounted(() => {
                                     :class="
                                         star <=
                                         (hoveredStars || editForm.rating)
-                                            ? 'text-yellow-400 drop-shadow-sm'
-                                            : 'text-gray-300 hover:text-gray-400'
+                                            ? 'text-warning drop-shadow-sm'
+                                            : 'text-muted-foreground/30 hover:text-muted-foreground/60'
                                     "
                                 >
                                     ★
@@ -721,7 +724,7 @@ onUnmounted(() => {
                         <div>
                             <label
                                 for="edit-review"
-                                class="mb-1.5 block text-xs font-medium text-gray-700"
+                                class="mb-1.5 block text-xs font-medium text-card-foreground"
                             >
                                 {{
                                     t(
@@ -733,7 +736,7 @@ onUnmounted(() => {
                                 id="edit-review"
                                 v-model="editForm.review"
                                 rows="3"
-                                class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm transition-all focus:border-red-400 focus:ring-2 focus:ring-red-100 focus:outline-none"
+                                class="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30 focus:outline-none"
                                 :placeholder="
                                     t(
                                         'menu.dishDetail.reviewSection.editReviewPlaceholder',
@@ -746,7 +749,7 @@ onUnmounted(() => {
                             <button
                                 type="submit"
                                 :disabled="isSubmitting"
-                                class="inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-700 hover:shadow-md active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                                class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-md active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <span
                                     v-if="isSubmitting"
@@ -769,7 +772,7 @@ onUnmounted(() => {
                             <button
                                 type="button"
                                 @click="cancelEdit"
-                                class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-800 active:scale-95"
+                                class="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground active:scale-95"
                             >
                                 {{ t('menu.dishDetail.reviewSection.cancel') }}
                             </button>
@@ -781,13 +784,13 @@ onUnmounted(() => {
                     <div
                         v-for="review in reviews"
                         :key="review.id"
-                        class="overflow-hidden rounded-2xl border border-gray-100 bg-white px-6 py-4 shadow-sm transition-all hover:shadow-lg"
+                        class="overflow-hidden rounded-2xl border border-border bg-card px-6 py-4 text-card-foreground shadow-sm transition-all hover:border-primary/30 hover:shadow-lg"
                     >
                         <div class="flex items-start gap-4">
                             <div class="flex-shrink-0">
                                 <div
                                     v-if="review.user.avatar"
-                                    class="h-12 w-12 overflow-hidden rounded-full ring-2 ring-gray-100"
+                                    class="h-12 w-12 overflow-hidden rounded-full ring-2 ring-border"
                                 >
                                     <img
                                         :src="review.user.avatar"
@@ -797,8 +800,7 @@ onUnmounted(() => {
                                 </div>
                                 <div
                                     v-else
-                                    class="flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold"
-                                    :class="getUserAvatarColor(review.user.id)"
+                                    class="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground"
                                 >
                                     {{ getInitials(review.user.name) }}
                                 </div>
@@ -813,7 +815,7 @@ onUnmounted(() => {
                                             class="flex flex-wrap items-center gap-2"
                                         >
                                             <p
-                                                class="font-semibold text-gray-900"
+                                                class="font-semibold text-card-foreground"
                                             >
                                                 {{ review.user.name }}
                                             </p>
@@ -821,7 +823,7 @@ onUnmounted(() => {
                                                 v-if="
                                                     review.user.id === user?.id
                                                 "
-                                                class="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600"
+                                                class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
                                             >
                                                 {{
                                                     t(
@@ -833,12 +835,12 @@ onUnmounted(() => {
                                         <div
                                             class="mt-0.5 flex items-center gap-3"
                                         >
-                                            <span
-                                                class="text-lg text-yellow-400"
-                                            >
+                                            <span class="text-lg text-warning">
                                                 {{ getStars(review.rating) }}
                                             </span>
-                                            <span class="text-xs text-gray-400">
+                                            <span
+                                                class="text-xs text-muted-foreground"
+                                            >
                                                 {{
                                                     formatDateForHumans(
                                                         review.created_at,
@@ -859,17 +861,9 @@ onUnmounted(() => {
                                                     review.id,
                                                 )
                                             "
-                                            class="rounded-lg p-1.5 text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-600"
+                                            class="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                         >
-                                            <svg
-                                                class="h-5 w-5"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                <path
-                                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
-                                                />
-                                            </svg>
+                                            <EllipsisVertical class="size-5" />
                                         </button>
 
                                         <Teleport to="body">
@@ -878,7 +872,7 @@ onUnmounted(() => {
                                                     dropdownOpen === review.id
                                                 "
                                                 @click.stop
-                                                class="fixed z-50 mt-2 w-40 origin-top-right rounded-xl bg-white py-1 shadow-xl ring-1 ring-gray-200 transition-all"
+                                                class="fixed z-50 mt-2 w-40 origin-top-right rounded-xl border border-border bg-popover p-1 text-popover-foreground shadow-xl transition-all"
                                                 :style="{
                                                     left: `${dropdownX}px`,
                                                     top: `${dropdownY}px`,
@@ -888,7 +882,7 @@ onUnmounted(() => {
                                                     @click="
                                                         toggleEditForm(review)
                                                     "
-                                                    class="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                                                    class="flex w-full items-center gap-3 rounded-sm px-4 py-2.5 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                                 >
                                                     {{
                                                         t(
@@ -901,7 +895,7 @@ onUnmounted(() => {
                                                         deleteReview(review)
                                                     "
                                                     :disabled="isDeleting"
-                                                    class="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
+                                                    class="flex w-full items-center gap-3 rounded-sm px-4 py-2.5 text-sm text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
                                                 >
                                                     {{
                                                         t(
@@ -923,13 +917,13 @@ onUnmounted(() => {
 
                                 <p
                                     v-if="review.review"
-                                    class="leading-relaxed text-gray-600"
+                                    class="leading-relaxed text-muted-foreground"
                                 >
                                     {{ review.review }}
                                 </p>
 
                                 <div
-                                    class="mt-3 flex items-center justify-between text-xs text-gray-400"
+                                    class="mt-3 flex items-center justify-between text-xs text-muted-foreground"
                                 >
                                     <span
                                         v-if="
@@ -950,15 +944,15 @@ onUnmounted(() => {
 
                     <div
                         v-if="!reviews.length"
-                        class="col-span-full rounded-2xl border-2 border-dashed border-gray-200 py-16 text-center"
+                        class="col-span-full rounded-2xl border-2 border-dashed border-border bg-muted/20 py-16 text-center"
                     >
                         <div class="mb-4 text-7xl">🍽️</div>
-                        <h3 class="text-lg font-semibold text-gray-900">
+                        <h3 class="text-lg font-semibold text-foreground">
                             {{
                                 t('menu.dishDetail.reviewSection.noReviewsYet')
                             }}
                         </h3>
-                        <p class="mt-1 text-sm text-gray-500">
+                        <p class="mt-1 text-sm text-muted-foreground">
                             {{ t('menu.dishDetail.reviewSection.firstReview') }}
                         </p>
                     </div>

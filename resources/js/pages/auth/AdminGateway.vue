@@ -41,27 +41,27 @@ const navigationItems = computed(() => [
                 v-for="item in navigationItems"
                 :key="item.label"
                 :href="item.route()"
-                class="group flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-5 transition-all hover:scale-[1.02] hover:border-gray-300 hover:shadow-md focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+                class="group flex items-center gap-4 rounded-lg border border-border bg-card p-5 text-card-foreground transition-all hover:scale-[1.02] hover:border-primary/50 hover:shadow-md focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none"
             >
                 <div
-                    class="rounded-lg bg-blue-50 p-3 transition-colors group-hover:bg-blue-100"
+                    class="rounded-lg bg-primary p-3 text-primary-foreground transition-colors group-hover:bg-primary/90"
                 >
                     <component
                         :is="item.icon"
-                        class="h-5 w-5 text-blue-600 transition-transform"
+                        class="h-5 w-5 transition-transform"
                         :class="item.iconClass"
                     />
                 </div>
                 <div class="flex flex-1 flex-col">
-                    <span class="text-base font-medium text-gray-900">
+                    <span class="text-base font-medium text-card-foreground">
                         {{ item.label }}
                     </span>
-                    <span class="text-sm text-gray-500">
+                    <span class="text-sm text-muted-foreground">
                         {{ item.description }}
                     </span>
                 </div>
                 <div
-                    class="text-gray-400 transition-transform group-hover:translate-x-1"
+                    class="text-muted-foreground transition-transform group-hover:translate-x-1"
                 >
                     →
                 </div>
@@ -69,8 +69,8 @@ const navigationItems = computed(() => [
         </div>
 
         <template #footer>
-            <div class="text-sm text-gray-500">
-                <p class="font-medium text-gray-700">
+            <div class="text-sm text-muted-foreground">
+                <p class="font-medium text-card-foreground">
                     {{ t('adminGateway.footer.title') }}
                 </p>
                 <p class="mt-1">
@@ -87,7 +87,7 @@ const navigationItems = computed(() => [
 }
 
 :focus-visible {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid var(--ring);
     outline-offset: 2px;
 }
 </style>

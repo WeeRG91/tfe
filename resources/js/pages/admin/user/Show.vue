@@ -239,7 +239,7 @@ const closeConfirmModal = () => {
                     />
                     <div
                         v-else
-                        class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full text-xl font-semibold text-white"
+                        class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full text-xl font-semibold"
                         :class="getUserAvatarColor(currentUser.id)"
                     >
                         {{ getInitials(currentUser.name) }}
@@ -256,11 +256,11 @@ const closeConfirmModal = () => {
                                 {{ currentUser.email }}
                                 <ShieldCheck
                                     v-if="currentUser.email_verified_at"
-                                    class="ml-1 inline h-3.5 w-3.5 text-green-500"
+                                    class="ml-1 inline h-3.5 w-3.5 text-success"
                                 />
                                 <CircleAlert
                                     v-else
-                                    class="ml-1 inline h-3.5 w-3.5 text-yellow-500"
+                                    class="ml-1 inline h-3.5 w-3.5 text-warning"
                                 />
                             </span>
                             <span>•</span>
@@ -302,7 +302,7 @@ const closeConfirmModal = () => {
                                 () => inactivateUser(currentUser.id),
                             )
                         "
-                        class="inline-flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-red-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
+                        class="inline-flex items-center justify-center rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground shadow hover:bg-destructive/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <ShieldX class="mr-2 h-4 w-4" />
                         {{ t('admin.buttons.inactivate') }}
@@ -320,7 +320,7 @@ const closeConfirmModal = () => {
                                 () => reactivateUser(currentUser.id),
                             )
                         "
-                        class="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-blue-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
+                        class="inline-flex items-center justify-center rounded-md bg-success px-4 py-2 text-sm font-medium text-success-foreground shadow hover:bg-success/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <ShieldCheck class="mr-2 h-4 w-4" />
                         {{ t('admin.buttons.reactivate') }}
@@ -338,7 +338,7 @@ const closeConfirmModal = () => {
                                 () => deleteUser(currentUser.id),
                             )
                         "
-                        class="inline-flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-sm font-medium text-white shadow hover:bg-red-600 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
+                        class="inline-flex items-center justify-center rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground shadow hover:bg-destructive/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none sm:w-32"
                     >
                         <Trash2 class="mr-2 h-4 w-4" />
                         {{ t('admin.buttons.delete') }}
@@ -458,7 +458,7 @@ const closeConfirmModal = () => {
                             <span
                                 v-for="role in currentUser.roles"
                                 :key="role.id"
-                                class="inline-flex items-center rounded-md bg-blue-500/10 px-3 py-1.5 text-sm font-medium text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
+                                class="inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
                             >
                                 <Shield class="mr-1.5 h-3.5 w-3.5" />
                                 {{ role.name }}
@@ -502,19 +502,19 @@ const closeConfirmModal = () => {
                                         :key="permission.id"
                                         class="inline-flex items-center rounded px-2 py-1 text-xs font-medium"
                                         :class="{
-                                            'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400':
+                                            'bg-success text-success-foreground':
                                                 getAllPermissionsWithSource().find(
                                                     (p) =>
                                                         p.permission.id ===
                                                         permission.id,
                                                 )?.source === 'direct',
-                                            'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400':
+                                            'bg-info text-info-foreground':
                                                 getAllPermissionsWithSource().find(
                                                     (p) =>
                                                         p.permission.id ===
                                                         permission.id,
                                                 )?.source === 'role',
-                                            'bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400':
+                                            'bg-accent text-accent-foreground':
                                                 getAllPermissionsWithSource().find(
                                                     (p) =>
                                                         p.permission.id ===
@@ -549,7 +549,7 @@ const closeConfirmModal = () => {
                                                         permission.id,
                                                 )?.source === 'both'
                                             "
-                                            class="ml-1 flex items-center gap-0.5 text-[8px] font-bold text-purple-500 uppercase"
+                                            class="ml-1 flex items-center gap-0.5 text-[8px] font-bold text-accent-foreground uppercase"
                                         >
                                             <Star class="h-2.5 w-2.5" />
                                             {{
@@ -669,11 +669,11 @@ const closeConfirmModal = () => {
                                     :class="
                                         transaction.type.label ===
                                         PointTypeEnum.EARNED
-                                            ? 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400'
+                                            ? 'bg-success text-success-foreground'
                                             : transaction.type.label ===
                                                 PointTypeEnum.REFUNDED
-                                              ? 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400'
-                                              : 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400'
+                                              ? 'bg-warning text-warning-foreground'
+                                              : 'bg-destructive text-destructive-foreground'
                                     "
                                 >
                                     {{
@@ -735,7 +735,7 @@ const closeConfirmModal = () => {
 }
 
 .order-scroll-container:hover {
-    scrollbar-color: hsl(var(--border)) transparent;
+    scrollbar-color: var(--border)transparent;
 }
 
 .order-scroll-container::-webkit-scrollbar {
@@ -753,11 +753,11 @@ const closeConfirmModal = () => {
 }
 
 .order-scroll-container:hover::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--border));
+    background-color: var(--border);
 }
 
 .order-scroll-container::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--muted-foreground));
+    background-color: var(--muted-foreground);
 }
 
 .points-scroll-container {
@@ -767,7 +767,7 @@ const closeConfirmModal = () => {
 }
 
 .points-scroll-container:hover {
-    scrollbar-color: hsl(var(--border)) transparent;
+    scrollbar-color: var(--border)transparent;
 }
 
 .points-scroll-container::-webkit-scrollbar {
@@ -785,10 +785,10 @@ const closeConfirmModal = () => {
 }
 
 .points-scroll-container:hover::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--border));
+    background-color: var(--border);
 }
 
 .points-scroll-container::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--muted-foreground));
+    background-color: var(--muted-foreground);
 }
 </style>

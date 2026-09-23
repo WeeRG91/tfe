@@ -14,7 +14,9 @@ const { t } = useI18n();
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <h2
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
@@ -23,9 +25,9 @@ const { t } = useI18n();
         </h2>
 
         <div>
-            <label class="mb-1 block text-sm font-medium text-gray-700">
+            <label class="mb-1 block text-sm font-medium text-card-foreground">
                 {{ t('cart.orderType.dineInForm.tableNumber') }}
-                <span class="text-sm text-red-500 sm:text-[18px]">*</span>
+                <span class="text-sm text-destructive sm:text-[18px]">*</span>
             </label>
             <input
                 :value="props.modelValue"
@@ -39,9 +41,9 @@ const { t } = useI18n();
                 :placeholder="
                     t('cart.orderType.dineInForm.tableNumberPlaceholder')
                 "
-                class="w-full rounded-md border border-gray-300 p-2.5 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
+                class="w-full rounded-md border border-input bg-background p-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
             />
-            <p class="mt-1 text-xs text-gray-500">
+            <p class="mt-1 text-xs text-muted-foreground">
                 {{ t('cart.orderType.dineInForm.helperText') }}
             </p>
         </div>

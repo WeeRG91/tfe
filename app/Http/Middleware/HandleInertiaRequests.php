@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\Resources\GlobalUserResource;
+use App\Services\ThemeRegistry;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -41,6 +42,12 @@ class HandleInertiaRequests extends Middleware
 
         $user = $request->user();
 
+        $themeContext = $request->attributes->get('themeContext', []);
+
+        if (! is_array($themeContext)) {
+            $themeContext = [];
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -48,6 +55,14 @@ class HandleInertiaRequests extends Middleware
             'fallbackLocale' => config('app.fallback_locale'),
             'availableLocales' => config('locales.supported'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
+            'theme' => [
+                'surface' => $themeContext['surface'] ?? 'client',
+                'selection' => $themeContext['selection']
+                    ?? 'restaurant-default',
+                'restaurantDefaultKey' => $themeContext['restaurantDefaultKey']
+                    ?? 'builtin/light',
+                'customThemes' => app(ThemeRegistry::class)->allPublishedCustomThemes(),
+            ],
             'features' => [
                 'companyDelivery' => (bool) config(
                     'restaurant.delivery.company.enabled',

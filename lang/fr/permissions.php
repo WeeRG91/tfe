@@ -17,6 +17,7 @@ return [
     ],
     'permissions' => [
         'admin' => ['access' => 'Accéder au panneau d’administration'],
+        'theme' => ['manage' => 'Gérer les thèmes du restaurant'],
         'dashboard' => ['view' => 'Voir le tableau de bord'],
         'allergen' => [
             'view' => 'Voir les allergènes',

@@ -92,7 +92,7 @@ const handlePhotoSelect = (event: Event) => {
                         <div class="flex items-center gap-4">
                             <div class="relative">
                                 <div
-                                    class="h-20 w-20 overflow-hidden rounded-full bg-gray-200"
+                                    class="h-20 w-20 overflow-hidden rounded-full bg-muted"
                                 >
                                     <img
                                         v-if="photoPreview"
@@ -102,7 +102,7 @@ const handlePhotoSelect = (event: Event) => {
                                     />
                                     <div
                                         v-else
-                                        class="flex h-full w-full items-center justify-center text-2xl font-semibold text-white"
+                                        class="flex h-full w-full items-center justify-center text-2xl font-semibold"
                                         :class="getUserAvatarColor(user.id)"
                                     >
                                         {{ getInitials(user.name) }}
@@ -192,7 +192,7 @@ const handlePhotoSelect = (event: Event) => {
                             <Link
                                 :href="send()"
                                 as="button"
-                                class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                class="text-foreground underline decoration-border underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                             >
                                 {{ t('setting.profile.verification.resend') }}
                             </Link>
@@ -200,7 +200,7 @@ const handlePhotoSelect = (event: Event) => {
 
                         <div
                             v-if="status === 'verification-link-sent'"
-                            class="mt-2 text-sm font-medium text-green-600"
+                            class="mt-2 text-sm font-medium text-success"
                         >
                             {{ t('setting.profile.verification.linkSent') }}
                         </div>
@@ -222,7 +222,7 @@ const handlePhotoSelect = (event: Event) => {
                         >
                             <p
                                 v-show="recentlySuccessful"
-                                class="text-sm text-neutral-600"
+                                class="text-sm text-muted-foreground"
                             >
                                 {{ t('setting.profile.messages.saved') }}
                             </p>

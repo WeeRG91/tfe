@@ -15,12 +15,13 @@ export function usePasswordStrength(password: Ref<string>) {
 
     const getPasswordStrengthColor = (index: number) => {
         if (index < passwordStrength.value) {
-            if (passwordStrength.value <= 2) return 'bg-red-400';
-            if (passwordStrength.value === 3) return 'bg-amber-400';
-            return 'bg-emerald-400';
+            if (passwordStrength.value <= 2) return 'bg-destructive';
+            if (passwordStrength.value === 3) return 'bg-warning';
+
+            return 'bg-success';
         }
 
-        return 'bg-gray-100';
+        return 'bg-muted';
     };
 
     return {

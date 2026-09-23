@@ -50,7 +50,7 @@ const goBack = () => {
             <div>
                 <label
                     for="password"
-                    class="mb-1.5 block text-sm font-medium text-gray-700"
+                    class="mb-1.5 block text-sm font-medium text-foreground"
                 >
                     {{ t('confirmPassword.fields.password') }}
                 </label>
@@ -63,9 +63,9 @@ const goBack = () => {
                         :placeholder="
                             t('confirmPassword.placeholders.password')
                         "
-                        class="w-full rounded-xl border border-gray-200 bg-white/50 py-2.5 pr-12 pl-4 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full rounded-xl border border-border bg-background/50 py-2.5 pr-12 pl-4 text-sm text-foreground backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground focus:border-ring focus:bg-background focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                         :class="{
-                            'border-red-300 focus:border-red-400':
+                            'border-destructive focus:border-destructive':
                                 form.errors.password,
                         }"
                         required
@@ -75,7 +75,7 @@ const goBack = () => {
                     <button
                         type="button"
                         @click="showPassword = !showPassword"
-                        class="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-gray-400 transition-colors hover:text-gray-600"
+                        class="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-muted-foreground transition-colors hover:text-foreground"
                     >
                         <Eye v-if="showPassword" class="h-5 w-5" />
                         <EyeOff v-else class="h-5 w-5" />
@@ -84,7 +84,7 @@ const goBack = () => {
 
                 <p
                     v-if="form.errors.password"
-                    class="mt-1.5 text-sm text-red-500"
+                    class="mt-1.5 text-sm text-destructive"
                 >
                     {{ form.errors.password }}
                 </p>
@@ -93,12 +93,12 @@ const goBack = () => {
             <button
                 type="submit"
                 :disabled="form.processing"
-                class="group w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
+                class="group w-full rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary disabled:hover:shadow-none"
             >
                 <span class="flex items-center justify-center gap-2">
                     <span
                         v-if="form.processing"
-                        class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                        class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                     ></span>
 
                     <span v-else>{{ t('auth.buttons.confirmPassword') }}</span>
@@ -111,7 +111,7 @@ const goBack = () => {
                 <div class="flex items-center justify-center gap-2">
                     <button
                         @click="goBack"
-                        class="group inline-flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:text-gray-900 focus:outline-none active:scale-95"
+                        class="group inline-flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-foreground transition-all hover:text-foreground focus:outline-none active:scale-95"
                     >
                         <MoveLeft
                             class="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1"

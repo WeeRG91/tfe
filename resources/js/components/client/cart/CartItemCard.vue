@@ -63,25 +63,25 @@ watch(isLoading, (newVal) => {
 
 const cardBorderClass = computed(() => {
     return props.type === ItemTypeEnum.DRINK
-        ? 'hover:border-blue-200'
-        : 'hover:border-red-200';
+        ? 'hover:border-info/40'
+        : 'hover:border-primary/40';
 });
 
 const priceColorClass = computed(() => {
-    return props.type === ItemTypeEnum.DRINK ? 'text-blue-600' : 'text-red-500';
+    return props.type === ItemTypeEnum.DRINK ? 'text-info' : 'text-primary';
 });
 
 const sectionHeaderClass = computed(() => {
     return props.type === ItemTypeEnum.DRINK
-        ? 'text-blue-500'
-        : 'text-gray-500';
+        ? 'text-info'
+        : 'text-muted-foreground';
 });
 </script>
 
 <template>
     <div
         :class="[
-            'flex flex-col overflow-hidden rounded-md border bg-white transition hover:shadow-lg sm:h-[210px] sm:flex-row',
+            'flex flex-col overflow-hidden rounded-md border border-border bg-card text-card-foreground transition hover:shadow-lg sm:h-[210px] sm:flex-row',
             cardBorderClass,
         ]"
     >
@@ -100,7 +100,7 @@ const sectionHeaderClass = computed(() => {
                         {{ cartItem.item.name }}
                     </h3>
                     <span
-                        class="text-xs tracking-widest text-gray-400 uppercase"
+                        class="text-xs tracking-widest text-muted-foreground uppercase"
                     >
                         {{ categoryLabel }}
                     </span>
@@ -122,17 +122,17 @@ const sectionHeaderClass = computed(() => {
                         <span :class="[sectionHeaderClass]"
                             >🌶️ {{ t('common.spicyLevel.title') }}:</span
                         >
-                        <div class="text-xs font-medium text-gray-600">
+                        <div class="text-xs font-medium text-foreground">
                             <span
                                 :class="[
                                     cartItem.spicy_level === 0 &&
-                                        'text-green-600',
+                                        'text-success',
                                     cartItem.spicy_level === 1 &&
-                                        'text-yellow-600',
+                                        'text-warning',
                                     cartItem.spicy_level === 2 &&
-                                        'text-orange-600',
+                                        'text-primary',
                                     cartItem.spicy_level === 3 &&
-                                        'text-red-600',
+                                        'text-destructive',
                                 ]"
                             >
                                 {{ spicyLevelLabels[cartItem.spicy_level] }}
@@ -152,7 +152,7 @@ const sectionHeaderClass = computed(() => {
                         }}</span>
                         <span
                             v-if="cartItem.meat.extra_price > 0"
-                            class="text-xs text-red-500"
+                            class="text-xs text-primary"
                         >
                             (+€{{ formatPrice(cartItem.meat.extra_price) }})
                         </span>
@@ -165,7 +165,7 @@ const sectionHeaderClass = computed(() => {
                         <span :class="[sectionHeaderClass]"
                             >🚫 {{ t('cart.cartItemCard.removed') }}:</span
                         >
-                        <span class="ml-1 text-xs text-gray-600">
+                        <span class="ml-1 text-xs text-muted-foreground">
                             {{
                                 cartItem.removed_ingredients
                                     .map((i) => i.name)
@@ -179,7 +179,7 @@ const sectionHeaderClass = computed(() => {
                             !cartItem.meat &&
                             !cartItem.removed_ingredients?.length
                         "
-                        class="flex items-center gap-1.5 text-xs text-gray-400 italic"
+                        class="flex items-center gap-1.5 text-xs text-muted-foreground italic"
                     >
                         <span
                             >🍽️
@@ -190,7 +190,7 @@ const sectionHeaderClass = computed(() => {
 
                 <template v-else>
                     <div class="flex items-center gap-1.5 text-xs">
-                        <span class="text-blue-500"
+                        <span class="text-info"
                             >🍹 {{ t('cart.cartItemCard.readyToServe') }}</span
                         >
                     </div>
@@ -201,26 +201,26 @@ const sectionHeaderClass = computed(() => {
                 <div v-if="!isEditingNotes" class="group relative">
                     <div
                         v-if="cartItem.notes"
-                        class="rounded-md bg-gray-50 p-1.5 text-xs text-gray-600"
+                        class="rounded-md bg-muted p-1.5 text-xs text-muted-foreground"
                     >
-                        <span class="text-gray-500"
+                        <span class="text-foreground"
                             >📝 {{ t('cart.cartItemCard.notes') }}:</span
                         >
                         <span class="ml-1">{{ cartItem.notes }}</span>
                     </div>
-                    <div v-else class="text-xs text-gray-400 italic">
+                    <div v-else class="text-xs text-muted-foreground italic">
                         {{ t('cart.cartItemCard.noNotes') }}
                     </div>
                     <button
                         @click="startEditNotes"
                         v-if="updateNoteItemId !== cartItem.id"
-                        class="absolute top-1 right-1 cursor-pointer text-blue-500 transition hover:text-blue-600"
+                        class="absolute top-1 right-1 cursor-pointer text-primary transition hover:text-primary/80"
                     >
                         <SquarePen class="h-4 w-4" />
                     </button>
                     <span
                         v-else
-                        class="absolute top-1 right-1 cursor-pointer text-xs text-green-500 transition"
+                        class="absolute top-1 right-1 text-xs text-success"
                     >
                         {{ t('cart.cartItemCard.saved') }}
                     </span>
@@ -231,7 +231,7 @@ const sectionHeaderClass = computed(() => {
                         v-model="editedNotes"
                         :placeholder="t('cart.cartItemCard.notesPlaceholder')"
                         rows="1"
-                        class="w-full rounded-md border border-gray-300 p-1.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                        class="w-full rounded-md border border-input bg-background p-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
                         @keydown.ctrl.enter.prevent="saveNotes"
                         @keydown.meta.enter.prevent="saveNotes"
                     ></textarea>
@@ -239,11 +239,11 @@ const sectionHeaderClass = computed(() => {
                         <button
                             @click="saveNotes"
                             :disabled="isLoading"
-                            class="flex w-14 cursor-pointer items-center justify-center gap-1 rounded-md bg-blue-500 px-2 py-0.5 text-xs text-white transition hover:bg-blue-600 disabled:opacity-50"
+                            class="flex w-14 cursor-pointer items-center justify-center gap-1 rounded-md bg-primary px-2 py-0.5 text-xs text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50"
                         >
                             <span
                                 v-if="isLoading"
-                                class="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                class="h-3 w-3 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                             ></span>
                             <span v-else>{{
                                 t('cart.cartItemCard.save')
@@ -251,12 +251,12 @@ const sectionHeaderClass = computed(() => {
                         </button>
                         <button
                             @click="cancelEditNotes"
-                            class="w-14 cursor-pointer rounded-md border border-gray-300 px-2 py-0.5 text-xs text-gray-600 transition hover:bg-gray-50"
+                            class="w-14 cursor-pointer rounded-md border border-input px-2 py-0.5 text-xs text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
                         >
                             {{ t('cart.cartItemCard.cancel') }}
                         </button>
                         <span
-                            class="ml-auto flex items-center text-xs text-gray-400"
+                            class="ml-auto flex items-center text-xs text-muted-foreground"
                         >
                             ⌘/Ctrl + ↵
                         </span>
@@ -270,7 +270,7 @@ const sectionHeaderClass = computed(() => {
                         <button
                             @click="updateQuantity('decrease')"
                             :disabled="cartItem.quantity <= 1"
-                            class="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                            class="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-input bg-background text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             -
                         </button>
@@ -281,26 +281,26 @@ const sectionHeaderClass = computed(() => {
                         </span>
                         <button
                             @click="updateQuantity('increase')"
-                            class="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border text-gray-600 transition hover:bg-gray-100"
+                            class="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-input bg-background text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             +
                         </button>
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <span class="text-xs text-gray-500">
+                        <span class="text-xs text-muted-foreground">
                             €{{ formatPrice(cartItem.unit_price) }}/{{
                                 t('cart.cartItemCard.each')
                             }}
                         </span>
                         <button
                             @click.prevent="emit('remove', cartItem.id)"
-                            class="flex cursor-pointer items-center gap-0.5 text-xs text-red-500 transition hover:text-red-600"
+                            class="flex cursor-pointer items-center gap-0.5 text-xs text-destructive transition hover:text-destructive/80"
                         >
                             <span>{{ t('cart.cartItemCard.remove') }}</span>
                             <span
                                 v-if="loadingRemoveItemId === cartItem.id"
-                                class="h-1 w-1 animate-spin rounded-full border-2 border-red-500 border-t-transparent p-1"
+                                class="h-1 w-1 animate-spin rounded-full border-2 border-destructive border-t-transparent p-1"
                             ></span>
                             <span v-else class="text-base">×</span>
                         </button>

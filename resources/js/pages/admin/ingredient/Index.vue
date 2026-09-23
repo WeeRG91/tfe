@@ -253,10 +253,10 @@ onBeforeUnmount(() => {
         >
             <div
                 ref="scrollContainer"
-                class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-sidebar-border/70 dark:border-sidebar-border"
+                class="relative h-full flex-1 overflow-hidden rounded-t-xl border border-border"
             >
                 <div
-                    class="flex flex-col gap-2 border-b bg-gradient-to-b from-white to-gray-50/50 p-4 md:flex-row md:items-center md:justify-between dark:from-gray-900 dark:to-gray-900/50"
+                    class="flex flex-col gap-2 border-b border-border bg-gradient-to-b from-card to-muted/50 p-4 md:flex-row md:items-center md:justify-between"
                 >
                     <div
                         class="flex w-full flex-wrap items-center gap-2 sm:w-auto"
@@ -274,10 +274,6 @@ onBeforeUnmount(() => {
                                     "
                                     @click="changeFilter('all')"
                                     class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
-                                    :class="
-                                        filter !== 'all' &&
-                                        'hover:bg-gray-100 dark:hover:bg-gray-800'
-                                    "
                                 >
                                     {{ t('admin.filters.all') }}
                                 </Button>
@@ -286,16 +282,11 @@ onBeforeUnmount(() => {
                                     size="sm"
                                     :variant="
                                         filter === 'deleted'
-                                            ? 'default'
+                                            ? 'destructive'
                                             : 'outline'
                                     "
                                     @click="changeFilter('deleted')"
                                     class="cursor-pointer text-xs shadow-sm transition-all duration-200 sm:h-9 sm:text-sm"
-                                    :class="[
-                                        filter === 'deleted'
-                                            ? 'bg-rose-600 hover:bg-rose-700 dark:bg-rose-600'
-                                            : 'hover:bg-gray-100 dark:hover:bg-gray-800',
-                                    ]"
                                 >
                                     {{ t('admin.filters.deleted') }}
                                 </Button>
@@ -303,7 +294,7 @@ onBeforeUnmount(() => {
 
                             <div class="relative flex-1 sm:w-52 sm:flex-none">
                                 <SearchIcon
-                                    class="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                    class="absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                                 />
                                 <input
                                     v-model="search"
@@ -311,7 +302,7 @@ onBeforeUnmount(() => {
                                     :placeholder="
                                         t('admin.filters.searchPlaceholder')
                                     "
-                                    class="h-8 w-full rounded-md border border-gray-200 bg-white pr-3 pl-8 text-sm text-gray-700 shadow-sm transition-all placeholder:text-gray-400 hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:placeholder:text-gray-500 dark:hover:border-gray-600"
+                                    class="h-8 w-full rounded-md border border-border bg-background pr-3 pl-8 text-sm text-foreground shadow-sm transition-all placeholder:text-muted-foreground hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none sm:h-9"
                                     @keyup.enter="applyFilters"
                                 />
                                 <button
@@ -320,7 +311,7 @@ onBeforeUnmount(() => {
                                         search = '';
                                         applyFilters();
                                     "
-                                    class="absolute top-1/2 right-2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                 >
                                     <XIcon class="h-4 w-4" />
                                 </button>
@@ -334,7 +325,7 @@ onBeforeUnmount(() => {
                                 <select
                                     v-model="allergen"
                                     @change="applyFilters"
-                                    class="h-8 w-full appearance-none rounded-md border border-gray-200 bg-white px-3 pr-8 text-sm text-gray-700 shadow-sm transition-all hover:border-gray-300 focus:outline-none sm:h-9 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-600"
+                                    class="h-8 w-full appearance-none rounded-md border border-border bg-background px-3 pr-8 text-sm text-foreground shadow-sm transition-all hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none sm:h-9"
                                 >
                                     <option :value="null">
                                         {{ t('ingredient.allAllergens') }}
@@ -348,7 +339,7 @@ onBeforeUnmount(() => {
                                     </option>
                                 </select>
                                 <ChevronDownIcon
-                                    class="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                    class="pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                                 />
                             </div>
 
@@ -367,7 +358,7 @@ onBeforeUnmount(() => {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        class="group cursor-pointer shadow-sm transition-all duration-300 hover:bg-gray-100 hover:shadow-md sm:h-9 dark:hover:bg-gray-800"
+                                        class="group cursor-pointer shadow-sm transition-all duration-300 hover:shadow-md sm:h-9"
                                     >
                                         <Plus
                                             class="mr-2 h-5 w-5 transition-transform group-hover:scale-110"
@@ -387,7 +378,7 @@ onBeforeUnmount(() => {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                class="group cursor-pointer shadow-sm transition-all duration-300 hover:bg-gray-100 hover:shadow-md sm:h-9 dark:hover:bg-gray-800"
+                                class="group cursor-pointer shadow-sm transition-all duration-300 hover:shadow-md sm:h-9"
                             >
                                 <Plus
                                     class="mr-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110"
@@ -400,27 +391,27 @@ onBeforeUnmount(() => {
 
                 <div
                     v-if="filter !== 'all' || allergen || search"
-                    class="flex flex-wrap items-center gap-2 border-t bg-gray-50/50 px-4 py-2 text-sm dark:bg-gray-900/50"
+                    class="flex flex-wrap items-center gap-2 border-t border-border bg-muted/50 px-4 py-2 text-sm"
                 >
                     <span
-                        class="hidden text-gray-500 sm:inline-block dark:text-gray-400"
+                        class="hidden text-muted-foreground sm:inline-block"
                         >{{ t('admin.filters.activeFilters') }}</span
                     >
                     <span
                         v-if="filter !== 'all'"
-                        class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                        class="inline-flex items-center rounded-full bg-info px-2.5 py-0.5 text-xs font-medium text-info-foreground"
                     >
                         {{ t(`admin.filters.${filter}`) }}
                         <button
                             @click="changeFilter('all')"
-                            class="ml-1 cursor-pointer hover:text-blue-600"
+                            class="ml-1 cursor-pointer rounded-full hover:bg-info-foreground/20"
                         >
                             ×
                         </button>
                     </span>
                     <span
                         v-if="allergen"
-                        class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
+                        class="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground"
                     >
                         {{ getAllergenLabel(allergen) }}
                         <button
@@ -428,14 +419,14 @@ onBeforeUnmount(() => {
                                 allergen = null;
                                 applyFilters();
                             "
-                            class="ml-1 cursor-pointer hover:text-purple-600"
+                            class="ml-1 cursor-pointer rounded-full hover:bg-accent-foreground/20"
                         >
                             ×
                         </button>
                     </span>
                     <span
                         v-if="search"
-                        class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                        class="inline-flex items-center rounded-full bg-warning px-2.5 py-0.5 text-xs font-medium text-warning-foreground"
                     >
                         "{{ search }}"
                         <button
@@ -443,14 +434,14 @@ onBeforeUnmount(() => {
                                 search = '';
                                 applyFilters();
                             "
-                            class="ml-1 cursor-pointer hover:text-amber-600"
+                            class="ml-1 cursor-pointer rounded-full hover:bg-warning-foreground/20"
                         >
                             ×
                         </button>
                     </span>
                     <button
                         @click="resetAllFilters"
-                        class="ml-auto hidden cursor-pointer text-xs text-gray-500 hover:text-gray-700 sm:inline-block dark:text-gray-400 dark:hover:text-gray-300"
+                        class="ml-auto hidden cursor-pointer text-xs text-muted-foreground hover:text-foreground sm:inline-block"
                     >
                         {{ t('admin.filters.clearAll') }}
                     </button>
@@ -506,7 +497,7 @@ onBeforeUnmount(() => {
                                 />
                                 <div
                                     v-if="ingredientData.allergen?.name"
-                                    class="absolute top-5 left-13 mb-1 w-max rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition group-hover:opacity-100"
+                                    class="absolute top-5 left-13 mb-1 w-max rounded border border-border bg-popover px-2 py-1 text-xs text-popover-foreground opacity-0 transition group-hover:opacity-100"
                                 >
                                     {{ ingredientData.allergen.name }}
                                 </div>
@@ -629,7 +620,7 @@ onBeforeUnmount(() => {
                         <tr ref="sentinel" v-if="nextCursor">
                             <td
                                 :colspan="5"
-                                class="py-2 text-center text-gray-500"
+                                class="py-2 text-center text-muted-foreground"
                             >
                                 <Loader
                                     class="mx-auto animate-spin text-muted-foreground"
@@ -650,7 +641,7 @@ onBeforeUnmount(() => {
 
                 <div
                     v-if="ingredients.length === 0 && !isLoading"
-                    class="flex h-24 items-center justify-center text-gray-300 sm:h-32"
+                    class="flex h-24 items-center justify-center text-muted-foreground sm:h-32"
                 >
                     {{ t('ingredient.messages.noIngredient') }}
                 </div>

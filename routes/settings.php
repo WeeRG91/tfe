@@ -1,10 +1,12 @@
 <?php
 
+use App\Enums\Permissions\AdminPermissionEnum;
+use App\Http\Controllers\Settings\CustomThemeController;
 use App\Http\Controllers\Settings\PasswordController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\RestaurantThemeController;
 use App\Http\Controllers\Settings\TwoFactorAuthenticationController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::middleware('auth')->group(function () {
     Route::redirect('settings', '/settings/profile');
@@ -20,9 +22,39 @@ Route::middleware('auth')->group(function () {
         ->middleware('throttle:6,1')
         ->name('password.update');
 
-    Route::get('settings/appearance', function () {
-        return Inertia::render('settings/Appearance');
-    })->name('appearance.edit');
+    Route::get(
+        'settings/appearance',
+        [RestaurantThemeController::class, 'edit'],
+    )->name('appearance.edit');
+    Route::get('settings/appearance/custom-themes/{customTheme}/edit', [CustomThemeController::class, 'edit'])
+        ->middleware('permission:'.AdminPermissionEnum::THEME_MANAGE->value)
+        ->name('appearance.custom-themes.edit');
+    Route::put(
+        'settings/appearance/restaurant-default',
+        [RestaurantThemeController::class, 'updateDefault'],
+    )
+        ->middleware(
+            'permission:'.AdminPermissionEnum::THEME_MANAGE->value,
+        )
+        ->name('appearance.restaurant-default.update');
+    Route::put(
+        'settings/appearance/custom-themes/{customTheme}',
+        [CustomThemeController::class, 'update'],
+    )
+        ->middleware('permission:'.AdminPermissionEnum::THEME_MANAGE->value)
+        ->name('appearance.custom-themes.update');
+    Route::post('settings/appearance/custom-themes', [CustomThemeController::class, 'store'])
+        ->middleware('permission:'.AdminPermissionEnum::THEME_MANAGE->value)
+        ->name('appearance.custom-themes.store');
+    Route::post(
+        'settings/appearance/custom-themes/{customTheme}/publish',
+        [CustomThemeController::class, 'publish'],
+    )
+        ->middleware('permission:'.AdminPermissionEnum::THEME_MANAGE->value)
+        ->name('appearance.custom-themes.publish');
+    Route::delete('settings/appearance/custom-themes/{customTheme}', [CustomThemeController::class, 'destroy'])
+        ->middleware('permission:'.AdminPermissionEnum::THEME_MANAGE->value)
+        ->name('appearance.custom-themes.destroy');
 
     Route::get('settings/two-factor', [TwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');

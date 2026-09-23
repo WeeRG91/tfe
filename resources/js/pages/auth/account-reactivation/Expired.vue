@@ -43,10 +43,10 @@ const submit = () => {
     >
         <div class="space-y-6">
             <div class="text-center">
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-muted-foreground">
                     {{ t('auth.linkExpired.heading.reactivateDescription') }}
                 </p>
-                <ul class="mt-2 space-y-1 text-sm text-gray-500">
+                <ul class="mt-2 space-y-1 text-sm text-muted-foreground">
                     <li>• {{ t('auth.linkExpired.reasons.expired') }}</li>
                     <li>
                         • {{ t('auth.linkExpired.reasons.alreadyReactivated') }}
@@ -57,10 +57,10 @@ const submit = () => {
 
             <div class="relative">
                 <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-200"></div>
+                    <div class="w-full border-t border-border"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                    <span class="bg-white px-4 text-gray-500">
+                    <span class="bg-card px-4 text-muted-foreground">
                         {{ t('auth.linkExpired.fields.requestNewLink') }}
                     </span>
                 </div>
@@ -70,7 +70,7 @@ const submit = () => {
                 <div>
                     <label
                         for="email"
-                        class="mb-1.5 block text-sm font-medium text-gray-700"
+                        class="mb-1.5 block text-sm font-medium text-foreground"
                     >
                         {{ t('auth.linkExpired.fields.emailAddress') }}
                     </label>
@@ -82,9 +82,9 @@ const submit = () => {
                             :placeholder="
                                 t('auth.linkExpired.fields.emailPlaceholder')
                             "
-                            class="w-full rounded-xl border border-gray-200 bg-white/50 px-4 py-2.5 text-sm text-gray-900 backdrop-blur-sm transition-all duration-200 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                            class="w-full rounded-xl border border-border bg-background/50 px-4 py-2.5 text-sm text-foreground backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground focus:border-ring focus:bg-background focus:ring-0 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                             :class="{
-                                'border-red-300 focus:border-red-400':
+                                'border-destructive focus:border-destructive':
                                     resendForm.errors.email,
                             }"
                             required
@@ -93,7 +93,7 @@ const submit = () => {
                     </div>
                     <p
                         v-if="resendForm.errors.email"
-                        class="mt-1.5 text-sm text-red-500"
+                        class="mt-1.5 text-sm text-destructive"
                     >
                         {{ resendForm.errors.email }}
                     </p>
@@ -102,7 +102,7 @@ const submit = () => {
                 <button
                     type="submit"
                     :disabled="resendForm.processing"
-                    class="group w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
+                    class="group w-full rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary disabled:hover:shadow-none"
                 >
                     <span class="flex items-center justify-center gap-2">
                         <RefreshCw
@@ -110,7 +110,7 @@ const submit = () => {
                         />
                         <span
                             v-if="resendForm.processing"
-                            class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                            class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                         ></span>
                         <span v-else>
                             {{
@@ -127,13 +127,13 @@ const submit = () => {
         <template #footer>
             <div class="space-y-6">
                 <div
-                    class="rounded-2xl border border-gray-100 bg-white/50 p-4 backdrop-blur-sm"
+                    class="rounded-2xl border border-border bg-muted/50 p-4 backdrop-blur-sm"
                 >
-                    <p class="text-center text-sm text-gray-500">
+                    <p class="text-center text-sm text-muted-foreground">
                         {{ t('auth.links.needHelp') }}
                         <Link
                             href="/contact"
-                            class="font-medium text-gray-900 transition-colors hover:text-gray-600"
+                            class="font-medium text-foreground transition-colors hover:text-foreground"
                         >
                             {{ t('auth.links.contactSupport') }}
                         </Link>
@@ -143,7 +143,7 @@ const submit = () => {
                 <div class="flex items-center justify-center gap-8">
                     <Link
                         :href="login()"
-                        class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
+                        class="group flex items-center gap-1.5 text-sm text-muted-foreground transition-all hover:text-foreground"
                     >
                         <MoveLeft
                             class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
@@ -151,11 +151,11 @@ const submit = () => {
                         {{ t('auth.links.backToSignIn') }}
                     </Link>
 
-                    <div class="h-4 w-px bg-gray-200"></div>
+                    <div class="h-4 w-px bg-border"></div>
 
                     <Link
                         :href="register()"
-                        class="group flex items-center gap-1.5 text-sm text-gray-500 transition-all hover:text-gray-900"
+                        class="group flex items-center gap-1.5 text-sm text-muted-foreground transition-all hover:text-foreground"
                     >
                         {{ t('auth.links.createAccount') }}
                         <MoveRight

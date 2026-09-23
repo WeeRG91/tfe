@@ -21,6 +21,7 @@ import {
     X,
     Building2,
     CalendarDays,
+    Loader,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -97,25 +98,23 @@ watch(
         @click="closeOnBackdrop"
     >
         <div
-            class="relative mx-2 w-full max-w-4xl rounded-lg bg-white shadow-xl dark:bg-gray-900"
+            class="relative mx-2 w-full max-w-4xl rounded-lg border border-border bg-card text-card-foreground shadow-xl"
         >
             <div
-                class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900"
+                class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-border bg-card px-6 py-4"
             >
                 <div class="flex items-center gap-3">
                     <component
                         :is="getOrderTypeIcon(order.type.value)"
                         :size="24"
-                        class="text-gray-600 dark:text-gray-400"
+                        class="text-card-foreground"
                     />
                     <div>
-                        <h2
-                            class="text-xl font-semibold text-gray-900 dark:text-white"
-                        >
+                        <h2 class="text-xl font-semibold text-card-foreground">
                             {{ order.order_number }}
                         </h2>
                         <p
-                            class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                            class="flex items-center gap-2 text-sm text-card-foreground"
                         >
                             <span>
                                 {{
@@ -145,7 +144,7 @@ watch(
                 </div>
                 <button
                     @click="handleClose"
-                    class="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
+                    class="rounded-lg p-1 text-card-foreground hover:bg-accent hover:text-accent-foreground"
                 >
                     <X :size="20" />
                 </button>
@@ -155,20 +154,16 @@ watch(
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     <div class="space-y-6 lg:col-span-2">
                         <div
-                            class="rounded-lg border border-gray-200 dark:border-gray-700"
+                            class="rounded-lg border border-border bg-card text-card-foreground"
                         >
                             <div
-                                class="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+                                class="rounded-t-lg border-b border-border bg-muted px-4 py-3"
                             >
-                                <h3
-                                    class="font-semibold text-gray-900 dark:text-white"
-                                >
+                                <h3 class="font-semibold text-muted-foreground">
                                     {{ t('confirmedOrder.details.items') }}
                                 </h3>
                             </div>
-                            <div
-                                class="divide-y divide-gray-200 dark:divide-gray-700"
-                            >
+                            <div class="divide-y divide-border">
                                 <div
                                     v-for="item in order.items"
                                     :key="item.id"
@@ -181,14 +176,14 @@ watch(
                                             >
                                                 <div>
                                                     <span
-                                                        class="font-medium text-gray-900 dark:text-white"
+                                                        class="font-medium text-card-foreground"
                                                     >
                                                         {{ item.quantity }}x
                                                         {{ item.item.name }}
                                                     </span>
                                                     <p
                                                         v-if="item.notes"
-                                                        class="mt-1 text-sm text-gray-500 dark:text-gray-400"
+                                                        class="mt-1 text-sm text-card-foreground"
                                                     >
                                                         {{
                                                             t(
@@ -199,7 +194,7 @@ watch(
                                                     </p>
                                                 </div>
                                                 <span
-                                                    class="font-medium text-gray-900 dark:text-white"
+                                                    class="font-medium text-card-foreground"
                                                 >
                                                     €{{
                                                         item.total_inc_vat.toFixed(
@@ -211,7 +206,7 @@ watch(
 
                                             <div
                                                 v-if="item.spicy_level"
-                                                class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                                                class="mt-1 text-xs text-card-foreground"
                                             >
                                                 {{
                                                     t(
@@ -227,7 +222,7 @@ watch(
 
                                             <div
                                                 v-if="item.meat"
-                                                class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                                                class="mt-1 text-xs text-card-foreground"
                                             >
                                                 {{
                                                     t(
@@ -241,7 +236,7 @@ watch(
                                                     item.removed_ingredients
                                                         ?.length
                                                 "
-                                                class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                                                class="mt-1 text-xs text-card-foreground"
                                             >
                                                 {{
                                                     t(
@@ -261,14 +256,12 @@ watch(
                         </div>
 
                         <div
-                            class="rounded-lg border border-gray-200 dark:border-gray-700"
+                            class="rounded-lg border border-border bg-card text-card-foreground"
                         >
                             <div
-                                class="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+                                class="rounded-t-lg border-b border-border bg-muted px-4 py-3"
                             >
-                                <h3
-                                    class="font-semibold text-gray-900 dark:text-white"
-                                >
+                                <h3 class="font-semibold text-muted-foreground">
                                     {{ t('confirmedOrder.details.timeline') }}
                                 </h3>
                             </div>
@@ -276,20 +269,18 @@ watch(
                                 <div class="flex items-start gap-3">
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="mt-2 h-2 w-2 rounded-full bg-green-500"
+                                            class="mt-2 h-2 w-2 rounded-full bg-primary"
                                         ></div>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                            class="text-sm text-gray-900 dark:text-white"
-                                        >
+                                        <p class="text-sm">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.timelineStatus.created',
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-xs">
                                             {{ formatDate(order.created_at) }}
                                         </p>
                                     </div>
@@ -300,20 +291,18 @@ watch(
                                 >
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="mt-2 h-2 w-2 rounded-full bg-blue-500"
+                                            class="mt-2 h-2 w-2 rounded-full bg-info"
                                         ></div>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                            class="text-sm text-gray-900 dark:text-white"
-                                        >
+                                        <p class="text-sm">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.timelineStatus.confirmed',
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-xs">
                                             {{ formatDate(order.confirmed_at) }}
                                         </p>
                                     </div>
@@ -324,20 +313,18 @@ watch(
                                 >
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="mt-2 h-2 w-2 rounded-full bg-yellow-500"
+                                            class="mt-2 h-2 w-2 rounded-full bg-warning"
                                         ></div>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                            class="text-sm text-gray-900 dark:text-white"
-                                        >
+                                        <p class="text-sm">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.timelineStatus.preparationStarted',
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-xs">
                                             {{ formatDate(order.prepare_at) }}
                                         </p>
                                     </div>
@@ -348,20 +335,18 @@ watch(
                                 >
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="mt-2 h-2 w-2 rounded-full bg-purple-500"
+                                            class="mt-2 h-2 w-2 rounded-full bg-success"
                                         ></div>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                            class="text-sm text-gray-900 dark:text-white"
-                                        >
+                                        <p class="text-sm">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.timelineStatus.ready',
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-xs">
                                             {{ formatDate(order.ready_at) }}
                                         </p>
                                     </div>
@@ -372,20 +357,18 @@ watch(
                                 >
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="mt-2 h-2 w-2 rounded-full bg-indigo-500"
+                                            class="mt-2 h-2 w-2 rounded-full bg-info"
                                         ></div>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                            class="text-sm text-gray-900 dark:text-white"
-                                        >
+                                        <p class="text-sm">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.timelineStatus.delivering',
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-xs">
                                             {{ formatDate(order.delivered_at) }}
                                         </p>
                                     </div>
@@ -396,20 +379,18 @@ watch(
                                 >
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="mt-2 h-2 w-2 rounded-full bg-green-600"
+                                            class="mt-2 h-2 w-2 rounded-full bg-success"
                                         ></div>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                            class="text-sm text-gray-900 dark:text-white"
-                                        >
+                                        <p class="text-sm">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.timelineStatus.completed',
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-xs">
                                             {{ formatDate(order.completed_at) }}
                                         </p>
                                     </div>
@@ -420,20 +401,18 @@ watch(
                                 >
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="mt-2 h-2 w-2 rounded-full bg-red-500"
+                                            class="mt-2 h-2 w-2 rounded-full bg-destructive"
                                         ></div>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                            class="text-sm text-gray-900 dark:text-white"
-                                        >
+                                        <p class="text-sm">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.timelineStatus.cancelled',
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-xs">
                                             {{ formatDate(order.cancelled_at) }}
                                         </p>
                                     </div>
@@ -444,14 +423,12 @@ watch(
 
                     <div class="space-y-6">
                         <div
-                            class="rounded-lg border border-gray-200 dark:border-gray-700"
+                            class="rounded-lg border border-border bg-card text-card-foreground"
                         >
                             <div
-                                class="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+                                class="rounded-t-lg border-b border-border bg-muted px-4 py-3"
                             >
-                                <h3
-                                    class="font-semibold text-gray-900 dark:text-white"
-                                >
+                                <h3 class="font-semibold text-muted-foreground">
                                     {{
                                         t(
                                             'confirmedOrder.details.customer.information',
@@ -463,15 +440,15 @@ watch(
                                 <div class="flex items-start gap-2">
                                     <User
                                         :size="16"
-                                        class="mt-0.5 text-gray-400"
+                                        class="mt-0.5 text-card-foreground"
                                     />
                                     <div>
                                         <p
-                                            class="text-sm font-medium text-gray-900 dark:text-white"
+                                            class="text-sm font-medium text-card-foreground"
                                         >
                                             {{ order.user.name }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-sm text-card-foreground">
                                             {{ order.user.email }}
                                         </p>
                                     </div>
@@ -487,11 +464,11 @@ watch(
                                 >
                                     <MapPin
                                         :size="16"
-                                        class="mt-0.5 text-gray-400"
+                                        class="mt-0.5 text-card-foreground"
                                     />
                                     <div>
                                         <p
-                                            class="text-sm text-gray-900 dark:text-white"
+                                            class="text-sm font-medium text-card-foreground"
                                         >
                                             {{
                                                 t(
@@ -499,7 +476,7 @@ watch(
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-sm text-card-foreground">
                                             {{
                                                 formatAddress(
                                                     order.delivery_address,
@@ -519,12 +496,12 @@ watch(
                                 >
                                     <Building2
                                         :size="16"
-                                        class="mt-0.5 text-gray-400"
+                                        class="mt-0.5 text-card-foreground"
                                     />
 
                                     <div>
                                         <p
-                                            class="text-sm text-gray-900 dark:text-white"
+                                            class="text-sm font-medium text-card-foreground"
                                         >
                                             {{
                                                 t(
@@ -533,9 +510,7 @@ watch(
                                             }}
                                         </p>
 
-                                        <p
-                                            class="text-xs font-medium text-gray-600 dark:text-gray-300"
-                                        >
+                                        <p class="text-sm text-card-foreground">
                                             {{ order.delivery_company.name }}
                                         </p>
                                     </div>
@@ -551,12 +526,12 @@ watch(
                                 >
                                     <CalendarDays
                                         :size="16"
-                                        class="mt-0.5 text-gray-400"
+                                        class="mt-0.5 text-card-foreground"
                                     />
 
                                     <div>
                                         <p
-                                            class="text-sm text-gray-900 dark:text-white"
+                                            class="text-sm font-medium text-card-foreground"
                                         >
                                             {{
                                                 t(
@@ -565,9 +540,7 @@ watch(
                                             }}
                                         </p>
 
-                                        <p
-                                            class="text-xs font-medium text-gray-600 dark:text-gray-300"
-                                        >
+                                        <p class="text-sm text-card-foreground">
                                             {{
                                                 formatDateOnly(
                                                     order.delivery_date,
@@ -586,11 +559,11 @@ watch(
                                 >
                                     <UserCircle
                                         :size="16"
-                                        class="mt-0.5 text-gray-400"
+                                        class="mt-0.5 text-card-foreground"
                                     />
                                     <div>
                                         <p
-                                            class="text-sm text-gray-900 dark:text-white"
+                                            class="text-sm font-medium text-card-foreground"
                                         >
                                             {{
                                                 t(
@@ -598,15 +571,15 @@ watch(
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-sm text-card-foreground">
                                             {{ order.pickup_name }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-sm text-card-foreground">
                                             {{ order.pickup_phone }}
                                         </p>
                                         <p
                                             v-if="order.pickup_time"
-                                            class="text-xs text-gray-500"
+                                            class="text-sm text-card-foreground"
                                         >
                                             {{ formatDate(order.pickup_time) }}
                                         </p>
@@ -622,11 +595,11 @@ watch(
                                 >
                                     <Utensils
                                         :size="16"
-                                        class="mt-0.5 text-gray-400"
+                                        class="mt-0.5 text-card-foreground"
                                     />
                                     <div>
                                         <p
-                                            class="text-sm text-gray-900 dark:text-white"
+                                            class="text-sm font-medium text-card-foreground"
                                         >
                                             {{
                                                 t(
@@ -634,7 +607,7 @@ watch(
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-sm text-card-foreground">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.customer.table',
@@ -651,11 +624,11 @@ watch(
                                 >
                                     <AlertCircle
                                         :size="16"
-                                        class="mt-0.5 text-gray-400"
+                                        class="mt-0.5 text-card-foreground"
                                     />
                                     <div>
                                         <p
-                                            class="text-sm text-gray-900 dark:text-white"
+                                            class="text-sm font-medium text-card-foreground"
                                         >
                                             {{
                                                 t(
@@ -663,7 +636,7 @@ watch(
                                                 )
                                             }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-sm text-card-foreground">
                                             {{ order.notes }}
                                         </p>
                                     </div>
@@ -672,14 +645,12 @@ watch(
                         </div>
 
                         <div
-                            class="rounded-lg border border-gray-200 dark:border-gray-700"
+                            class="rounded-lg border border-border bg-card text-card-foreground"
                         >
                             <div
-                                class="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+                                class="rounded-t-lg border-b border-border bg-muted px-4 py-3"
                             >
-                                <h3
-                                    class="font-semibold text-gray-900 dark:text-white"
-                                >
+                                <h3 class="font-semibold text-muted-foreground">
                                     {{
                                         t(
                                             'confirmedOrder.details.payment.information',
@@ -689,9 +660,7 @@ watch(
                             </div>
                             <div class="space-y-3 p-4">
                                 <div class="flex items-center justify-between">
-                                    <span
-                                        class="text-sm text-gray-600 dark:text-gray-400"
-                                    >
+                                    <span class="text-sm text-card-foreground">
                                         {{
                                             t(
                                                 'confirmedOrder.details.payment.method',
@@ -699,7 +668,7 @@ watch(
                                         }}
                                     </span>
                                     <span
-                                        class="flex items-center gap-1 text-sm font-medium text-gray-900 dark:text-white"
+                                        class="flex items-center gap-1 text-sm font-medium text-card-foreground"
                                     >
                                         <component
                                             :is="
@@ -718,9 +687,7 @@ watch(
                                 </div>
 
                                 <div class="flex items-center justify-between">
-                                    <span
-                                        class="text-sm text-gray-600 dark:text-gray-400"
-                                    >
+                                    <span class="text-sm text-card-foreground">
                                         {{
                                             t(
                                                 'confirmedOrder.details.payment.status',
@@ -755,9 +722,7 @@ watch(
                                     v-if="order.paid_at"
                                     class="flex items-center justify-between"
                                 >
-                                    <span
-                                        class="text-sm text-gray-600 dark:text-gray-400"
-                                    >
+                                    <span class="text-sm text-card-foreground">
                                         {{
                                             t(
                                                 'confirmedOrder.details.payment.paidAt',
@@ -765,7 +730,7 @@ watch(
                                         }}
                                     </span>
                                     <span
-                                        class="text-sm text-gray-900 dark:text-white"
+                                        class="text-sm text-card-foreground"
                                         >{{ formatDate(order.paid_at) }}</span
                                     >
                                 </div>
@@ -773,29 +738,25 @@ watch(
                         </div>
 
                         <div
-                            class="rounded-lg border border-gray-200 dark:border-gray-700"
+                            class="rounded-lg border border-border bg-card text-card-foreground"
                         >
                             <div
-                                class="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+                                class="rounded-t-lg border-b border-border bg-muted px-4 py-3"
                             >
-                                <h3
-                                    class="font-semibold text-gray-900 dark:text-white"
-                                >
+                                <h3 class="font-semibold text-muted-foreground">
                                     {{ t('confirmedOrder.details.summary') }}
                                 </h3>
                             </div>
                             <div class="space-y-2 p-4">
                                 <div class="flex justify-between text-sm">
-                                    <span
-                                        class="text-gray-600 dark:text-gray-400"
-                                    >
+                                    <span class="text-card-foreground">
                                         {{
                                             t(
                                                 'confirmedOrder.details.price.subtotal',
                                             )
                                         }}
                                     </span>
-                                    <span class="text-gray-900 dark:text-white"
+                                    <span class="text-card-foreground"
                                         >€{{ order.subtotal.toFixed(2) }}</span
                                     >
                                 </div>
@@ -804,16 +765,14 @@ watch(
                                     v-if="order.delivery_fee > 0"
                                     class="flex justify-between text-sm"
                                 >
-                                    <span
-                                        class="text-gray-600 dark:text-gray-400"
-                                    >
+                                    <span class="text-card-foreground">
                                         {{
                                             t(
                                                 'confirmedOrder.details.price.deliveryFee',
                                             )
                                         }}
                                     </span>
-                                    <span class="text-red-600 dark:text-white"
+                                    <span class="text-card-foreground"
                                         >€{{
                                             order.delivery_fee.toFixed(2)
                                         }}</span
@@ -824,31 +783,29 @@ watch(
                                     v-if="order.discount_total > 0"
                                     class="flex justify-between text-sm"
                                 >
-                                    <span
-                                        class="text-gray-600 dark:text-gray-400"
-                                    >
+                                    <span class="text-card-foreground">
                                         {{
                                             t(
                                                 'confirmedOrder.details.price.discount',
                                             )
                                         }}
                                     </span>
-                                    <span class="text-green-600">
+                                    <span
+                                        class="inline-flex rounded-md bg-success px-2 py-0.5 text-success-foreground"
+                                    >
                                         -€{{ order.discount_total.toFixed(2) }}
                                     </span>
                                 </div>
 
                                 <div class="flex justify-between text-sm">
-                                    <span
-                                        class="text-gray-600 dark:text-gray-400"
-                                    >
+                                    <span class="text-card-foreground">
                                         {{
                                             t(
                                                 'confirmedOrder.details.price.vat',
                                             )
                                         }}
                                     </span>
-                                    <span class="text-gray-900 dark:text-white">
+                                    <span class="text-card-foreground">
                                         €{{ order.vat_total.toFixed(2) }}
                                     </span>
                                 </div>
@@ -862,7 +819,7 @@ watch(
                                         :key="vat.vat_rate"
                                         class="flex justify-between text-xs"
                                     >
-                                        <span class="text-gray-500">
+                                        <span class="text-card-foreground">
                                             {{
                                                 t(
                                                     'confirmedOrder.details.price.vat',
@@ -870,18 +827,16 @@ watch(
                                             }}
                                             {{ vat.vat_rate }}%
                                         </span>
-                                        <span class="text-gray-600">
+                                        <span class="text-card-foreground">
                                             €{{ vat.vat_total.toFixed(2) }}
                                         </span>
                                     </div>
                                 </div>
 
-                                <div
-                                    class="border-t border-gray-200 pt-2 dark:border-gray-700"
-                                >
+                                <div class="border-t border-border pt-2">
                                     <div class="flex justify-between">
                                         <span
-                                            class="font-semibold text-gray-900 dark:text-white"
+                                            class="font-semibold text-card-foreground"
                                         >
                                             {{
                                                 t(
@@ -890,7 +845,7 @@ watch(
                                             }}
                                         </span>
                                         <span
-                                            class="text-xl font-bold text-gray-900 dark:text-white"
+                                            class="text-xl font-bold text-card-foreground"
                                         >
                                             €{{
                                                 order.total_inc_vat.toFixed(2)
@@ -906,33 +861,14 @@ watch(
                                 v-for="(btn, index) in orderStatusActions"
                                 :key="index"
                                 @click="btn.action"
-                                class="w-full rounded-md px-4 py-2 text-sm font-medium text-white transition-colors"
+                                class="w-full rounded-md px-4 py-2 text-sm font-medium transition-colors"
                                 :class="btn.class"
                             >
                                 <span
                                     v-if="orderStatusActionId === btn.id"
                                     class="flex items-center justify-center"
                                 >
-                                    <svg
-                                        class="h-5 w-5 animate-spin"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="white"
-                                            stroke-width="3"
-                                            fill="none"
-                                            opacity="0.3"
-                                        />
-                                        <path
-                                            d="M22 12a10 10 0 0 1-10 10"
-                                            stroke="white"
-                                            stroke-width="3"
-                                            fill="none"
-                                        />
-                                    </svg>
+                                    <Loader class="h-5 w-5 animate-spin" />
                                 </span>
                                 <span v-else>{{ btn.label }}</span>
                             </button>
@@ -947,6 +883,7 @@ watch(
 <style scoped>
 .max-h-\[calc\(100vh-8rem\)\] {
     scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) var(--muted);
 }
 
 .max-h-\[calc\(100vh-8rem\)\]::-webkit-scrollbar {
@@ -954,16 +891,16 @@ watch(
 }
 
 .max-h-\[calc\(100vh-8rem\)\]::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--muted);
     border-radius: 4px;
 }
 
 .max-h-\[calc\(100vh-8rem\)\]::-webkit-scrollbar-thumb {
-    background: #888;
+    background: var(--muted-foreground);
     border-radius: 4px;
 }
 
 .max-h-\[calc\(100vh-8rem\)\]::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: var(--foreground);
 }
 </style>

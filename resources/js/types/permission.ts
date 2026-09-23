@@ -7,6 +7,7 @@ export type PermissionType = {
 export enum AdminPermissionEnum {
     ADMIN_ACCESS = 'admin.access',
     DASHBOARD_VIEW = 'dashboard.view',
+    THEME_MANAGE = 'theme.manage',
 }
 
 export enum AllergenPermissionEnum {

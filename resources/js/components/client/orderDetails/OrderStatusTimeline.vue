@@ -138,18 +138,20 @@ const getStepDate = (stepValue: number) => {
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <h2
             class="mb-6 flex items-center gap-2 text-lg font-semibold uppercase"
         >
-            <Clock class="h-5 w-5 text-red-500" />
+            <Clock class="h-5 w-5 text-primary" />
             {{ t('order.orderStatusTimeline.title') }}
         </h2>
 
         <div class="md:hidden">
             <div class="relative">
                 <div
-                    class="absolute top-3 left-5 h-84 w-0.5 bg-gray-200"
+                    class="absolute top-3 left-5 h-84 w-0.5 bg-border"
                     :class="
                         orderToShow.type.label === 'Delivery' &&
                         orderToShow.status.label !== 'Completed'
@@ -170,10 +172,10 @@ const getStepDate = (stepValue: number) => {
                             :class="[
                                 'flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 shadow-sm transition-all',
                                 isStepCompleted(step.value)
-                                    ? 'border-green-300 bg-green-300 text-white shadow-green-200'
+                                    ? 'border-success/50 bg-success text-success-foreground'
                                     : isCurrentStep(step.value)
-                                      ? 'border-green-500 bg-green-500 text-white ring-4 shadow-green-200 ring-green-100'
-                                      : 'border-gray-300 bg-white text-gray-400',
+                                      ? 'border-primary bg-primary text-primary-foreground ring-4 ring-primary/15'
+                                      : 'border-border bg-background text-muted-foreground',
                             ]"
                         >
                             <Check
@@ -188,9 +190,9 @@ const getStepDate = (stepValue: number) => {
 
                     <div class="flex-1">
                         <div
-                            class="rounded-lg bg-gray-50 p-3 transition-all"
+                            class="rounded-lg bg-muted/50 p-3 transition-all"
                             :class="{
-                                'border-l-4 border-green-500 bg-green-50':
+                                'border-l-4 border-primary bg-primary/10':
                                     isCurrentStep(step.value),
                             }"
                         >
@@ -200,15 +202,15 @@ const getStepDate = (stepValue: number) => {
                                         'font-semibold',
                                         isStepCompleted(step.value) ||
                                         isCurrentStep(step.value)
-                                            ? 'text-gray-900'
-                                            : 'text-gray-500',
+                                            ? 'text-card-foreground'
+                                            : 'text-muted-foreground',
                                     ]"
                                 >
                                     {{ step.label }}
                                 </p>
                                 <p
                                     v-if="getStepDate(step.value)"
-                                    class="text-xs text-gray-400"
+                                    class="text-xs text-muted-foreground"
                                 >
                                     {{
                                         getStepDate(step.value)
@@ -224,7 +226,7 @@ const getStepDate = (stepValue: number) => {
                                     isCurrentStep(step.value) &&
                                     step.description
                                 "
-                                class="mt-1 text-xs text-gray-500"
+                                class="mt-1 text-xs text-muted-foreground"
                             >
                                 {{ step.description }}
                             </p>
@@ -246,10 +248,10 @@ const getStepDate = (stepValue: number) => {
                             :class="[
                                 'z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-sm transition-all',
                                 isStepCompleted(step.value)
-                                    ? 'border-green-300 bg-green-300 text-white'
+                                    ? 'border-success/50 bg-success text-success-foreground'
                                     : isCurrentStep(step.value)
-                                      ? 'border-green-500 bg-green-500 text-white ring-4 ring-green-100'
-                                      : 'border-gray-300 bg-white text-gray-400',
+                                      ? 'border-primary bg-primary text-primary-foreground ring-4 ring-primary/15'
+                                      : 'border-border bg-background text-muted-foreground',
                             ]"
                         >
                             <Check
@@ -267,15 +269,15 @@ const getStepDate = (stepValue: number) => {
                                     'text-sm font-medium',
                                     isStepCompleted(step.value) ||
                                     isCurrentStep(step.value)
-                                        ? 'text-gray-900'
-                                        : 'text-gray-400',
+                                        ? 'text-card-foreground'
+                                        : 'text-muted-foreground',
                                 ]"
                             >
                                 {{ step.label }}
                             </p>
                             <p
                                 v-if="getStepDate(step.value)"
-                                class="mt-1 text-xs whitespace-nowrap text-gray-400"
+                                class="mt-1 text-xs whitespace-nowrap text-muted-foreground"
                             >
                                 {{
                                     getStepDate(step.value)
@@ -290,8 +292,8 @@ const getStepDate = (stepValue: number) => {
                             class="absolute top-6 right-0 left-[calc(50%+0.75rem)] h-0.5 -translate-y-1/2"
                             :class="[
                                 isStepCompleted(step.value)
-                                    ? 'bg-green-500'
-                                    : 'bg-gray-200',
+                                    ? 'bg-success'
+                                    : 'bg-border',
                             ]"
                             :style="{ width: 'calc(100% - 1.5rem)' }"
                         ></div>

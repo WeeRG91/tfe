@@ -15,11 +15,13 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <h2
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
-            <Soup class="h-5 w-5 text-red-500" />
+            <Soup class="h-5 w-5 text-primary" />
             {{ t('order.orderItemsCard.title') }}
         </h2>
 
@@ -27,7 +29,7 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
             <div
                 v-for="item in orderToShow.items"
                 :key="item.id"
-                class="border-b border-gray-100 pb-3 last:border-0"
+                class="border-b border-border pb-3 last:border-0"
             >
                 <div class="flex justify-between text-sm">
                     <div class="flex-1">
@@ -36,20 +38,20 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                         </div>
                         <div
                             v-if="item.spicy_level"
-                            class="mt-1 text-xs text-gray-500"
+                            class="mt-1 text-xs text-muted-foreground"
                         >
                             {{ t('common.spicyLevel.title') }}:
                             {{ spicyLevelLabels[item.spicy_level] }}
                         </div>
                         <div
                             v-if="item.meat"
-                            class="mt-1 text-xs text-gray-500"
+                            class="mt-1 text-xs text-muted-foreground"
                         >
                             {{ t('order.orderItemsCard.meat') }}:
                             {{ item.meat.name }}
                             <span
                                 v-if="item.meat.extra_price > 0"
-                                class="text-gray-400"
+                                class="text-muted-foreground"
                             >
                                 (+€{{ formatPrice(item.meat.extra_price) }})
                             </span>
@@ -59,7 +61,7 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                                 item.removed_ingredients &&
                                 item.removed_ingredients.length > 0
                             "
-                            class="mt-1 text-xs text-gray-400"
+                            class="mt-1 text-xs text-muted-foreground"
                         >
                             {{ t('order.orderItemsCard.without') }}:
                             {{
@@ -70,7 +72,7 @@ const spicyLevelLabels = computed(() => getSpicyLevelLabels(t));
                         </div>
                         <div
                             v-if="item.notes"
-                            class="mt-1 text-xs text-gray-400"
+                            class="mt-1 text-xs text-muted-foreground"
                         >
                             {{ t('order.orderItemsCard.note') }}:
                             {{ item.notes }}

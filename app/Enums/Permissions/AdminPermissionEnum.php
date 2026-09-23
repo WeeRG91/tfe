@@ -10,4 +10,5 @@ enum AdminPermissionEnum: string
 
     case ADMIN_ACCESS = 'admin.access';
     case DASHBOARD_VIEW = 'dashboard.view';
+    case THEME_MANAGE = 'theme.manage';
 }

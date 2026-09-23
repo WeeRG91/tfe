@@ -91,7 +91,7 @@ const triggerStarAnimation = () => {
 <template>
     <div
         @click="goToDetail"
-        class="group flex h-full cursor-pointer flex-col rounded-md border bg-white transition-all duration-300"
+        class="group flex h-full cursor-pointer flex-col rounded-md border border-border bg-card text-card-foreground transition-all duration-300"
         :class="{
             'opacity-60 grayscale hover:opacity-70':
                 props.dish.is_available === DishAvailabilityEnum.UNAVAILABLE,
@@ -122,7 +122,7 @@ const triggerStarAnimation = () => {
                 <h3
                     class="text-lg font-semibold uppercase transition-colors"
                     :class="{
-                        'text-gray-400':
+                        'text-muted-foreground':
                             props.dish.is_available ===
                             DishAvailabilityEnum.UNAVAILABLE,
                     }"
@@ -139,12 +139,12 @@ const triggerStarAnimation = () => {
                         :class="[
                             i <= dish.default_spicy_level
                                 ? [
-                                      'text-green-500',
-                                      'text-yellow-500',
-                                      'text-orange-500',
-                                      'text-red-500',
+                                      'text-success',
+                                      'text-warning',
+                                      'text-primary',
+                                      'text-destructive',
                                   ][i]
-                                : 'text-gray-300',
+                                : 'text-muted-foreground/40',
                         ]"
                     />
                 </div>
@@ -153,10 +153,10 @@ const triggerStarAnimation = () => {
             <p
                 class="mt-2 line-clamp-2 text-sm transition-colors"
                 :class="{
-                    'text-gray-400':
+                    'text-muted-foreground/25':
                         props.dish.is_available ===
                         DishAvailabilityEnum.UNAVAILABLE,
-                    'text-gray-600':
+                    'text-muted-foreground':
                         props.dish.is_available ===
                         DishAvailabilityEnum.AVAILABLE,
                 }"
@@ -173,7 +173,9 @@ const triggerStarAnimation = () => {
                                     ref="ratingContainer"
                                     class="rating-container relative inline-block"
                                 >
-                                    <div class="flex text-lg text-gray-300">
+                                    <div
+                                        class="flex text-lg text-muted-foreground/25"
+                                    >
                                         <span
                                             v-for="star in 5"
                                             :key="`bg-${star}`"
@@ -182,7 +184,7 @@ const triggerStarAnimation = () => {
                                     </div>
 
                                     <div
-                                        class="absolute top-0 left-0 overflow-hidden text-lg whitespace-nowrap text-yellow-400 transition-all duration-500"
+                                        class="rating-star-active absolute top-0 left-0 overflow-hidden text-lg whitespace-nowrap text-warning transition-all duration-500"
                                         :style="{
                                             width: `${ratingPercentage}%`,
                                         }"
@@ -201,7 +203,7 @@ const triggerStarAnimation = () => {
                                     <div
                                         v-for="star in floatingStars"
                                         :key="star.id"
-                                        class="firework-star pointer-events-none absolute text-yellow-400"
+                                        class="firework-star rating-star-active pointer-events-none absolute text-warning"
                                         :style="{
                                             left: `${star.x}px`,
                                             top: `${star.y}px`,
@@ -216,7 +218,9 @@ const triggerStarAnimation = () => {
                                 </div>
                             </div>
 
-                            <span class="text-xs font-semibold text-gray-900">
+                            <span
+                                class="text-xs font-semibold text-card-foreground"
+                            >
                                 {{
                                     (props.dish.rating_average ?? 0).toFixed(1)
                                 }}
@@ -226,7 +230,7 @@ const triggerStarAnimation = () => {
                         <span
                             class="ml-1 text-xs transition-colors"
                             :class="{
-                                'text-gray-400':
+                                'text-muted-foreground':
                                     props.dish.is_available ===
                                     DishAvailabilityEnum.UNAVAILABLE,
                             }"
@@ -238,10 +242,10 @@ const triggerStarAnimation = () => {
                     <div
                         class="flex items-center gap-1 transition-colors"
                         :class="{
-                            'text-gray-400':
+                            'text-muted-foreground/25':
                                 props.dish.is_available ===
                                 DishAvailabilityEnum.UNAVAILABLE,
-                            'text-gray-500':
+                            'text-muted-foreground':
                                 props.dish.is_available ===
                                 DishAvailabilityEnum.AVAILABLE,
                         }"
@@ -249,10 +253,10 @@ const triggerStarAnimation = () => {
                         <span
                             class="font-semibold transition-colors"
                             :class="{
-                                'text-gray-400':
+                                'text-muted-foreground':
                                     props.dish.is_available ===
                                     DishAvailabilityEnum.UNAVAILABLE,
-                                'text-red-500':
+                                'text-primary':
                                     props.dish.is_available ===
                                     DishAvailabilityEnum.AVAILABLE,
                             }"
@@ -266,7 +270,7 @@ const triggerStarAnimation = () => {
                     <span
                         class="text-xs tracking-widest uppercase transition-colors"
                         :class="{
-                            'text-gray-400':
+                            'text-muted-foreground':
                                 props.dish.is_available ===
                                 DishAvailabilityEnum.UNAVAILABLE,
                         }"
@@ -280,7 +284,7 @@ const triggerStarAnimation = () => {
                             DishAvailabilityEnum.AVAILABLE
                         "
                         @click.stop="emit('add', props.dish)"
-                        class="cursor-pointer text-sm text-red-500 transition-all duration-300 hover:translate-x-1 hover:text-red-600"
+                        class="cursor-pointer text-sm font-medium text-primary transition-all duration-300 hover:translate-x-1 hover:text-primary/80"
                     >
                         {{ $t('menu.card.add') }}
                         <span
@@ -292,7 +296,7 @@ const triggerStarAnimation = () => {
                     <button
                         v-else
                         disabled
-                        class="cursor-not-allowed text-sm text-gray-400"
+                        class="cursor-not-allowed text-sm text-muted-foreground"
                     >
                         {{ $t('menu.card.unavailable') }}
                     </button>
@@ -364,11 +368,11 @@ const triggerStarAnimation = () => {
     animation: ratingPulse 0.6s ease-in-out 2;
 }
 
-.rating-container .text-yellow-400 {
+.rating-star-active {
     transition: text-shadow 0.3s ease;
 }
 
-.rating-container:hover .text-yellow-400 {
-    text-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
+.rating-container:hover .rating-star-active {
+    text-shadow: 0 0 20px color-mix(in oklch, var(--warning) 30%, transparent);
 }
 </style>

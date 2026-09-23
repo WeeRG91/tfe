@@ -1,52 +1,67 @@
 <script setup lang="ts">
+import ThemePreviewCard from '@/components/theme/ThemePreviewCard.vue';
 import { useAppearance } from '@/composables/useAppearance';
-import { Monitor, Moon, Sun } from 'lucide-vue-next';
-import { computed } from 'vue';
+import type { ThemeDefinition } from '@/types/theme';
+import { Check, Monitor } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 
-const { appearance, updateAppearance } = useAppearance();
+defineProps<{
+    themes: ThemeDefinition[];
+}>();
 
 const { t } = useI18n();
+const { appearance, updateAppearance } = useAppearance('admin');
 
-const tabs = computed(
-    () =>
-        [
-            {
-                value: 'light',
-                Icon: Sun,
-                label: t('setting.appearance.options.light'),
-            },
-            {
-                value: 'dark',
-                Icon: Moon,
-                label: t('setting.appearance.options.dark'),
-            },
-            {
-                value: 'system',
-                Icon: Monitor,
-                label: t('setting.appearance.options.system'),
-            },
-        ] as const,
-);
+function selectTheme(theme: ThemeDefinition): void {
+    updateAppearance(theme.key);
+}
 </script>
 
 <template>
-    <div
-        class="inline-flex gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800"
-    >
+    <div class="space-y-5">
         <button
-            v-for="{ value, Icon, label } in tabs"
-            :key="value"
-            @click="updateAppearance(value)"
-            :class="[
-                'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
-                appearance === value
-                    ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
-                    : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60',
-            ]"
+            type="button"
+            :aria-pressed="appearance === 'system'"
+            class="flex w-full items-center gap-3 rounded-lg border bg-card p-3 text-left transition-all hover:border-primary/50 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+            :class="
+                appearance === 'system'
+                    ? 'border-primary ring-2 ring-primary/30'
+                    : 'border-border'
+            "
+            @click="updateAppearance('system')"
         >
-            <component :is="Icon" class="-ml-1 h-4 w-4" />
-            <span class="ml-1.5 text-sm">{{ label }}</span>
+            <span
+                class="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground"
+            >
+                <Monitor class="size-4" />
+            </span>
+
+            <span class="min-w-0 flex-1">
+                <span class="block font-medium text-card-foreground">
+                    {{ t('setting.appearance.options.system') }}
+                </span>
+
+                <span class="block text-sm text-muted-foreground">
+                    {{ t('setting.appearance.options.systemDescription') }}
+                </span>
+            </span>
+
+            <span
+                v-if="appearance === 'system'"
+                class="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
+            >
+                <Check class="size-4" />
+            </span>
         </button>
+
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
+            <ThemePreviewCard
+                v-for="theme in themes"
+                :key="theme.key"
+                :theme="theme"
+                :selected="appearance === theme.key"
+                @select="selectTheme"
+            />
+        </div>
     </div>
 </template>

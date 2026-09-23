@@ -47,10 +47,10 @@ useClickOutside(menuContainerRef, () => {
         <button
             v-if="user"
             @click="toggleUserMenu"
-            class="flex items-center gap-2 rounded-lg px-2 py-1 transition-all duration-200 hover:bg-gray-100"
+            class="flex items-center gap-2 rounded-lg px-2 py-1 transition duration-300 hover:scale-110 cursor-pointer"
         >
             <div
-                class="relative h-9 w-9 overflow-hidden rounded-full bg-gradient-to-r from-red-500 to-red-600"
+                class="relative h-9 w-9 overflow-hidden rounded-full bg-primary"
             >
                 <img
                     v-if="user.avatar"
@@ -60,7 +60,7 @@ useClickOutside(menuContainerRef, () => {
                 />
                 <div
                     v-else
-                    class="flex h-full w-full items-center justify-center text-white"
+                    class="flex h-full w-full items-center justify-center text-primary-foreground"
                 >
                     <User class="h-4 w-4" />
                 </div>
@@ -70,7 +70,7 @@ useClickOutside(menuContainerRef, () => {
         <Link
             v-else
             :href="login()"
-            class="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:from-red-600 hover:to-red-700 hover:shadow-md sm:flex"
+            class="hidden items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:flex"
         >
             <LogIn class="h-4 w-4" />
             {{ t('navigation.userMenu.signIn') }}
@@ -79,38 +79,40 @@ useClickOutside(menuContainerRef, () => {
         <Transition name="dropdown">
             <div
                 v-if="isUserMenuOpen && user"
-                class="absolute right-0 mt-2 w-56 rounded-xl border border-gray-100 bg-white py-2 shadow-lg"
+                class="absolute right-0 mt-2 w-56 rounded-xl border border-border bg-popover p-2 text-popover-foreground shadow-lg"
             >
-                <div class="border-b border-gray-100 px-4 py-3">
-                    <p class="text-sm font-semibold text-gray-900">
+                <div class="border-b border-border px-4 py-3">
+                    <p class="text-sm font-semibold text-popover-foreground">
                         {{ user.name }}
                     </p>
-                    <p class="text-xs text-gray-500">{{ user.email }}</p>
+                    <p class="text-xs text-muted-foreground">
+                        {{ user.email }}
+                    </p>
                 </div>
                 <a
                     :href="clientProfile.edit().url"
-                    class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
+                    class="flex items-center gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     <User class="h-4 w-4" />
                     {{ t('navigation.userMenu.profile') }}
                 </a>
                 <a
                     :href="order.myOrders().url"
-                    class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
+                    class="flex items-center gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     <NotepadText class="h-4 w-4" />
                     {{ t('navigation.userMenu.orders') }}
                 </a>
                 <a
                     :href="loyaltyPointTransaction.myPoints().url"
-                    class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600"
+                    class="flex items-center gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     <Trophy class="h-4 w-4" />
                     {{ t('navigation.userMenu.points') }}
                 </a>
                 <button
                     @click="handleLogout"
-                    class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                    class="flex w-full items-center gap-3 px-4 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
                 >
                     <LogIn class="h-4 w-4" />
                     {{ t('navigation.userMenu.signOut') }}

@@ -19,20 +19,22 @@ const getItemTypeIcon = (itemType: number) => {
 };
 
 const getItemTypeColor = (itemType: number) => {
-    return itemType === ItemTypeEnum.DISH ? 'text-red-500' : 'text-blue-500';
+    return itemType === ItemTypeEnum.DISH ? 'text-primary' : 'text-info';
 };
 </script>
 
 <template>
-    <div class="rounded-lg bg-white p-3">
-        <div class="mb-3 flex items-center gap-2 border-b border-gray-100 pb-2">
-            <Soup class="h-4 w-4 text-red-500" />
+    <div
+        class="rounded-lg border border-border bg-card p-3 text-card-foreground"
+    >
+        <div class="mb-3 flex items-center gap-2 border-b border-border pb-2">
+            <Soup class="h-4 w-4 text-primary" />
             <h3
-                class="text-sm font-semibold tracking-wide text-gray-700 uppercase"
+                class="text-sm font-semibold tracking-wide text-card-foreground uppercase"
             >
                 {{ t('order.orderItemsList.title') }}
             </h3>
-            <span class="text-xs text-gray-500">{{
+            <span class="text-xs text-muted-foreground">{{
                 t('order.orderItemsList.itemCount', order.items?.length || 0)
             }}</span>
         </div>
@@ -41,11 +43,11 @@ const getItemTypeColor = (itemType: number) => {
             <div
                 v-for="item in order.items"
                 :key="item.id"
-                class="flex flex-col gap-2 border-b border-gray-100 pb-3 last:border-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
+                class="flex flex-col gap-2 border-b border-border pb-3 last:border-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
             >
                 <div class="flex gap-3">
                     <div
-                        class="h-14 w-14 shrink-0 overflow-hidden rounded-lg border bg-gray-50"
+                        class="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-border bg-muted"
                     >
                         <img
                             :src="item.item?.main_image"
@@ -60,14 +62,14 @@ const getItemTypeColor = (itemType: number) => {
                                 :class="getItemTypeColor(item.item_type)"
                                 class="h-3.5 w-3.5"
                             />
-                            <p class="font-medium text-gray-800">
+                            <p class="font-medium text-card-foreground">
                                 {{ item.item?.name }}
                             </p>
-                            <span class="text-sm font-semibold text-red-500"
+                            <span class="text-sm font-semibold text-primary"
                                 >×{{ item.quantity }}</span
                             >
                         </div>
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs text-muted-foreground">
                             €{{ formatPrice(item.unit_price) }}
                             {{ t('order.orderItemsList.each') }}
                         </p>
@@ -76,8 +78,10 @@ const getItemTypeColor = (itemType: number) => {
                             v-if="item.item_type === ItemTypeEnum.DISH"
                             class="mt-1 space-y-0.5 text-xs"
                         >
-                            <p class="flex items-center gap-1 text-gray-600">
-                                <span class="text-red-500">🌶️</span>
+                            <p
+                                class="flex items-center gap-1 text-muted-foreground"
+                            >
+                                <span>🌶️</span>
                                 <span>{{ t('common.spicyLevel.title') }}:</span>
                                 <span class="font-medium">
                                     {{ spicyLevelLabels[item.spicy_level] }}
@@ -85,9 +89,9 @@ const getItemTypeColor = (itemType: number) => {
                             </p>
                             <p
                                 v-if="item.meat"
-                                class="flex items-center gap-1 text-gray-600"
+                                class="flex items-center gap-1 text-muted-foreground"
                             >
-                                <span class="text-red-500">🥩</span>
+                                <span>🥩</span>
                                 <span
                                     >{{ t('order.orderItemsList.meat') }}:</span
                                 >
@@ -96,7 +100,7 @@ const getItemTypeColor = (itemType: number) => {
                                 }}</span>
                                 <span
                                     v-if="item.meat.extra_price > 0"
-                                    class="text-red-500"
+                                    class="text-primary"
                                     >(+€{{
                                         formatPrice(item.meat.extra_price)
                                     }})</span
@@ -104,7 +108,7 @@ const getItemTypeColor = (itemType: number) => {
                             </p>
                             <p
                                 v-if="item.removed_ingredients?.length"
-                                class="flex flex-wrap items-center gap-1 text-gray-500"
+                                class="flex flex-wrap items-center gap-1 text-muted-foreground"
                             >
                                 <span
                                     >🚫
@@ -120,7 +124,7 @@ const getItemTypeColor = (itemType: number) => {
                             </p>
                             <p
                                 v-if="item.notes"
-                                class="flex items-start gap-1 text-gray-500 italic"
+                                class="flex items-start gap-1 text-muted-foreground italic"
                             >
                                 <span>📝</span>
                                 <span>{{ item.notes }}</span>
@@ -128,7 +132,7 @@ const getItemTypeColor = (itemType: number) => {
                         </div>
                         <div
                             v-else-if="item.notes"
-                            class="mt-1 flex items-start gap-1 text-xs text-gray-500 italic"
+                            class="mt-1 flex items-start gap-1 text-xs text-muted-foreground italic"
                         >
                             <span>📝</span>
                             <span>{{ item.notes }}</span>
@@ -136,7 +140,7 @@ const getItemTypeColor = (itemType: number) => {
                     </div>
                 </div>
                 <div class="shrink-0 text-right">
-                    <p class="text-base font-semibold text-gray-800">
+                    <p class="text-base font-semibold text-card-foreground">
                         €{{ formatPrice(item.total_inc_vat) }}
                     </p>
                 </div>
@@ -144,10 +148,12 @@ const getItemTypeColor = (itemType: number) => {
         </div>
     </div>
 
-    <div class="rounded-lg bg-white p-3">
+    <div
+        class="rounded-lg border border-border bg-card p-3 text-card-foreground"
+    >
         <div class="space-y-1.5 text-sm">
             <div class="flex justify-between">
-                <span class="text-gray-600">{{
+                <span class="text-muted-foreground">{{
                     t('order.orderItemsList.subtotal')
                 }}</span>
                 <span class="font-medium"
@@ -155,7 +161,7 @@ const getItemTypeColor = (itemType: number) => {
                 >
             </div>
             <div v-if="order.delivery_fee > 0" class="flex justify-between">
-                <span class="text-gray-600">{{
+                <span class="text-muted-foreground">{{
                     t('order.orderItemsList.deliveryFee')
                 }}</span>
                 <span class="font-medium"
@@ -164,17 +170,17 @@ const getItemTypeColor = (itemType: number) => {
             </div>
             <div
                 v-if="order.discount_total > 0"
-                class="flex justify-between text-emerald-600"
+                class="flex justify-between text-success"
             >
                 <span class="font-semibold"
                     >-€{{ formatPrice(order.discount_total) }}</span
                 >
             </div>
             <div
-                class="flex justify-between border-t border-gray-200 pt-2 text-base font-bold"
+                class="flex justify-between border-t border-border pt-2 text-base font-bold"
             >
                 <span>{{ t('order.orderItemsList.total') }}</span>
-                <span class="text-red-500"
+                <span class="text-primary"
                     >€{{ formatPrice(order.total_inc_vat) }}</span
                 >
             </div>

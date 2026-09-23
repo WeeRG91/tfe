@@ -23,7 +23,9 @@ const isNearLimit = computed(() => remainingCharacters.value < 50);
 </script>
 
 <template>
-    <div class="rounded-lg border bg-white p-6">
+    <div
+        class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+    >
         <h2
             class="mb-4 flex items-center gap-2 text-lg font-semibold uppercase"
         >
@@ -43,11 +45,11 @@ const isNearLimit = computed(() => remainingCharacters.value < 50);
                 rows="3"
                 :placeholder="placeholder || t('cart.orderNotes.placeholder')"
                 :maxlength="maxLength || 500"
-                class="w-full resize-y rounded-md border border-gray-300 p-2.5 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none"
+                class="w-full resize-y rounded-md border border-input bg-background p-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
             ></textarea>
 
             <div class="flex items-center justify-between">
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-muted-foreground">
                     {{ t('cart.orderNotes.helper') }}
                 </p>
 
@@ -55,8 +57,8 @@ const isNearLimit = computed(() => remainingCharacters.value < 50);
                     v-if="maxLength"
                     :class="[
                         'text-xs',
-                        isNearLimit ? 'text-amber-600' : 'text-gray-400',
-                        remainingCharacters === 0 ? 'text-red-600' : '',
+                        isNearLimit ? 'text-warning' : 'text-muted-foreground',
+                        remainingCharacters === 0 ? 'text-destructive' : '',
                     ]"
                 >
                     {{ remainingCharacters }} / {{ maxLength }}
@@ -65,7 +67,7 @@ const isNearLimit = computed(() => remainingCharacters.value < 50);
             </div>
 
             <div class="mt-3 flex flex-wrap gap-2">
-                <span class="text-xs text-gray-500">{{
+                <span class="text-xs text-muted-foreground">{{
                     t('cart.orderNotes.quickSuggestions')
                 }}</span>
                 <button
@@ -75,7 +77,7 @@ const isNearLimit = computed(() => remainingCharacters.value < 50);
                             t('cart.orderNotes.suggestions.extraSpicy'),
                         )
                     "
-                    class="rounded-md bg-gray-100 px-2 py-1 text-xs transition-colors hover:bg-gray-200"
+                    class="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     🌶️ {{ t('cart.orderNotes.suggestions.extraSpicy') }}
                 </button>
@@ -86,7 +88,7 @@ const isNearLimit = computed(() => remainingCharacters.value < 50);
                             t('cart.orderNotes.suggestions.allergyAlert'),
                         )
                     "
-                    class="rounded-md bg-gray-100 px-2 py-1 text-xs transition-colors hover:bg-gray-200"
+                    class="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     🥜 {{ t('cart.orderNotes.suggestions.allergyAlert') }}
                 </button>
@@ -97,7 +99,7 @@ const isNearLimit = computed(() => remainingCharacters.value < 50);
                             t('cart.orderNotes.suggestions.cutleryNeeded'),
                         )
                     "
-                    class="rounded-md bg-gray-100 px-2 py-1 text-xs transition-colors hover:bg-gray-200"
+                    class="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     🍴 {{ t('cart.orderNotes.suggestions.cutleryNeeded') }}
                 </button>

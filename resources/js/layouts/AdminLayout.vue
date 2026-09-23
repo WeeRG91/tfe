@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAppearance } from '@/composables/useAppearance';
 import { usePermission } from '@/composables/usePermission';
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
 import { useChatStore } from '@/stores/chat';
@@ -6,6 +7,8 @@ import { useOrderStore } from '@/stores/order';
 import type { BreadcrumbItemType } from '@/types';
 import { ChatPermissionEnum, OrderPermissionEnum } from '@/types/permission';
 import { onMounted, onUnmounted, ref } from 'vue';
+
+useAppearance('admin');
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];

@@ -162,26 +162,28 @@ watch(filterPoint, resetAndReload);
         <section class="mx-auto max-w-6xl px-4 py-3 md:px-6 md:py-4">
             <div class="mb-4 md:mb-6">
                 <p
-                    class="text-xs tracking-widest text-red-500 uppercase md:text-sm"
+                    class="text-xs tracking-widest text-primary uppercase md:text-sm"
                 >
                     [ {{ t('point.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     {{ t('point.title') }}
                 </h1>
-                <p class="mt-0.5 text-xs text-gray-600 md:mt-1 md:text-sm">
+                <p
+                    class="mt-0.5 text-xs text-muted-foreground md:mt-1 md:text-sm"
+                >
                     {{ t('point.description') }}
                 </p>
             </div>
 
             <div
-                class="mb-4 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 px-4 py-2 text-white shadow-lg sm:mb-6 sm:py-4 md:px-6"
+                class="mb-4 rounded-2xl bg-gradient-to-r from-primary to-primary/80 px-4 py-2 text-primary-foreground shadow-lg sm:mb-6 sm:py-4 md:px-6"
             >
                 <div
                     class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <div class="flex items-center gap-3">
-                        <div class="rounded-full bg-white/20 p-2">
+                        <div class="rounded-full bg-primary-foreground/20 p-2">
                             <Award class="h-5 w-5 md:h-6 md:w-6" />
                         </div>
                         <div>
@@ -199,9 +201,9 @@ watch(filterPoint, resetAndReload);
                     </div>
 
                     <div
-                        class="flex items-center gap-3 border-t border-white/20 pt-3 sm:border-t-0 sm:pt-0"
+                        class="flex items-center gap-3 border-t border-primary-foreground/20 pt-3 sm:border-t-0 sm:pt-0"
                     >
-                        <div class="rounded-full bg-white/20 p-2">
+                        <div class="rounded-full bg-primary-foreground/20 p-2">
                             <ClockArrowUp class="h-5 w-5 md:h-6 md:w-6" />
                         </div>
                         <div>
@@ -241,8 +243,8 @@ watch(filterPoint, resetAndReload);
                     class="rounded-full border px-3 py-1 text-xs transition-all duration-500 md:px-4 md:py-1.5 md:text-sm"
                     :class="
                         filterPoint === filter.value
-                            ? 'border-red-500 bg-red-500 text-white hover:bg-red-600'
-                            : 'text-gray-600 hover:bg-gray-100'
+                            ? 'border-primary bg-primary text-primary-foreground hover:bg-primary/90'
+                            : 'border-border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                     "
                 >
                     {{ filter.label }}
@@ -257,7 +259,9 @@ watch(filterPoint, resetAndReload);
                     :key="dateLabel"
                     class="space-y-2 md:space-y-3"
                 >
-                    <h3 class="text-xs font-semibold text-gray-400 md:text-sm">
+                    <h3
+                        class="text-xs font-semibold text-muted-foreground md:text-sm"
+                    >
                         {{ dateLabel }}
                     </h3>
 
@@ -282,7 +286,7 @@ watch(filterPoint, resetAndReload);
                 class="flex h-16 items-center justify-center md:h-24"
             >
                 <Loader
-                    class="h-5 w-5 animate-spin text-gray-400 md:h-6 md:w-6"
+                    class="h-5 w-5 animate-spin text-primary md:h-6 md:w-6"
                 />
             </div>
         </section>

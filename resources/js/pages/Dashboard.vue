@@ -9,6 +9,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useChartColors } from '@/composables/useChartColors';
 
 const props = defineProps<{
     completedOrders: number;
@@ -42,6 +43,7 @@ const props = defineProps<{
 }>();
 
 const { t, locale } = useI18n();
+const chartColors = useChartColors();
 
 const periodLabel = computed(() => {
     switch (props.period) {
@@ -94,7 +96,7 @@ const changePeriod = (event: Event) => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="dashboard-board-scroll flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <div class="flex items-center justify-end gap-3">
                 <label for="dashboard-period" class="text-sm font-medium">
@@ -104,7 +106,7 @@ const changePeriod = (event: Event) => {
                 <select
                     id="dashboard-period"
                     :value="period"
-                    class="rounded-md border border-sidebar-border bg-background px-3 py-2 text-sm"
+                    class="rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
                     @change="changePeriod"
                 >
                     <option value="1">
@@ -124,7 +126,7 @@ const changePeriod = (event: Event) => {
 
             <div class="grid auto-rows-min gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+                    class="rounded-xl border border-border bg-card p-6 text-card-foreground"
                 >
                     <p class="text-sm text-muted-foreground">
                         {{ t('dashboard.cards.completedOrders') }}
@@ -140,7 +142,7 @@ const changePeriod = (event: Event) => {
                 </div>
 
                 <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+                    class="rounded-xl border border-border bg-card p-6 text-card-foreground"
                 >
                     <p class="text-sm text-muted-foreground">
                         {{ t('dashboard.cards.paidSales') }}
@@ -156,7 +158,7 @@ const changePeriod = (event: Event) => {
                 </div>
 
                 <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+                    class="rounded-xl border border-border bg-card p-6 text-card-foreground"
                 >
                     <p class="text-sm text-muted-foreground">
                         {{ t('dashboard.cards.averageOrderValue') }}
@@ -172,7 +174,7 @@ const changePeriod = (event: Event) => {
                 </div>
 
                 <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+                    class="rounded-xl border border-border bg-card p-6 text-card-foreground"
                 >
                     <p class="text-sm text-muted-foreground">
                         {{ t('dashboard.cards.cancellationRate') }}
@@ -194,7 +196,7 @@ const changePeriod = (event: Event) => {
                 </div>
 
                 <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+                    class="rounded-xl border border-border bg-card p-6 text-card-foreground"
                 >
                     <p class="text-sm text-muted-foreground">
                         {{ t('dashboard.cards.preparationTime') }}
@@ -223,7 +225,7 @@ const changePeriod = (event: Event) => {
                 </div>
 
                 <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+                    class="rounded-xl border border-border bg-card p-6 text-card-foreground"
                 >
                     <p class="text-sm text-muted-foreground">
                         {{ t('dashboard.cards.returningCustomers') }}
@@ -257,42 +259,71 @@ const changePeriod = (event: Event) => {
             </div>
 
             <div
-                class="rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
+                class="rounded-xl border border-border bg-card text-card-foreground"
             >
                 <DailySalesChart
                     :daily-sales="dailySales"
                     :period-label="periodLabel"
+                    :chart-colors="chartColors"
                 />
             </div>
 
             <div class="grid gap-4 lg:grid-cols-2">
                 <div
-                    class="min-w-0 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
+                    class="min-w-0 rounded-xl border border-border bg-card text-card-foreground"
                 >
                     <TopDishesChart
                         :top-dishes="topDishes"
                         :period-label="periodLabel"
+                        :chart-colors="chartColors"
                     />
                 </div>
 
                 <div
-                    class="min-w-0 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
+                    class="min-w-0 rounded-xl border border-border bg-card text-card-foreground"
                 >
                     <OrdersByTypeChart
                         :orders-by-type="ordersByType"
                         :period-label="periodLabel"
+                        :chart-colors="chartColors"
                     />
                 </div>
             </div>
 
             <div
-                class="rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
+                class="rounded-xl border border-border bg-card text-card-foreground"
             >
                 <OrdersByHourChart
                     :orders-by-hour="ordersByHour"
                     :period-label="periodLabel"
+                    :chart-colors="chartColors"
                 />
             </div>
         </div>
     </AdminLayout>
 </template>
+
+<style scoped>
+.dashboard-board-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) var(--muted);
+}
+
+.dashboard-board-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.dashboard-board-scroll::-webkit-scrollbar-track {
+    background: var(--muted);
+    border-radius: 4px;
+}
+
+.dashboard-board-scroll::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 4px;
+}
+
+.dashboard-board-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground);
+}
+</style>

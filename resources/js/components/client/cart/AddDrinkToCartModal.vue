@@ -100,7 +100,7 @@ watch(
             <div
                 v-if="open"
                 @click.stop
-                class="relative flex w-full max-w-md animate-in flex-col rounded-2xl border bg-white shadow-xl duration-200 zoom-in-95 fade-in slide-in-from-top-4"
+                class="relative flex w-full max-w-md animate-in flex-col rounded-2xl border border-border bg-card text-card-foreground shadow-xl duration-200 zoom-in-95 fade-in slide-in-from-top-4"
                 style="max-height: 90vh"
             >
                 <div class="relative flex-shrink-0">
@@ -111,7 +111,7 @@ watch(
                     />
                     <button
                         @click="$emit('close')"
-                        class="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-gray-600 transition hover:bg-white hover:text-gray-900"
+                        class="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-popover/90 text-popover-foreground hover:bg-popover"
                     >
                         ✕
                     </button>
@@ -123,7 +123,7 @@ watch(
                             <h2 class="text-lg font-bold uppercase">
                                 {{ drink.name }}
                             </h2>
-                            <span class="text-lg font-bold text-red-500">
+                            <span class="text-lg font-bold text-primary">
                                 €{{ formatPrice(drink.price) }}
                             </span>
                         </div>
@@ -131,7 +131,7 @@ watch(
 
                     <div class="mb-3">
                         <h3
-                            class="mb-2 text-xs font-semibold tracking-wider text-gray-700 uppercase"
+                            class="mb-2 text-xs font-semibold tracking-wider text-card-foreground uppercase"
                         >
                             {{ t('drinks.addDrinkModal.specialInstructions') }}
                         </h3>
@@ -144,15 +144,15 @@ watch(
                                         'drinks.addDrinkModal.specialInstructionsPlaceholder',
                                     )
                                 "
-                                class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 placeholder-gray-400 transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none"
+                                class="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
                                 :class="{
-                                    'border-red-500 ring-2 ring-red-500/20':
+                                    'border-primary ring-2 ring-primary/20':
                                         notes.length > 0,
                                 }"
                             ></textarea>
                             <div
                                 v-if="notes.length > 0"
-                                class="absolute right-2 bottom-2 text-xs text-gray-400"
+                                class="absolute right-2 bottom-2 text-xs text-muted-foreground"
                             >
                                 {{ notes.length }}/500
                             </div>
@@ -161,7 +161,7 @@ watch(
 
                     <div class="mb-3">
                         <h3
-                            class="mb-2 text-xs font-semibold tracking-wider text-gray-700 uppercase"
+                            class="mb-2 text-xs font-semibold tracking-wider text-card-foreground uppercase"
                         >
                             {{ t('drinks.addDrinkModal.quantity') }}
                         </h3>
@@ -169,7 +169,7 @@ watch(
                             <button
                                 @click="decrementQuantity"
                                 :disabled="quantity <= 1"
-                                class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-300 text-gray-600 transition hover:border-red-500 hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                class="flex h-8 w-8 items-center justify-center rounded-lg border border-input bg-background text-foreground transition hover:border-primary hover:bg-primary/10 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 −
                             </button>
@@ -180,7 +180,7 @@ watch(
                             </span>
                             <button
                                 @click="incrementQuantity"
-                                class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-300 text-gray-600 transition hover:border-red-500 hover:bg-red-50 hover:text-red-500"
+                                class="flex h-8 w-8 items-center justify-center rounded-lg border border-input bg-background text-foreground transition hover:border-primary hover:bg-primary/10 hover:text-primary"
                             >
                                 +
                             </button>
@@ -188,14 +188,14 @@ watch(
                     </div>
                 </div>
 
-                <div class="border-t p-5 pt-4">
+                <div class="border-t border-border p-5 pt-4">
                     <div class="mb-3 flex items-center justify-between">
                         <span
-                            class="text-xs tracking-wider text-gray-600 uppercase"
+                            class="text-xs tracking-wider text-muted-foreground uppercase"
                         >
                             {{ t('drinks.addDrinkModal.total') }}
                         </span>
-                        <span class="text-2xl font-bold text-red-500">
+                        <span class="text-2xl font-bold text-primary">
                             €{{ totalPrice.toFixed(2) }}
                         </span>
                     </div>
@@ -203,42 +203,21 @@ watch(
                     <div class="flex gap-2">
                         <button
                             @click="emit('close')"
-                            class="flex-1 rounded-lg border border-gray-300 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                            class="flex-1 rounded-lg border border-input bg-background py-3 text-sm font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
                         >
                             {{ t('drinks.addDrinkModal.cancel') }}
                         </button>
                         <button
                             @click="addToCart"
-                            class="group relative flex-1 overflow-hidden rounded-lg bg-gradient-to-r from-red-500 to-red-600 py-3 text-white transition-all hover:shadow-lg hover:shadow-red-200"
+                            class="group relative flex-1 overflow-hidden rounded-lg bg-gradient-to-r from-primary to-primary/80 py-3 text-primary-foreground transition-all hover:shadow-lg hover:shadow-primary/20"
                         >
                             <span
                                 class="relative z-10 flex items-center justify-center"
                             >
                                 <span
                                     v-if="isLoading"
-                                    class="flex items-center justify-center"
-                                >
-                                    <svg
-                                        class="h-4 w-4 animate-spin text-white"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            class="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            stroke-width="4"
-                                        ></circle>
-                                        <path
-                                            class="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
-                                </span>
+                                    class="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent text-primary-foreground"
+                                ></span>
                                 <span v-else>
                                     {{ t('drinks.addDrinkModal.addToCart') }}
                                     <span
@@ -248,7 +227,7 @@ watch(
                                 </span>
                             </span>
                             <div
-                                class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-red-600 to-red-700 transition-transform duration-300 group-hover:translate-x-0"
+                                class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-primary/90 to-primary transition-transform duration-300 group-hover:translate-x-0"
                             ></div>
                         </button>
                     </div>
@@ -269,7 +248,7 @@ button:hover .animate-arrow {
 
 .overflow-y-auto {
     scrollbar-width: thin;
-    scrollbar-color: #e5e7eb #f3f4f6;
+    scrollbar-color: var(--border) var(--muted);
 }
 
 .overflow-y-auto::-webkit-scrollbar {
@@ -277,17 +256,17 @@ button:hover .animate-arrow {
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
-    background: #f3f4f6;
+    background: var(--muted);
     border-radius: 2px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: #e5e7eb;
+    background: var(--border);
     border-radius: 2px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: #d1d5db;
+    background: var(--muted-foreground);
 }
 
 .fixed {

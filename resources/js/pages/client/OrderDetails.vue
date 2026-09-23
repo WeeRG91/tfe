@@ -116,7 +116,7 @@ onUnmounted(() => {
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <p
-                            class="text-sm tracking-widest text-red-500 uppercase"
+                            class="text-sm tracking-widest text-primary uppercase"
                         >
                             [ {{ t('order.orderDetailsPage.eyebrow') }} ]
                         </p>
@@ -125,7 +125,7 @@ onUnmounted(() => {
                         >
                             {{ currentOrder.order_number }}
                         </h1>
-                        <p class="mt-2 text-gray-600">
+                        <p class="mt-2 text-muted-foreground">
                             {{
                                 t('order.orderDetailsPage.placedOn', {
                                     date: formatDate(currentOrder.created_at),

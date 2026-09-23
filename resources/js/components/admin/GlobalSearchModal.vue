@@ -272,8 +272,10 @@ watch(flatResults, () => {
 
 <template>
     <Dialog :open="open" @update:open="props.onClose">
-        <DialogContent class="gap-0 overflow-hidden p-0 sm:max-w-2xl">
-            <DialogHeader class="border-b px-6 py-4">
+        <DialogContent
+            class="gap-0 overflow-hidden border-border bg-card p-0 text-card-foreground sm:max-w-2xl"
+        >
+            <DialogHeader class="border-b border-border px-6 py-4">
                 <DialogTitle class="text-lg font-semibold">
                     {{ t('globalSearch.title') }}
                 </DialogTitle>
@@ -282,23 +284,23 @@ watch(flatResults, () => {
                 </DialogDescription>
             </DialogHeader>
 
-            <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-5">
+            <div class="border-b border-border bg-muted/40 px-6 py-5">
                 <div class="relative">
                     <Search
-                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                     />
                     <Input
                         ref="inputRef"
                         v-model="query"
                         :placeholder="t('globalSearch.placeholders.search')"
-                        class="h-12 rounded-xl border-gray-200 pr-10 pl-10 transition-all duration-200 focus:ring-0"
+                        class="h-12 rounded-xl border-input bg-background pr-10 pl-10 text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
                     />
                     <button
                         v-if="query"
                         @click="clearSearch"
-                        class="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-0.5 transition-colors hover:bg-gray-100"
+                        class="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-0.5 transition-colors hover:bg-accent hover:text-accent-foreground"
                     >
-                        <X class="h-4 w-4 text-gray-400" />
+                        <X class="h-4 w-4 text-muted-foreground" />
                     </button>
                 </div>
             </div>
@@ -331,9 +333,9 @@ watch(flatResults, () => {
 
                 <div
                     v-else-if="results !== null && !isLoading"
-                    class="bg-gray-50/50"
+                    class="rounded-md bg-muted px-3 py-2 text-muted-foreground"
                 >
-                    <p class="text-xs text-gray-500">
+                    <p class="text-xs">
                         {{
                             t('globalSearch.messages.resultsFound', {
                                 count: totalResultsCount,
@@ -347,7 +349,7 @@ watch(flatResults, () => {
                         class="mb-2 flex border-b text-xs text-muted-foreground uppercase"
                     >
                         <span>{{ type.label }}</span>
-                        <span class="ml-auto text-xs text-gray-400">{{
+                        <span class="ml-auto text-xs text-card-foreground">{{
                             results![type.key].length
                         }}</span>
                     </h3>
@@ -369,7 +371,9 @@ watch(flatResults, () => {
                         "
                         :class="[
                             'group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2 transition',
-                            isSelected(item) ? 'bg-muted' : 'hover:bg-muted',
+                            isSelected(item)
+                                ? 'bg-accent text-accent-foreground'
+                                : 'text-card-foreground hover:bg-accent hover:text-accent-foreground',
                         ]"
                     >
                         <div class="flex items-center justify-center gap-3">
@@ -382,42 +386,37 @@ watch(flatResults, () => {
                                 :alt="item.name"
                                 class="h-9 w-9 rounded object-cover"
                             />
-                            <Shield v-else class="h-9 w-9 text-gray-400" />
+                            <Shield v-else class="h-9 w-9 text-current" />
                             <span class="text-sm font-medium">
                                 {{ item.name }}
                             </span>
                         </div>
 
                         <CornerDownLeft
-                            :class="[
-                                'h-5 w-5 text-gray-400',
-                                isSelected(item)
-                                    ? 'text-gray-500'
-                                    : 'group-hover:text-gray-500',
-                            ]"
+                            class="h-5 w-5 text-current opacity-70"
                         />
                     </div>
                 </div>
             </div>
 
             <div
-                class="flex items-center justify-between border-t border-gray-100 bg-gray-50/50 px-6 py-3 text-xs text-gray-500"
+                class="flex items-center justify-between border-t border-border bg-muted px-6 py-3 text-xs text-muted-foreground"
             >
                 <div class="flex items-center gap-3">
                     <div class="flex items-center gap-1">
                         <kbd
-                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+                            class="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] text-card-foreground"
                             >↑</kbd
                         >
                         <kbd
-                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+                            class="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] text-card-foreground"
                             >↓</kbd
                         >
                         <span>{{ t('globalSearch.keyboard.navigate') }}</span>
                     </div>
                     <div class="flex items-center gap-1">
                         <kbd
-                            class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+                            class="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] text-card-foreground"
                             >Enter</kbd
                         >
                         <span>{{ t('globalSearch.keyboard.select') }}</span>
@@ -425,7 +424,7 @@ watch(flatResults, () => {
                 </div>
                 <div class="flex items-center gap-1">
                     <kbd
-                        class="rounded border border-gray-300 bg-white px-1.5 py-0.5 font-mono text-[10px]"
+                        class="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] text-card-foreground"
                         >Esc</kbd
                     >
                     <span>{{ t('globalSearch.keyboard.close') }}</span>
@@ -446,6 +445,6 @@ watch(flatResults, () => {
 }
 
 .scrollable::-webkit-scrollbar-thumb {
-    background-color: rgba(100, 100, 100, 0.3);
+    background-color: var(--border);
 }
 </style>

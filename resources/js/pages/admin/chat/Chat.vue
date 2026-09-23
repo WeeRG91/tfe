@@ -516,14 +516,12 @@ watchDebounced(
             <div class="flex min-h-[600px] flex-1 gap-4 md:min-h-[700px]">
                 <div
                     :class="[
-                        'bg-sidebar-background flex flex-shrink-0 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-300 dark:border-sidebar-border',
+                        'bg-sidebar-background flex flex-shrink-0 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-300',
                         isMobile && showMobileChat ? 'hidden' : 'flex',
                         isMobile ? 'w-full' : 'w-[320px]',
                     ]"
                 >
-                    <div
-                        class="border-b border-sidebar-border/70 p-3 sm:p-4 dark:border-sidebar-border"
-                    >
+                    <div class="border-b border-sidebar-border/70 p-3 sm:p-4">
                         <div class="flex items-center justify-between">
                             <h2
                                 class="mb-2 text-base font-semibold text-foreground sm:text-lg"
@@ -600,7 +598,7 @@ watchDebounced(
                                 v-for="user in users"
                                 :key="user.id"
                                 @click="selectUser(user.id)"
-                                class="cursor-pointer border-b border-sidebar-border/50 p-4 transition-colors duration-200 hover:bg-accent/50 dark:border-sidebar-border"
+                                class="cursor-pointer border-b border-sidebar-border/50 p-4 transition-colors duration-200 hover:bg-accent/50"
                             >
                                 <div class="flex items-start gap-3">
                                     <div class="relative flex-shrink-0">
@@ -608,9 +606,7 @@ watchDebounced(
                                             class="flex h-10 w-10 items-center justify-center rounded-full"
                                             :class="getUserAvatarColor(user.id)"
                                         >
-                                            <span
-                                                class="text-sm font-medium text-white"
-                                            >
+                                            <span class="text-sm font-medium">
                                                 {{ getInitials(user.name) }}
                                             </span>
                                         </div>
@@ -687,7 +683,7 @@ watchDebounced(
                                 v-for="chat in visibleChats"
                                 :key="chat.id"
                                 @click="selectChat(chat.id)"
-                                class="cursor-pointer border-b border-sidebar-border/50 p-4 transition-colors duration-200 hover:bg-accent/50 dark:border-sidebar-border"
+                                class="cursor-pointer border-b border-sidebar-border/50 p-4 transition-colors duration-200 hover:bg-accent/50"
                                 :class="{
                                     'bg-accent': selectedChatId === chat.id,
                                 }"
@@ -700,9 +696,7 @@ watchDebounced(
                                                 getUserAvatarColor(chat.user.id)
                                             "
                                         >
-                                            <span
-                                                class="text-sm font-medium text-white"
-                                            >
+                                            <span class="text-sm font-medium">
                                                 {{
                                                     chat.user
                                                         ? getInitials(
@@ -776,7 +770,7 @@ watchDebounced(
 
                 <div
                     :class="[
-                        'bg-sidebar-background flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-300 dark:border-sidebar-border',
+                        'bg-sidebar-background flex flex-1 flex-col overflow-hidden rounded-xl border border-sidebar-border/70 transition-all duration-300',
                         isMobile && !showMobileChat ? 'hidden' : 'flex',
                     ]"
                 >
@@ -786,7 +780,7 @@ watchDebounced(
                             class="flex h-full flex-col"
                         >
                             <div
-                                class="flex items-center justify-between border-b border-sidebar-border/70 p-3 sm:p-4 dark:border-sidebar-border"
+                                class="flex items-center justify-between border-b border-sidebar-border/70 p-3 sm:p-4"
                             >
                                 <div class="flex items-center gap-3">
                                     <button
@@ -935,7 +929,7 @@ watchDebounced(
                                                             !msg.unsent_at &&
                                                             !msg.deleted_at,
 
-                                                        'bg-gray-100/50 text-gray-500 italic':
+                                                        'bg-muted text-muted-foreground italic':
                                                             msg.unsent_at ||
                                                             msg.deleted_at,
                                                     },
@@ -963,7 +957,7 @@ watchDebounced(
                                                                 msg.id,
                                                             )
                                                         "
-                                                        class="rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                                                        class="rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                                     >
                                                         <MoreHorizontal
                                                             class="h-4 w-4 sm:h-5 sm:w-5"
@@ -1009,7 +1003,7 @@ watchDebounced(
                                         selectedChat.latest_message
                                             .is_from_restaurant
                                     "
-                                    class="flex justify-end text-[10px] text-gray-400 sm:text-xs"
+                                    class="flex justify-end text-[10px] text-muted-foreground sm:text-xs"
                                 >
                                     {{ t('chat.labels.readAt') }}
                                     {{
@@ -1021,7 +1015,7 @@ watchDebounced(
                             </div>
 
                             <div
-                                class="border-t border-sidebar-border/70 bg-background p-3 sm:p-4 dark:border-sidebar-border"
+                                class="border-t border-sidebar-border/70 bg-background p-3 sm:p-4"
                             >
                                 <div
                                     v-if="editingMessageId"
@@ -1030,13 +1024,13 @@ watchDebounced(
                                     <div class="flex items-center gap-2">
                                         <button
                                             @click.stop="cancelEditing()"
-                                            class="text-xs text-gray-400 hover:text-gray-600"
+                                            class="text-xs text-muted-foreground hover:text-foreground"
                                         >
                                             {{ t('admin.buttons.cancel') }}
                                         </button>
                                     </div>
                                     <span
-                                        class="text-[10px] text-gray-400 sm:text-xs"
+                                        class="text-[10px] text-muted-foreground sm:text-xs"
                                     >
                                         {{ t('chat.labels.pressEnterToSave') }}
                                     </span>
@@ -1124,13 +1118,13 @@ watchDebounced(
                 v-if="messageMenuId !== null"
                 ref="messageMenuDropdownRef"
                 @click.stop
-                class="fixed z-50 w-48 rounded-md border bg-white py-1 shadow-lg"
+                class="fixed z-50 w-48 rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-lg"
                 :style="dropdownStyle"
             >
                 <button
                     v-if="!isUnsentOrRemoved"
                     @click="startEditing(messageMenuId)"
-                    class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    class="flex w-full items-center rounded-sm px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
                 >
                     <SquarePen class="mr-2 h-4 w-4" />
                     {{ t('admin.buttons.edit') }}
@@ -1138,7 +1132,7 @@ watchDebounced(
                 <button
                     v-if="!isUnsentOrRemoved"
                     @click="unsendMessage(messageMenuId)"
-                    class="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    class="flex w-full items-center rounded-sm px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
                 >
                     <MessageCircleOff class="mr-2 h-4 w-4" />
                     {{ t('admin.buttons.unsend') }}
@@ -1146,7 +1140,7 @@ watchDebounced(
                 <button
                     v-if="!isUnsentOrRemoved"
                     @click="removeMessage(messageMenuId)"
-                    class="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    class="flex w-full items-center rounded-sm px-4 py-2 text-sm text-destructive hover:bg-destructive/10"
                 >
                     <CircleX class="mr-2 h-4 w-4" />
                     {{ t('admin.buttons.delete') }}
@@ -1166,12 +1160,12 @@ watchDebounced(
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.3);
+    background: var(--border);
     border-radius: 3px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.5);
+    background: var(--muted-foreground);
 }
 
 textarea {

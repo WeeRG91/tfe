@@ -7,15 +7,15 @@ const { t } = useI18n();
 
 <template>
     <div
-        class="flex flex-col items-center justify-center rounded-2xl bg-gray-50 p-12 text-center"
+        class="flex flex-col items-center justify-center rounded-2xl border border-border bg-muted/40 p-12 text-center"
     >
-        <div class="mb-4 rounded-full bg-gray-200 p-4">
-            <Gift class="h-8 w-8 text-gray-400" />
+        <div class="mb-4 rounded-full bg-primary/10 p-4">
+            <Gift class="h-8 w-8 text-primary" />
         </div>
-        <h3 class="mb-2 text-lg font-semibold text-gray-900">
+        <h3 class="mb-2 text-lg font-semibold text-foreground">
             {{ t('point.emptyPoint.title') }}
         </h3>
-        <p class="max-w-md text-sm text-gray-500">
+        <p class="max-w-md text-sm text-muted-foreground">
             {{ t('point.emptyPoint.description') }}
         </p>
     </div>

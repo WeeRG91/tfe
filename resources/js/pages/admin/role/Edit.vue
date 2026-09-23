@@ -143,9 +143,7 @@ const submit = () => {
             class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4"
         >
             <form @submit.prevent="submit" class="space-y-6">
-                <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
-                >
+                <div class="rounded-xl border border-sidebar-border/70 p-6">
                     <h3 class="mb-4 text-lg font-semibold text-foreground">
                         {{ t('role.form.sections.roleInformation') }}
                     </h3>
@@ -161,22 +159,20 @@ const submit = () => {
                             id="role-name"
                             v-model="roleForm.name"
                             type="text"
-                            class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none dark:border-sidebar-border"
+                            class="w-full rounded-lg border border-sidebar-border/70 bg-background px-4 py-2.5 text-foreground transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
                             :placeholder="t('role.form.placeholders.roleName')"
                             required
                         />
                         <p
                             v-if="roleForm.errors.name"
-                            class="mt-2 text-sm text-red-600 dark:text-red-400"
+                            class="mt-2 text-sm text-destructive"
                         >
                             {{ roleForm.errors.name }}
                         </p>
                     </div>
                 </div>
 
-                <div
-                    class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
-                >
+                <div class="rounded-xl border border-sidebar-border/70 p-6">
                     <div class="mb-6 flex items-center justify-between">
                         <div>
                             <h3 class="text-lg font-semibold text-foreground">
@@ -201,7 +197,7 @@ const submit = () => {
                                 permissions, category
                             ) in groupedPermissions"
                             :key="category"
-                            class="overflow-hidden rounded-lg border border-sidebar-border/50 transition-all duration-200 hover:border-sidebar-border/70 dark:border-sidebar-border"
+                            class="overflow-hidden rounded-lg border border-sidebar-border/50 transition-all duration-200 hover:border-sidebar-border/70"
                         >
                             <div
                                 @click="toggleCategory(category)"
@@ -281,7 +277,7 @@ const submit = () => {
 
                     <p
                         v-if="roleForm.errors.permissions"
-                        class="mt-4 text-sm text-red-600 dark:text-red-400"
+                        class="mt-4 text-sm text-destructive"
                     >
                         {{ roleForm.errors.permissions }}
                     </p>
@@ -290,7 +286,7 @@ const submit = () => {
                 <div class="flex justify-end gap-4">
                     <Link
                         :href="role.index().url"
-                        class="flex items-center justify-center rounded-lg border border-sidebar-border/70 px-6 py-2.5 text-foreground transition-all duration-200 hover:border-sidebar-border hover:bg-muted/50 sm:w-32 dark:border-sidebar-border"
+                        class="flex items-center justify-center rounded-lg border border-sidebar-border/70 px-6 py-2.5 text-foreground transition-all duration-200 hover:border-sidebar-border hover:bg-muted/50 sm:w-32"
                     >
                         {{ t('admin.buttons.cancel') }}
                     </Link>

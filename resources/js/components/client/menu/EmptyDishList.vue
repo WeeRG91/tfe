@@ -9,7 +9,7 @@ const { t } = useI18n();
         class="flex h-full w-full flex-col items-center justify-center p-10 text-center"
     >
         <div
-            class="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-3xl text-gray-500"
+            class="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-3xl text-muted-foreground"
         >
             🍽️
         </div>
@@ -18,10 +18,10 @@ const { t } = useI18n();
             {{ t('menu.emptyList.title') }}
         </h3>
 
-        <p class="mt-2 max-w-sm text-sm text-gray-500">
+        <p class="mt-2 max-w-sm text-sm text-muted-foreground">
             {{ t('menu.emptyList.description') }}
         </p>
-        <p class="mt-2 max-w-sm text-sm text-gray-500">
+        <p class="mt-2 max-w-sm text-sm text-muted-foreground">
             {{ t('menu.emptyList.addition') }}
         </p>
     </div>

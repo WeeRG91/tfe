@@ -51,14 +51,16 @@ const tabs = computed(() => [
         <section class="mx-auto max-w-7xl px-4 py-3 md:px-6 md:py-4">
             <div class="mb-6 md:mb-8">
                 <p
-                    class="text-xs tracking-widest text-red-500 uppercase md:text-sm"
+                    class="text-xs tracking-widest text-primary uppercase md:text-sm"
                 >
                     [ {{ t('profile.eyebrow') }} ]
                 </p>
                 <h1 class="text-4xl font-semibold uppercase md:text-5xl">
                     {{ t('profile.title') }}
                 </h1>
-                <p class="mt-0.5 text-xs text-gray-600 md:mt-1 md:text-sm">
+                <p
+                    class="mt-0.5 text-xs text-muted-foreground md:mt-1 md:text-sm"
+                >
                     {{ t('profile.description') }}
                 </p>
             </div>
@@ -66,7 +68,7 @@ const tabs = computed(() => [
             <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
                 <div class="lg:w-72 lg:flex-shrink-0">
                     <div
-                        class="sticky top-6 rounded-2xl bg-white p-2 shadow-sm"
+                        class="sticky top-6 rounded-2xl border border-border bg-card p-2 text-card-foreground shadow-sm"
                     >
                         <nav class="space-y-1">
                             <button
@@ -76,16 +78,16 @@ const tabs = computed(() => [
                                 class="group flex w-full items-start gap-3 rounded-xl px-4 py-3 text-left transition-all duration-200"
                                 :class="
                                     activeTab === tab.id
-                                        ? 'bg-gradient-to-r from-red-500/10 to-red-500/5 text-red-600 shadow-sm'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        ? 'bg-gradient-to-r from-primary/10 to-primary/5 text-primary shadow-sm'
+                                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                                 "
                             >
                                 <div
                                     class="mt-0.5 rounded-lg p-1.5 transition-colors"
                                     :class="
                                         activeTab === tab.id
-                                            ? 'bg-red-500 text-white'
-                                            : 'bg-gray-100 text-gray-500 group-hover:bg-gray-200 group-hover:text-gray-700'
+                                            ? 'bg-primary text-primary-foreground'
+                                            : 'bg-muted text-muted-foreground group-hover:bg-accent group-hover:text-accent-foreground'
                                     "
                                 >
                                     <component :is="tab.icon" class="h-5 w-5" />
@@ -95,8 +97,8 @@ const tabs = computed(() => [
                                         class="text-sm font-medium"
                                         :class="
                                             activeTab === tab.id
-                                                ? 'text-red-600'
-                                                : 'text-gray-700'
+                                                ? 'text-primary'
+                                                : 'text-card-foreground'
                                         "
                                     >
                                         {{ tab.label }}
@@ -105,8 +107,8 @@ const tabs = computed(() => [
                                         class="text-xs"
                                         :class="
                                             activeTab === tab.id
-                                                ? 'text-red-500/80'
-                                                : 'text-gray-500'
+                                                ? 'text-primary/80'
+                                                : 'text-muted-foreground'
                                         "
                                     >
                                         {{ tab.description }}
@@ -119,7 +121,7 @@ const tabs = computed(() => [
 
                 <div class="min-w-0 flex-1">
                     <div
-                        class="max-w-2xl rounded-2xl bg-white p-4 shadow-sm md:p-6 lg:p-8"
+                        class="max-w-2xl rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm md:p-6 lg:p-8"
                     >
                         <InfoTab
                             v-if="activeTab === 'info' && user"

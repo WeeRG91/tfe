@@ -25,7 +25,7 @@ const showAvatar = computed(
     <Avatar class="h-8 w-8 overflow-hidden rounded-full">
         <AvatarImage v-if="showAvatar" :src="user?.avatar!" :alt="user?.name" />
         <AvatarFallback
-            class="rounded-full text-white"
+            class="rounded-full"
             :class="getUserAvatarColor(user.id)"
         >
             {{ getInitials(user?.name) }}

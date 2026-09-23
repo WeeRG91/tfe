@@ -157,20 +157,20 @@ watch(
     <Transition name="slide">
         <div
             v-if="open"
-            class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl"
+            class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-background text-foreground shadow-2xl"
         >
             <div class="flex h-full flex-col">
                 <div
-                    class="flex items-center justify-between border-b border-gray-100 p-4"
+                    class="flex items-center justify-between border-b border-border p-4"
                 >
                     <div class="flex items-center gap-2">
-                        <Bell class="h-5 w-5 text-red-500" />
-                        <h2 class="text-lg font-semibold text-gray-900">
+                        <Bell class="h-5 w-5 text-primary" />
+                        <h2 class="text-lg font-semibold text-foreground">
                             {{ t('notification.notificationDrawer.title') }}
                         </h2>
                         <span
                             v-if="unreadCount > 0"
-                            class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-600"
+                            class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
                         >
                             {{ unreadCount }}
                             {{ t('notification.notificationDrawer.new') }}
@@ -180,7 +180,7 @@ watch(
                         <div ref="dropdownRef" class="relative">
                             <button
                                 @click.stop="toggleDropdown"
-                                class="rounded-full p-2 text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600"
+                                class="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                 aria-label="More options"
                             >
                                 <MoreHorizontal class="h-5 w-5" />
@@ -189,12 +189,12 @@ watch(
                             <Transition name="dropdown-fade">
                                 <div
                                     v-if="showDropdown"
-                                    class="ring-opacity-5 absolute top-full right-0 z-50 mt-2 w-48 origin-top-right rounded-lg bg-white py-1 shadow-lg ring-1 ring-gray-100 focus:outline-none"
+                                    class="absolute top-full right-0 z-50 mt-2 w-48 origin-top-right rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg focus:outline-none"
                                     @click.stop
                                 >
                                     <button
                                         @click="goToNotifications"
-                                        class="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                                        class="flex w-full items-center rounded-sm gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                     >
                                         <Eye class="h-4 w-4" />
                                         <span>{{
@@ -205,7 +205,7 @@ watch(
                                     </button>
                                     <button
                                         @click.stop="markAllAsRead"
-                                        class="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                                        class="flex w-full items-center rounded-sm gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                     >
                                         <CheckCheck class="h-4 w-4" />
                                         <span>{{
@@ -224,7 +224,7 @@ watch(
                                                 () => deleteAllNotifications(),
                                             )
                                         "
-                                        class="flex w-full items-center gap-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                                        class="flex w-full items-center rounded-sm gap-3 px-4 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
                                     >
                                         <Trash2 class="h-4 w-4" />
                                         <span>{{
@@ -239,7 +239,7 @@ watch(
 
                         <button
                             @click="onClose"
-                            class="rounded-full p-2 text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600"
+                            class="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                             aria-label="Close"
                         >
                             <X class="h-5 w-5" />
@@ -252,13 +252,13 @@ watch(
                         v-if="notificationsToShow.length === 0"
                         class="flex h-full flex-col items-center justify-center p-8 text-center"
                     >
-                        <Bell class="mb-3 h-12 w-12 text-gray-300" />
-                        <p class="text-gray-500">
+                        <Bell class="mb-3 h-12 w-12 text-muted-foreground/50" />
+                        <p class="text-muted-foreground">
                             {{
                                 t('notification.notificationDrawer.empty.title')
                             }}
                         </p>
-                        <p class="mt-1 text-sm text-gray-400">
+                        <p class="mt-1 text-sm text-muted-foreground">
                             {{
                                 t(
                                     'notification.notificationDrawer.empty.description',
@@ -267,13 +267,13 @@ watch(
                         </p>
                     </div>
 
-                    <div v-else class="divide-y divide-gray-100">
+                    <div v-else class="divide-y divide-border">
                         <div
                             v-for="notification in notificationsToShow"
                             :key="notification.id"
                             :class="[
-                                'group relative transition-all duration-200 hover:bg-gray-50',
-                                !notification.read_at ? 'bg-red-50/30' : '',
+                                'group relative transition-colors hover:bg-accent/40',
+                                !notification.read_at ? 'bg-primary/5' : '',
                             ]"
                         >
                             <div
@@ -309,7 +309,7 @@ watch(
                                             class="flex items-start justify-between gap-2"
                                         >
                                             <p
-                                                class="flex-1 text-sm font-medium text-gray-900"
+                                                class="flex-1 text-sm font-medium text-foreground"
                                             >
                                                 {{
                                                     getNotificationTitle(
@@ -318,7 +318,7 @@ watch(
                                                 }}
                                             </p>
                                             <span
-                                                class="flex-shrink-0 text-xs text-gray-400"
+                                                class="flex-shrink-0 text-xs text-muted-foreground"
                                             >
                                                 {{
                                                     formatDateForHumans(
@@ -328,7 +328,9 @@ watch(
                                             </span>
                                         </div>
 
-                                        <p class="mt-1 text-sm text-gray-600">
+                                        <p
+                                            class="mt-1 text-sm text-muted-foreground"
+                                        >
                                             {{
                                                 getNotificationMessage(
                                                     notification,
@@ -344,10 +346,10 @@ watch(
                                                 class="flex items-center"
                                             >
                                                 <span
-                                                    class="inline-flex h-1.5 w-1.5 rounded-full bg-red-500"
+                                                    class="inline-flex h-1.5 w-1.5 rounded-full bg-primary"
                                                 ></span>
                                                 <span
-                                                    class="ml-1 text-xs text-red-600"
+                                                    class="ml-1 text-xs text-primary"
                                                     >{{
                                                         t(
                                                             'notification.notificationDrawer.new',
@@ -366,7 +368,7 @@ watch(
                                                             notification.id,
                                                         )
                                                     "
-                                                    class="rounded-md px-2 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50"
+                                                    class="rounded-md px-2 py-1 text-xs font-medium text-info transition-colors hover:bg-info/10"
                                                     :title="
                                                         t(
                                                             'notification.notificationDrawer.actions.markAsRead',
@@ -396,7 +398,7 @@ watch(
                                                                 ),
                                                         )
                                                     "
-                                                    class="rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+                                                    class="rounded-md px-2 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
                                                     :title="
                                                         t(
                                                             'notification.notificationDrawer.actions.delete',
@@ -423,7 +425,7 @@ watch(
                     <button
                         v-if="notificationsToShow.length > 8"
                         @click="goToNotifications"
-                        class="mt-2 flex w-full items-center justify-center gap-2 border-t border-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-blue-600"
+                        class="mt-2 flex w-full items-center justify-center gap-2 border-t border-border bg-background px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-primary"
                     >
                         <Eye class="h-4 w-4" />
                         <span>{{

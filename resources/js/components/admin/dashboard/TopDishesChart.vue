@@ -6,6 +6,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { computed } from 'vue';
 import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
+import type { ChartColors } from '@/composables/useChartColors';
 
 use([CanvasRenderer, BarChart, GridComponent, TooltipComponent]);
 
@@ -15,13 +16,18 @@ const props = defineProps<{
         quantity: number;
     }[];
     periodLabel: string;
+    chartColors: ChartColors;
 }>();
 
 const { t } = useI18n();
 
 const option = computed<EChartsCoreOption>(() => ({
+    color: props.chartColors.series,
     tooltip: {
         trigger: 'axis',
+        backgroundColor: props.chartColors.tooltipBackground,
+        borderColor: props.chartColors.gridLine,
+        textStyle: { color: props.chartColors.tooltipText },
         valueFormatter: (value: unknown) =>
             t('dashboard.charts.topDishes.tooltip', {
                 count: Number(value),
@@ -38,11 +44,19 @@ const option = computed<EChartsCoreOption>(() => ({
         type: 'value',
         min: 0,
         minInterval: 1,
+        axisLabel: { color: props.chartColors.axisText },
+        splitLine: {
+            lineStyle: { color: props.chartColors.gridLine },
+        },
     },
     yAxis: {
         type: 'category',
         inverse: true,
         data: props.topDishes.map((dish) => dish.name),
+        axisLabel: { color: props.chartColors.axisText },
+        axisLine: {
+            lineStyle: { color: props.chartColors.gridLine },
+        },
     },
     series: [
         {

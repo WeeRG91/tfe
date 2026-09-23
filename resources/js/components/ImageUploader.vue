@@ -172,11 +172,11 @@ watch(
         @dragover.prevent="isDragging = true"
         @dragleave="isDragging = false"
         @drop="handleDrop"
-        class="relative flex min-h-24 flex-1 flex-col items-center justify-start rounded-2xl border-2 border-dashed bg-transparent p-6 text-gray-600 transition-all duration-200"
+        class="relative flex min-h-24 flex-1 flex-col items-center justify-start rounded-2xl border-2 border-dashed bg-background p-6 text-muted-foreground transition-all duration-200"
         :class="{
-            'border-blue-500 bg-blue-50': isDragging,
-            'border-red-500 bg-red-50': error && !isDragging,
-            'border-gray-300 bg-gray-50': !isDragging && !error,
+            'border-info bg-info/10': isDragging,
+            'border-destructive bg-destructive/10': error && !isDragging,
+            'border-border bg-muted/50': !isDragging && !error,
         }"
     >
         <input
@@ -195,8 +195,8 @@ watch(
             "
             class="absolute inset-0 flex flex-col items-center justify-center space-y-2 text-center"
         >
-            <ImagePlus :class="error ? 'text-red-500' : ''" />
-            <p class="text-sm" :class="error ? 'text-red-500' : ''">
+            <ImagePlus :class="error ? 'text-destructive' : ''" />
+            <p class="text-sm" :class="error ? 'text-destructive' : ''">
                 {{ t('admin.imageUploader.dragAndDrop') }}
             </p>
         </div>
@@ -216,7 +216,7 @@ watch(
                     v-if="url !== existingMainImage"
                     type="button"
                     @click.stop="removeExistingImage(index)"
-                    class="absolute top-2 right-2 z-20 cursor-pointer rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+                    class="absolute top-2 right-2 z-20 cursor-pointer rounded-full bg-destructive px-2 py-1 text-xs text-destructive-foreground opacity-100 transition-opacity hover:bg-destructive/90 sm:opacity-0 sm:group-hover:opacity-100"
                 >
                     ✕
                 </button>
@@ -225,12 +225,12 @@ watch(
                     @click.stop="setMainImage(index)"
                     :disabled="url === existingMainImage"
                     :class="url !== existingMainImage ? 'cursor-pointer' : ''"
-                    class="absolute top-2 left-2 z-20 rounded-full bg-transparent text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+                    class="absolute top-2 left-2 z-20 rounded-full bg-card/90 p-1 text-xs text-card-foreground opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
                 >
                     <Star
                         class="h-5.5 w-5.5"
                         :class="
-                            url === existingMainImage ? 'fill-yellow-400' : ''
+                            url === existingMainImage ? 'fill-warning text-warning' : ''
                         "
                     />
                 </button>
@@ -248,7 +248,7 @@ watch(
                 <button
                     type="button"
                     @click.stop="removeImage(index)"
-                    class="absolute top-2 right-2 z-20 rounded-full bg-red-500/50 px-2 py-1 text-xs text-white opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+                    class="absolute top-2 right-2 z-20 rounded-full bg-destructive px-2 py-1 text-xs text-destructive-foreground opacity-100 transition-opacity hover:bg-destructive/90 sm:opacity-0 sm:group-hover:opacity-100"
                 >
                     ✕
                 </button>
@@ -258,13 +258,13 @@ watch(
         <transition name="fade">
             <div
                 v-if="isDragging"
-                class="absolute inset-0 flex items-center justify-center rounded-2xl bg-blue-100/70 text-lg font-semibold text-blue-700"
+                class="absolute inset-0 flex items-center justify-center rounded-2xl bg-info/20 text-lg font-semibold text-foreground"
             >
                 {{ t('admin.imageUploader.dropImagesHere') }}
             </div>
         </transition>
     </div>
-    <span v-if="error" class="text-sm text-red-500">{{ error }}</span>
+    <span v-if="error" class="text-sm text-destructive">{{ error }}</span>
 </template>
 
 <style scoped>

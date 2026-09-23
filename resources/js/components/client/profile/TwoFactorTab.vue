@@ -217,12 +217,14 @@ const copySecretKey = async () => {
             <h2 class="text-lg font-semibold sm:text-xl md:text-2xl">
                 {{ t('profile.twoFactorTab.title') }}
             </h2>
-            <p class="mt-1 text-xs text-gray-500 sm:text-sm">
+            <p class="mt-1 text-xs text-muted-foreground sm:text-sm">
                 {{ t('profile.twoFactorTab.description') }}
             </p>
         </div>
 
-        <div class="rounded-lg border p-3 sm:p-4">
+        <div
+            class="rounded-lg border border-border bg-background/50 p-3 sm:p-4"
+        >
             <div
                 class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             >
@@ -230,21 +232,21 @@ const copySecretKey = async () => {
                     <div
                         class="rounded-full p-1.5 sm:p-2"
                         :class="
-                            isTwoFactorEnabled ? 'bg-green-100' : 'bg-gray-100'
+                            isTwoFactorEnabled ? 'bg-success/10' : 'bg-muted'
                         "
                     >
                         <Shield
                             class="h-4 w-4 sm:h-5 sm:w-5"
                             :class="
                                 isTwoFactorEnabled
-                                    ? 'text-green-600'
-                                    : 'text-gray-400'
+                                    ? 'text-success'
+                                    : 'text-muted-foreground'
                             "
                         />
                     </div>
                     <div>
                         <p
-                            class="text-sm font-medium text-gray-900 sm:text-base"
+                            class="text-sm font-medium text-card-foreground sm:text-base"
                         >
                             {{
                                 isTwoFactorEnabled
@@ -252,7 +254,7 @@ const copySecretKey = async () => {
                                     : t('profile.twoFactorTab.status.disabled')
                             }}
                         </p>
-                        <p class="text-xs text-gray-500 sm:text-sm">
+                        <p class="text-xs text-muted-foreground sm:text-sm">
                             {{
                                 isTwoFactorEnabled
                                     ? t('profile.twoFactorTab.status.protected')
@@ -267,7 +269,7 @@ const copySecretKey = async () => {
                     v-if="!isTwoFactorEnabled"
                     @click="startSetup"
                     :disabled="isLoading"
-                    class="w-full rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    class="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                     {{
                         isLoading
@@ -279,7 +281,7 @@ const copySecretKey = async () => {
                     v-else
                     @click="confirmDisableTwoFactor"
                     :disabled="isLoading"
-                    class="w-full rounded-lg border border-red-500 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    class="w-full rounded-lg border border-destructive bg-background px-4 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                     {{
                         isLoading
@@ -294,11 +296,15 @@ const copySecretKey = async () => {
             v-if="showSetup && !isTwoFactorEnabled"
             class="space-y-4 sm:space-y-6"
         >
-            <div class="rounded-lg border p-4 sm:p-6">
-                <h3 class="text-base font-semibold text-gray-900 sm:text-lg">
+            <div
+                class="rounded-lg border border-border bg-background/50 p-4 sm:p-6"
+            >
+                <h3
+                    class="text-base font-semibold text-card-foreground sm:text-lg"
+                >
                     {{ t('profile.twoFactorTab.setup.step1Title') }}
                 </h3>
-                <p class="mt-1 text-xs text-gray-500 sm:text-sm">
+                <p class="mt-1 text-xs text-muted-foreground sm:text-sm">
                     {{ t('profile.twoFactorTab.setup.step1Description') }}
                 </p>
 
@@ -306,7 +312,9 @@ const copySecretKey = async () => {
                     class="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-6"
                 >
                     <div class="flex-shrink-0">
-                        <div class="rounded-lg bg-white p-3 shadow-sm sm:p-4">
+                        <div
+                            class="rounded-lg border border-border bg-card p-3 text-card-foreground shadow-sm sm:p-4"
+                        >
                             <div
                                 v-if="qrCode"
                                 v-html="qrCode"
@@ -314,22 +322,22 @@ const copySecretKey = async () => {
                             />
                             <div
                                 v-else
-                                class="flex h-32 w-32 items-center justify-center bg-gray-100 sm:h-48 sm:w-48"
+                                class="flex h-32 w-32 items-center justify-center bg-muted sm:h-48 sm:w-48"
                             >
                                 <RefreshCw
-                                    class="h-6 w-6 animate-spin text-gray-400 sm:h-8 sm:w-8"
+                                    class="h-6 w-6 animate-spin text-muted-foreground sm:h-8 sm:w-8"
                                 />
                             </div>
                         </div>
                     </div>
 
                     <div class="w-full flex-1">
-                        <p class="text-xs text-gray-500 sm:text-sm">
+                        <p class="text-xs text-muted-foreground sm:text-sm">
                             {{ t('profile.twoFactorTab.setup.manualEntry') }}
                         </p>
                         <div class="mt-2 flex flex-wrap items-center gap-2">
                             <code
-                                class="flex-1 truncate rounded bg-gray-100 px-2 py-1 font-mono text-xs sm:px-3 sm:text-sm"
+                                class="flex-1 truncate rounded bg-muted px-2 py-1 font-mono text-xs text-foreground sm:px-3 sm:text-sm"
                             >
                                 {{
                                     secretKey ||
@@ -339,19 +347,19 @@ const copySecretKey = async () => {
                             <button
                                 v-if="secretKey"
                                 @click="copySecretKey"
-                                class="rounded p-1 hover:bg-gray-100"
+                                class="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                 type="button"
                             >
-                                <Copy
-                                    class="h-3 w-3 text-gray-500 sm:h-4 sm:w-4"
-                                />
+                                <Copy class="h-3 w-3 sm:h-4 sm:w-4" />
                             </button>
                         </div>
-                        <p class="mt-2 text-xs text-gray-500 sm:text-sm">
+                        <p
+                            class="mt-2 text-xs text-muted-foreground sm:text-sm"
+                        >
                             {{ t('profile.twoFactorTab.setup.appName') }}:
                             <span class="font-medium">Thai Restaurant</span>
                         </p>
-                        <p class="text-xs text-gray-500 sm:text-sm">
+                        <p class="text-xs text-muted-foreground sm:text-sm">
                             {{ t('profile.twoFactorTab.setup.account') }}:
                             <span class="font-medium">{{ user.email }}</span>
                         </p>
@@ -360,10 +368,12 @@ const copySecretKey = async () => {
             </div>
 
             <div class="rounded-lg border p-4 sm:p-6">
-                <h3 class="text-base font-semibold text-gray-900 sm:text-lg">
+                <h3
+                    class="text-base font-semibold text-card-foreground sm:text-lg"
+                >
                     {{ t('profile.twoFactorTab.setup.step2Title') }}
                 </h3>
-                <p class="mt-1 text-xs text-gray-500 sm:text-sm">
+                <p class="mt-1 text-xs text-muted-foreground sm:text-sm">
                     {{ t('profile.twoFactorTab.setup.step2Description') }}
                 </p>
 
@@ -384,14 +394,14 @@ const copySecretKey = async () => {
                                     'profile.twoFactorTab.setup.verificationPlaceholder',
                                 )
                             "
-                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-center text-xl tracking-widest focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:outline-none sm:px-4 sm:text-2xl"
+                            class="w-full rounded-lg border border-input bg-background px-3 py-2 text-center text-xl tracking-widest text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none sm:px-4 sm:text-2xl"
                             @keyup.enter="verifyAndEnable"
                         />
                     </div>
                     <button
                         @click="verifyAndEnable"
                         :disabled="isVerifying || verificationCode.length !== 6"
-                        class="w-full rounded-lg bg-red-500 px-4 py-2 text-sm text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6"
+                        class="w-full rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6"
                     >
                         {{
                             isVerifying
@@ -409,7 +419,7 @@ const copySecretKey = async () => {
                     "
                     class="mt-2"
                 >
-                    <p class="text-xs text-red-500 sm:text-sm">
+                    <p class="text-xs text-destructive sm:text-sm">
                         {{ t('profile.twoFactorTab.setup.incompleteCode') }}
                     </p>
                 </div>
@@ -418,19 +428,17 @@ const copySecretKey = async () => {
 
         <div
             v-if="showRecoveryCodes"
-            class="rounded-lg border border-yellow-200 bg-yellow-50 p-4 sm:p-6"
+            class="rounded-lg border border-warning/20 bg-warning/10 p-4 sm:p-6"
         >
             <div class="flex items-start gap-2 sm:gap-3">
                 <AlertCircle
-                    class="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 sm:h-5 sm:w-5"
+                    class="mt-0.5 h-4 w-4 flex-shrink-0 text-warning sm:h-5 sm:w-5"
                 />
                 <div class="min-w-0 flex-1">
-                    <h3
-                        class="text-base font-semibold text-yellow-900 sm:text-lg"
-                    >
+                    <h3 class="text-base font-semibold text-warning sm:text-lg">
                         {{ t('profile.twoFactorTab.recoveryCodes.title') }}
                     </h3>
-                    <p class="text-xs text-yellow-700 sm:text-sm">
+                    <p class="text-xs text-foreground sm:text-sm">
                         {{
                             t('profile.twoFactorTab.recoveryCodes.description')
                         }}
@@ -442,7 +450,7 @@ const copySecretKey = async () => {
                         <div
                             v-for="(code, index) in recoveryCodes"
                             :key="index"
-                            class="rounded bg-white p-2 text-center break-all"
+                            class="rounded border border-border bg-background p-2 text-center break-all text-foreground"
                         >
                             {{ code }}
                         </div>
@@ -452,19 +460,20 @@ const copySecretKey = async () => {
                         <button
                             @click="copyRecoveryCodes"
                             :disabled="recoveryCodes.length === 0"
-                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-white disabled:hover:shadow-sm sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
+                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground shadow-sm transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-md disabled:cursor-not-allowed disabled:text-muted-foreground disabled:opacity-40 disabled:hover:bg-background disabled:hover:shadow-sm sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
                             type="button"
                         >
                             <Copy
                                 v-if="!copiedCode"
                                 class="h-3 w-3 sm:h-4 sm:w-4"
                                 :class="{
-                                    'text-gray-400': recoveryCodes.length === 0,
+                                    'text-muted-foreground':
+                                        recoveryCodes.length === 0,
                                 }"
                             />
                             <Check
                                 v-else
-                                class="h-3 w-3 text-green-500 sm:h-4 sm:w-4"
+                                class="h-3 w-3 text-success sm:h-4 sm:w-4"
                             />
                             <span class="xs:inline hidden">{{
                                 copiedCode
@@ -475,7 +484,7 @@ const copySecretKey = async () => {
                         <button
                             @click="downloadRecoveryCodes"
                             :disabled="recoveryCodes.length === 0"
-                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-white disabled:hover:shadow-sm sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
+                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground shadow-sm transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-md disabled:cursor-not-allowed disabled:text-muted-foreground disabled:opacity-40 disabled:hover:bg-background disabled:hover:shadow-sm sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
                             type="button"
                         >
                             <Download class="h-3 w-3 sm:h-4 sm:w-4" />
@@ -486,7 +495,7 @@ const copySecretKey = async () => {
                         <button
                             @click="confirmRegenerateRecoveryCodes"
                             :disabled="isLoading"
-                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
+                            class="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:w-36 sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
                             type="button"
                         >
                             <RefreshCw
@@ -506,24 +515,24 @@ const copySecretKey = async () => {
 
         <div
             v-if="isTwoFactorEnabled"
-            class="rounded-lg border border-green-200 bg-green-50 p-3 sm:p-4"
+            class="rounded-lg border border-success/20 bg-success/10 p-3 sm:p-4"
         >
             <div class="flex items-start gap-2 sm:gap-3">
                 <Check
-                    class="mt-0.5 h-4 w-4 flex-shrink-0 text-green-600 sm:h-5 sm:w-5"
+                    class="mt-0.5 h-4 w-4 flex-shrink-0 text-success sm:h-5 sm:w-5"
                 />
                 <div class="min-w-0">
-                    <p class="text-xs font-medium text-green-900 sm:text-sm">
+                    <p class="text-xs font-medium text-success sm:text-sm">
                         {{ t('profile.twoFactorTab.enabledNotice.title') }}
                     </p>
-                    <p class="text-xs text-green-700 sm:text-sm">
+                    <p class="text-xs text-foreground sm:text-sm">
                         {{
                             t('profile.twoFactorTab.enabledNotice.description')
                         }}
                     </p>
                     <button
                         @click="toggleRecoveryCodes()"
-                        class="mt-1.5 text-xs text-green-700 underline transition-colors hover:text-green-900 sm:mt-2 sm:text-sm"
+                        class="mt-1.5 text-xs text-success underline transition-opacity hover:opacity-80 sm:mt-2 sm:text-sm"
                         type="button"
                     >
                         {{

@@ -16,9 +16,9 @@ const props = withDefaults(defineProps<Props>(), {
     href: '',
     text: '',
     bgColor: 'transparent',
-    beforeColor: '#fb2c36',
-    textColor: '#fff',
-    hoverTextColor: '#000',
+    beforeColor: 'var(--primary)',
+    textColor: 'var(--primary-foreground)',
+    hoverTextColor: 'var(--foreground)',
 });
 
 const styleVars = computed(() => ({
@@ -44,7 +44,7 @@ const componentProps = computed(() => {
         :is="componentTag"
         v-bind="componentProps"
         :style="styleVars"
-        class="animated-btn group relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-b-gray-200 bg-[var(--btn-bg)] px-6 py-3 text-sm no-underline"
+        class="animated-btn group relative inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-md border border-border bg-[var(--btn-bg)] px-6 py-3 text-sm font-medium no-underline"
     >
         <span
             class="relative z-10 text-[var(--btn-text)] transition-colors duration-300 group-hover:text-[var(--btn-text-hover)]"

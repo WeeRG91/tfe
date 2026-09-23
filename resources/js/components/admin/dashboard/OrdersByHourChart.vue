@@ -6,6 +6,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { computed } from 'vue';
 import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
+import type { ChartColors } from '@/composables/useChartColors';
 
 const props = defineProps<{
     ordersByHour: {
@@ -13,6 +14,7 @@ const props = defineProps<{
         count: number;
     }[];
     periodLabel: string;
+    chartColors: ChartColors;
 }>();
 
 const { t } = useI18n();
@@ -24,8 +26,12 @@ const totalOrders = computed(() =>
 );
 
 const option = computed<EChartsCoreOption>(() => ({
+    color: props.chartColors.series,
     tooltip: {
         trigger: 'axis',
+        backgroundColor: props.chartColors.tooltipBackground,
+        borderColor: props.chartColors.gridLine,
+        textStyle: { color: props.chartColors.tooltipText },
         valueFormatter: (value: unknown) =>
             t('dashboard.charts.ordersByHour.tooltip', {
                 count: Number(value),
@@ -43,12 +49,20 @@ const option = computed<EChartsCoreOption>(() => ({
         data: props.ordersByHour.map((hour) => hour.hour),
         axisLabel: {
             interval: 2,
+            color: props.chartColors.axisText,
+        },
+        axisLine: {
+            lineStyle: { color: props.chartColors.gridLine },
         },
     },
     yAxis: {
         type: 'value',
         min: 0,
         minInterval: 1,
+        axisLabel: { color: props.chartColors.axisText },
+        splitLine: {
+            lineStyle: { color: props.chartColors.gridLine },
+        },
     },
     series: [
         {

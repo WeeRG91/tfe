@@ -18,6 +18,7 @@ return [
     'permissions' => [
         'admin' => ['access' => 'Access the admin panel'],
         'dashboard' => ['view' => 'View the dashboard'],
+        'theme' => ['manage' => 'Manage restaurant themes'],
         'allergen' => [
             'view' => 'View allergens',
             'create' => 'Create allergens',

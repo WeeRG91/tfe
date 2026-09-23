@@ -109,7 +109,7 @@ const closeCreateIngredientModal = () => {
             <form @submit.prevent="submit">
                 <div class="grid auto-rows-min gap-4 md:grid-cols-2">
                     <div
-                        class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
+                        class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
                             {{ t('allergen.form.sections.information') }}
@@ -139,7 +139,7 @@ const closeCreateIngredientModal = () => {
                         />
                     </div>
                     <div
-                        class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
+                        class="relative flex flex-col gap-4 rounded-xl border border-sidebar-border/70 p-4"
                     >
                         <h2 class="flex items-center border-b-1 py-2">
                             {{ t('allergen.form.sections.photos') }}

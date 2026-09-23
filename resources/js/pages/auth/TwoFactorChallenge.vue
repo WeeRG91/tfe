@@ -92,12 +92,12 @@ const codeValue = computed<string>(() => code.value.join(''));
                     <button
                         type="submit"
                         :disabled="processing"
-                        class="group w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
+                        class="group w-full rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary disabled:hover:shadow-none"
                     >
                         <span class="flex items-center justify-center gap-2">
                             <span
                                 v-if="processing"
-                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                             ></span>
                             <span v-else>
                                 {{ t('twoFactorChallenge.continue') }}
@@ -127,12 +127,12 @@ const codeValue = computed<string>(() => code.value.join(''));
                     <button
                         type="submit"
                         :disabled="processing"
-                        class="group w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-gray-900 disabled:hover:shadow-none"
+                        class="group w-full rounded-2xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary disabled:hover:shadow-none"
                     >
                         <span class="flex items-center justify-center gap-2">
                             <span
                                 v-if="processing"
-                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
                             ></span>
                             <span v-else>
                                 {{ t('twoFactorChallenge.continue') }}
@@ -147,7 +147,7 @@ const codeValue = computed<string>(() => code.value.join(''));
                 <span> {{ t('twoFactorChallenge.orYouCan') }}&nbsp; </span>
                 <button
                     type="button"
-                    class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                    class="text-foreground underline decoration-border underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                     @click="() => toggleRecoveryMode()"
                 >
                     {{ authConfigContent.toggleText }}
