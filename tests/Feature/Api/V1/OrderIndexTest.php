@@ -26,6 +26,70 @@ function mobileOrderForHistory(User $user, array $overrides = []): Order
     ]);
 }
 
+it('cursor paginates mobile orders ten at a time', function () {
+    $user = User::factory()->withoutTwoFactor()->create();
+    $token = $user->createToken('Test phone', ['mobile']);
+
+    $orders = collect();
+
+    foreach (range(1, 15) as $index) {
+        $orders->push(
+            mobileOrderForHistory($user, [
+                'created_at' => now()->subMinutes(15 - $index),
+            ]),
+        );
+    }
+
+    $firstResponse = $this
+        ->withToken($token->plainTextToken)
+        ->getJson('/api/v1/orders');
+
+    $firstResponse
+        ->assertOk()
+        ->assertJsonCount(10, 'data')
+        ->assertJsonPath(
+            'data.0.id',
+            $orders->last()->id,
+        )
+        ->assertJsonPath('meta.per_page', 10);
+
+    $nextCursor = $firstResponse->json(
+        'meta.next_cursor',
+    );
+
+    expect($nextCursor)->not->toBeNull();
+
+    $secondResponse = $this
+        ->withToken($token->plainTextToken)
+        ->getJson(
+            '/api/v1/orders?'
+            .http_build_query([
+                'cursor' => $nextCursor,
+            ]),
+        );
+
+    $secondResponse
+        ->assertOk()
+        ->assertJsonCount(5, 'data')
+        ->assertJsonPath(
+            'data.0.id',
+            $orders->get(4)->id,
+        )
+        ->assertJsonPath('meta.next_cursor', null);
+
+    $firstPageIds = collect(
+        $firstResponse->json('data'),
+    )->pluck('id');
+
+    $secondPageIds = collect(
+        $secondResponse->json('data'),
+    )->pluck('id');
+
+    expect(
+        $firstPageIds->intersect($secondPageIds),
+    )->toBeEmpty();
+});
+
 it('returns only the authenticated mobile users orders newest first', function () {
     $user = User::factory()->withoutTwoFactor()->create();
     $otherUser = User::factory()->withoutTwoFactor()->create();
@@ -49,33 +113,29 @@ it('returns only the authenticated mobile users orders newest first', function (
 
     $response = $this
         ->withToken($token->plainTextToken)
-        ->getJson('/api/v1/orders?per_page=2');
+        ->getJson('/api/v1/orders');
 
     $response
         ->assertOk()
-        ->assertJsonCount(2, 'data')
+        ->assertJsonCount(3, 'data')
         ->assertJsonPath('data.0.id', $newestOrder->id)
         ->assertJsonPath(
             'data.0.created_at',
             $newestOrder->created_at->toISOString(),
         )
-        ->assertJsonPath('data.0.status.key', 'preparing')
-        ->assertJsonPath('data.0.payment_status.key', 'paid')
+        ->assertJsonPath(
+            'data.0.status.key',
+            'preparing',
+        )
+        ->assertJsonPath(
+            'data.0.payment_status.key',
+            'paid',
+        )
         ->assertJsonPath('data.1.id', $middleOrder->id)
-        ->assertJsonPath('meta.current_page', 1)
-        ->assertJsonPath('meta.per_page', 2)
-        ->assertJsonPath('meta.last_page', 2)
-        ->assertJsonPath('meta.total', 3)
+        ->assertJsonPath('data.2.id', $oldestOrder->id)
+        ->assertJsonPath('meta.per_page', 10)
+        ->assertJsonPath('meta.next_cursor', null)
         ->assertJsonMissing(['id' => $otherOrder->id]);
-
-    $this
-        ->withToken($token->plainTextToken)
-        ->getJson('/api/v1/orders?per_page=2&page=2')
-        ->assertOk()
-        ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.id', $oldestOrder->id)
-        ->assertJsonPath('meta.current_page', 2)
-        ->assertJsonPath('meta.total', 3);
 });
 
 it('returns an empty paginated history when the mobile user has no orders', function () {
@@ -87,8 +147,8 @@ it('returns an empty paginated history when the mobile user has no orders', func
         ->getJson('/api/v1/orders')
         ->assertOk()
         ->assertJsonCount(0, 'data')
-        ->assertJsonPath('meta.current_page', 1)
-        ->assertJsonPath('meta.total', 0);
+        ->assertJsonPath('meta.per_page', 10)
+        ->assertJsonPath('meta.next_cursor', null);
 });
 
 it('translates mobile order history labels from the accept-language header', function () {

@@ -9,18 +9,15 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OrderController extends Controller
 {
-    public function index(Request $request): AnonymousResourceCollection
-    {
-        $perPage = max(
-            1,
-            min($request->integer('per_page', 10), 20),
-        );
-
+    public function index(
+        Request $request,
+    ): AnonymousResourceCollection {
         $orders = $request->user()
             ->orders()
             ->with('address')
-            ->latest()
-            ->paginate($perPage)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->cursorPaginate(10)
             ->withQueryString();
 
         return OrderResource::collection($orders);
