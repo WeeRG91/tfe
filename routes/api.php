@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\CheckoutController;
 use App\Http\Controllers\Api\V1\DishController;
 use App\Http\Controllers\Api\V1\DishReviewController;
 use App\Http\Controllers\Api\V1\DrinkController;
+use App\Http\Controllers\Api\V1\LoyaltyPointTransactionController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
@@ -168,6 +169,10 @@ Route::prefix('v1')
             ->whereNumber('orderId')
             ->middleware('auth:sanctum')
             ->name('orders.show');
+
+        Route::get('loyalty-point-transactions', [LoyaltyPointTransactionController::class, 'index'])
+            ->middleware('auth:sanctum')
+            ->name('loyalty-point-transactions.index');
 
         Route::get('notifications', [NotificationController::class, 'index'])
             ->middleware('auth:sanctum')

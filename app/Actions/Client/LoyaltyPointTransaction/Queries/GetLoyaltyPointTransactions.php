@@ -22,7 +22,8 @@ class GetLoyaltyPointTransactions
                     default => null,
                 };
             })
-            ->latest()
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->cursorPaginate(10);
     }
 }
