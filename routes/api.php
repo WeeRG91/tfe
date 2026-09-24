@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PushTokenController;
+use App\Http\Controllers\Api\V1\ThemeCatalogController;
 use App\Http\Controllers\Client\RestaurantAvailabilityController;
 use App\Http\Middleware\SetApiLocale;
 use Illuminate\Http\Request;
@@ -188,6 +189,9 @@ Route::prefix('v1')
 
         Route::get('restaurant/availability', RestaurantAvailabilityController::class)
             ->name('restaurant.availability');
+
+        Route::get('restaurant/themes', ThemeCatalogController::class)
+            ->name('restaurant.themes');
     });
 
 Route::get('/user', function (Request $request) {
