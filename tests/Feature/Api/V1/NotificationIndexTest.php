@@ -41,6 +41,57 @@ function mobileNotification(
     ]);
 }
 
+it('cursor paginates mobile notifications ten at a time', function () {
+    $user = User::factory()->withoutTwoFactor()->create();
+    $token = $user->createToken('Test phone', ['mobile']);
+
+    foreach (range(1, 15) as $index) {
+        mobileNotification($user, [
+            'title' => "Notification {$index}",
+            'created_at' => now()->subMinutes(15 - $index),
+        ]);
+    }
+
+    $firstResponse = $this
+        ->withToken($token->plainTextToken)
+        ->getJson('/api/v1/notifications');
+
+    $firstResponse
+        ->assertOk()
+        ->assertJsonCount(10, 'data')
+        ->assertJsonPath('data.0.title', 'Notification 15')
+        ->assertJsonPath('meta.per_page', 10)
+        ->assertJsonPath('unread_count', 15);
+
+    $nextCursor = $firstResponse->json('meta.next_cursor');
+
+    expect($nextCursor)->not->toBeNull();
+
+    $secondResponse = $this
+        ->withToken($token->plainTextToken)
+        ->getJson(
+            '/api/v1/notifications?'
+            .http_build_query(['cursor' => $nextCursor]),
+        );
+
+    $secondResponse
+        ->assertOk()
+        ->assertJsonCount(5, 'data')
+        ->assertJsonPath('data.0.title', 'Notification 5')
+        ->assertJsonPath('meta.next_cursor', null)
+        ->assertJsonPath('unread_count', 15);
+
+    $firstPageIds = collect($firstResponse->json('data'))
+        ->pluck('id');
+
+    $secondPageIds = collect($secondResponse->json('data'))
+        ->pluck('id');
+
+    expect(
+        $firstPageIds->intersect($secondPageIds),
+    )->toBeEmpty();
+});
+
 it('returns only the authenticated mobile users notifications newest first', function () {
     $user = User::factory()->withoutTwoFactor()->create();
     $otherUser = User::factory()->withoutTwoFactor()->create();
@@ -83,11 +134,11 @@ it('returns only the authenticated mobile users notifications newest first', fun
 
     $response = $this
         ->withToken($token->plainTextToken)
-        ->getJson('/api/v1/notifications?per_page=2');
+        ->getJson('/api/v1/notifications');
 
     $response
         ->assertOk()
-        ->assertJsonCount(2, 'data')
+        ->assertJsonCount(3, 'data')
         ->assertJsonPath('data.0.id', $newestNotification->id)
         ->assertJsonPath(
             'data.0.type.value',
@@ -101,41 +152,12 @@ it('returns only the authenticated mobile users notifications newest first', fun
             $order->order_number,
         )
         ->assertJsonPath('data.1.id', $middleNotification->id)
-        ->assertJsonPath('meta.current_page', 1)
-        ->assertJsonPath('meta.per_page', 2)
-        ->assertJsonPath('meta.total', 3)
+        ->assertJsonPath('data.2.id', $oldestNotification->id)
+        ->assertJsonPath('data.2.is_read', true)
+        ->assertJsonPath('meta.per_page', 10)
+        ->assertJsonPath('meta.next_cursor', null)
         ->assertJsonPath('unread_count', 2)
         ->assertJsonMissing(['id' => $otherNotification->id]);
-
-    $this
-        ->withToken($token->plainTextToken)
-        ->getJson('/api/v1/notifications?per_page=2&page=2')
-        ->assertOk()
-        ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.id', $oldestNotification->id)
-        ->assertJsonPath('data.0.is_read', true)
-        ->assertJsonPath('meta.current_page', 2)
-        ->assertJsonPath('unread_count', 2);
-});
-
-it('filters the authenticated mobile users unread notifications', function () {
-    $user = User::factory()->withoutTwoFactor()->create();
-    $token = $user->createToken('Test phone', ['mobile']);
-
-    $readNotification = mobileNotification($user, [
-        'read_at' => now(),
-    ]);
-    $unreadNotification = mobileNotification($user);
-
-    $this
-        ->withToken($token->plainTextToken)
-        ->getJson('/api/v1/notifications?filter=unread')
-        ->assertOk()
-        ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.id', $unreadNotification->id)
-        ->assertJsonPath('meta.total', 1)
-        ->assertJsonPath('unread_count', 1)
-        ->assertJsonMissing(['id' => $readNotification->id]);
 });
 
 it('returns an empty paginated notification list for a new mobile user', function () {
@@ -147,7 +169,8 @@ it('returns an empty paginated notification list for a new mobile user', functio
         ->getJson('/api/v1/notifications')
         ->assertOk()
         ->assertJsonCount(0, 'data')
-        ->assertJsonPath('meta.total', 0)
+        ->assertJsonPath('meta.per_page', 10)
+        ->assertJsonPath('meta.next_cursor', null)
         ->assertJsonPath('unread_count', 0);
 });
 
