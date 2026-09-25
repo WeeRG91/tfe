@@ -12,13 +12,14 @@ import {
     ChevronUp,
     CircleX,
     Clock,
+    Maximize2,
     Package,
     RefreshCw,
     Truck,
     X,
 } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 
@@ -39,6 +40,8 @@ const expandedColumns = ref<Set<string>>(new Set(['confirmed']));
 const showCompletedModal = ref<boolean>(false);
 const showCancelledModal = ref<boolean>(false);
 const isCancelling = ref<boolean>(false);
+const isDisplayMode = ref<boolean>(false);
+const previousBodyOverFlow = ref<string>('');
 
 const columns = computed(() => [
     {
@@ -158,8 +161,80 @@ const closeCancelledModal = () => {
     showCancelledModal.value = false;
 };
 
+const enterDisplayMode = async () => {
+    if (isDisplayMode.value) {
+        return;
+    }
+
+    previousBodyOverFlow.value = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    isDisplayMode.value = true;
+
+    try {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+        }
+    } catch (error) {
+        console.error('Unable to enter fullscreen mode:', error);
+    }
+};
+
+const exitDisplayMode = async () => {
+    if (!isDisplayMode.value && !document.fullscreenElement) {
+        return;
+    }
+
+    document.body.style.overflow = previousBodyOverFlow.value;
+    isDisplayMode.value = false;
+
+    try {
+        if (document.fullscreenElement) {
+            await document.exitFullscreen();
+        }
+    } catch (error) {
+        console.error('Unable to exit fullscreen mode:', error);
+    }
+};
+
+const handleFullscreenChange = () => {
+    if (!document.fullscreenElement && isDisplayMode.value) {
+        document.body.style.overflow = previousBodyOverFlow.value;
+        isDisplayMode.value = false;
+    }
+};
+
+const handleDisplayModeKeydown = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape') {
+        return;
+    }
+
+    if (showCompletedModal.value) {
+        closeCompletedModal();
+        return;
+    }
+
+    if (showCancelledModal.value) {
+        closeCancelledModal();
+        return;
+    }
+
+    exitDisplayMode();
+};
+
 onMounted(async () => {
+    window.addEventListener('keydown', handleDisplayModeKeydown);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
     await orderStore.getConfirmedOrders();
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', handleDisplayModeKeydown);
+    document.removeEventListener('fullscreenchange', handleFullscreenChange);
+
+    if (isDisplayMode.value) {
+        document.body.style.overflow = previousBodyOverFlow.value;
+    }
 });
 </script>
 
@@ -292,56 +367,79 @@ onMounted(async () => {
             </div>
 
             <div
-                class="order-board-scroll hidden grid-cols-1 gap-4 overflow-x-auto md:grid md:grid-cols-3 lg:gap-6"
-                style="min-width: 600px"
+                :class="[
+                    'group/order-board',
+                    isDisplayMode
+                        ? 'fixed inset-0 z-40 flex flex-col gap-4 bg-background p-4'
+                        : 'relative',
+                ]"
             >
                 <div
-                    v-for="column in columns"
-                    :key="column.key"
-                    class="flex flex-col gap-3"
+                    :class="[
+                        'order-board-scroll min-h-0 flex-1 grid-cols-1 gap-4 overflow-x-auto md:grid-cols-3 lg:gap-6',
+                        isDisplayMode ? 'grid' : 'hidden md:grid',
+                    ]"
+                    :style="isDisplayMode ? undefined : { minWidth: '600px' }"
                 >
                     <div
-                        class="flex items-center justify-between rounded-lg p-3"
-                        :class="column.headerClass"
+                        v-for="column in columns"
+                        :key="column.key"
+                        class="flex flex-col gap-3"
                     >
-                        <div class="flex items-center gap-2">
-                            <component
-                                :is="column.icon"
-                                :size="20"
-                                class="shrink-0"
-                            />
-                            <h3 class="font-semibold">
-                                {{ column.title }}
-                            </h3>
-                            <span
-                                class="rounded-full border border-current px-2 py-0.5 text-xs font-medium"
-                            >
-                                {{ column.orders.length }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-3">
-                        <OrderCard
-                            v-for="order in column.orders"
-                            :key="order.id"
-                            :order="order"
-                            :update-status-order-id="updatedStatusOrderId"
-                            :is-cancelling="isCancelling"
-                            @cancel-order="handleCancelOrder"
-                            @update-status="handleStatusUpdate"
-                        />
-
                         <div
-                            v-if="column.orders.length === 0"
-                            class="rounded-lg border border-dashed border-border bg-muted p-8 text-center"
+                            class="flex items-center justify-between rounded-lg p-3"
+                            :class="column.headerClass"
                         >
-                            <p class="text-sm text-muted-foreground">
-                                {{ column.emptyText }}
-                            </p>
+                            <div class="flex items-center gap-2">
+                                <component
+                                    :is="column.icon"
+                                    :size="20"
+                                    class="shrink-0"
+                                />
+                                <h3 class="font-semibold">
+                                    {{ column.title }}
+                                </h3>
+                                <span
+                                    class="rounded-full border border-current px-2 py-0.5 text-xs font-medium"
+                                >
+                                    {{ column.orders.length }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-3">
+                            <OrderCard
+                                v-for="order in column.orders"
+                                :key="order.id"
+                                :order="order"
+                                :update-status-order-id="updatedStatusOrderId"
+                                :is-cancelling="isCancelling"
+                                @cancel-order="handleCancelOrder"
+                                @update-status="handleStatusUpdate"
+                            />
+
+                            <div
+                                v-if="column.orders.length === 0"
+                                class="rounded-lg border border-dashed border-border bg-muted p-8 text-center"
+                            >
+                                <p class="text-sm text-muted-foreground">
+                                    {{ column.emptyText }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <button
+                    v-if="!isDisplayMode"
+                    type="button"
+                    @click="enterDisplayMode"
+                    :aria-label="t('confirmedOrder.buttons.enterDisplayMode')"
+                    :title="t('confirmedOrder.buttons.enterDisplayMode')"
+                    class="pointer-events-none fixed right-15 bottom-15 z-20 hidden translate-y-2 items-center justify-center gap-2 rounded-full bg-primary p-4 font-medium text-primary-foreground opacity-0 shadow-xl transition-all duration-200 group-hover/order-board:pointer-events-auto group-hover/order-board:translate-y-0 group-hover/order-board:opacity-100 focus-visible:pointer-events-auto focus-visible:translate-y-0 focus-visible:opacity-100 md:inline-flex"
+                >
+                    <Maximize2 :size="20" />
+                </button>
             </div>
         </div>
 

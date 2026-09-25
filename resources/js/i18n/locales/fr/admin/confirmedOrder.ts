@@ -10,6 +10,8 @@ export default {
         completed: 'Terminées ({count})',
         cancelled: 'Annulées ({count})',
         refresh: 'Actualiser',
+        enterDisplayMode: "Mode d'affichage",
+        exitDisplayMode: "Quitter le mode d'affichage",
     },
     emptyStates: {
         confirmed: 'Aucune commande confirmée',

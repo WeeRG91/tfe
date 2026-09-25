@@ -10,6 +10,8 @@ export default {
         completed: 'Completed ({count})',
         cancelled: 'Cancelled ({count})',
         refresh: 'Refresh',
+        enterDisplayMode: 'Display mode',
+        exitDisplayMode: 'Exit display mode',
     },
     emptyStates: {
         confirmed: 'No confirmed orders',

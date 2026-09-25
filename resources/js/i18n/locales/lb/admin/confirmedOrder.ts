@@ -5,6 +5,8 @@ export default {
         confirmed: 'Confirméiert (waart)',
         preparing: 'An der Virbereedung',
         ready: 'Prett',
+        enterDisplayMode: 'Affichagemodus',
+        exitDisplayMode: 'Affichagemodus verloossen',
     },
     buttons: {
         completed: 'Ofgeschloss ({count})',

@@ -10,6 +10,8 @@ export default {
         completed: 'เสร็จสมบูรณ์ ({count})',
         cancelled: 'ยกเลิกแล้ว ({count})',
         refresh: 'รีเฟรช',
+        enterDisplayMode: 'โหมดแสดงผล',
+        exitDisplayMode: 'ออกจากโหมดแสดงผล',
     },
     emptyStates: {
         confirmed: 'ไม่มีคำสั่งซื้อที่ยืนยันแล้ว',
