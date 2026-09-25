@@ -27,6 +27,10 @@ const props = defineProps<{
 }
 
 .scrollable::-webkit-scrollbar-thumb {
-    background-color: rgba(100,100,100,0.3);
+    background: var(--border);
+}
+
+.scrollable::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
 }
 </style>

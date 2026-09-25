@@ -96,7 +96,7 @@ const changePeriod = (event: Event) => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="dashboard-board-scroll flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-y-auto rounded-xl p-4"
         >
             <div class="flex items-center justify-end gap-3">
                 <label for="dashboard-period" class="text-sm font-medium">
@@ -304,26 +304,19 @@ const changePeriod = (event: Event) => {
 </template>
 
 <style scoped>
-.dashboard-board-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: var(--muted-foreground) var(--muted);
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
 }
 
-.dashboard-board-scroll::-webkit-scrollbar {
-    height: 8px;
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.dashboard-board-scroll::-webkit-scrollbar-track {
-    background: var(--muted);
-    border-radius: 4px;
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: var(--border);
 }
 
-.dashboard-board-scroll::-webkit-scrollbar-thumb {
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background: var(--muted-foreground);
-    border-radius: 4px;
-}
-
-.dashboard-board-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--foreground);
 }
 </style>

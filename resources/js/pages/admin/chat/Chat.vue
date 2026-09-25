@@ -30,6 +30,7 @@ import { storeToRefs } from 'pinia';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
+import NotificationSoundToggle from '@/components/admin/NotificationSoundToggle.vue';
 
 const { t } = useI18n();
 const { getIntlLocale } = useLocale();
@@ -469,32 +470,47 @@ onUnmounted(async () => {
     window.removeEventListener('scroll', closeMenu, true);
 
     if (channel.value && selectedChatId.value) {
-        window.Echo.leave(`private-chat.${selectedChatId.value}`);
+        window.Echo.leave(`chat.${selectedChatId.value}`);
+        channel.value = null;
     }
 });
 
-watch(selectedChatId, async (newId) => {
-    if (newId) {
-        await fetchMessages(newId);
+watch(selectedChatId, async (newId, oldId) => {
+    if (oldId) {
+        window.Echo.leave(`chat.${oldId}`);
+        channel.value = null;
+    }
 
-        channel.value = window.Echo.private(
-            `chat.${selectedChatId.value}`,
-        ).listen('.message-sent', async (e: MessageType) => {
-            const exists = messages.value.some((m) => m.id === e.id);
-            const isCurrentSelectedChat = e.chat_id === selectedChatId.value;
+    if (!newId) {
+        return;
+    }
+
+    await fetchMessages(newId);
+
+    channel.value = window.Echo.private(`chat.${newId}`).listen(
+        '.message-sent',
+        async (event: MessageType) => {
+            const exists = messages.value.some(
+                (message) => message.id === event.id,
+            );
+
+            const isCurrentSelectedChat =
+                event.chat_id === selectedChatId.value;
 
             if (!exists && isCurrentSelectedChat) {
-                messages.value.push(e);
+                messages.value.push(event);
                 await scrollToBottom();
             } else {
-                const index = messages.value.findIndex((m) => m.id === e.id);
+                const index = messages.value.findIndex(
+                    (message) => message.id === event.id,
+                );
 
                 if (index !== -1) {
-                    messages.value[index] = e;
+                    messages.value[index] = event;
                 }
             }
-        });
-    }
+        },
+    );
 });
 
 watchDebounced(
@@ -513,6 +529,10 @@ watchDebounced(
         <div
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-2 sm:p-4"
         >
+            <div class="flex justify-end">
+                <NotificationSoundToggle />
+            </div>
+
             <div class="flex min-h-[600px] flex-1 gap-4 md:min-h-[700px]">
                 <div
                     :class="[
@@ -1161,7 +1181,6 @@ watchDebounced(
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
     background: var(--border);
-    border-radius: 3px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {

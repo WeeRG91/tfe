@@ -213,7 +213,7 @@ const deleteDeliveryDate = async () => {
     <Head :title="t('deliveryCompanies.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <section class="space-y-6 p-4 md:p-6">
+        <section class="space-y-6 overflow-y-auto p-4 md:p-6">
             <header>
                 <h1 class="text-2xl font-semibold">
                     {{ t('deliveryCompanies.title') }}
@@ -529,3 +529,21 @@ const deleteDeliveryDate = async () => {
         />
     </AdminLayout>
 </template>
+
+<style scoped>
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: var(--border);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+}
+</style>

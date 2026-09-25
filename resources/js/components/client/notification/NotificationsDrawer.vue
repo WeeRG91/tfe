@@ -194,7 +194,7 @@ watch(
                                 >
                                     <button
                                         @click="goToNotifications"
-                                        class="flex w-full items-center rounded-sm gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                                        class="flex w-full items-center gap-3 rounded-sm px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                     >
                                         <Eye class="h-4 w-4" />
                                         <span>{{
@@ -205,7 +205,7 @@ watch(
                                     </button>
                                     <button
                                         @click.stop="markAllAsRead"
-                                        class="flex w-full items-center rounded-sm gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                                        class="flex w-full items-center gap-3 rounded-sm px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                     >
                                         <CheckCheck class="h-4 w-4" />
                                         <span>{{
@@ -224,7 +224,7 @@ watch(
                                                 () => deleteAllNotifications(),
                                             )
                                         "
-                                        class="flex w-full items-center rounded-sm gap-3 px-4 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
+                                        class="flex w-full items-center gap-3 rounded-sm px-4 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
                                     >
                                         <Trash2 class="h-4 w-4" />
                                         <span>{{
@@ -489,17 +489,31 @@ watch(
     transform: scale(0.95);
 }
 
-/* Ensure proper text wrapping */
 .min-w-0 {
     min-width: 0;
 }
 
-/* Button hover effects */
 button {
     cursor: pointer;
 }
 
 .rounded-md {
     border-radius: 0.375rem;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: var(--border);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
 }
 </style>

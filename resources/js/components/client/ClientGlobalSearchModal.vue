@@ -274,7 +274,7 @@ watch(flatResults, () => {
                     </div>
 
                     <div
-                        class="scrollable max-h-[50vh] overflow-y-auto bg-popover sm:max-h-[460px]"
+                        class="max-h-[50vh] overflow-y-auto bg-popover sm:max-h-[460px]"
                     >
                         <div
                             v-if="isLoading"
@@ -491,22 +491,19 @@ watch(flatResults, () => {
 </template>
 
 <style scoped>
-.scrollable {
-    scrollbar-color: var(--border) var(--muted);
-    scrollbar-width: thin;
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
 }
 
-.scrollable::-webkit-scrollbar-track {
-    background: var(--muted);
-    border-radius: 10px;
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.scrollable::-webkit-scrollbar-thumb {
+.overflow-y-auto::-webkit-scrollbar-thumb {
     background: var(--border);
-    border-radius: 10px;
 }
 
-.scrollable::-webkit-scrollbar-thumb:hover {
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background: var(--muted-foreground);
 }
 

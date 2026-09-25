@@ -22,6 +22,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
+import NotificationSoundToggle from '@/components/admin/NotificationSoundToggle.vue';
 
 const orderStore = useOrderStore();
 const { confirmedOrders } = storeToRefs(orderStore);
@@ -243,7 +244,7 @@ onBeforeUnmount(() => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-3 md:gap-6 md:p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-y-auto p-3 md:gap-6 md:p-4"
         >
             <div
                 class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
@@ -293,6 +294,7 @@ onBeforeUnmount(() => {
                             <RefreshCw :size="16" />
                             {{ t('confirmedOrder.buttons.refresh') }}
                         </button>
+                        <NotificationSoundToggle />
                     </div>
                 </div>
             </div>
@@ -376,7 +378,7 @@ onBeforeUnmount(() => {
             >
                 <div
                     :class="[
-                        'order-board-scroll min-h-0 flex-1 grid-cols-1 gap-4 overflow-x-auto md:grid-cols-3 lg:gap-6',
+                        'min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto md:grid-cols-3 lg:gap-6',
                         isDisplayMode ? 'grid' : 'hidden md:grid',
                     ]"
                     :style="isDisplayMode ? undefined : { minWidth: '600px' }"
@@ -449,7 +451,7 @@ onBeforeUnmount(() => {
             @click.self="closeCompletedModal"
         >
             <div
-                class="relative mx-2 w-full max-w-4xl rounded-lg border border-border bg-card text-card-foreground shadow-xl"
+                class="relative mx-2 w-full max-w-4xl overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-xl"
             >
                 <div
                     class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-border bg-card px-6 py-4"
@@ -483,9 +485,7 @@ onBeforeUnmount(() => {
                     </button>
                 </div>
 
-                <div
-                    class="modal-scroll max-h-[calc(100vh-8rem)] overflow-y-auto p-6"
-                >
+                <div class="max-h-[calc(100vh-8rem)] overflow-y-auto p-6">
                     <div class="flex flex-col gap-3">
                         <OrderCard
                             v-for="order in completedOrders"
@@ -513,7 +513,7 @@ onBeforeUnmount(() => {
             @click.self="closeCancelledModal"
         >
             <div
-                class="relative mx-2 w-full max-w-4xl rounded-lg border border-border bg-card text-card-foreground shadow-xl"
+                class="relative mx-2 w-full max-w-4xl overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-xl"
             >
                 <div
                     class="sticky top-0 z-10 flex items-center justify-between rounded-t-lg border-b border-border bg-card px-6 py-4"
@@ -547,9 +547,7 @@ onBeforeUnmount(() => {
                     </button>
                 </div>
 
-                <div
-                    class="modal-scroll max-h-[calc(100vh-8rem)] overflow-y-auto p-6"
-                >
+                <div class="max-h-[calc(100vh-8rem)] overflow-y-auto p-6">
                     <div class="flex flex-col gap-3">
                         <OrderCard
                             v-for="order in cancelledOrders"
@@ -574,36 +572,19 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.modal-scroll {
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
 }
 
-.modal-scroll::-webkit-scrollbar {
-    display: none;
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.order-board-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: var(--muted-foreground) var(--muted);
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: var(--border);
 }
 
-.order-board-scroll::-webkit-scrollbar {
-    height: 8px;
-}
-
-.order-board-scroll::-webkit-scrollbar-track {
-    background: var(--muted);
-    border-radius: 4px;
-}
-
-.order-board-scroll::-webkit-scrollbar-thumb {
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background: var(--muted-foreground);
-    border-radius: 4px;
-}
-
-.order-board-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--foreground);
 }
 </style>

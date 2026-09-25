@@ -28,7 +28,11 @@ class SendMessage
 
         $message->load('sender');
 
-        event(new MessageSentBroadcast($message, $user));
+        event(new MessageSentBroadcast(
+            message: $message,
+            user: $user,
+            action: 'created',
+        ));
 
         return $message;
     }

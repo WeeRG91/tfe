@@ -641,7 +641,6 @@ watch(
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
     background: var(--primary);
-    border-radius: 4px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
@@ -650,7 +649,6 @@ watch(
 
 .line-clamp-2 {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

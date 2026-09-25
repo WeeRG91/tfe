@@ -20,7 +20,8 @@ class MessageSentBroadcast implements ShouldBroadcast
      */
     public function __construct(
         public Message $message,
-        public User $user
+        public User $user,
+        public string $action = 'updated',
     ) {}
 
     /**
@@ -49,6 +50,7 @@ class MessageSentBroadcast implements ShouldBroadcast
             'unsent_at' => $this->message->unsent_at,
             'created_at' => $this->message->created_at,
             'deleted_at' => $this->message->deleted_at,
+            'action' => $this->action,
         ];
     }
 

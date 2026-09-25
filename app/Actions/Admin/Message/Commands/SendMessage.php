@@ -25,7 +25,11 @@ class SendMessage
             'last_message_at' => now(),
         ]);
 
-        event(new MessageSentBroadcast($message, $user));
+        event(new MessageSentBroadcast(
+            message: $message,
+            user: $user,
+            action: 'created',
+        ));
 
         return $message;
     }

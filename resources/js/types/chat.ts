@@ -18,3 +18,7 @@ export type MessageType = {
     created_at: string;
     deleted_at: string;
 };
+
+export type MessageBroadcastType = MessageType & {
+    action: 'created' | 'updated';
+};

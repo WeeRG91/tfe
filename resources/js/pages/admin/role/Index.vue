@@ -198,7 +198,7 @@ onUnmounted(() => {
 
     <AdminLayout :breadcrumbs="breadcrumbs">
         <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+            class="flex h-full flex-1 flex-col gap-4 overflow-y-auto rounded-xl p-4"
         >
             <div
                 class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
@@ -457,3 +457,21 @@ onUnmounted(() => {
         </div>
     </AdminLayout>
 </template>
+
+<style scoped>
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: var(--border);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+}
+</style>

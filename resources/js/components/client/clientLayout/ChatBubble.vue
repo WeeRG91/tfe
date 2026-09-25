@@ -624,15 +624,21 @@ watch(messageMenuId, (id) => {
                                 {{ t('chatBubble.labels.editingInstructions') }}
                             </span>
                         </div>
-                        <textarea
-                            v-model="messageInput"
-                            @keydown="handleKeyDown"
-                            :placeholder="t('chatBubble.placeholders.message')"
-                            rows="1"
-                            class="block w-full resize-none rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
-                            style="min-height: 42px; max-height: 120px"
-                            :disabled="isSending || isEditing"
-                        ></textarea>
+                        <div
+                            class="overflow-hidden rounded-lg border border-input bg-background focus-within:border-ring focus-within:ring-1 focus-within:ring-ring"
+                        >
+                            <textarea
+                                v-model="messageInput"
+                                @keydown="handleKeyDown"
+                                :placeholder="
+                                    t('chatBubble.placeholders.message')
+                                "
+                                rows="1"
+                                class="block w-full resize-none overflow-y-auto border-0 bg-transparent px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:ring-0 focus:outline-none"
+                                style="min-height: 42px; max-height: 120px"
+                                :disabled="isSending || isEditing"
+                            ></textarea>
+                        </div>
                     </div>
                     <button
                         v-if="editingMessageId"
@@ -692,4 +698,20 @@ watch(messageMenuId, (id) => {
     </Teleport>
 </template>
 
-<style scoped></style>
+<style scoped>
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: var(--border);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+}
+</style>

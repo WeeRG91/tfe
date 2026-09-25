@@ -375,7 +375,7 @@ const deleteClosure = async (): Promise<void> => {
     <Head :title="t('restaurantSchedule.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-1 flex-col gap-6 p-4">
+        <div class="flex flex-1 flex-col gap-6 p-4 overflow-y-auto">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">
                     {{ t('restaurantSchedule.title') }}
@@ -794,7 +794,8 @@ const deleteClosure = async (): Promise<void> => {
                                 type="date"
                                 class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-destructive': closureError('starts_on'),
+                                    'border-destructive':
+                                        closureError('starts_on'),
                                 }"
                             />
 
@@ -825,7 +826,8 @@ const deleteClosure = async (): Promise<void> => {
                                 :min="closureForm.starts_on || undefined"
                                 class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-destructive': closureError('ends_on'),
+                                    'border-destructive':
+                                        closureError('ends_on'),
                                 }"
                             />
 
@@ -856,7 +858,8 @@ const deleteClosure = async (): Promise<void> => {
                                 step="900"
                                 class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-destructive': closureError('starts_at'),
+                                    'border-destructive':
+                                        closureError('starts_at'),
                                 }"
                             />
 
@@ -886,7 +889,8 @@ const deleteClosure = async (): Promise<void> => {
                                 :min="closureForm.starts_at || undefined"
                                 class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-destructive': closureError('ends_at'),
+                                    'border-destructive':
+                                        closureError('ends_at'),
                                 }"
                             />
 
@@ -924,7 +928,8 @@ const deleteClosure = async (): Promise<void> => {
                                 "
                                 class="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
                                 :class="{
-                                    'border-destructive': closureError('reason'),
+                                    'border-destructive':
+                                        closureError('reason'),
                                 }"
                             />
 
@@ -1148,3 +1153,21 @@ const deleteClosure = async (): Promise<void> => {
         />
     </AdminLayout>
 </template>
+
+<style scoped>
+.overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: var(--border);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+}
+</style>
