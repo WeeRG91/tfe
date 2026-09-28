@@ -54,6 +54,10 @@ class HandleInertiaRequests extends Middleware
             'locale' => app()->getLocale(),
             'fallbackLocale' => config('app.fallback_locale'),
             'availableLocales' => config('locales.supported'),
+            'restaurant' => [
+                'name' => config('restaurant.name'),
+                'contactEmail' => config('restaurant.contact_email'),
+            ],
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'theme' => [
                 'surface' => $themeContext['surface'] ?? 'client',

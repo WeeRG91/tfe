@@ -54,6 +54,10 @@ export type AppPageProps<
 > = T & {
     name: string;
     quote: { message: string; author: string };
+    restaurant: {
+        name: string;
+        contactEmail: string;
+    };
     theme: ThemePageProps;
     features: {
         companyDelivery: boolean;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DesktopNav from '@/components/client/clientLayout/DesktopNav.vue';
+import RestaurantLogo from '@/components/RestaurantLogo.vue';
 import { User } from '@/types';
 import { Menu } from 'lucide-vue-next';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
@@ -28,10 +29,6 @@ const toggleMobileMenu = () => {
 
 const closeMobileMenu = () => {
     mobileMenuOpen.value = false;
-};
-
-const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 const handleSearchShortcut = (e: KeyboardEvent) => {
@@ -66,13 +63,7 @@ watch(mobileMenuOpen, (isOpen) => {
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center">
-                    <a
-                        href="/"
-                        @click="scrollToTop"
-                        class="text-2xl font-bold text-primary transition-colors hover:text-primary/80"
-                    >
-                        Restaurant
-                    </a>
+                    <RestaurantLogo size="lg" />
                 </div>
 
                 <DesktopNav :current-path="currentPath" />

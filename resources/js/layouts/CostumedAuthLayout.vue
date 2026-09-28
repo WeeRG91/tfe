@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
-import { router } from '@inertiajs/vue3';
+import RestaurantLogo from '@/components/RestaurantLogo.vue';
 
 defineProps<{
     title: string;
     subtitle?: string;
     badge?: string;
 }>();
-
-const goToHome = () => {
-    router.visit('/');
-};
 </script>
 
 <template>
@@ -29,13 +25,8 @@ const goToHome = () => {
             class="fixed top-12 left-0 h-0.5 w-full bg-gradient-to-r from-primary/80 via-primary/30 to-primary/80 sm:top-24"
         ></div>
 
-        <div class="fixed top-8 left-20 z-10 sm:top-19 sm:left-36">
-            <span
-                @click="goToHome"
-                class="inline-block cursor-pointer rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground shadow-md transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-lg active:scale-95 sm:text-lg"
-            >
-                Restaurant
-            </span>
+        <div class="fixed top-4 left-16 z-10 sm:top-14 sm:left-36">
+            <RestaurantLogo size="xl" />
         </div>
 
         <div

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import RestaurantLogo from '@/components/RestaurantLogo.vue';
 import { login, logout } from '@/routes';
 import cart from '@/routes/cart';
 import clientProfile from '@/routes/client-profile';
@@ -66,11 +67,11 @@ const handleLogout = () => {
                     <div
                         class="flex items-center justify-between border-b border-border p-6"
                     >
-                        <div
-                            class="text-2xl font-bold text-primary"
-                        >
-                            Restaurant
-                        </div>
+                        <RestaurantLogo
+                            size="md"
+                            :always-show-name="true"
+                            @click="emit('close')"
+                        />
                         <button
                             @click="emit('close')"
                             class="rounded-full p-2 text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-accent-foreground"
@@ -98,7 +99,9 @@ const handleLogout = () => {
                                 </div>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-semibold text-card-foreground">
+                                <p
+                                    class="text-sm font-semibold text-card-foreground"
+                                >
                                     {{ user.name }}
                                 </p>
                                 <p class="text-xs text-muted-foreground">
@@ -145,7 +148,9 @@ const handleLogout = () => {
                                 :href="loyaltyPointTransaction.myPoints().url"
                                 :class="[
                                     'flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-200',
-                                    currentPath.startsWith(loyaltyPointTransaction.myPoints().url)
+                                    currentPath.startsWith(
+                                        loyaltyPointTransaction.myPoints().url,
+                                    )
                                         ? 'bg-accent text-accent-foreground shadow-sm'
                                         : 'text-card-foreground hover:bg-accent hover:text-accent-foreground',
                                 ]"
