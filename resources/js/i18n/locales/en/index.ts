@@ -30,6 +30,7 @@ import cart from '@/i18n/locales/en/client/cart';
 import chatBubble from '@/i18n/locales/en/client/chatBubble';
 import common from '@/i18n/locales/en/client/common';
 import drinks from '@/i18n/locales/en/client/drinks';
+import footer from '@/i18n/locales/en/client/footer';
 import home from '@/i18n/locales/en/client/home';
 import menu from '@/i18n/locales/en/client/menu';
 import navigation from '@/i18n/locales/en/client/navigation';
@@ -77,6 +78,7 @@ export default {
     chatBubble,
     common,
     drinks,
+    footer,
     home,
     menu,
     navigation,

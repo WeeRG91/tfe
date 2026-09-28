@@ -2,6 +2,7 @@
 import CartDrawer from '@/components/client/cart/CartDrawer.vue';
 import ClientGlobalSearchModal from '@/components/client/ClientGlobalSearchModal.vue';
 import ChatBubble from '@/components/client/clientLayout/ChatBubble.vue';
+import ClientFooter from '@/components/client/clientLayout/ClientFooter.vue';
 import LayoutHeader from '@/components/client/clientLayout/LayoutHeader.vue';
 import RestaurantClosedModal from '@/components/client/clientLayout/RestaurantClosedModal.vue';
 import RestaurantClosureBanner from '@/components/client/clientLayout/RestaurantClosureBanner.vue';
@@ -187,6 +188,11 @@ onUnmounted(() => {
                 <slot />
             </main>
         </div>
+
+        <ClientFooter
+            :restaurant-name="page.props.restaurant.name"
+            :contact-email="page.props.restaurant.contactEmail"
+        />
 
         <ChatBubble v-if="user" />
 
