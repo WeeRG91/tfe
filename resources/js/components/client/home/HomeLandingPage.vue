@@ -4,16 +4,42 @@ import ClientLayout from '@/layouts/ClientLayout.vue';
 import { gsap } from 'gsap';
 import { onMounted } from 'vue';
 
-onMounted(() => {
-    const tl = gsap.timeline({ delay: 0 });
+const INTRO_STORAGE_KEY = 'home-intro-seen';
 
-    tl.to('.col', {
+onMounted(() => {
+    const hasSeenIntro = sessionStorage.getItem(INTRO_STORAGE_KEY) === 'true';
+
+    if (hasSeenIntro) {
+        gsap.set('.container-home', {
+            display: 'none',
+        });
+
+        gsap.set('.content', {
+            opacity: 1,
+        });
+
+        gsap.set('.landing-wrapper', {
+            overflowY: 'auto',
+            overflowX: 'hidden',
+        });
+
+        return;
+    }
+
+    const timeline = gsap.timeline({
+        delay: 0,
+        onComplete: () => {
+            sessionStorage.setItem(INTRO_STORAGE_KEY, 'true');
+        },
+    });
+
+    timeline.to('.col', {
         top: 0,
         duration: 3,
         ease: 'power4.inOut',
     });
 
-    tl.to(
+    timeline.to(
         '.c-1 .item',
         {
             top: 0,
@@ -24,7 +50,7 @@ onMounted(() => {
         '-=2',
     );
 
-    tl.to(
+    timeline.to(
         '.c-2 .item',
         {
             top: 0,
@@ -35,7 +61,7 @@ onMounted(() => {
         '-=4',
     );
 
-    tl.to(
+    timeline.to(
         '.c-3 .item',
         {
             top: 0,
@@ -46,7 +72,7 @@ onMounted(() => {
         '-=4',
     );
 
-    tl.to(
+    timeline.to(
         '.c-4 .item',
         {
             top: 0,
@@ -57,7 +83,7 @@ onMounted(() => {
         '-=4',
     );
 
-    tl.to(
+    timeline.to(
         '.c-5 .item',
         {
             top: 0,
@@ -68,7 +94,7 @@ onMounted(() => {
         '-=4',
     );
 
-    tl.to(
+    timeline.to(
         '.container-home',
         {
             scale: 6,
@@ -78,7 +104,7 @@ onMounted(() => {
         '-=2',
     );
 
-    tl.to(
+    timeline.to(
         '.container-home',
         {
             opacity: 0,
@@ -90,7 +116,7 @@ onMounted(() => {
         '-=2',
     );
 
-    tl.to(
+    timeline.to(
         '.content',
         {
             opacity: 1,
@@ -100,11 +126,11 @@ onMounted(() => {
         '>-0.3',
     );
 
-    tl.to('.container-home', {
+    timeline.to('.container-home', {
         display: 'none',
     });
 
-    tl.to('.landing-wrapper', {
+    timeline.to('.landing-wrapper', {
         overflowY: 'auto',
         overflowX: 'hidden',
     });
@@ -117,8 +143,8 @@ onMounted(() => {
             <div class="col c-1">
                 <div class="item" v-for="n in 5" :key="'c1' + n">
                     <img
-                        :src="`/images/dish-${n}.jpg`"
-                        :alt="`dish-${n}.jpg`"
+                        :src="`/images/home/intro/dish-${n}.webp`"
+                        :alt="`Dish ${n}`"
                     />
                 </div>
             </div>
@@ -126,8 +152,8 @@ onMounted(() => {
             <div class="col c-2">
                 <div class="item" v-for="n in [6, 7, 8, 9, 10]" :key="'c2' + n">
                     <img
-                        :src="`/images/dish-${n}.jpg`"
-                        :alt="`dish-${n}.jpg`"
+                        :src="`/images/home/intro/dish-${n}.webp`"
+                        :alt="`Dish ${n}`"
                     />
                 </div>
             </div>
@@ -139,8 +165,8 @@ onMounted(() => {
                     :key="'c3' + n"
                 >
                     <img
-                        :src="`/images/dish-${n}.jpg`"
-                        :alt="`dish-${n}.jpg`"
+                        :src="`/images/home/intro/dish-${n}.webp`"
+                        :alt="`Dish ${n}`"
                     />
                 </div>
             </div>
@@ -148,8 +174,8 @@ onMounted(() => {
             <div class="col c-4">
                 <div class="item" v-for="n in [6, 7, 8, 9, 10]" :key="'c4' + n">
                     <img
-                        :src="`/images/dish-${n}.jpg`"
-                        :alt="`dish-${n}.jpg`"
+                        :src="`/images/home/intro/dish-${n}.webp`"
+                        :alt="`Dish ${n}`"
                     />
                 </div>
             </div>
@@ -157,8 +183,8 @@ onMounted(() => {
             <div class="col c-5">
                 <div class="item" v-for="n in 5" :key="'c5' + n">
                     <img
-                        :src="`/images/dish-${n}.jpg`"
-                        :alt="`dish-${n}.jpg`"
+                        :src="`/images/home/intro/dish-${n}.webp`"
+                        :alt="`Dish ${n}`"
                     />
                 </div>
             </div>
@@ -229,20 +255,20 @@ footer {
 .c-1,
 .c-3,
 .c-5 {
-    top: 100%;
     position: relative;
+    top: 100%;
 }
 
 .c-1 .item,
 .c-3 .item,
 .c-5 .item {
-    top: 100%;
     position: relative;
+    top: 100%;
 }
 
 .c-2 .item,
 .c-4 .item {
-    top: -100%;
     position: relative;
+    top: -100%;
 }
 </style>

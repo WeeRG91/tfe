@@ -1,38 +1,43 @@
 <script setup lang="ts">
 import AnimatedButton from '@/components/AnimatedButton.vue';
 import menu from '@/routes/menu';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
 const slides = [
     {
-        image: '/images/dish-1.jpg',
+        image: '/images/home/slider/dish-1.webp',
+        thumbnail: '/images/home/thumbnails/dish-1.webp',
         title: t('home.slides.mainCourses.title'),
         word: t('home.slides.mainCourses.word'),
         description: t('home.slides.mainCourses.description'),
     },
     {
-        image: '/images/dish-2.jpg',
+        image: '/images/home/slider/dish-2.webp',
+        thumbnail: '/images/home/thumbnails/dish-2.webp',
         title: t('home.slides.soups.title'),
         word: t('home.slides.soups.word'),
         description: t('home.slides.soups.description'),
     },
     {
-        image: '/images/dish-3.jpg',
+        image: '/images/home/slider/dish-3.webp',
+        thumbnail: '/images/home/thumbnails/dish-3.webp',
         title: t('home.slides.appetizers.title'),
         word: t('home.slides.appetizers.word'),
         description: t('home.slides.appetizers.description'),
     },
     {
-        image: '/images/dish-4.jpg',
+        image: '/images/home/slider/dish-4.webp',
+        thumbnail: '/images/home/thumbnails/dish-4.webp',
         title: t('home.slides.noodles.title'),
         word: t('home.slides.noodles.word'),
         description: t('home.slides.noodles.description'),
     },
     {
-        image: '/images/dish-5.jpg',
+        image: '/images/home/slider/dish-5.webp',
+        thumbnail: '/images/home/thumbnails/dish-5.webp',
         title: t('home.slides.vegetarians.title'),
         word: t('home.slides.vegetarians.word'),
         description: t('home.slides.vegetarians.description'),
@@ -43,78 +48,75 @@ const currentIndex = ref(0);
 let interval: number;
 const desktopThumbnailContainer = ref<HTMLElement | null>(null);
 const mobileThumbnailContainer = ref<HTMLElement | null>(null);
-const virtualIndex = ref(slides.length);
 
-const infiniteSlides = computed(() => {
-    return [...slides, ...slides, ...slides, ...slides, ...slides];
-});
+const preloadedSlideImages: HTMLImageElement[] = [];
 
-const thumbnailOffset = computed(() => {
-    if (!desktopThumbnailContainer.value) return 0;
+const preloadSliderImages = () => {
+    slides.forEach((slide, index) => {
+        if (index === currentIndex.value) return;
 
-    const containerHeight = desktopThumbnailContainer.value.clientHeight;
-    const thumbnailHeight = 96;
-    const gap = 16;
+        const image = new Image();
 
-    return (
-        virtualIndex.value * (thumbnailHeight + gap) -
-        containerHeight / 2 +
-        thumbnailHeight / 2
-    );
-});
+        image.decoding = 'async';
+        image.src = slide.image;
+
+        preloadedSlideImages.push(image);
+    })
+}
 
 const scrollToActive = () => {
     nextTick(() => {
         if (window.innerWidth >= 768) {
-            if (!desktopThumbnailContainer.value) return;
+            const container = desktopThumbnailContainer.value;
 
-            desktopThumbnailContainer.value.scrollTo({
-                top: thumbnailOffset.value,
-                behavior: 'smooth',
-            });
-        } else {
-            if (!mobileThumbnailContainer.value) return;
+            if (!container) return;
 
-            const activeThumb = mobileThumbnailContainer.value.children[
-                virtualIndex.value
-            ] as HTMLElement;
-            if (!activeThumb) return;
+            const activeThumbnail = container.children[currentIndex.value] as
+                | HTMLElement
+                | undefined;
 
-            const container = mobileThumbnailContainer.value;
-            const containerWidth = container.clientWidth;
-            const thumbWidth = activeThumb.offsetWidth;
+            if (!activeThumbnail) return;
 
-            const scrollLeft =
-                activeThumb.offsetLeft - containerWidth / 2 + thumbWidth / 2;
+            const scrollTop =
+                activeThumbnail.offsetTop -
+                container.clientHeight / 2 +
+                activeThumbnail.offsetHeight / 2;
 
             container.scrollTo({
-                left: scrollLeft,
+                top: scrollTop,
                 behavior: 'smooth',
             });
+
+            return;
         }
+
+        const container = mobileThumbnailContainer.value;
+
+        if (!container) return;
+
+        const activeThumbnail = container.children[currentIndex.value] as
+            | HTMLElement
+            | undefined;
+
+        if (!activeThumbnail) return;
+
+        const scrollLeft =
+            activeThumbnail.offsetLeft -
+            container.clientWidth / 2 +
+            activeThumbnail.offsetWidth / 2;
+
+        container.scrollTo({
+            left: scrollLeft,
+            behavior: 'smooth',
+        });
     });
 };
 
 onMounted(() => {
-    interval = setInterval(() => {
-        virtualIndex.value++;
+    preloadSliderImages();
 
-        if (virtualIndex.value >= slides.length * 4) {
-            virtualIndex.value =
-                slides.length + (virtualIndex.value % slides.length);
-
-            nextTick(() => {
-                if (
-                    desktopThumbnailContainer.value &&
-                    window.innerWidth >= 768
-                ) {
-                    desktopThumbnailContainer.value.scrollTop =
-                        thumbnailOffset.value;
-                }
-            });
-        }
-
-        currentIndex.value = virtualIndex.value % slides.length;
+    interval = window.setInterval(() => {
+        currentIndex.value = (currentIndex.value + 1) % slides.length;
 
         scrollToActive();
     }, 5000);
@@ -127,9 +129,6 @@ onUnmounted(() => {
 });
 
 const goToSlide = (index: number) => {
-    const base = Math.floor(virtualIndex.value / slides.length) * slides.length;
-    virtualIndex.value = base + index;
-
     currentIndex.value = index;
     scrollToActive();
 };
@@ -146,7 +145,7 @@ const goToSlide = (index: number) => {
             </p>
         </Transition>
 
-        <h1 class="mb-6 text-4xl font-semibold uppercase md:text-5xl">
+        <h1 class="mb-6 text-3xl font-semibold uppercase md:text-5xl">
             {{ t('home.headingPrefix') }}
             <Transition name="fade-slide" mode="out-in">
                 <span
@@ -158,14 +157,16 @@ const goToSlide = (index: number) => {
             </Transition>
         </h1>
 
-        <Transition name="fade-slide" mode="out-in">
-            <p
-                :key="slides[currentIndex].description"
-                class="mb-6 max-w-2xl text-muted-foreground"
-            >
-                {{ slides[currentIndex].description }}
-            </p>
-        </Transition>
+        <div class="description-slot mb-6 max-w-2xl">
+            <Transition name="fade-slide">
+                <p
+                    :key="slides[currentIndex].description"
+                    class="text-muted-foreground"
+                >
+                    {{ slides[currentIndex].description }}
+                </p>
+            </Transition>
+        </div>
 
         <AnimatedButton
             as="a"
@@ -176,15 +177,22 @@ const goToSlide = (index: number) => {
 
     <section class="px-8 pb-16">
         <div class="relative mx-auto max-w-6xl">
-            <div class="relative overflow-hidden rounded-md">
-                <img
-                    :src="slides[currentIndex].image"
-                    :alt="slides[currentIndex].image"
-                    class="h-[300px] w-full object-cover transition-all duration-700 sm:h-[450px]"
-                />
+            <div
+                class="relative h-[300px] overflow-hidden rounded-md sm:h-[450px]"
+            >
+                <Transition name="image-fade">
+                    <img
+                        :key="slides[currentIndex].image"
+                        :src="slides[currentIndex].image"
+                        :alt="slides[currentIndex].title"
+                        decoding="async"
+                        fetchpriority="high"
+                        class="absolute inset-0 h-full w-full object-cover"
+                    />
+                </Transition>
 
                 <div
-                    class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/10 to-transparent p-6"
+                    class="absolute inset-0 z-10 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/10 to-transparent p-6"
                 >
                     <Transition name="fade-slide" mode="out-in">
                         <p
@@ -208,18 +216,18 @@ const goToSlide = (index: number) => {
 
             <div
                 ref="desktopThumbnailContainer"
-                class="absolute top-1/2 right-0 mx-4 hidden max-h-[544px] -translate-y-1/2 flex-col gap-4 overflow-y-hidden px-2 md:flex"
+                class="absolute top-1/2 z-20 right-0 mx-4 hidden max-h-[560px] -translate-y-1/2 flex-col gap-4 overflow-y-hidden p-2 md:flex"
                 style="scrollbar-width: none; -ms-overflow-style: none"
             >
                 <img
-                    v-for="(slide, index) in infiniteSlides"
-                    :key="index"
-                    :src="slide.image"
+                    v-for="(slide, index) in slides"
+                    :key="slide.image"
+                    :src="slide.thumbnail"
                     :alt="slide.title"
-                    @click="goToSlide(index % slides.length)"
+                    @click="goToSlide(index)"
                     class="h-24 w-40 flex-shrink-0 cursor-pointer rounded-md object-cover transition-all duration-300 ease-in-out"
                     :class="[
-                        index === virtualIndex
+                        index === currentIndex
                             ? 'scale-105 opacity-100 ring-2 ring-primary ring-offset-2 ring-offset-background'
                             : 'opacity-50 grayscale hover:opacity-70 hover:grayscale-0',
                     ]"
@@ -232,14 +240,14 @@ const goToSlide = (index: number) => {
                 style="scrollbar-width: none; -ms-overflow-style: none"
             >
                 <img
-                    v-for="(slide, index) in infiniteSlides"
-                    :key="index"
+                    v-for="(slide, index) in slides"
+                    :key="slide.image"
                     :src="slide.image"
                     :alt="slide.title"
-                    @click="goToSlide(index % slides.length)"
+                    @click="goToSlide(index)"
                     class="h-20 w-32 flex-shrink-0 cursor-pointer rounded-md object-cover transition-all duration-300 ease-in-out"
                     :class="[
-                        index === virtualIndex
+                        index === currentIndex
                             ? 'scale-105 opacity-100 ring-2 ring-white'
                             : 'opacity-50 grayscale hover:opacity-70 hover:grayscale-0',
                     ]"
@@ -263,5 +271,56 @@ const goToSlide = (index: number) => {
 .fade-slide-leave-to {
     opacity: 0;
     transform: translateY(-10px);
+}
+
+.image-fade-enter-active,
+.image-fade-leave-active {
+    transition:
+        opacity 700ms ease,
+        transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+}
+
+.image-fade-enter-from {
+    opacity: 0;
+    transform: scale(1.025);
+}
+
+.image-fade-enter-to,
+.image-fade-leave-from {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.image-fade-leave-to {
+    opacity: 0;
+    transform: scale(0.99);
+}
+
+.image-fade-leave-active {
+    position: absolute;
+    inset: 0;
+}
+
+.description-slot {
+    display: grid;
+    min-height: 10.5rem;
+    align-items: start;
+}
+
+.description-slot > p {
+    grid-area: 1 / 1;
+}
+
+@media (min-width: 640px) {
+    .description-slot {
+        min-height: 7.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .description-slot {
+        min-height: 6rem;
+    }
 }
 </style>
