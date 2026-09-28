@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import deliveryCompanies from '@/routes/admin/delivery-companies';
 import type { BreadcrumbItem } from '@/types';
@@ -16,11 +17,13 @@ import {
     Plus,
     Power,
     Trash2,
+    Pencil,
+    Save,
+    X,
 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const props = defineProps<{
     companies: DeliveryCompanyType[];
@@ -80,6 +83,114 @@ const createCompany = async () => {
         toast.error(t('deliveryCompanies.createFailed'));
     } finally {
         isCreatingCompany.value = false;
+    }
+};
+
+const editingCompanyId = ref<number | null>(null);
+const editCompanyForm = ref<CompanyFormType>(emptyCompanyForm());
+const companyUpdateErrors = ref<Record<string, string[]>>({});
+const isUpdatingCompany = ref<boolean>(false);
+
+const startEditingCompany = (company: DeliveryCompanyType) => {
+    editingCompanyId.value = company.id;
+
+    editCompanyForm.value = {
+        name: company.name,
+        is_active: company.is_active,
+        minimum_advance_days: company.minimum_advance_days,
+    };
+
+    companyUpdateErrors.value = {};
+};
+
+const cancelEditingCompany = () => {
+    if (isUpdatingCompany.value) {
+        return;
+    }
+
+    editingCompanyId.value = null;
+    editCompanyForm.value = emptyCompanyForm();
+    companyUpdateErrors.value = {};
+};
+
+const updateCompany = async (company: DeliveryCompanyType) => {
+    companyUpdateErrors.value = {};
+    isUpdatingCompany.value = true;
+
+    try {
+        await axios.put(
+            deliveryCompanies.update(company.id).url,
+            editCompanyForm.value,
+        );
+
+        toast.success(t('deliveryCompanies.updated'));
+
+        editingCompanyId.value = null;
+
+        router.reload({
+            only: ['companies'],
+        });
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 422) {
+            companyUpdateErrors.value = error.response.data.errors ?? {};
+        }
+
+        toast.error(t('deliveryCompanies.updateFailed'));
+    } finally {
+        isUpdatingCompany.value = false;
+    }
+};
+
+const companyToDelete = ref<DeliveryCompanyType | null>(null);
+const isDeletingCompany = ref<boolean>(false);
+
+const requestCompanyDeletion = (company: DeliveryCompanyType) => {
+    companyToDelete.value = company;
+};
+
+const closeCompanyDeletion = () => {
+    if (!isDeletingCompany.value) {
+        companyToDelete.value = null;
+    }
+};
+
+const companyDeletionMessage = computed(() => {
+    if (!companyToDelete.value) {
+        return '';
+    }
+
+    return t('deliveryCompanies.confirmDeleteCompany', {
+        name: companyToDelete.value.name,
+    });
+});
+
+const deleteCompany = async () => {
+    if (!companyToDelete.value) {
+        return;
+    }
+
+    isDeletingCompany.value = true;
+
+    try {
+        await axios.delete(
+            deliveryCompanies.destroy(companyToDelete.value.id).url,
+        );
+
+        toast.success(t('deliveryCompanies.deleted'));
+
+        if (editingCompanyId.value === companyToDelete.value.id) {
+            editingCompanyId.value = null;
+        }
+
+        companyToDelete.value = null;
+
+        router.reload({
+            only: ['companies'],
+        });
+    } catch {
+        toast.error(t('deliveryCompanies.deleteFailed'));
+    } finally {
+        isDeletingCompany.value = false;
     }
 };
 
@@ -365,21 +476,140 @@ const deleteDeliveryDate = async () => {
                             </div>
                         </div>
 
-                        <span
-                            class="rounded-full px-2.5 py-1 text-xs font-medium"
-                            :class="
-                                company.is_active
-                                    ? 'bg-success text-success-foreground'
-                                    : 'bg-secondary text-secondary-foreground'
-                            "
-                        >
-                            {{
-                                company.is_active
-                                    ? t('deliveryCompanies.active')
-                                    : t('deliveryCompanies.inactive')
-                            }}
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="rounded-full px-2.5 py-1 text-xs font-medium"
+                                :class="
+                                    company.is_active
+                                        ? 'bg-success text-success-foreground'
+                                        : 'bg-secondary text-secondary-foreground'
+                                "
+                            >
+                                {{
+                                    company.is_active
+                                        ? t('deliveryCompanies.active')
+                                        : t('deliveryCompanies.inactive')
+                                }}
+                            </span>
+
+                            <button
+                                type="button"
+                                class="rounded-md border p-1.5 hover:bg-muted"
+                                :title="t('deliveryCompanies.editCompany')"
+                                @click="startEditingCompany(company)"
+                            >
+                                <Pencil class="h-4 w-4" />
+                            </button>
+
+                            <button
+                                type="button"
+                                class="rounded-md border border-destructive/50 p-1.5 text-destructive hover:bg-destructive/10"
+                                :title="t('deliveryCompanies.deleteCompany')"
+                                @click="requestCompanyDeletion(company)"
+                            >
+                                <Trash2 class="h-4 w-4" />
+                            </button>
+                        </div>
                     </div>
+
+                    <form
+                        v-if="editingCompanyId === company.id"
+                        class="mt-4 space-y-4 rounded-lg border bg-muted/30 p-4"
+                        @submit.prevent="updateCompany(company)"
+                    >
+                        <div>
+                            <label
+                                :for="`edit-company-name-${company.id}`"
+                                class="mb-1.5 block text-sm font-medium"
+                            >
+                                {{ t('deliveryCompanies.companyName') }}
+                            </label>
+
+                            <input
+                                :id="`edit-company-name-${company.id}`"
+                                v-model.trim="editCompanyForm.name"
+                                type="text"
+                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                            />
+
+                            <p
+                                v-if="companyUpdateErrors.name"
+                                class="mt-1 text-xs text-destructive"
+                            >
+                                {{ companyUpdateErrors.name[0] }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                :for="`edit-advance-days-${company.id}`"
+                                class="mb-1.5 block text-sm font-medium"
+                            >
+                                {{ t('deliveryCompanies.minimumAdvanceDays') }}
+                            </label>
+
+                            <input
+                                :id="`edit-advance-days-${company.id}`"
+                                v-model.number="
+                                    editCompanyForm.minimum_advance_days
+                                "
+                                type="number"
+                                min="0"
+                                max="365"
+                                class="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                            />
+
+                            <p
+                                v-if="companyUpdateErrors.minimum_advance_days"
+                                class="mt-1 text-xs text-destructive"
+                            >
+                                {{
+                                    companyUpdateErrors.minimum_advance_days[0]
+                                }}
+                            </p>
+                        </div>
+
+                        <label class="flex items-center gap-2 text-sm">
+                            <input
+                                v-model="editCompanyForm.is_active"
+                                type="checkbox"
+                                class="h-4 w-4"
+                            />
+
+                            {{ t('deliveryCompanies.activeCompany') }}
+                        </label>
+
+                        <div class="flex gap-2">
+                            <button
+                                type="submit"
+                                :disabled="isUpdatingCompany"
+                                class="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+                            >
+                                <Loader2
+                                    v-if="isUpdatingCompany"
+                                    class="h-4 w-4 animate-spin"
+                                />
+
+                                <Save v-else class="h-4 w-4" />
+
+                                {{
+                                    isUpdatingCompany
+                                        ? t('deliveryCompanies.updating')
+                                        : t('deliveryCompanies.save')
+                                }}
+                            </button>
+
+                            <button
+                                type="button"
+                                :disabled="isUpdatingCompany"
+                                class="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-muted disabled:opacity-50"
+                                @click="cancelEditingCompany"
+                            >
+                                <X class="h-4 w-4" />
+                                {{ t('deliveryCompanies.cancel') }}
+                            </button>
+                        </div>
+                    </form>
 
                     <div class="mt-5 border-t pt-4">
                         <h3
@@ -526,6 +756,15 @@ const deleteDeliveryDate = async () => {
             type="destructive"
             :is-loading="isDeletingDate"
             @confirm="deleteDeliveryDate"
+        />
+
+        <ConfirmModal
+            :open="companyToDelete !== null"
+            :on-close="closeCompanyDeletion"
+            :message="companyDeletionMessage"
+            type="destructive"
+            :is-loading="isDeletingCompany"
+            @confirm="deleteCompany"
         />
     </AdminLayout>
 </template>
