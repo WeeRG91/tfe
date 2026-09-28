@@ -34,4 +34,11 @@ export default {
                 'Nos créations végétariennes mettent en valeur toute la diversité de la cuisine thaïlandaise. Légumes de saison, tofu, herbes fraîches et épices authentiques s’associent pour créer des plats colorés, équilibrés et pleins de saveurs.',
         },
     },
+    recommended: {
+        eyebrow: 'À découvrir',
+        title: 'Un aperçu de notre menu',
+        description:
+            'Découvrez une sélection de plats fraîchement préparés issus de notre menu.',
+        viewMenu: 'Voir le menu complet',
+    },
 };

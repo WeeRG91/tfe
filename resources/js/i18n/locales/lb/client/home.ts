@@ -34,4 +34,11 @@ export default {
                 'Eis vegetaresch Spezialitéite weisen déi grouss Villfalt vun der thailännescher Kichen. Saisongeméis, Tofu, frësch Kraider an authentesch Gewierzer verbannen sech zu faarwege Platen, déi gesond a gläichzäiteg voller Aroma sinn.',
         },
     },
+    recommended: {
+        eyebrow: 'Entdecken',
+        title: 'En Abléck an eise Menü',
+        description:
+            'Entdeckt eng Auswiel u frësch preparéierte Platen aus eisem Menü.',
+        viewMenu: 'De ganze Menü kucken',
+    },
 };

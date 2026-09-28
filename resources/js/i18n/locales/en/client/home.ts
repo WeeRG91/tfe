@@ -34,4 +34,11 @@ export default {
                 'Our vegetarian creations showcase the incredible diversity of Thai cuisine. Fresh seasonal vegetables, fragrant herbs, tofu, and authentic spices come together to create colourful dishes that are both wholesome and bursting with flavour.',
         },
     },
+    recommended: {
+        eyebrow: 'Discover',
+        title: 'A taste of our menu',
+        description:
+            'Explore a selection of freshly prepared dishes chosen from our menu.',
+        viewMenu: 'View the full menu',
+    },
 };

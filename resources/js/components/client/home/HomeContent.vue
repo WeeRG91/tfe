@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import AnimatedButton from '@/components/AnimatedButton.vue';
+import DishCard from '@/components/client/menu/DishCard.vue';
 import menu from '@/routes/menu';
+import { ClientDishType } from '@/types/dish';
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+defineProps<{
+    recommendedDishes: ClientDishType[];
+}>();
 
 const { t } = useI18n();
 
@@ -61,8 +67,8 @@ const preloadSliderImages = () => {
         image.src = slide.image;
 
         preloadedSlideImages.push(image);
-    })
-}
+    });
+};
 
 const scrollToActive = () => {
     nextTick(() => {
@@ -135,7 +141,7 @@ const goToSlide = (index: number) => {
 </script>
 
 <template>
-    <section class="mx-auto max-w-5xl px-8 py-14">
+    <section class="mx-auto max-w-5xl p-8">
         <Transition name="fade-slide" mode="out-in">
             <p
                 :key="slides[currentIndex].word"
@@ -216,7 +222,7 @@ const goToSlide = (index: number) => {
 
             <div
                 ref="desktopThumbnailContainer"
-                class="absolute top-1/2 z-20 right-0 mx-4 hidden max-h-[560px] -translate-y-1/2 flex-col gap-4 overflow-y-hidden p-2 md:flex"
+                class="absolute top-1/2 right-0 z-20 mx-4 hidden max-h-[560px] -translate-y-1/2 flex-col gap-4 overflow-y-hidden p-2 md:flex"
                 style="scrollbar-width: none; -ms-overflow-style: none"
             >
                 <img
@@ -251,6 +257,49 @@ const goToSlide = (index: number) => {
                             ? 'scale-105 opacity-100 ring-2 ring-white'
                             : 'opacity-50 grayscale hover:opacity-70 hover:grayscale-0',
                     ]"
+                />
+            </div>
+        </div>
+    </section>
+
+    <section
+        v-if="recommendedDishes.length"
+        class="border-t border-border bg-muted/30 px-6 py-16"
+    >
+        <div class="mx-auto max-w-6xl">
+            <div
+                class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+            >
+                <div>
+                    <p class="text-sm tracking-widest text-primary uppercase">
+                        [ {{ t('home.recommended.eyebrow') }} ]
+                    </p>
+
+                    <h2
+                        class="mt-2 text-3xl font-semibold uppercase md:text-4xl"
+                    >
+                        {{ t('home.recommended.title') }}
+                    </h2>
+
+                    <p class="mt-3 max-w-2xl text-muted-foreground">
+                        {{ t('home.recommended.description') }}
+                    </p>
+                </div>
+
+                <a
+                    :href="menu.dish().url"
+                    class="font-medium text-primary transition-colors hover:text-primary/80"
+                >
+                    {{ t('home.recommended.viewMenu') }} →
+                </a>
+            </div>
+
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <DishCard
+                    v-for="dish in recommendedDishes"
+                    :key="dish.id"
+                    :dish="dish"
+                    :show-add-action="false"
                 />
             </div>
         </div>

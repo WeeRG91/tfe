@@ -9,9 +9,15 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const props = defineProps<{
-    dish: ClientDishType;
-}>();
+const props = withDefaults(
+    defineProps<{
+        dish: ClientDishType;
+        showAddAction?: boolean;
+    }>(),
+    {
+        showAddAction: true,
+    },
+);
 
 const emit = defineEmits<{
     add: [dish: ClientDishType];
@@ -280,8 +286,9 @@ const triggerStarAnimation = () => {
 
                     <button
                         v-if="
+                            props.showAddAction &&
                             props.dish.is_available ===
-                            DishAvailabilityEnum.AVAILABLE
+                                DishAvailabilityEnum.AVAILABLE
                         "
                         @click.stop="emit('add', props.dish)"
                         class="cursor-pointer text-sm font-medium text-primary transition-all duration-300 hover:translate-x-1 hover:text-primary/80"
@@ -294,7 +301,7 @@ const triggerStarAnimation = () => {
                     </button>
 
                     <button
-                        v-else
+                        v-else-if="props.showAddAction"
                         disabled
                         class="cursor-not-allowed text-sm text-muted-foreground"
                     >

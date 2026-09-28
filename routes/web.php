@@ -4,6 +4,7 @@ use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\ChatController;
 use App\Http\Controllers\Client\ClientGlobalSearchController;
+use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\LoyaltyPointTransactionController;
 use App\Http\Controllers\Client\MenuController;
 use App\Http\Controllers\Client\MessageController;
@@ -38,9 +39,7 @@ Route::post('/locale', function (Request $request) {
     return back();
 })->name('locale.update');
 
-Route::get('/', function () {
-    return Inertia::render('client/Home');
-})->name('home');
+Route::get('/', HomeController::class)->name('home');
 
 Route::get('/restaurant/availability', RestaurantAvailabilityController::class)
     ->name('restaurant.availability');

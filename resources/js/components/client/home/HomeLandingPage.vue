@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import HomeContent from '@/components/client/home/HomeContent.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
+import { ClientDishType } from '@/types/dish';
 import { gsap } from 'gsap';
 import { onMounted } from 'vue';
+
+defineProps<{
+    recommendedDishes: ClientDishType[];
+}>();
 
 const INTRO_STORAGE_KEY = 'home-intro-seen';
 
@@ -191,7 +196,7 @@ onMounted(() => {
         </div>
 
         <ClientLayout class="content opacity-0">
-            <HomeContent />
+            <HomeContent :recommended-dishes="recommendedDishes" />
         </ClientLayout>
     </div>
 </template>
@@ -212,12 +217,6 @@ img {
 .title p {
     position: relative;
     top: 150px;
-}
-
-footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
 }
 
 .preview img {
