@@ -66,7 +66,7 @@ onUnmounted(() => {
 watch(
     () => props.open,
     (newValue) => {
-        if (!newValue) {
+        if (newValue) {
             resetForm();
             document.body.style.overflow = 'hidden';
         } else {
@@ -77,126 +77,146 @@ watch(
 </script>
 
 <template>
-    <Transition
-        enter-active-class="transition duration-200 ease-out"
-        enter-from-class="opacity-0 scale-95"
-        enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition duration-150 ease-in"
-        leave-from-class="opacity-100 scale-100"
-        leave-to-class="opacity-0 scale-95"
-    >
-        <div
-            v-if="open"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-            @click.self="closeModal"
-        >
+    <Teleport to="body">
+        <Transition name="client-modal" appear>
             <div
-                class="w-full max-w-md rounded-xl border border-border bg-card p-6 text-card-foreground shadow-2xl transition-all"
+                v-if="open"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                @click.self="closeModal"
             >
-                <div class="flex items-start gap-4">
-                    <div
-                        class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-destructive/10"
-                    >
-                        <AlertTriangle class="h-6 w-6 text-destructive" />
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-card-foreground">
-                            Delete Account
-                        </h3>
-                        <p class="mt-1 text-sm text-muted-foreground">
-                            This action cannot be undone. All your data will be
-                            permanently removed.
-                        </p>
-                    </div>
-                    <button
-                        @click="closeModal"
-                        class="rounded-lg p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                    >
-                        <X class="h-5 w-5" />
-                    </button>
-                </div>
-
-                <div class="mt-6 space-y-4">
-                    <div>
-                        <label
-                            class="mb-1.5 block text-sm font-medium text-card-foreground"
+                <div
+                    class="client-modal-panel w-full max-w-md rounded-xl border border-border bg-card p-6 text-card-foreground shadow-2xl"
+                >
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-destructive/10"
                         >
-                            Current Password
-                        </label>
-                        <input
-                            v-model="deleteForm.password"
-                            type="password"
-                            class="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-                            :class="{
-                                'border-destructive ring-2 ring-destructive/20':
-                                    deleteForm.errors.password,
-                            }"
-                            placeholder="Enter your current password"
-                            @keydown.enter="confirmDelete"
-                        />
-                        <p
-                            v-if="deleteForm.errors.password"
-                            class="mt-1.5 text-xs text-destructive"
-                        >
-                            {{ deleteForm.errors.password }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <label
-                            class="mb-1.5 block text-sm font-medium text-card-foreground"
-                        >
-                            Type
-                            <span class="font-bold text-destructive"
-                                >DELETE</span
+                            <AlertTriangle class="h-6 w-6 text-destructive" />
+                        </div>
+                        <div class="flex-1">
+                            <h3
+                                class="text-lg font-semibold text-card-foreground"
                             >
-                            to confirm
-                        </label>
-                        <input
-                            v-model="deleteConfirmationText"
-                            type="text"
-                            class="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-                            placeholder="Type DELETE"
-                            @keydown.enter="confirmDelete"
-                        />
-                    </div>
-
-                    <div class="flex gap-3 pt-2">
+                                Delete Account
+                            </h3>
+                            <p class="mt-1 text-sm text-muted-foreground">
+                                This action cannot be undone. All your data will
+                                be permanently removed.
+                            </p>
+                        </div>
                         <button
                             @click="closeModal"
-                            :disabled="deleteForm.processing"
-                            class="flex-1 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                            class="rounded-lg p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                         >
-                            Cancel
+                            <X class="h-5 w-5" />
                         </button>
-                        <button
-                            @click="confirmDelete"
-                            :disabled="
-                                deleteForm.processing ||
-                                deleteConfirmationText !== 'DELETE'
-                            "
-                            class="flex-1 rounded-lg bg-destructive px-4 py-2.5 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            <span
-                                v-if="deleteForm.processing"
-                                class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-destructive-foreground/20 border-t-destructive-foreground"
-                            ></span>
-                            {{
-                                deleteForm.processing
-                                    ? 'Deleting...'
-                                    : 'Delete Account'
-                            }}
-                        </button>
+                    </div>
+
+                    <div class="mt-6 space-y-4">
+                        <div>
+                            <label
+                                class="mb-1.5 block text-sm font-medium text-card-foreground"
+                            >
+                                Current Password
+                            </label>
+                            <input
+                                v-model="deleteForm.password"
+                                type="password"
+                                class="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                                :class="{
+                                    'border-destructive ring-2 ring-destructive/20':
+                                        deleteForm.errors.password,
+                                }"
+                                placeholder="Enter your current password"
+                                @keydown.enter="confirmDelete"
+                            />
+                            <p
+                                v-if="deleteForm.errors.password"
+                                class="mt-1.5 text-xs text-destructive"
+                            >
+                                {{ deleteForm.errors.password }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                class="mb-1.5 block text-sm font-medium text-card-foreground"
+                            >
+                                Type
+                                <span class="font-bold text-destructive"
+                                    >DELETE</span
+                                >
+                                to confirm
+                            </label>
+                            <input
+                                v-model="deleteConfirmationText"
+                                type="text"
+                                class="w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                                placeholder="Type DELETE"
+                                @keydown.enter="confirmDelete"
+                            />
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <button
+                                @click="closeModal"
+                                :disabled="deleteForm.processing"
+                                class="flex-1 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                @click="confirmDelete"
+                                :disabled="
+                                    deleteForm.processing ||
+                                    deleteConfirmationText !== 'DELETE'
+                                "
+                                class="flex-1 rounded-lg bg-destructive px-4 py-2.5 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <span
+                                    v-if="deleteForm.processing"
+                                    class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-destructive-foreground/20 border-t-destructive-foreground"
+                                ></span>
+                                {{
+                                    deleteForm.processing
+                                        ? 'Deleting...'
+                                        : 'Delete Account'
+                                }}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </Transition>
+        </Transition>
+    </Teleport>
 </template>
 
 <style scoped>
 .fixed {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+}
+
+.client-modal-enter-active,
+.client-modal-leave-active {
+    transition: opacity 200ms ease;
+}
+
+.client-modal-enter-active .client-modal-panel,
+.client-modal-leave-active .client-modal-panel {
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease;
+}
+
+.client-modal-enter-from,
+.client-modal-leave-to {
+    opacity: 0;
+}
+
+.client-modal-enter-from .client-modal-panel,
+.client-modal-leave-to .client-modal-panel {
+    opacity: 0;
+    transform: translateY(-1rem) scale(0.95);
 }
 </style>

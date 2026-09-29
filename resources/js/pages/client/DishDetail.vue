@@ -8,7 +8,7 @@ import rating from '@/routes/rating';
 import { useDishStore } from '@/stores/dish';
 import { ClientDishType } from '@/types/dish';
 import { ReviewResultType, ReviewType } from '@/types/rating';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { Flame, X, EllipsisVertical } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -94,6 +94,12 @@ const loadReviews = async () => {
 };
 
 const openAddModal = async () => {
+    if (!user.value) {
+        router.visit('/login');
+
+        return;
+    }
+
     isAddModalOpen.value = true;
 };
 

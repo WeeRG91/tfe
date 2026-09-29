@@ -108,7 +108,7 @@ const getOrderStatusProgress = (status: OrderStatusEnum) => {
 
 <template>
     <div
-        class="rounded-lg border border-border bg-card text-card-foreground shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
+        class="rounded-lg overflow-hidden border border-border bg-card text-card-foreground shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
     >
         <div
             @click="toggleDetails"

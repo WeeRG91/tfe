@@ -57,6 +57,7 @@ export type AppPageProps<
     restaurant: {
         name: string;
         contactEmail: string;
+        contactPhone: string;
     };
     theme: ThemePageProps;
     features: {

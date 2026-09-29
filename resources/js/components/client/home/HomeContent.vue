@@ -181,7 +181,7 @@ const goToSlide = (index: number) => {
         />
     </section>
 
-    <section class="px-8 pb-16">
+    <section class="px-8 pb-8 sm:pb-16">
         <div class="relative mx-auto max-w-6xl">
             <div
                 class="relative h-[300px] overflow-hidden rounded-md sm:h-[450px]"
@@ -264,7 +264,7 @@ const goToSlide = (index: number) => {
 
     <section
         v-if="recommendedDishes.length"
-        class="border-t border-border bg-muted/30 px-6 py-16"
+        class="px-6 pb-8 sm:pb-16"
     >
         <div class="mx-auto max-w-6xl">
             <div

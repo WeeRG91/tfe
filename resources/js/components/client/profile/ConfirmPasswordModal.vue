@@ -149,136 +149,156 @@ watch(
 </script>
 
 <template>
-    <Transition
-        enter-active-class="transition duration-200 ease-out"
-        enter-from-class="opacity-0 scale-95"
-        enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition duration-150 ease-in"
-        leave-from-class="opacity-100 scale-100"
-        leave-to-class="opacity-0 scale-95"
-    >
-        <div
-            v-if="open"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-            @click.self="closeModal"
-        >
+    <Teleport to="body">
+        <Transition name="client-modal" appear>
             <div
-                class="w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl"
+                v-if="open"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                @click.self="closeModal"
             >
-                <div class="flex items-start justify-between">
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="rounded-full p-2.5"
-                            :class="
-                                isDestructiveAction
-                                    ? 'bg-destructive/10 text-destructive'
-                                    : 'bg-primary/10 text-primary'
-                            "
-                        >
-                            <component :is="content.icon" class="h-5 w-5" />
-                        </div>
-                        <div>
-                            <h3
-                                class="text-lg font-semibold text-card-foreground"
+                <div
+                    class="client-modal-panel w-full max-w-md rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl"
+                >
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="rounded-full p-2.5"
+                                :class="
+                                    isDestructiveAction
+                                        ? 'bg-destructive/10 text-destructive'
+                                        : 'bg-primary/10 text-primary'
+                                "
                             >
-                                {{ content.title }}
-                            </h3>
-                            <p class="mt-0.5 text-sm text-muted-foreground">
-                                {{ content.description }}
-                            </p>
+                                <component :is="content.icon" class="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h3
+                                    class="text-lg font-semibold text-card-foreground"
+                                >
+                                    {{ content.title }}
+                                </h3>
+                                <p class="mt-0.5 text-sm text-muted-foreground">
+                                    {{ content.description }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <button
-                        @click="closeModal"
-                        class="rounded-lg p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                        :disabled="isConfirming"
-                        type="button"
-                    >
-                        <X class="h-5 w-5" />
-                    </button>
-                </div>
-
-                <div class="mt-6">
-                    <label for="confirm-password-modal" class="sr-only">{{
-                        t('profile.confirmPasswordModal.password')
-                    }}</label>
-                    <div class="relative">
-                        <input
-                            id="confirm-password-modal"
-                            v-model="password"
-                            :type="showPassword ? 'text' : 'password'"
-                            :placeholder="
-                                t(
-                                    'profile.confirmPasswordModal.passwordPlaceholder',
-                                )
-                            "
-                            class="w-full rounded-lg border border-input bg-background px-4 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-                            :class="{
-                                'border-destructive ring-2 ring-destructive/20':
-                                    passwordError,
-                            }"
-                            @keyup="handleKeyup"
-                            :disabled="isConfirming"
-                            autofocus
-                        />
                         <button
-                            @click="showPassword = !showPassword"
-                            class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                            type="button"
+                            @click="closeModal"
+                            class="rounded-lg p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                             :disabled="isConfirming"
+                            type="button"
                         >
-                            <Eye v-if="!showPassword" class="h-4 w-4" />
-                            <EyeOff v-else class="h-4 w-4" />
+                            <X class="h-5 w-5" />
                         </button>
                     </div>
-                    <p
-                        v-if="passwordError"
-                        class="mt-1.5 text-sm text-destructive"
-                    >
-                        {{ passwordError }}
-                    </p>
-                </div>
 
-                <div class="mt-6 flex gap-3">
-                    <button
-                        @click="closeModal"
-                        class="flex-1 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
-                        :disabled="isConfirming"
-                        type="button"
-                    >
-                        {{ t('profile.confirmPasswordModal.cancel') }}
-                    </button>
-                    <button
-                        @click="confirmPassword"
-                        :disabled="isConfirming || !password"
-                        class="flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                        type="button"
-                        :class="
-                            isDestructiveAction
-                                ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
-                                : 'bg-primary text-primary-foreground hover:bg-primary/90'
-                        "
-                    >
-                        <span
-                            v-if="isConfirming"
-                            class="flex items-center justify-center gap-2"
-                        >
-                            <Loader
-                                class="animate-spin text-primary-foreground"
+                    <div class="mt-6">
+                        <label for="confirm-password-modal" class="sr-only">{{
+                            t('profile.confirmPasswordModal.password')
+                        }}</label>
+                        <div class="relative">
+                            <input
+                                id="confirm-password-modal"
+                                v-model="password"
+                                :type="showPassword ? 'text' : 'password'"
+                                :placeholder="
+                                    t(
+                                        'profile.confirmPasswordModal.passwordPlaceholder',
+                                    )
+                                "
+                                class="w-full rounded-lg border border-input bg-background px-4 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                                :class="{
+                                    'border-destructive ring-2 ring-destructive/20':
+                                        passwordError,
+                                }"
+                                @keyup="handleKeyup"
+                                :disabled="isConfirming"
+                                autofocus
                             />
-                            {{ t('profile.confirmPasswordModal.confirming') }}
-                        </span>
-                        <span v-else>{{ content.confirmText }}</span>
-                    </button>
+                            <button
+                                @click="showPassword = !showPassword"
+                                class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                type="button"
+                                :disabled="isConfirming"
+                            >
+                                <Eye v-if="!showPassword" class="h-4 w-4" />
+                                <EyeOff v-else class="h-4 w-4" />
+                            </button>
+                        </div>
+                        <p
+                            v-if="passwordError"
+                            class="mt-1.5 text-sm text-destructive"
+                        >
+                            {{ passwordError }}
+                        </p>
+                    </div>
+
+                    <div class="mt-6 flex gap-3">
+                        <button
+                            @click="closeModal"
+                            class="flex-1 rounded-lg border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                            :disabled="isConfirming"
+                            type="button"
+                        >
+                            {{ t('profile.confirmPasswordModal.cancel') }}
+                        </button>
+                        <button
+                            @click="confirmPassword"
+                            :disabled="isConfirming || !password"
+                            class="flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                            type="button"
+                            :class="
+                                isDestructiveAction
+                                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                            "
+                        >
+                            <span
+                                v-if="isConfirming"
+                                class="flex items-center justify-center gap-2"
+                            >
+                                <Loader
+                                    class="animate-spin text-primary-foreground"
+                                />
+                                {{
+                                    t('profile.confirmPasswordModal.confirming')
+                                }}
+                            </span>
+                            <span v-else>{{ content.confirmText }}</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </Transition>
+        </Transition>
+    </Teleport>
 </template>
 
 <style scoped>
 .fixed {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+}
+
+.client-modal-enter-active,
+.client-modal-leave-active {
+    transition: opacity 200ms ease;
+}
+
+.client-modal-enter-active .client-modal-panel,
+.client-modal-leave-active .client-modal-panel {
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease;
+}
+
+.client-modal-enter-from,
+.client-modal-leave-to {
+    opacity: 0;
+}
+
+.client-modal-enter-from .client-modal-panel,
+.client-modal-leave-to .client-modal-panel {
+    opacity: 0;
+    transform: translateY(-1rem) scale(0.95);
 }
 </style>

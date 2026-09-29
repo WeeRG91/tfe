@@ -84,157 +84,157 @@ watch(
 </script>
 
 <template>
-    <Transition
-        enter-active-class="transition duration-200 ease-out"
-        enter-from-class="opacity-0 scale-95"
-        enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition duration-150 ease-in"
-        leave-from-class="opacity-100 scale-100"
-        leave-to-class="opacity-0 scale-95"
-    >
-        <div
-            v-if="open"
-            @click="$emit('close')"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
-        >
+    <Teleport to="body">
+        <Transition name="client-modal" appear>
             <div
                 v-if="open"
-                @click.stop
-                class="relative flex w-full max-w-md animate-in flex-col rounded-2xl border border-border bg-card text-card-foreground shadow-xl duration-200 zoom-in-95 fade-in slide-in-from-top-4"
-                style="max-height: 90vh"
+                @click="$emit('close')"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
             >
-                <div class="relative flex-shrink-0">
-                    <img
-                        :src="drink.main_image"
-                        :alt="drink.name"
-                        class="h-32 w-full rounded-t-2xl object-cover"
-                    />
-                    <button
-                        @click="$emit('close')"
-                        class="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-popover/90 text-popover-foreground hover:bg-popover"
-                    >
-                        ✕
-                    </button>
-                </div>
-
-                <div class="flex-1 overflow-y-auto p-4">
-                    <div class="mb-3">
-                        <div class="flex items-start justify-between">
-                            <h2 class="text-lg font-bold uppercase">
-                                {{ drink.name }}
-                            </h2>
-                            <span class="text-lg font-bold text-primary">
-                                €{{ formatPrice(drink.price) }}
-                            </span>
-                        </div>
+                <div
+                    @click.stop
+                    class="client-modal-panel relative flex w-full max-w-md flex-col rounded-2xl border border-border bg-card text-card-foreground shadow-xl"
+                    style="max-height: 90vh"
+                >
+                    <div class="relative flex-shrink-0">
+                        <img
+                            :src="drink.main_image"
+                            :alt="drink.name"
+                            class="h-32 w-full rounded-t-2xl object-cover"
+                        />
+                        <button
+                            @click="$emit('close')"
+                            class="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-popover/90 text-popover-foreground hover:bg-popover"
+                        >
+                            ✕
+                        </button>
                     </div>
 
-                    <div class="mb-3">
-                        <h3
-                            class="mb-2 text-xs font-semibold tracking-wider text-card-foreground uppercase"
-                        >
-                            {{ t('drinks.addDrinkModal.specialInstructions') }}
-                        </h3>
-                        <div class="relative">
-                            <textarea
-                                v-model="notes"
-                                rows="1"
-                                :placeholder="
-                                    t(
-                                        'drinks.addDrinkModal.specialInstructionsPlaceholder',
-                                    )
-                                "
-                                class="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
-                                :class="{
-                                    'border-primary ring-2 ring-primary/20':
-                                        notes.length > 0,
-                                }"
-                            ></textarea>
-                            <div
-                                v-if="notes.length > 0"
-                                class="absolute right-2 bottom-2 text-xs text-muted-foreground"
+                    <div class="flex-1 overflow-y-auto p-4">
+                        <div class="mb-3">
+                            <div class="flex items-start justify-between">
+                                <h2 class="text-lg font-bold uppercase">
+                                    {{ drink.name }}
+                                </h2>
+                                <span class="text-lg font-bold text-primary">
+                                    €{{ formatPrice(drink.price) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h3
+                                class="mb-2 text-xs font-semibold tracking-wider text-card-foreground uppercase"
                             >
-                                {{ notes.length }}/500
+                                {{
+                                    t(
+                                        'drinks.addDrinkModal.specialInstructions',
+                                    )
+                                }}
+                            </h3>
+                            <div class="relative">
+                                <textarea
+                                    v-model="notes"
+                                    rows="1"
+                                    :placeholder="
+                                        t(
+                                            'drinks.addDrinkModal.specialInstructionsPlaceholder',
+                                        )
+                                    "
+                                    class="w-full resize-none rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
+                                    :class="{
+                                        'border-primary ring-2 ring-primary/20':
+                                            notes.length > 0,
+                                    }"
+                                ></textarea>
+                                <div
+                                    v-if="notes.length > 0"
+                                    class="absolute right-2 bottom-2 text-xs text-muted-foreground"
+                                >
+                                    {{ notes.length }}/500
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h3
+                                class="mb-2 text-xs font-semibold tracking-wider text-card-foreground uppercase"
+                            >
+                                {{ t('drinks.addDrinkModal.quantity') }}
+                            </h3>
+                            <div class="flex items-center gap-3">
+                                <button
+                                    @click="decrementQuantity"
+                                    :disabled="quantity <= 1"
+                                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-input bg-background text-foreground transition hover:border-primary hover:bg-primary/10 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    −
+                                </button>
+                                <span
+                                    class="w-10 text-center text-lg font-semibold"
+                                >
+                                    {{ quantity }}
+                                </span>
+                                <button
+                                    @click="incrementQuantity"
+                                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-input bg-background text-foreground transition hover:border-primary hover:bg-primary/10 hover:text-primary"
+                                >
+                                    +
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <h3
-                            class="mb-2 text-xs font-semibold tracking-wider text-card-foreground uppercase"
-                        >
-                            {{ t('drinks.addDrinkModal.quantity') }}
-                        </h3>
-                        <div class="flex items-center gap-3">
-                            <button
-                                @click="decrementQuantity"
-                                :disabled="quantity <= 1"
-                                class="flex h-8 w-8 items-center justify-center rounded-lg border border-input bg-background text-foreground transition hover:border-primary hover:bg-primary/10 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                −
-                            </button>
+                    <div class="border-t border-border p-5 pt-4">
+                        <div class="mb-3 flex items-center justify-between">
                             <span
-                                class="w-10 text-center text-lg font-semibold"
+                                class="text-xs tracking-wider text-muted-foreground uppercase"
                             >
-                                {{ quantity }}
+                                {{ t('drinks.addDrinkModal.total') }}
                             </span>
+                            <span class="text-2xl font-bold text-primary">
+                                €{{ totalPrice.toFixed(2) }}
+                            </span>
+                        </div>
+
+                        <div class="flex gap-2">
                             <button
-                                @click="incrementQuantity"
-                                class="flex h-8 w-8 items-center justify-center rounded-lg border border-input bg-background text-foreground transition hover:border-primary hover:bg-primary/10 hover:text-primary"
+                                @click="emit('close')"
+                                class="flex-1 rounded-lg border border-input bg-background py-3 text-sm font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
                             >
-                                +
+                                {{ t('drinks.addDrinkModal.cancel') }}
+                            </button>
+                            <button
+                                @click="addToCart"
+                                class="group relative flex-1 overflow-hidden rounded-lg bg-gradient-to-r from-primary to-primary/80 py-3 text-primary-foreground transition-all hover:shadow-lg hover:shadow-primary/20"
+                            >
+                                <span
+                                    class="relative z-10 flex items-center justify-center"
+                                >
+                                    <span
+                                        v-if="isLoading"
+                                        class="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent text-primary-foreground"
+                                    ></span>
+                                    <span v-else>
+                                        {{
+                                            t('drinks.addDrinkModal.addToCart')
+                                        }}
+                                        <span
+                                            class="animate-arrow ml-2 inline-block"
+                                            >→</span
+                                        >
+                                    </span>
+                                </span>
+                                <div
+                                    class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-primary/90 to-primary transition-transform duration-300 group-hover:translate-x-0"
+                                ></div>
                             </button>
                         </div>
                     </div>
                 </div>
-
-                <div class="border-t border-border p-5 pt-4">
-                    <div class="mb-3 flex items-center justify-between">
-                        <span
-                            class="text-xs tracking-wider text-muted-foreground uppercase"
-                        >
-                            {{ t('drinks.addDrinkModal.total') }}
-                        </span>
-                        <span class="text-2xl font-bold text-primary">
-                            €{{ totalPrice.toFixed(2) }}
-                        </span>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button
-                            @click="emit('close')"
-                            class="flex-1 rounded-lg border border-input bg-background py-3 text-sm font-medium text-foreground transition hover:bg-accent hover:text-accent-foreground"
-                        >
-                            {{ t('drinks.addDrinkModal.cancel') }}
-                        </button>
-                        <button
-                            @click="addToCart"
-                            class="group relative flex-1 overflow-hidden rounded-lg bg-gradient-to-r from-primary to-primary/80 py-3 text-primary-foreground transition-all hover:shadow-lg hover:shadow-primary/20"
-                        >
-                            <span
-                                class="relative z-10 flex items-center justify-center"
-                            >
-                                <span
-                                    v-if="isLoading"
-                                    class="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent text-primary-foreground"
-                                ></span>
-                                <span v-else>
-                                    {{ t('drinks.addDrinkModal.addToCart') }}
-                                    <span
-                                        class="animate-arrow ml-2 inline-block"
-                                        >→</span
-                                    >
-                                </span>
-                            </span>
-                            <div
-                                class="absolute inset-0 -translate-x-full transform bg-gradient-to-r from-primary/90 to-primary transition-transform duration-300 group-hover:translate-x-0"
-                            ></div>
-                        </button>
-                    </div>
-                </div>
             </div>
-        </div>
-    </Transition>
+        </Transition>
+    </Teleport>
 </template>
 
 <style scoped>
@@ -272,5 +272,28 @@ button:hover .animate-arrow {
 .fixed {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+}
+
+.client-modal-enter-active,
+.client-modal-leave-active {
+    transition: opacity 200ms ease;
+}
+
+.client-modal-enter-active .client-modal-panel,
+.client-modal-leave-active .client-modal-panel {
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease;
+}
+
+.client-modal-enter-from,
+.client-modal-leave-to {
+    opacity: 0;
+}
+
+.client-modal-enter-from .client-modal-panel,
+.client-modal-leave-to .client-modal-panel {
+    opacity: 0;
+    transform: translateY(-1rem) scale(0.95);
 }
 </style>

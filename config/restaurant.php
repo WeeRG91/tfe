@@ -4,6 +4,7 @@ return [
     'name' => env('RESTAURANT_NAME', 'Restaurant'),
 
     'contact_email' => env('RESTAURANT_CONTACT_EMAIL', 'hello@example.com'),
+    'contact_phone' => env('RESTAURANT_CONTACT_PHONE', '+32 123 45 67 89'),
 
     /*
    |--------------------------------------------------------------------------

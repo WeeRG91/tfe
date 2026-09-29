@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CartDrawer from '@/components/client/cart/CartDrawer.vue';
-import ClientGlobalSearchModal from '@/components/client/ClientGlobalSearchModal.vue';
+import ClientGlobalSearchModal from '@/components/client/clientLayout/ClientGlobalSearchModal.vue';
 import ChatBubble from '@/components/client/clientLayout/ChatBubble.vue';
 import ClientFooter from '@/components/client/clientLayout/ClientFooter.vue';
 import LayoutHeader from '@/components/client/clientLayout/LayoutHeader.vue';
@@ -192,6 +192,7 @@ onUnmounted(() => {
         <ClientFooter
             :restaurant-name="page.props.restaurant.name"
             :contact-email="page.props.restaurant.contactEmail"
+            :contact-phone="page.props.restaurant.contactPhone"
         />
 
         <ChatBubble v-if="user" />
