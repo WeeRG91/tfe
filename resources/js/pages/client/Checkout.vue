@@ -89,7 +89,7 @@ const handleRemoveItem = async (cartItemId: number) => {
 <template>
     <Head :title="t('cart.checkoutPage.pageTitle')" />
     <ClientLayout>
-        <section class="mx-auto max-w-6xl px-6 py-4">
+        <section class="mx-auto max-w-6xl px-6 py-10 sm:py-14">
             <div class="mb-4">
                 <p class="text-sm tracking-widest text-primary uppercase">
                     [ {{ t('cart.checkoutPage.eyebrow') }} ]

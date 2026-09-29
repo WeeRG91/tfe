@@ -227,7 +227,7 @@ const goToSlide = (index: number) => {
 
 <template>
     <div ref="homeContentRoot">
-        <section data-home-section class="mx-auto max-w-5xl px-8 pt-14 pb-8">
+        <section data-home-section class="mx-auto max-w-5xl px-8 pt-10 sm:pt-14 pb-8">
             <Transition name="fade-slide" mode="out-in">
                 <p
                     data-home-reveal
@@ -407,7 +407,7 @@ const goToSlide = (index: number) => {
         <section
             data-home-section
             v-if="homepageReviews.length"
-            class="px-6 py-16 lg:px-8 lg:py-16"
+            class="px-6 py-10 lg:px-8 lg:py-16"
         >
             <div class="mx-auto max-w-6xl">
                 <header data-home-reveal class="max-w-3xl">

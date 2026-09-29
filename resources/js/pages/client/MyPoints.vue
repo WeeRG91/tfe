@@ -159,7 +159,7 @@ watch(filterPoint, resetAndReload);
     <Head :title="t('point.pageTitle')" />
 
     <ClientLayout>
-        <section class="mx-auto max-w-6xl px-4 py-3 md:px-6 md:py-4">
+        <section class="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14">
             <div class="mb-4 md:mb-6">
                 <p
                     class="text-xs tracking-widest text-primary uppercase md:text-sm"

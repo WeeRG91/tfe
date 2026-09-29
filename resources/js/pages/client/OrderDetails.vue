@@ -111,7 +111,7 @@ onUnmounted(() => {
 <template>
     <Head :title="t('order.orderDetailsPage.pageTitle')" />
     <ClientLayout>
-        <section v-if="currentOrder" class="mx-auto max-w-6xl px-6 py-4">
+        <section v-if="currentOrder" class="mx-auto max-w-6xl px-6 py-10 sm:py-14">
             <div class="mb-8">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>

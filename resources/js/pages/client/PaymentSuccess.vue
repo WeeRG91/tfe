@@ -122,7 +122,7 @@ onUnmounted(() => {
     />
 
     <ClientLayout>
-        <section class="mx-auto max-w-6xl px-6 py-4">
+        <section class="mx-auto max-w-6xl px-6 py-10 sm:py-14">
             <div class="mb-8">
                 <p class="mb-1 text-sm tracking-widest text-primary uppercase">
                     [ Payment Details ]
