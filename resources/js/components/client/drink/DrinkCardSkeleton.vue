@@ -41,18 +41,12 @@
                         ></div>
                     </div>
 
-                    <div
-                        class="h-4 w-6 animate-pulse rounded bg-muted"
-                    ></div>
+                    <div class="h-4 w-6 animate-pulse rounded bg-muted"></div>
                 </div>
 
                 <div class="mt-2 flex items-center justify-between">
-                    <div
-                        class="h-3 w-20 animate-pulse rounded bg-muted"
-                    ></div>
-                    <div
-                        class="h-5 w-12 animate-pulse rounded bg-muted"
-                    ></div>
+                    <div class="h-3 w-20 animate-pulse rounded bg-muted"></div>
+                    <div class="h-5 w-12 animate-pulse rounded bg-muted"></div>
                 </div>
             </div>
         </div>

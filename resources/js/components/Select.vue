@@ -88,12 +88,18 @@ onBeforeUnmount(() => {
                         : 'border-border focus:border-ring'
                 "
             >
-                <Badge v-if="selectedLabel()" :class="getCategoryBadgeColor(selectedValue ?? 1)">{{
-                    selectedLabel()
-                }}</Badge>
+                <Badge
+                    v-if="selectedLabel()"
+                    :class="getCategoryBadgeColor(selectedValue ?? 1)"
+                    >{{ selectedLabel() }}</Badge
+                >
                 <span
                     v-else
-                    :class="props.error ? 'text-destructive' : 'text-muted-foreground'"
+                    :class="
+                        props.error
+                            ? 'text-destructive'
+                            : 'text-muted-foreground'
+                    "
                     >{{ label }}...</span
                 >
             </button>
@@ -170,5 +176,4 @@ onBeforeUnmount(() => {
 .minimal-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--muted-foreground);
 }
-
 </style>

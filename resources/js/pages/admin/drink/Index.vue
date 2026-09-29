@@ -551,7 +551,11 @@ onBeforeUnmount(() => {
                             </TableCell>
                             <TableCell>
                                 <Badge
-                                    :class="getCategoryBadgeColor(drinkData.category.value)"
+                                    :class="
+                                        getCategoryBadgeColor(
+                                            drinkData.category.value,
+                                        )
+                                    "
                                     >{{
                                         t(
                                             `drink.categories.${drinkData.category.key}`,
@@ -574,7 +578,10 @@ onBeforeUnmount(() => {
                                         )
                                     }}</Badge
                                 >
-                                <Badge v-else class="bg-destructive text-destructive-foreground">
+                                <Badge
+                                    v-else
+                                    class="bg-destructive text-destructive-foreground"
+                                >
                                     {{
                                         t(
                                             `admin.status.${drinkData.is_available}`,

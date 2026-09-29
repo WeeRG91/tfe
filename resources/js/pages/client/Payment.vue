@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDateFormatter } from '@/composables/useDateFormatter';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import { getSpicyLevelLabels } from '@/lib/const';
 import {
@@ -7,22 +8,21 @@ import {
     getOrderTypeIcon,
 } from '@/lib/utils';
 import paymentOrder from '@/routes/payment-order';
+import { DeliveryTypeEnum } from '@/types/delivery';
 import { OrderType, OrderTypeEnum } from '@/types/order';
 import { Head } from '@inertiajs/vue3';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import {
+    Building2,
     CreditCard,
     HandCoins,
     MapPin,
     Soup,
     User,
-    Building2,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useDateFormatter } from '@/composables/useDateFormatter';
-import { DeliveryTypeEnum } from '@/types/delivery';
 
 const props = defineProps<{
     order: OrderType;

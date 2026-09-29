@@ -20,6 +20,7 @@ import order from '@/routes/order';
 import paymentOrder from '@/routes/payment-order';
 import { useOrderStore } from '@/stores/order';
 import { AddressType } from '@/types/address';
+import { DeliveryOptionsType, DeliveryTypeEnum } from '@/types/delivery';
 import { OrderType, OrderTypeEnum, OrderTypeType } from '@/types/order';
 import { PaymentMethodType } from '@/types/payment';
 import { Head, router } from '@inertiajs/vue3';
@@ -27,7 +28,6 @@ import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { DeliveryOptionsType, DeliveryTypeEnum } from '@/types/delivery';
 
 const props = defineProps<{
     orderToReorder: OrderType;

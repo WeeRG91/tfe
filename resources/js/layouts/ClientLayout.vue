@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import CartDrawer from '@/components/client/cart/CartDrawer.vue';
-import ClientGlobalSearchModal from '@/components/client/clientLayout/ClientGlobalSearchModal.vue';
 import ChatBubble from '@/components/client/clientLayout/ChatBubble.vue';
 import ClientFooter from '@/components/client/clientLayout/ClientFooter.vue';
+import ClientGlobalSearchModal from '@/components/client/clientLayout/ClientGlobalSearchModal.vue';
 import LayoutHeader from '@/components/client/clientLayout/LayoutHeader.vue';
 import RestaurantClosedModal from '@/components/client/clientLayout/RestaurantClosedModal.vue';
 import RestaurantClosureBanner from '@/components/client/clientLayout/RestaurantClosureBanner.vue';

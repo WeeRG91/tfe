@@ -4,11 +4,18 @@ import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import ThemePreviewCard from '@/components/theme/ThemePreviewCard.vue';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { usePermission } from '@/composables/usePermission';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit } from '@/routes/appearance';
+import {
+    edit as editCustomTheme,
+    store as storeCustomTheme,
+} from '@/routes/appearance/custom-themes';
 import { update as updateRestaurantDefault } from '@/routes/appearance/restaurant-default';
+import { builtInThemes } from '@/themes/registry';
 import type { BreadcrumbItem } from '@/types';
 import { AdminPermissionEnum } from '@/types/permission';
 import type {
@@ -20,13 +27,6 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import {
-    store as storeCustomTheme,
-    edit as editCustomTheme,
-} from '@/routes/appearance/custom-themes';
-import { builtInThemes } from '@/themes/registry';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 const props = defineProps<{
     availableThemes: ThemeDefinition[];

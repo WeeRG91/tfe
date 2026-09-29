@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import HomeLandingPage from '@/components/client/home/HomeLandingPage.vue';
-import { ClientDishType } from '@/types/dish';
+import type { ClientDishType } from '@/types/dish';
+import type { HomepageReviewType } from '@/types/rating';
 import { Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
 defineProps<{
     recommendedDishes: ClientDishType[];
+    homepageReviews: HomepageReviewType[];
 }>();
 
 const { t } = useI18n();
@@ -13,7 +15,10 @@ const { t } = useI18n();
 
 <template>
     <Head :title="t('home.pageTitle')" />
-    <HomeLandingPage :recommended-dishes="recommendedDishes" />
+    <HomeLandingPage
+        :recommended-dishes="recommendedDishes"
+        :homepage-reviews="homepageReviews"
+    />
 </template>
 
 <style scoped></style>

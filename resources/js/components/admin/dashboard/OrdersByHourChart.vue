@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ChartColors } from '@/composables/useChartColors';
 import { BarChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent } from 'echarts/components';
 import { use, type EChartsCoreOption } from 'echarts/core';
@@ -6,7 +7,6 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { computed } from 'vue';
 import VChart from 'vue-echarts';
 import { useI18n } from 'vue-i18n';
-import type { ChartColors } from '@/composables/useChartColors';
 
 const props = defineProps<{
     ordersByHour: {

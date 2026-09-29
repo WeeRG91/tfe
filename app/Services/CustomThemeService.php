@@ -25,8 +25,7 @@ readonly class CustomThemeService
         string $name,
         string $baseThemeKey,
         User $actor,
-    ): CustomTheme
-    {
+    ): CustomTheme {
         $name = trim($name);
 
         Validator::make(
@@ -94,8 +93,7 @@ readonly class CustomThemeService
     public function publishTheme(
         CustomTheme $theme,
         User $actor,
-    ): CustomTheme
-    {
+    ): CustomTheme {
         $colors = $this->validatePalette($theme->colors);
         $this->assertReadablePalette($colors);
 
@@ -113,8 +111,7 @@ readonly class CustomThemeService
     public function deleteTheme(
         CustomTheme $theme,
         User $actor,
-    ): void
-    {
+    ): void {
         DB::transaction(function () use ($theme, $actor): void {
             RestaurantThemeSetting::query()
                 ->where('default_client_theme_key', $theme->key)
@@ -130,6 +127,7 @@ readonly class CustomThemeService
 
     /**
      * @return array<string, string>
+     *
      * @throws JsonException
      */
     private function validatePalette(mixed $colors): array

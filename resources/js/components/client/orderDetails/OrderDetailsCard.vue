@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { useDateFormatter } from '@/composables/useDateFormatter';
 import { formatAddress, getOrderTypeIcon } from '@/lib/utils';
+import { DeliveryTypeEnum } from '@/types/delivery';
 import { OrderType, OrderTypeEnum } from '@/types/order';
 import { PaymentMethodEnum } from '@/types/payment';
 import {
+    Building2,
     Coins,
     CreditCard,
     FileText,
     MapPin,
     User,
-    Building2,
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
-import { DeliveryTypeEnum } from '@/types/delivery';
 
 defineProps<{
     orderToShow: OrderType;
@@ -182,10 +182,7 @@ const { formatDate, formatDateOnly } = useDateFormatter();
                             ) || t('order.orderDetailsCard.notAvailable')
                         }}
                     </p>
-                    <p
-                        v-if="orderToShow.paid_at"
-                        class="text-sm text-success"
-                    >
+                    <p v-if="orderToShow.paid_at" class="text-sm text-success">
                         {{ t('order.orderDetailsCard.paidOn') }}
                         {{ formatDate(orderToShow.paid_at) }}
                     </p>
@@ -200,7 +197,9 @@ const { formatDate, formatDateOnly } = useDateFormatter();
                     <p class="text-sm text-muted-foreground">
                         {{ t('order.orderDetailsCard.orderNotes') }}
                     </p>
-                    <p class="text-sm text-muted-foreground">{{ orderToShow.notes }}</p>
+                    <p class="text-sm text-muted-foreground">
+                        {{ orderToShow.notes }}
+                    </p>
                 </div>
             </div>
         </div>

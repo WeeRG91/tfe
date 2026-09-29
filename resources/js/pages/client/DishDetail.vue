@@ -10,7 +10,7 @@ import { ClientDishType } from '@/types/dish';
 import { ReviewResultType, ReviewType } from '@/types/rating';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
-import { Flame, X, EllipsisVertical } from 'lucide-vue-next';
+import { EllipsisVertical, Flame, X } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';

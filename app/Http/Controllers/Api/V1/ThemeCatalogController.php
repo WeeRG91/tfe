@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Services\RestaurantThemeService;
 use App\Services\ThemeRegistry;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use JsonException;
 
 class ThemeCatalogController extends Controller
@@ -17,8 +16,7 @@ class ThemeCatalogController extends Controller
     public function __invoke(
         ThemeRegistry $themes,
         RestaurantThemeService $restaurantThemes,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         return response()->json([
             'data' => [
                 'default_theme_key' => $restaurantThemes->defaultClientThemeKey(),

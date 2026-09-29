@@ -194,11 +194,6 @@ onUnmounted(() => {
         <div ref="pageRoot">
             <section class="relative isolate overflow-hidden">
                 <div
-                    aria-hidden="true"
-                    class="pointer-events-none absolute top-1/4 -left-40 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-3xl"
-                />
-
-                <div
                     class="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:px-8 lg:py-24"
                 >
                     <div class="relative z-10">

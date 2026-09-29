@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -8,9 +9,9 @@ import AdminLayout from '@/layouts/AdminLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { edit as editAppearance } from '@/routes/appearance';
 import {
-    update as updateCustomTheme,
-    publish as publishCustomTheme,
     destroy as destroyCustomTheme,
+    publish as publishCustomTheme,
+    update as updateCustomTheme,
 } from '@/routes/appearance/custom-themes';
 import type { BreadcrumbItem } from '@/types';
 import type { ManagedCustomTheme, ThemeColors } from '@/types/theme';
@@ -18,7 +19,6 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import ConfirmModal from '@/components/ConfirmModal.vue';
 
 const props = defineProps<{
     customTheme: ManagedCustomTheme;

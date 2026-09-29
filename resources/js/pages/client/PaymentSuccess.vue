@@ -180,7 +180,9 @@ onUnmounted(() => {
             <div class="flex flex-col gap-6 lg:flex-row">
                 <div class="flex-1">
                     <div class="space-y-6">
-                        <div class="rounded-lg border border-border bg-card p-6 text-card-foreground">
+                        <div
+                            class="rounded-lg border border-border bg-card p-6 text-card-foreground"
+                        >
                             <div
                                 class="flex flex-wrap items-center justify-between gap-3"
                             >
@@ -188,7 +190,9 @@ onUnmounted(() => {
                                     <p class="text-sm text-muted-foreground">
                                         Order Number
                                     </p>
-                                    <p class="text-2xl font-bold text-card-foreground">
+                                    <p
+                                        class="text-2xl font-bold text-card-foreground"
+                                    >
                                         #{{ paidOrder.order_number }}
                                     </p>
                                 </div>

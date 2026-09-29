@@ -98,9 +98,7 @@ const goBack = () => {
     <section
         class="relative flex h-screen w-full items-center justify-center overflow-hidden bg-background px-6 py-16 text-foreground md:px-8"
     >
-        <div
-            class="animate-pulse-grid error-grid absolute inset-0"
-        ></div>
+        <div class="animate-pulse-grid error-grid absolute inset-0"></div>
 
         <div
             class="z-10 grid w-full max-w-7xl items-center gap-3 lg:grid-cols-[1fr_28rem]"

@@ -24,8 +24,7 @@ class CustomThemeController extends Controller
     public function store(
         StoreCustomThemeRequest $request,
         CustomThemeService $customThemes,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $validated = $request->validated();
 
         $customThemes->createDraft(
@@ -40,8 +39,7 @@ class CustomThemeController extends Controller
     public function edit(
         CustomTheme $customTheme,
         ThemeRegistry $themes,
-    ): Response
-    {
+    ): Response {
         return Inertia::render('settings/CustomThemeEdit', [
             'customTheme' => $themes->managedCustomThemeDefinition($customTheme),
         ]);
@@ -54,8 +52,7 @@ class CustomThemeController extends Controller
         UpdateCustomThemeRequest $request,
         CustomTheme $customTheme,
         CustomThemeService $customThemes,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $customThemes->updateTheme(
             $customTheme,
             $request->validated(),
@@ -72,8 +69,7 @@ class CustomThemeController extends Controller
         PublishCustomThemeRequest $request,
         CustomTheme $customTheme,
         CustomThemeService $customThemes,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $customThemes->publishTheme($customTheme, $request->user());
 
         return to_route('appearance.custom-themes.edit', $customTheme);
@@ -86,8 +82,7 @@ class CustomThemeController extends Controller
         Request $request,
         CustomTheme $customTheme,
         CustomThemeService $customThemes,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $customThemes->deleteTheme($customTheme, $request->user());
 
         return to_route('appearance.edit');

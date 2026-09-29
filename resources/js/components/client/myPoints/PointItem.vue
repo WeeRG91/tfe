@@ -104,7 +104,9 @@ const getPointPrefix = (type: PointTypeEnum) => {
                 {{ getPointPrefix(transaction.type.label as PointTypeEnum)
                 }}{{ transaction.points }}
             </p>
-            <p class="hidden text-[10px] text-muted-foreground md:block md:text-xs">
+            <p
+                class="hidden text-[10px] text-muted-foreground md:block md:text-xs"
+            >
                 {{ t(`common.pointFilters.${transaction.type.key}`) }}
             </p>
         </div>

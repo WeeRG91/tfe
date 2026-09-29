@@ -9,10 +9,10 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useRestaurantStore } from '@/stores/restaurant';
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { AppPageProps } from '@/types';
 import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const restaurantStore = useRestaurantStore();
 const { t } = useI18n();

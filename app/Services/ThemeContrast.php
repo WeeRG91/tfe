@@ -24,8 +24,7 @@ class ThemeContrast
     public static function ratio(
         string $first,
         string $second,
-    ): float
-    {
+    ): float {
         $a = self::luminance($first);
         $b = self::luminance($second);
 

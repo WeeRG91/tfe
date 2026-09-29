@@ -41,4 +41,14 @@ export default {
             'Explore a selection of freshly prepared dishes chosen from our menu.',
         viewMenu: 'View the full menu',
     },
+    reviews: {
+        eyebrow: 'Guest reviews',
+        title: 'Loved by our guests',
+        description:
+            'Authentic flavours, shared by the people who tasted them.',
+        verified: 'Verified customer',
+        dishLabel: 'Reviewed dish',
+        viewDish: 'View dish',
+        ratingLabel: 'Rated {rating} out of 5',
+    },
 };

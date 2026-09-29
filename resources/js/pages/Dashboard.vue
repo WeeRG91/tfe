@@ -3,13 +3,13 @@ import DailySalesChart from '@/components/admin/dashboard/DailySalesChart.vue';
 import OrdersByHourChart from '@/components/admin/dashboard/OrdersByHourChart.vue';
 import OrdersByTypeChart from '@/components/admin/dashboard/OrdersByTypeChart.vue';
 import TopDishesChart from '@/components/admin/dashboard/TopDishesChart.vue';
+import { useChartColors } from '@/composables/useChartColors';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { dashboard } from '@/routes/admin';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useChartColors } from '@/composables/useChartColors';
 
 const props = defineProps<{
     completedOrders: number;

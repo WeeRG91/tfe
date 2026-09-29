@@ -18,7 +18,6 @@ use App\Http\Controllers\Client\RestaurantAvailabilityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
-use Inertia\Inertia;
 
 Route::post('/locale', function (Request $request) {
     $validated = $request->validate([

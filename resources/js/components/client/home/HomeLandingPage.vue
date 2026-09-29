@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import HomeContent from '@/components/client/home/HomeContent.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
-import { ClientDishType } from '@/types/dish';
+import type { ClientDishType } from '@/types/dish';
+import type { HomepageReviewType } from '@/types/rating';
 import { gsap } from 'gsap';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 defineProps<{
     recommendedDishes: ClientDishType[];
+    homepageReviews: HomepageReviewType[];
 }>();
 
 const INTRO_STORAGE_KEY = 'home-intro-seen';
+
+const animationsReady = ref(false);
 
 onMounted(() => {
     const hasSeenIntro = sessionStorage.getItem(INTRO_STORAGE_KEY) === 'true';
@@ -28,6 +32,8 @@ onMounted(() => {
             overflowX: 'hidden',
         });
 
+        animationsReady.value = true;
+
         return;
     }
 
@@ -35,6 +41,7 @@ onMounted(() => {
         delay: 0,
         onComplete: () => {
             sessionStorage.setItem(INTRO_STORAGE_KEY, 'true');
+            animationsReady.value = true;
         },
     });
 
@@ -196,7 +203,11 @@ onMounted(() => {
         </div>
 
         <ClientLayout class="content opacity-0">
-            <HomeContent :recommended-dishes="recommendedDishes" />
+            <HomeContent
+                :recommended-dishes="recommendedDishes"
+                :homepage-reviews="homepageReviews"
+                :animations-ready="animationsReady"
+            />
         </ClientLayout>
     </div>
 </template>

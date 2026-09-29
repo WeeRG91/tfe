@@ -11,21 +11,21 @@ import {
     getPaymentStatusIcon,
     getPaymentStatusVariant,
 } from '@/lib/utils';
+import { DeliveryTypeEnum } from '@/types/delivery';
 import { OrderStatusEnum, OrderType, OrderTypeEnum } from '@/types/order';
 import {
     AlertCircle,
+    Building2,
+    CalendarDays,
+    Loader,
     MapPin,
     User,
     UserCircle,
     Utensils,
     X,
-    Building2,
-    CalendarDays,
-    Loader,
 } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { DeliveryTypeEnum } from '@/types/delivery';
 
 const props = defineProps<{
     order: OrderType | null;

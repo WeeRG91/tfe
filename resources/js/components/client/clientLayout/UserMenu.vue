@@ -47,7 +47,7 @@ useClickOutside(menuContainerRef, () => {
         <button
             v-if="user"
             @click="toggleUserMenu"
-            class="flex items-center gap-2 rounded-lg px-2 py-1 transition duration-300 hover:scale-110 cursor-pointer"
+            class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 transition duration-300 hover:scale-110"
         >
             <div
                 class="relative h-9 w-9 overflow-hidden rounded-full bg-primary"

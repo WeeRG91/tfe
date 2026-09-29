@@ -22,8 +22,7 @@ class RestaurantThemeController extends Controller
         Request $request,
         ThemeRegistry $themes,
         RestaurantThemeService $restaurantThemes,
-    ): Response
-    {
+    ): Response {
         return Inertia::render('settings/Appearance', [
             'availableThemes' => $themes->allPublishedThemes(),
             'defaultClientThemeKey' => $restaurantThemes->defaultClientThemeKey(),
@@ -41,8 +40,7 @@ class RestaurantThemeController extends Controller
     public function updateDefault(
         UpdateRestaurantThemeRequest $request,
         RestaurantThemeService $restaurantThemes,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $validated = $request->validated();
 
         $restaurantThemes->setDefaultClientTheme(

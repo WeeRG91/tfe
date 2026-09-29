@@ -28,7 +28,7 @@ const emit = defineEmits<{
     <button
         v-if="user"
         @click="emit('open-notifications')"
-        class="group relative hidden size-10 items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground sm:flex cursor-pointer"
+        class="group relative hidden size-10 cursor-pointer items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground sm:flex"
     >
         <Bell class="size-5" />
         <span
@@ -42,7 +42,7 @@ const emit = defineEmits<{
     <button
         v-if="user"
         @click="emit('open-cart')"
-        class="group relative hidden size-10 items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground sm:flex cursor-pointer"
+        class="group relative hidden size-10 cursor-pointer items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground sm:flex"
     >
         <ShoppingCart class="size-5" />
         <span

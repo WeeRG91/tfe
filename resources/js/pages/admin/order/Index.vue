@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import NotificationSoundToggle from '@/components/admin/NotificationSoundToggle.vue';
 import OrderCard from '@/components/admin/order/OrderCard.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import confirmedOrder from '@/routes/admin/confirmed-order';
@@ -22,7 +23,6 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import NotificationSoundToggle from '@/components/admin/NotificationSoundToggle.vue';
 
 const orderStore = useOrderStore();
 const { confirmedOrders } = storeToRefs(orderStore);

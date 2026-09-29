@@ -41,4 +41,14 @@ export default {
             'Découvrez une sélection de plats fraîchement préparés issus de notre menu.',
         viewMenu: 'Voir le menu complet',
     },
+    reviews: {
+        eyebrow: 'Avis clients',
+        title: 'Apprécié par nos clients',
+        description:
+            'Des saveurs authentiques, racontées par celles et ceux qui les ont goûtées.',
+        verified: 'Client vérifié',
+        dishLabel: 'Plat dégusté',
+        viewDish: 'Voir le plat',
+        ratingLabel: 'Note : {rating} sur 5',
+    },
 };

@@ -735,7 +735,7 @@ const closeConfirmModal = () => {
 }
 
 .order-scroll-container:hover {
-    scrollbar-color: var(--border)transparent;
+    scrollbar-color: var(--border) transparent;
 }
 
 .order-scroll-container::-webkit-scrollbar {
@@ -767,7 +767,7 @@ const closeConfirmModal = () => {
 }
 
 .points-scroll-container:hover {
-    scrollbar-color: var(--border)transparent;
+    scrollbar-color: var(--border) transparent;
 }
 
 .points-scroll-container::-webkit-scrollbar {

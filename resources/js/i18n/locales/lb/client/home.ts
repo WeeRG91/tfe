@@ -41,4 +41,14 @@ export default {
             'Entdeckt eng Auswiel u frësch preparéierte Platen aus eisem Menü.',
         viewMenu: 'De ganze Menü kucken',
     },
+    reviews: {
+        eyebrow: 'Gäschtbewäertungen',
+        title: 'Vun eise Gäscht geschätzt',
+        description:
+            'Authentesch Goûten, gedeelt vun de Leit, déi se geschmaacht hunn.',
+        verified: 'Verifizéierte Client',
+        dishLabel: 'Bewäerte Plat',
+        viewDish: 'Plat ukucken',
+        ratingLabel: '{rating} vu 5 Stären',
+    },
 };

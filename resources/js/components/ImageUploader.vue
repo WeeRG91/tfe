@@ -230,7 +230,9 @@ watch(
                     <Star
                         class="h-5.5 w-5.5"
                         :class="
-                            url === existingMainImage ? 'fill-warning text-warning' : ''
+                            url === existingMainImage
+                                ? 'fill-warning text-warning'
+                                : ''
                         "
                     />
                 </button>

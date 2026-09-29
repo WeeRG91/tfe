@@ -17,8 +17,7 @@ type AvailabilityResponse = {
     };
 };
 
-const CLOSED_WARNING_SESSION_KEY =
-    'restaurant-closed-warning-shown';
+const CLOSED_WARNING_SESSION_KEY = 'restaurant-closed-warning-shown';
 
 export const useRestaurantStore = defineStore('restaurant', {
     state: () => ({

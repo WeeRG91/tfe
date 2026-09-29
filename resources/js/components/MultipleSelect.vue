@@ -119,7 +119,11 @@ onBeforeUnmount(() => {
                     </span>
                     <span
                         v-if="selectedValues.length === 0"
-                        :class="props.error ? 'text-destructive' : 'text-muted-foreground'"
+                        :class="
+                            props.error
+                                ? 'text-destructive'
+                                : 'text-muted-foreground'
+                        "
                     >
                         {{ label }}...
                     </span>
@@ -210,5 +214,4 @@ onBeforeUnmount(() => {
 .minimal-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--muted-foreground);
 }
-
 </style>

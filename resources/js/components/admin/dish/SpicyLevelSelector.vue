@@ -34,7 +34,8 @@ const levels = computed(() => [
     {
         value: 3,
         label: t('dish.spicyLevel.hot'),
-        selectedClass: 'border-destructive bg-destructive text-destructive-foreground',
+        selectedClass:
+            'border-destructive bg-destructive text-destructive-foreground',
     },
 ]);
 

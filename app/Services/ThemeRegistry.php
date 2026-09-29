@@ -86,6 +86,7 @@ class ThemeRegistry
 
     /**
      * @return list<array<string, mixed>>
+     *
      * @throws JsonException
      */
     public function allPublishedThemes(): array
@@ -102,6 +103,7 @@ class ThemeRegistry
 
     /**
      * @return array<string, mixed>|null
+     *
      * @throws JsonException
      */
     public function findPublishedTheme(string $key): ?array
@@ -114,7 +116,7 @@ class ThemeRegistry
                 : null;
         }
 
-        if (!str_starts_with($key, 'custom/')) {
+        if (! str_starts_with($key, 'custom/')) {
             return null;
         }
 

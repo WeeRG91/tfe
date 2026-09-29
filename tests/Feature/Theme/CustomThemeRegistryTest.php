@@ -9,9 +9,9 @@ test('only published custom themes are available to clients', function () {
     $colors = $registry->fallbackTheme()['colors'];
 
     foreach ([
-                 ['key' => 'custom/published', 'name' => 'Published', 'published' => true],
-                 ['key' => 'custom/draft', 'name' => 'Draft', 'published' => false],
-             ] as $data) {
+        ['key' => 'custom/published', 'name' => 'Published', 'published' => true],
+        ['key' => 'custom/draft', 'name' => 'Draft', 'published' => false],
+    ] as $data) {
         CustomTheme::query()->create([
             ...$data,
             'mode' => 'light',
@@ -43,9 +43,9 @@ test('Inertia shares published custom themes but not drafts', function () {
     $colors = app(ThemeRegistry::class)->fallbackTheme()['colors'];
 
     foreach ([
-                 ['key' => 'custom/published', 'name' => 'Published', 'published' => true],
-                 ['key' => 'custom/draft', 'name' => 'Draft', 'published' => false],
-             ] as $data) {
+        ['key' => 'custom/published', 'name' => 'Published', 'published' => true],
+        ['key' => 'custom/draft', 'name' => 'Draft', 'published' => false],
+    ] as $data) {
         CustomTheme::query()->create([
             ...$data,
             'mode' => 'light',

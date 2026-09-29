@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import NotificationSoundToggle from '@/components/admin/NotificationSoundToggle.vue';
 import { useClickOutside } from '@/composables/useClickOutside';
 import { useDateFormatter } from '@/composables/useDateFormatter';
 import { useLocale } from '@/composables/useLocale';
@@ -30,7 +31,6 @@ import { storeToRefs } from 'pinia';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import NotificationSoundToggle from '@/components/admin/NotificationSoundToggle.vue';
 
 const { t } = useI18n();
 const { getIntlLocale } = useLocale();

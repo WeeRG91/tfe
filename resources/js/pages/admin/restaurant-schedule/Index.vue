@@ -375,7 +375,7 @@ const deleteClosure = async (): Promise<void> => {
     <Head :title="t('restaurantSchedule.title')" />
 
     <AdminLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-1 flex-col gap-6 p-4 overflow-y-auto">
+        <div class="flex flex-1 flex-col gap-6 overflow-y-auto p-4">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">
                     {{ t('restaurantSchedule.title') }}

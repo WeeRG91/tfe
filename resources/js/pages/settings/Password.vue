@@ -124,8 +124,7 @@ const handlePasswordInput = (event: Event) => {
                             </span>
                             <span
                                 :class="{
-                                    'text-success':
-                                        passwordChecks.uppercase,
+                                    'text-success': passwordChecks.uppercase,
                                 }"
                                 class="transition-colors duration-200"
                             >
@@ -138,8 +137,7 @@ const handlePasswordInput = (event: Event) => {
                             </span>
                             <span
                                 :class="{
-                                    'text-success':
-                                        passwordChecks.lowercase,
+                                    'text-success': passwordChecks.lowercase,
                                 }"
                                 class="transition-colors duration-200"
                             >

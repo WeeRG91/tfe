@@ -1,7 +1,7 @@
 import { AddressType } from '@/types/address';
 import { CategoryOptionType } from '@/types/category';
-import { PaymentMethodType, PaymentStatusType } from '@/types/payment';
 import { DeliveryTypeEnum } from '@/types/delivery';
+import { PaymentMethodType, PaymentStatusType } from '@/types/payment';
 
 export type OrderType = {
     id: number;
