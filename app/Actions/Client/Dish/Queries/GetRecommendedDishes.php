@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GetRecommendedDishes
 {
-    public function execute(int $limit = 3): AnonymousResourceCollection
+    public function execute(int $limit = 6): AnonymousResourceCollection
     {
         $dishes = Dish::query()
             ->where('is_available', true)
