@@ -49,22 +49,24 @@ export interface ThemePageProps {
     customThemes: ThemeDefinition[];
 }
 
+export interface RestaurantDetails {
+    name: string;
+    contactEmail: string;
+    contactPhone: string;
+    address: {
+        street: string;
+        postalCode: string;
+        city: string;
+        country: string;
+    };
+}
+
 export type AppPageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
     name: string;
     quote: { message: string; author: string };
-    restaurant: {
-        name: string;
-        contactEmail: string;
-        contactPhone: string;
-        address: {
-            street: string;
-            postalCode: string;
-            city: string;
-            country: string;
-        };
-    };
+    restaurant: RestaurantDetails;
     theme: ThemePageProps;
     features: {
         companyDelivery: boolean;

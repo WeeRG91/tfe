@@ -6,9 +6,9 @@ import type { AboutClosureType, AboutOpeningDayType } from '@/types/about';
 import { Head, usePage } from '@inertiajs/vue3';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Map } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Map } from 'lucide-vue-next';
 
 const cuisinePrinciples = [
     'aromatic',
@@ -664,7 +664,7 @@ onUnmounted(() => {
                                 class="mt-6 inline-flex items-center font-semibold text-primary transition-colors hover:text-primary/75"
                             >
                                 {{ t('about.location.directionsAction') }}
-                                <Map class="size-4 ml-1" />
+                                <Map class="ml-1 size-4" />
                             </a>
                         </article>
 

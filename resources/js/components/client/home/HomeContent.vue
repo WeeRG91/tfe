@@ -227,7 +227,10 @@ const goToSlide = (index: number) => {
 
 <template>
     <div ref="homeContentRoot">
-        <section data-home-section class="mx-auto max-w-5xl px-8 pt-10 sm:pt-14 pb-8">
+        <section
+            data-home-section
+            class="mx-auto max-w-5xl px-8 pt-10 pb-8 sm:pt-14"
+        >
             <Transition name="fade-slide" mode="out-in">
                 <p
                     data-home-reveal

@@ -2,6 +2,7 @@
 import { useDateFormatter } from '@/composables/useDateFormatter';
 import { getSpicyLevelLabels } from '@/lib/const';
 import { formatPrice } from '@/lib/utils';
+import { RestaurantDetails } from '@/types';
 import { OrderType } from '@/types/order';
 import { PaymentMethodEnum } from '@/types/payment';
 import { computed } from 'vue';
@@ -9,6 +10,7 @@ import { useI18n } from 'vue-i18n';
 
 defineProps<{
     orderToShow: OrderType;
+    restaurantDetails: RestaurantDetails;
 }>();
 
 const { t } = useI18n();
@@ -19,11 +21,18 @@ const { formatDate } = useDateFormatter();
 <template>
     <div class="receipt">
         <div class="mb-2 text-center">
-            <h2 class="text-lg font-bold">WEE RESTAURANT</h2>
-            <p>Rue de Wee 123</p>
-            <p>6000 Arlon, Belgium</p>
+            <h2 class="text-lg font-bold">{{ restaurantDetails.name }}</h2>
+            <p>{{ restaurantDetails.address.street }}</p>
+            <p>
+                {{ restaurantDetails.address.postalCode }}
+                {{ restaurantDetails.address.city }},
+                {{ restaurantDetails.address.country }}
+            </p>
             <p>{{ t('order.receipt.vatNumber') }}: BE0123.456.789</p>
-            <p>{{ t('order.receipt.telephone') }}: +32 123 45 67 89</p>
+            <p>
+                {{ t('order.receipt.telephone') }}:
+                {{ restaurantDetails.contactPhone }}
+            </p>
         </div>
 
         <div class="divider"></div>

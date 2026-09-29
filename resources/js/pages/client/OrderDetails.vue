@@ -111,7 +111,10 @@ onUnmounted(() => {
 <template>
     <Head :title="t('order.orderDetailsPage.pageTitle')" />
     <ClientLayout>
-        <section v-if="currentOrder" class="mx-auto max-w-6xl px-6 py-10 sm:py-14">
+        <section
+            v-if="currentOrder"
+            class="mx-auto max-w-6xl px-6 py-10 sm:py-14"
+        >
             <div class="mb-8">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
@@ -170,7 +173,11 @@ onUnmounted(() => {
         </section>
 
         <div id="receipt" class="hidden">
-            <OrderReceipt v-if="currentOrder" :order-to-show="currentOrder" />
+            <OrderReceipt
+                v-if="currentOrder"
+                :order-to-show="currentOrder"
+                :restaurant-details="page.props.restaurant"
+            />
         </div>
     </ClientLayout>
 </template>

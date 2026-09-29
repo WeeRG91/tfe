@@ -11,6 +11,7 @@ import { router } from '@inertiajs/vue3';
 import {
     Bell,
     HandPlatter,
+    House,
     Info,
     LogIn,
     LogOut,
@@ -19,7 +20,6 @@ import {
     User,
     Wine,
     X,
-    House,
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 

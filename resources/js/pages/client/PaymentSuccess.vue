@@ -10,13 +10,15 @@ import order from '@/routes/order';
 import paymentOrder from '@/routes/payment-order';
 import { OrderType } from '@/types/order';
 import { PaymentStatusEnum } from '@/types/payment';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
     orderToPay: OrderType;
 }>();
+
+const page = usePage();
 
 const paidOrder = ref<OrderType>(props.orderToPay);
 const isPaid = computed(
@@ -229,7 +231,10 @@ onUnmounted(() => {
         </section>
 
         <div id="receipt" class="hidden">
-            <OrderReceipt :order-to-show="paidOrder" />
+            <OrderReceipt
+                :order-to-show="paidOrder"
+                :restaurant-details="page.props.restaurant"
+            />
         </div>
     </ClientLayout>
 </template>
