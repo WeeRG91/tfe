@@ -58,6 +58,12 @@ export type AppPageProps<
         name: string;
         contactEmail: string;
         contactPhone: string;
+        address: {
+            street: string;
+            postalCode: string;
+            city: string;
+            country: string;
+        };
     };
     theme: ThemePageProps;
     features: {

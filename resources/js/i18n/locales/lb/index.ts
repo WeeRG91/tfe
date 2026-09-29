@@ -26,6 +26,7 @@ import resetPassword from '@/i18n/locales/lb/auth/resetPassword';
 import twoFactorChallenge from '@/i18n/locales/lb/auth/twoFactorChallenge';
 import verifyEmail from '@/i18n/locales/lb/auth/verifyEmail';
 
+import about from '@/i18n/locales/lb/client/about';
 import cart from '@/i18n/locales/lb/client/cart';
 import chatBubble from '@/i18n/locales/lb/client/chatBubble';
 import common from '@/i18n/locales/lb/client/common';
@@ -74,6 +75,7 @@ export default {
     twoFactorChallenge,
     verifyEmail,
 
+    about,
     cart,
     chatBubble,
     common,

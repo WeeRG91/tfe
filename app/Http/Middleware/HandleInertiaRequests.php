@@ -58,6 +58,12 @@ class HandleInertiaRequests extends Middleware
                 'name' => config('restaurant.name'),
                 'contactEmail' => config('restaurant.contact_email'),
                 'contactPhone' => config('restaurant.contact_phone'),
+                'address' => [
+                    'street' => config('restaurant.address.street'),
+                    'postalCode' => config('restaurant.address.postal_code'),
+                    'city' => config('restaurant.address.city'),
+                    'country' => config('restaurant.address.country'),
+                ],
             ],
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'theme' => [

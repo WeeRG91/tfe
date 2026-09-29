@@ -5,6 +5,27 @@ return [
 
     'contact_email' => env('RESTAURANT_CONTACT_EMAIL', 'hello@example.com'),
     'contact_phone' => env('RESTAURANT_CONTACT_PHONE', '+32 123 45 67 89'),
+    'address' => [
+        'street' => env(
+            'RESTAURANT_ADDRESS_STREET',
+            '1 Rue du Wee',
+        ),
+
+        'postal_code' => env(
+            'RESTAURANT_ADDRESS_POSTAL_CODE',
+            '6747',
+        ),
+
+        'city' => env(
+            'RESTAURANT_ADDRESS_CITY',
+            'Arlon',
+        ),
+
+        'country' => env(
+            'RESTAURANT_ADDRESS_COUNTRY',
+            'Belgium',
+        ),
+    ],
 
     /*
    |--------------------------------------------------------------------------

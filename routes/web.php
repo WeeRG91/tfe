@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Client\AboutController;
 use App\Http\Controllers\Client\AddressController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\ChatController;
@@ -40,6 +41,8 @@ Route::post('/locale', function (Request $request) {
 })->name('locale.update');
 
 Route::get('/', HomeController::class)->name('home');
+
+Route::get('/about', AboutController::class)->name('about');
 
 Route::get('/restaurant/availability', RestaurantAvailabilityController::class)
     ->name('restaurant.availability');

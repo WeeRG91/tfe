@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import RestaurantLogo from '@/components/RestaurantLogo.vue';
-import { login, logout } from '@/routes';
+import { about, login, logout } from '@/routes';
 import cart from '@/routes/cart';
 import clientProfile from '@/routes/client-profile';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
@@ -15,7 +15,6 @@ import {
     LogIn,
     LogOut,
     NotepadText,
-    Phone,
     ShoppingCart,
     User,
     Wine,
@@ -258,29 +257,29 @@ const handleLogout = () => {
                         </a>
 
                         <a
+                            :href="about().url"
                             @click="emit('close')"
-                            href="#"
-                            class="flex items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
+                            :class="[
+                                'flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-200',
+                                currentPath === about().url
+                                    ? 'bg-accent text-accent-foreground shadow-sm'
+                                    : 'text-card-foreground hover:bg-accent hover:text-primary',
+                            ]"
                         >
-                            <div class="rounded-lg bg-muted p-2">
+                            <div
+                                :class="[
+                                    'rounded-lg p-2 transition-all duration-200',
+                                    currentPath === about().url
+                                        ? 'bg-primary/10'
+                                        : 'bg-muted',
+                                ]"
+                            >
                                 <Info class="h-5 w-5" />
                             </div>
-                            <span class="font-medium">{{
-                                t('navigation.about')
-                            }}</span>
-                        </a>
 
-                        <a
-                            @click="emit('close')"
-                            href="#"
-                            class="flex items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
-                        >
-                            <div class="rounded-lg bg-muted p-2">
-                                <Phone class="h-5 w-5" />
-                            </div>
-                            <span class="font-medium">{{
-                                t('navigation.contact')
-                            }}</span>
+                            <span class="font-medium">
+                                {{ t('navigation.about') }}
+                            </span>
                         </a>
                     </nav>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { about } from '@/routes';
 import menu from '@/routes/menu';
 import { useI18n } from 'vue-i18n';
 
@@ -46,17 +47,20 @@ defineProps<{
         </a>
 
         <a
-            href="#"
-            class="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            :href="about().url"
+            :class="[
+                'relative rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                currentPath === about().url
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+            ]"
         >
             {{ t('navigation.about') }}
-        </a>
 
-        <a
-            href="#"
-            class="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-            {{ t('navigation.contact') }}
+            <span
+                v-if="currentPath === about().url"
+                class="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary"
+            />
         </a>
     </nav>
 </template>
