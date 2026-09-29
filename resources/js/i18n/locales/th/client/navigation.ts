@@ -1,4 +1,5 @@
 export default {
+    home: 'หน้าหลัก',
     menu: 'เมนู',
     drinks: 'เครื่องดื่ม',
     about: 'เกี่ยวกับเรา',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import RestaurantLogo from '@/components/RestaurantLogo.vue';
-import { about, login, logout } from '@/routes';
+import { about, home, login, logout } from '@/routes';
 import cart from '@/routes/cart';
 import clientProfile from '@/routes/client-profile';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
@@ -19,6 +19,7 @@ import {
     User,
     Wine,
     X,
+    House,
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 
@@ -111,6 +112,32 @@ const handleLogout = () => {
                     </div>
 
                     <nav class="flex-1 space-y-1 overflow-y-auto p-4">
+                        <a
+                            @click="emit('close')"
+                            :href="home().url"
+                            :class="[
+                                'flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-200',
+                                currentPath === home().url
+                                    ? 'bg-accent text-accent-foreground shadow-sm'
+                                    : 'text-card-foreground hover:bg-accent hover:text-accent-foreground',
+                            ]"
+                        >
+                            <div
+                                :class="[
+                                    'rounded-lg p-2 transition-all duration-200',
+                                    currentPath === home().url
+                                        ? 'bg-primary/10'
+                                        : 'bg-muted',
+                                ]"
+                            >
+                                <House class="h-5 w-5" />
+                            </div>
+
+                            <span class="font-medium">
+                                {{ t('navigation.home') }}
+                            </span>
+                        </a>
+
                         <div v-if="user" class="mt-4 space-y-1">
                             <a
                                 @click="emit('close')"
@@ -142,6 +169,7 @@ const handleLogout = () => {
                                     t('navigation.userMenu.orders')
                                 }}</span>
                             </a>
+
                             <a
                                 @click="emit('close')"
                                 :href="loyaltyPointTransaction.myPoints().url"
@@ -161,50 +189,51 @@ const handleLogout = () => {
                                     t('navigation.userMenu.points')
                                 }}</span>
                             </a>
+
+                            <a
+                                :href="notification.myNotifications().url"
+                                class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
+                            >
+                                <div class="relative rounded-lg bg-muted p-2">
+                                    <Bell class="h-5 w-5" />
+                                    <span
+                                        v-if="unreadNotificationsCount > 0"
+                                        class="absolute -top-1 -right-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground"
+                                    >
+                                        {{
+                                            unreadNotificationsCount > 9
+                                                ? '9+'
+                                                : unreadNotificationsCount
+                                        }}
+                                    </span>
+                                </div>
+                                <span class="font-medium">{{
+                                    t('navigation.userMenu.notifications')
+                                }}</span>
+                            </a>
+
+                            <a
+                                :href="cart.checkout().url"
+                                class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
+                            >
+                                <div class="relative rounded-lg bg-muted p-2">
+                                    <ShoppingCart class="h-5 w-5" />
+                                    <span
+                                        v-if="cartItemCount > 0"
+                                        class="absolute -top-1 -right-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground"
+                                    >
+                                        {{
+                                            cartItemCount > 9
+                                                ? '9+'
+                                                : cartItemCount
+                                        }}
+                                    </span>
+                                </div>
+                                <span class="font-medium">{{
+                                    t('navigation.cart')
+                                }}</span>
+                            </a>
                         </div>
-
-                        <a
-                            :href="cart.checkout().url"
-                            class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
-                        >
-                            <div class="relative rounded-lg bg-muted p-2">
-                                <ShoppingCart class="h-5 w-5" />
-                                <span
-                                    v-if="cartItemCount > 0"
-                                    class="absolute -top-1 -right-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground"
-                                >
-                                    {{
-                                        cartItemCount > 9 ? '9+' : cartItemCount
-                                    }}
-                                </span>
-                            </div>
-                            <span class="font-medium">{{
-                                t('navigation.cart')
-                            }}</span>
-                        </a>
-
-                        <a
-                            v-if="user"
-                            :href="notification.myNotifications().url"
-                            class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
-                        >
-                            <div class="relative rounded-lg bg-muted p-2">
-                                <Bell class="h-5 w-5" />
-                                <span
-                                    v-if="unreadNotificationsCount > 0"
-                                    class="absolute -top-1 -right-1 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground"
-                                >
-                                    {{
-                                        unreadNotificationsCount > 9
-                                            ? '9+'
-                                            : unreadNotificationsCount
-                                    }}
-                                </span>
-                            </div>
-                            <span class="font-medium">{{
-                                t('navigation.userMenu.notifications')
-                            }}</span>
-                        </a>
 
                         <a
                             @click="emit('close')"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { about } from '@/routes';
+import { about, home } from '@/routes';
 import menu from '@/routes/menu';
 import { useI18n } from 'vue-i18n';
 
@@ -12,6 +12,23 @@ defineProps<{
 
 <template>
     <nav class="hidden items-center gap-1 md:flex lg:gap-2">
+        <a
+            :href="home().url"
+            :class="[
+                'relative rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                currentPath === home().url
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+            ]"
+        >
+            {{ t('navigation.home') }}
+
+            <span
+                v-if="currentPath === home().url"
+                class="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary"
+            />
+        </a>
+
         <a
             :href="menu.dish().url"
             :class="[

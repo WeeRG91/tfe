@@ -1,4 +1,5 @@
 export default {
+    home: 'Startsäit',
     menu: 'Menü',
     drinks: 'Gedrénks',
     about: 'Iwwer eis',

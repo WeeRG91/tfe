@@ -8,6 +8,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { Map } from 'lucide-vue-next';
 
 const cuisinePrinciples = [
     'aromatic',
@@ -663,7 +664,7 @@ onUnmounted(() => {
                                 class="mt-6 inline-flex items-center font-semibold text-primary transition-colors hover:text-primary/75"
                             >
                                 {{ t('about.location.directionsAction') }}
-                                <span aria-hidden="true" class="ml-2">↗</span>
+                                <Map class="size-4 ml-1" />
                             </a>
                         </article>
 

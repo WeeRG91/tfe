@@ -25,8 +25,12 @@ defineProps<{
             class="fixed top-12 left-0 h-0.5 w-full bg-gradient-to-r from-primary/80 via-primary/30 to-primary/80 sm:top-24"
         ></div>
 
-        <div class="fixed top-4 left-16 z-10 sm:top-14 sm:left-36">
+        <div class="fixed top-14 left-36 z-10 hidden sm:block">
             <RestaurantLogo size="xl" />
+        </div>
+
+        <div class="fixed top-6 left-18 z-10 sm:hidden">
+            <RestaurantLogo size="lg" />
         </div>
 
         <div
