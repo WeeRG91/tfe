@@ -51,4 +51,13 @@ export default {
         viewDish: 'View dish',
         ratingLabel: 'Rated {rating} out of 5',
     },
+    mobileApp: {
+        eyebrow: 'Kin Dee Mobile',
+        title: 'Kin Dee, wherever you are',
+        description:
+            'Order your favourite Thai dishes wherever you are with the Kin Dee mobile app.',
+        downloadAndroid: 'Download for Android',
+        downloadIos: 'Download for iOS',
+        comingSoon: 'Coming soon',
+    },
 };

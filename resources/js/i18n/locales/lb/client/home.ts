@@ -51,4 +51,13 @@ export default {
         viewDish: 'Plat ukucken',
         ratingLabel: '{rating} vu 5 Stären',
     },
+    mobileApp: {
+        eyebrow: 'Kin Dee Mobile',
+        title: 'Kin Dee, egal wou Dir sidd',
+        description:
+            'Bestellt Är léifsten thailännesch Platen iwwerall mat der Kin Dee Mobile-App.',
+        downloadAndroid: 'Fir Android eroflueden',
+        downloadIos: 'Fir iOS eroflueden',
+        comingSoon: 'Geschwënn verfügbar',
+    },
 };

@@ -3,16 +3,19 @@ import AnimatedButton from '@/components/AnimatedButton.vue';
 import DishCard from '@/components/client/menu/DishCard.vue';
 import menu from '@/routes/menu';
 import type { ClientDishType } from '@/types/dish';
+import type { MobileAppAvailability } from '@/types/mobile-app';
 import type { HomepageReviewType } from '@/types/rating';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { BadgeCheck, Quote, Star } from 'lucide-vue-next';
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import MobileAppSection from '@/components/client/home/MobileAppSection.vue';
 
 const props = defineProps<{
     recommendedDishes: ClientDishType[];
     homepageReviews: HomepageReviewType[];
+    mobileApp: MobileAppAvailability;
     animationsReady: boolean;
 }>();
 
@@ -406,6 +409,8 @@ const goToSlide = (index: number) => {
                 </div>
             </div>
         </section>
+
+        <MobileAppSection :mobile-app="mobileApp" />
 
         <section
             data-home-section

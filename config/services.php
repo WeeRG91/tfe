@@ -46,5 +46,9 @@ return [
             'MOBILE_PASSWORD_RESET_URL',
             'tfemobile://auth/reset-password',
         ),
+
+        'android_download_url' => env('MOBILE_ANDROID_DOWNLOAD_URL'),
+
+        'ios_download_url' => env('MOBILE_IOS_DOWNLOAD_URL'),
     ],
 ];

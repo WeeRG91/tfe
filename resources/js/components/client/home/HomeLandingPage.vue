@@ -2,18 +2,43 @@
 import HomeContent from '@/components/client/home/HomeContent.vue';
 import ClientLayout from '@/layouts/ClientLayout.vue';
 import type { ClientDishType } from '@/types/dish';
+import type { MobileAppAvailability } from '@/types/mobile-app';
 import type { HomepageReviewType } from '@/types/rating';
 import { gsap } from 'gsap';
-import { onMounted, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 
 defineProps<{
     recommendedDishes: ClientDishType[];
     homepageReviews: HomepageReviewType[];
+    mobileApp: MobileAppAvailability;
 }>();
 
 const INTRO_STORAGE_KEY = 'home-intro-seen';
 
 const animationsReady = ref(false);
+
+const scrollToMobileAppSection = async (): Promise<void> => {
+    if (window.location.hash !== '#mobile-app') {
+        return;
+    }
+
+    await nextTick();
+
+    const mobileAppSection = document.getElementById('mobile-app');
+
+    if (!mobileAppSection) {
+        return;
+    }
+
+    const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    mobileAppSection.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+    });
+};
 
 onMounted(() => {
     const hasSeenIntro = sessionStorage.getItem(INTRO_STORAGE_KEY) === 'true';
@@ -34,6 +59,8 @@ onMounted(() => {
 
         animationsReady.value = true;
 
+        void scrollToMobileAppSection();
+
         return;
     }
 
@@ -42,6 +69,8 @@ onMounted(() => {
         onComplete: () => {
             sessionStorage.setItem(INTRO_STORAGE_KEY, 'true');
             animationsReady.value = true;
+
+            void scrollToMobileAppSection();
         },
     });
 
@@ -206,6 +235,7 @@ onMounted(() => {
             <HomeContent
                 :recommended-dishes="recommendedDishes"
                 :homepage-reviews="homepageReviews"
+                :mobile-app="mobileApp"
                 :animations-ready="animationsReady"
             />
         </ClientLayout>

@@ -9,6 +9,7 @@ use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\LoyaltyPointTransactionController;
 use App\Http\Controllers\Client\MenuController;
 use App\Http\Controllers\Client\MessageController;
+use App\Http\Controllers\Client\MobileAppDownloadController;
 use App\Http\Controllers\Client\NotificationController;
 use App\Http\Controllers\Client\OrderController;
 use App\Http\Controllers\Client\PaymentController;
@@ -40,6 +41,15 @@ Route::post('/locale', function (Request $request) {
 })->name('locale.update');
 
 Route::get('/', HomeController::class)->name('home');
+
+Route::controller(MobileAppDownloadController::class)
+    ->prefix('app')
+    ->name('mobile-app.')
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/android', 'android')->name('android');
+        Route::get('/ios', 'ios')->name('ios');
+    });
 
 Route::get('/about', AboutController::class)->name('about');
 

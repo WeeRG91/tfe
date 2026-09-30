@@ -51,4 +51,13 @@ export default {
         viewDish: 'Voir le plat',
         ratingLabel: 'Note : {rating} sur 5',
     },
+    mobileApp: {
+        eyebrow: 'Kin Dee Mobile',
+        title: 'Kin Dee, où que vous soyez',
+        description:
+            'Commandez vos plats thaïlandais préférés où que vous soyez avec l’application mobile Kin Dee.',
+        downloadAndroid: 'Télécharger pour Android',
+        downloadIos: 'Télécharger pour iOS',
+        comingSoon: 'Bientôt disponible',
+    },
 };

@@ -50,4 +50,12 @@ export default {
         viewDish: 'ดูเมนู',
         ratingLabel: 'ให้คะแนน {rating} จาก 5',
     },
+    mobileApp: {
+        eyebrow: 'Kin Dee Mobile',
+        title: 'Kin Dee ไม่ว่าคุณจะอยู่ที่ไหน',
+        description: 'สั่งอาหารไทยจานโปรดของคุณได้ทุกที่ผ่านแอปมือถือ Kin Dee',
+        downloadAndroid: 'ดาวน์โหลดสำหรับ Android',
+        downloadIos: 'ดาวน์โหลดสำหรับ iOS',
+        comingSoon: 'เร็ว ๆ นี้',
+    },
 };
