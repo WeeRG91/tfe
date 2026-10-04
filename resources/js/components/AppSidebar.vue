@@ -147,7 +147,7 @@ const mainNavItems = computed<NavItem[]>(() => [
 const footerNavItems = computed<NavItem[]>(() => [
     {
         title: t('layout.navigation.myRestaurant'),
-        href: 'http://127.0.0.1:8000',
+        href: '/',
         icon: BookOpen,
     },
     {
