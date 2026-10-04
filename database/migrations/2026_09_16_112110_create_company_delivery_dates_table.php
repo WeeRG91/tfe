@@ -22,7 +22,10 @@ return new class extends Migration
 
             $table->unique(['delivery_company_id', 'delivery_date']);
 
-            $table->index(['delivery_company_id', 'is_available', 'delivery_date']);
+            $table->index(
+                ['delivery_company_id', 'is_available', 'delivery_date'],
+                'company_delivery_dates_availability_index',
+            );
         });
     }
 
