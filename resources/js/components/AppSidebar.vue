@@ -45,7 +45,6 @@ import {
     Building2,
     CalendarClock,
     Carrot,
-    Folder,
     LayoutGrid,
     MessageCircle,
     Salad,
@@ -149,11 +148,6 @@ const footerNavItems = computed<NavItem[]>(() => [
         title: t('layout.navigation.myRestaurant'),
         href: '/',
         icon: BookOpen,
-    },
-    {
-        title: t('layout.navigation.documentation'),
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: Folder,
     },
 ]);
 
