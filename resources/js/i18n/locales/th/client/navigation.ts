@@ -7,6 +7,7 @@ export default {
     contact: 'ติดต่อ',
     search: 'ค้นหา',
     userMenu: {
+        adminPanel: 'แผงผู้ดูแลระบบ',
         signIn: 'เข้าสู่ระบบ',
         profile: 'โปรไฟล์ของฉัน',
         orders: 'คำสั่งซื้อของฉัน',

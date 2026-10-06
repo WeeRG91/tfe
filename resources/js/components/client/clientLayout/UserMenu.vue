@@ -1,16 +1,26 @@
 <script setup lang="ts">
 import { useClickOutside } from '@/composables/useClickOutside';
+import { usePermission } from '@/composables/usePermission';
 import { login, logout } from '@/routes';
+import { dashboard } from '@/routes/admin';
 import clientProfile from '@/routes/client-profile';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 import order from '@/routes/order';
 import type { User as UserType } from '@/types/index';
+import { AdminPermissionEnum } from '@/types/permission';
 import { Link, router } from '@inertiajs/vue3';
-import { LogIn, NotepadText, Trophy, User } from 'lucide-vue-next';
+import {
+    LayoutDashboard,
+    LogIn,
+    NotepadText,
+    Trophy,
+    User,
+} from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const { can } = usePermission();
 
 defineProps<{
     user: UserType | null;
@@ -109,6 +119,15 @@ useClickOutside(menuContainerRef, () => {
                 >
                     <Trophy class="h-4 w-4" />
                     {{ t('navigation.userMenu.points') }}
+                </a>
+                <a
+                    v-if="can(AdminPermissionEnum.ADMIN_ACCESS)"
+                    :href="dashboard().url"
+                    @click="closeUserMenu"
+                    class="flex items-center gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                >
+                    <LayoutDashboard class="h-4 w-4" />
+                    {{ t('navigation.userMenu.adminPanel') }}
                 </a>
                 <button
                     @click="handleLogout"

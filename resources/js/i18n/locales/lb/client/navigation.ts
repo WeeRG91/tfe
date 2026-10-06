@@ -7,6 +7,7 @@ export default {
     contact: 'Kontakt',
     search: 'Sichen',
     userMenu: {
+        adminPanel: 'Administratioun',
         signIn: 'Umellen',
         profile: 'Mäi Profil',
         orders: 'Meng Bestellungen',

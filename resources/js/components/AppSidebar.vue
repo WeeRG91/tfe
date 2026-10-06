@@ -41,7 +41,6 @@ import { Link, usePage } from '@inertiajs/vue3';
 import {
     BeanOff,
     Beef,
-    BookOpen,
     Building2,
     CalendarClock,
     Carrot,
@@ -49,6 +48,7 @@ import {
     MessageCircle,
     Salad,
     SquareMenu,
+    Store,
     UserRoundPen,
     UserRoundPlus,
     Wine,
@@ -147,7 +147,7 @@ const footerNavItems = computed<NavItem[]>(() => [
     {
         title: t('layout.navigation.myRestaurant'),
         href: '/',
-        icon: BookOpen,
+        icon: Store,
     },
 ]);
 

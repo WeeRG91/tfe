@@ -7,6 +7,7 @@ export default {
     contact: 'Contact',
     search: 'Search',
     userMenu: {
+        adminPanel: 'Administration',
         signIn: 'Sign in',
         profile: 'My Profile',
         orders: 'My Orders',

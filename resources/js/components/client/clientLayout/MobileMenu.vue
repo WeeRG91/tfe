@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import RestaurantLogo from '@/components/RestaurantLogo.vue';
+import { usePermission } from '@/composables/usePermission';
 import { about, home, login, logout } from '@/routes';
+import { dashboard } from '@/routes/admin';
 import cart from '@/routes/cart';
 import clientProfile from '@/routes/client-profile';
 import loyaltyPointTransaction from '@/routes/loyalty-point-transaction';
 import menu from '@/routes/menu';
 import notification from '@/routes/notification';
 import order from '@/routes/order';
+import { AdminPermissionEnum } from '@/types/permission';
 import { router } from '@inertiajs/vue3';
 import {
     Bell,
     HandPlatter,
     House,
     Info,
+    LayoutDashboard,
     LogIn,
     LogOut,
     NotepadText,
@@ -24,6 +28,7 @@ import {
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const { can } = usePermission();
 
 defineProps<{
     open: boolean;
@@ -139,6 +144,19 @@ const handleLogout = () => {
                         </a>
 
                         <div v-if="user" class="mt-4 space-y-1">
+                            <a
+                                v-if="can(AdminPermissionEnum.ADMIN_ACCESS)"
+                                @click="emit('close')"
+                                :href="dashboard().url"
+                                class="flex items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
+                            >
+                                <div class="rounded-lg bg-muted p-2">
+                                    <LayoutDashboard class="h-5 w-5" />
+                                </div>
+                                <span class="font-medium">{{
+                                    t('navigation.userMenu.adminPanel')
+                                }}</span>
+                            </a>
                             <a
                                 @click="emit('close')"
                                 :href="clientProfile.edit().url"
