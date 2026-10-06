@@ -178,7 +178,6 @@ const setupHomeAnimations = async () => {
                     autoAlpha: 0,
                     y: 32,
                     duration: 0.7,
-                    stagger: 0.1,
                     ease: 'power3.out',
                     clearProps: 'transform,opacity,visibility',
                 });
