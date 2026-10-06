@@ -160,7 +160,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="flex min-h-screen flex-col bg-background text-foreground">
+    <div class="flex min-h-dvh flex-col bg-background text-foreground">
         <LayoutHeader
             :user="user"
             :cart-item-count="items.length"
