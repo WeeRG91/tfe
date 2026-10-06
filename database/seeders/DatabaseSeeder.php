@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,28 +13,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()
-            ->count(10)
-            ->withoutTwoFactor()
-            ->create();
-
-        User::factory()
-            ->withoutTwoFactor()
-            ->create([
-                'name' => 'Admin Restaurant',
-                'email' => 'admin@example.com',
-            ]);
-
-        User::factory()
-            ->withoutTwoFactor()
-            ->create([
-                'name' => 'Super Admin',
-                'email' => 'super_admin@example.com',
-            ]);
-
         $this->call([
             RestaurantHoursSeeder::class,
             RolesAndPermissionsSeeder::class,
         ]);
+
+        foreach ([
+            'admin@kindee.net' => ['Admin Restaurant', 'Admin'],
+            'super_admin@kindee.net' => ['Super Admin', 'Super Admin'],
+        ] as $email => [$name, $role]) {
+            $user = User::withTrashed()->firstOrCreate(
+                ['email' => $email],
+                User::factory()->withoutTwoFactor()->raw([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => Hash::make('PQJTt2zEX#tr'),
+                ]),
+            );
+
+            if ($user->wasRecentlyCreated) {
+                $user->assignRole($role);
+            }
+        }
     }
 }

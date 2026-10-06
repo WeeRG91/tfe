@@ -15,7 +15,6 @@ use App\Enums\Permissions\OrderPermissionEnum;
 use App\Enums\Permissions\PermissionCategoryEnum;
 use App\Enums\Permissions\RolePermissionEnum;
 use App\Enums\Permissions\UserPermissionEnum;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -48,7 +47,7 @@ class RolesAndPermissionsSeeder extends Seeder
         foreach ($permissionGroups as $category => $permissions) {
             foreach ($permissions as $permission) {
                 Permission::query()->firstOrCreate(
-                    ['name' => $permission->value],
+                    ['name' => $permission->value, 'guard_name' => 'web'],
                     ['category' => $category]
                 );
             }
@@ -57,14 +56,11 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdmin = Role::findOrCreate('Super Admin', 'web');
         $admin = Role::findOrCreate('Admin', 'web');
 
-        $superAdmin->syncPermissions(Permission::all());
-        $admin->syncPermissions(Permission::all());
-
-        $superUser = User::firstWhere('email', 'super_admin@example.com');
-        $user = User::firstWhere('email', 'admin@example.com');
-
-        $superUser?->syncRoles([$superAdmin]);
-        $user?->syncRoles([$admin]);
+        foreach ([$superAdmin, $admin] as $role) {
+            if ($role->wasRecentlyCreated) {
+                $role->givePermissionTo(Permission::query()->where('guard_name', 'web')->get());
+            }
+        }
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
