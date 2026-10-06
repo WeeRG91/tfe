@@ -99,28 +99,31 @@ useClickOutside(menuContainerRef, () => {
                         {{ user.email }}
                     </p>
                 </div>
-                <a
+                <Link
                     :href="clientProfile.edit().url"
+                    @click="closeUserMenu"
                     class="flex items-center gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     <User class="h-4 w-4" />
                     {{ t('navigation.userMenu.profile') }}
-                </a>
-                <a
+                </Link>
+                <Link
                     :href="order.myOrders().url"
+                    @click="closeUserMenu"
                     class="flex items-center gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     <NotepadText class="h-4 w-4" />
                     {{ t('navigation.userMenu.orders') }}
-                </a>
-                <a
+                </Link>
+                <Link
                     :href="loyaltyPointTransaction.myPoints().url"
+                    @click="closeUserMenu"
                     class="flex items-center gap-3 px-4 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                     <Trophy class="h-4 w-4" />
                     {{ t('navigation.userMenu.points') }}
-                </a>
-                <a
+                </Link>
+                <Link
                     v-if="can(AdminPermissionEnum.ADMIN_ACCESS)"
                     :href="dashboard().url"
                     @click="closeUserMenu"
@@ -128,7 +131,7 @@ useClickOutside(menuContainerRef, () => {
                 >
                     <LayoutDashboard class="h-4 w-4" />
                     {{ t('navigation.userMenu.adminPanel') }}
-                </a>
+                </Link>
                 <button
                     @click="handleLogout"
                     class="flex w-full items-center gap-3 px-4 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"

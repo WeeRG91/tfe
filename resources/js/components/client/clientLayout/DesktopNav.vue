@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { about, home } from '@/routes';
 import menu from '@/routes/menu';
+import { Link } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
@@ -12,7 +13,7 @@ defineProps<{
 
 <template>
     <nav class="hidden items-center gap-1 md:flex lg:gap-2">
-        <a
+        <Link
             :href="home().url"
             :class="[
                 'relative rounded-lg px-3 py-2 text-sm font-medium transition-colors',
@@ -27,9 +28,9 @@ defineProps<{
                 v-if="currentPath === home().url"
                 class="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary"
             />
-        </a>
+        </Link>
 
-        <a
+        <Link
             :href="menu.dish().url"
             :class="[
                 'relative rounded-lg px-3 py-2 text-sm font-medium transition-colors',
@@ -44,9 +45,9 @@ defineProps<{
                 v-if="currentPath.startsWith(menu.dish().url)"
                 class="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary"
             />
-        </a>
+        </Link>
 
-        <a
+        <Link
             :href="menu.drink().url"
             :class="[
                 'relative rounded-lg px-3 py-2 text-sm font-medium transition-colors',
@@ -61,9 +62,9 @@ defineProps<{
                 v-if="currentPath.startsWith(menu.drink().url)"
                 class="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary"
             />
-        </a>
+        </Link>
 
-        <a
+        <Link
             :href="about().url"
             :class="[
                 'relative rounded-lg px-3 py-2 text-sm font-medium transition-colors',
@@ -78,6 +79,6 @@ defineProps<{
                 v-if="currentPath === about().url"
                 class="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary"
             />
-        </a>
+        </Link>
     </nav>
 </template>

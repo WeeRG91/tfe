@@ -10,7 +10,7 @@ import menu from '@/routes/menu';
 import notification from '@/routes/notification';
 import order from '@/routes/order';
 import { AdminPermissionEnum } from '@/types/permission';
-import { router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import {
     Bell,
     HandPlatter,
@@ -117,7 +117,7 @@ const handleLogout = () => {
                     </div>
 
                     <nav class="flex-1 space-y-1 overflow-y-auto p-4">
-                        <a
+                        <Link
                             @click="emit('close')"
                             :href="home().url"
                             :class="[
@@ -141,10 +141,10 @@ const handleLogout = () => {
                             <span class="font-medium">
                                 {{ t('navigation.home') }}
                             </span>
-                        </a>
+                        </Link>
 
                         <div v-if="user" class="mt-4 space-y-1">
-                            <a
+                            <Link
                                 v-if="can(AdminPermissionEnum.ADMIN_ACCESS)"
                                 @click="emit('close')"
                                 :href="dashboard().url"
@@ -156,8 +156,8 @@ const handleLogout = () => {
                                 <span class="font-medium">{{
                                     t('navigation.userMenu.adminPanel')
                                 }}</span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 @click="emit('close')"
                                 :href="clientProfile.edit().url"
                                 class="flex items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
@@ -168,9 +168,9 @@ const handleLogout = () => {
                                 <span class="font-medium">{{
                                     t('navigation.userMenu.profile')
                                 }}</span>
-                            </a>
+                            </Link>
 
-                            <a
+                            <Link
                                 @click="emit('close')"
                                 :href="order.myOrders().url"
                                 :class="[
@@ -186,9 +186,9 @@ const handleLogout = () => {
                                 <span class="font-medium">{{
                                     t('navigation.userMenu.orders')
                                 }}</span>
-                            </a>
+                            </Link>
 
-                            <a
+                            <Link
                                 @click="emit('close')"
                                 :href="loyaltyPointTransaction.myPoints().url"
                                 :class="[
@@ -206,10 +206,11 @@ const handleLogout = () => {
                                 <span class="font-medium">{{
                                     t('navigation.userMenu.points')
                                 }}</span>
-                            </a>
+                            </Link>
 
-                            <a
+                            <Link
                                 :href="notification.myNotifications().url"
+                                @click="emit('close')"
                                 class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
                             >
                                 <div class="relative rounded-lg bg-muted p-2">
@@ -228,10 +229,11 @@ const handleLogout = () => {
                                 <span class="font-medium">{{
                                     t('navigation.userMenu.notifications')
                                 }}</span>
-                            </a>
+                            </Link>
 
-                            <a
+                            <Link
                                 :href="cart.checkout().url"
+                                @click="emit('close')"
                                 class="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 text-card-foreground transition-all duration-200 hover:bg-accent hover:text-primary"
                             >
                                 <div class="relative rounded-lg bg-muted p-2">
@@ -250,10 +252,10 @@ const handleLogout = () => {
                                 <span class="font-medium">{{
                                     t('navigation.cart')
                                 }}</span>
-                            </a>
+                            </Link>
                         </div>
 
-                        <a
+                        <Link
                             @click="emit('close')"
                             :href="menu.dish().url"
                             :class="[
@@ -276,9 +278,9 @@ const handleLogout = () => {
                             <span class="font-medium">{{
                                 t('navigation.menu')
                             }}</span>
-                        </a>
+                        </Link>
 
-                        <a
+                        <Link
                             @click="emit('close')"
                             :href="menu.drink().url"
                             :class="[
@@ -301,9 +303,9 @@ const handleLogout = () => {
                             <span class="font-medium">{{
                                 t('navigation.drinks')
                             }}</span>
-                        </a>
+                        </Link>
 
-                        <a
+                        <Link
                             :href="about().url"
                             @click="emit('close')"
                             :class="[
@@ -327,7 +329,7 @@ const handleLogout = () => {
                             <span class="font-medium">
                                 {{ t('navigation.about') }}
                             </span>
-                        </a>
+                        </Link>
                     </nav>
 
                     <div class="border-t border-border p-6">

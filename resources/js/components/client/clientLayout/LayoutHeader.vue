@@ -2,8 +2,9 @@
 import DesktopNav from '@/components/client/clientLayout/DesktopNav.vue';
 import RestaurantLogo from '@/components/RestaurantLogo.vue';
 import { User } from '@/types';
+import { usePage } from '@inertiajs/vue3';
 import { Menu } from 'lucide-vue-next';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import HeaderActions from './HeaderActions.vue';
 import MobileMenu from './MobileMenu.vue';
 import UserMenu from './UserMenu.vue';
@@ -21,7 +22,8 @@ const emit = defineEmits<{
 }>();
 
 const mobileMenuOpen = ref<boolean>(false);
-const currentPath = ref<string>('');
+const page = usePage();
+const currentPath = computed(() => page.url.split(/[?#]/)[0]);
 
 const toggleMobileMenu = () => {
     mobileMenuOpen.value = !mobileMenuOpen.value;
@@ -40,11 +42,11 @@ const handleSearchShortcut = (e: KeyboardEvent) => {
 
 onMounted(() => {
     window.addEventListener('keydown', handleSearchShortcut);
-    currentPath.value = window.location.pathname;
 });
 
 onUnmounted(() => {
     window.removeEventListener('keydown', handleSearchShortcut);
+    document.body.style.overflow = '';
 });
 
 watch(mobileMenuOpen, (isOpen) => {
