@@ -2,12 +2,7 @@ import axios from 'axios';
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const token = document
-    .querySelector('meta[name="csrf-token"]')
-    ?.getAttribute('content');
-
-if (token) {
-    axios.defaults.headers.common['x-CSRF-TOKEN'] = token;
-}
+// Axios reads Laravel's XSRF-TOKEN cookie for each same-origin request.
+// A fixed header would become stale when authentication rotates the token.
 
 import './echo.ts';
