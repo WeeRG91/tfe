@@ -22,7 +22,7 @@ const imageNames = Array.from(
 )
 
 for (const imageName of imageNames) {
-    const source = path.join(sourceDirectory, `${imageName}.jpg`);
+    const source = path.join(sourceDirectory, `${imageName}.png`);
 
     await sharp(source)
         .rotate()
